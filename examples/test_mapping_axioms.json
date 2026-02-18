@@ -1,0 +1,85 @@
+{
+  "program_vars": ["value", "counter"],
+
+  "var_types": {
+    "value": "Int",
+    "counter": "Int"
+  },
+
+  "constants": {
+    "EMPTY": {
+      "type": "Int",
+      "value": "0"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "mapping_read",
+      "signature": "(Int Int) Int"
+    },
+    {
+      "name": "mapping_write",
+      "signature": "(Int Int Int) Int"
+    }
+  ],
+
+  "axioms": [
+    {
+      "formula": "(forall ((m Int) (k1 Int) (k2 Int) (v Int)) (=> (not (= k1 k2)) (= (mapping_read (mapping_write m k1 v) k2) (mapping_read m k2))))",
+      "description": "Read after write at different key returns old value"
+    },
+    "(forall ((m Int) (k Int)) (>= (mapping_read m k) 0))"
+  ],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_counter_1 10) (>= v_value_1 0))",
+      "in_vars": {
+        "counter": "v_counter_1",
+        "value": "v_value_1"
+      },
+      "out_vars": {
+        "counter": "v_counter_1",
+        "value": "v_value_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["counter"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(> v_counter_2 0)",
+      "in_vars": {
+      	"value": "v_value_1",
+        "counter": "v_counter_2"
+      },
+      "out_vars": {
+      	"value": "v_value_1",
+        "counter": "v_counter_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(= v_counter_3 (- v_counter_4 1))",
+      "in_vars": {
+      	"value": "v_value_1",
+        "counter": "v_counter_4"
+      },
+      "out_vars": {
+        "value": "v_value_1",
+        "counter": "v_counter_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["counter"]
+    }
+  ]
+}

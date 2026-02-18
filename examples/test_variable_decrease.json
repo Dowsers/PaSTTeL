@@ -1,0 +1,80 @@
+{
+  "program_vars": [
+    "x",
+    "y"
+  ],
+  "var_types": {
+    "x": "Int",
+    "y": "Int"
+  },
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(= v_y_1 23)",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "y"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(>= v_x_2 0)",
+      "in_vars": {
+        "x": "v_x_2",
+        "y": "v_y_2"
+      },
+      "out_vars": {
+        "x": "v_x_2",
+        "y": "v_y_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L4",
+      "formula": "(= v_x_3 (- v_x_4 v_y_4))",
+      "in_vars": {
+        "x": "v_x_4",
+        "y": "v_y_4"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_4"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "x"
+      ]
+    },
+    {
+      "source": "L4",
+      "target": "L2",
+      "formula": "(= v_y_5 (+ v_y_6 1))",
+      "in_vars": {
+        "x": "v_x_6",
+        "y": "v_y_6"
+      },
+      "out_vars": {
+        "x": "v_x_6",
+        "y": "v_y_5"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "y"
+      ]
+    }
+  ]
+}

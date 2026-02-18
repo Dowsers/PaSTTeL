@@ -1,0 +1,92 @@
+{
+  "program_vars": ["totalSupply", "i"],
+
+  "var_types": {
+    "totalSupply": "Int",
+    "i": "Int"
+  },
+
+  "constants": {
+    "ZERO": {
+      "type": "Int",
+      "value": "0"
+    },
+    "MAX_SUPPLY": {
+      "type": "Int",
+      "value": "1000000"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "sum__balances",
+      "signature": "Int Int"
+    },
+    {
+      "name": "balanceAt",
+      "signature": "Int Int"
+    }
+  ],
+
+  "axioms": [
+    {
+      "formula": "(forall ((x Int)) (>= (sum__balances x) 0))",
+      "description": "Sum of balances is always non-negative"
+    },
+    {
+      "formula": "(forall ((x Int)) (>= (balanceAt x) 0))",
+      "description": "Individual balances are non-negative"
+    }
+  ],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_totalSupply_1 1000) (= v_i_1 10))",
+      "in_vars": {
+        "totalSupply": "v_totalSupply_1",
+        "i": "v_i_1"
+      },
+      "out_vars": {
+        "totalSupply": "v_totalSupply_1",
+        "i": "v_i_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["totalSupply", "i"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(> v_i_2 0)",
+      "in_vars": {
+      	"totalSupply": "v_totalSupply_1",
+        "i": "v_i_2"
+      },
+      "out_vars": {
+     	"totalSupply": "v_totalSupply_1",
+        "i": "v_i_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(= v_i_3 (- v_i_4 1))",
+      "in_vars": {
+       "totalSupply": "v_totalSupply_1",
+        "i": "v_i_4"
+      },
+      "out_vars": {
+       "totalSupply": "v_totalSupply_1",
+        "i": "v_i_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["i"]
+    }
+  ]
+}
