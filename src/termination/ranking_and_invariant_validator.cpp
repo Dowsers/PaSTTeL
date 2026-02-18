@@ -21,11 +21,13 @@ RankingAndInvariantValidator::RankingAndInvariantValidator() {
 // ============================================================================
 
 RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validate(
-    const GenericTerminationSynthesizer::RankingFunction& ranking_function,
-    const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+    const TerminationArgument& argument,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver)
 {
+    const RankingFunction& ranking_function = argument.ranking_function;
+    const std::vector<SupportingInvariant>& supporting_invariants = argument.supporting_invariants;
+
     ValidationResult result;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     result.is_valid = false;
@@ -243,7 +245,7 @@ void RankingAndInvariantValidator::registerProgramVariablesToSolver(
 
 RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::validateSingleSI(
     int si_index,
-    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const SupportingInvariant& si,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver)
 {
@@ -324,7 +326,7 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
 // ============================================================================
 
 bool RankingAndInvariantValidator::checkSIIsFalse(
-    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+    const SupportingInvariant& si) const
 {
     // SI est trivialement FAUX si :
     // - Pas de variables (seulement une constante c)
@@ -354,7 +356,7 @@ bool RankingAndInvariantValidator::checkSIIsFalse(
 }
 
 bool RankingAndInvariantValidator::checkSIIsTrue(
-    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+    const SupportingInvariant& si) const
 {
     // SI est trivialement VRAI si :
     // - Pas de variables (seulement une constante c)
@@ -384,7 +386,7 @@ bool RankingAndInvariantValidator::checkSIIsTrue(
 }
 
 bool RankingAndInvariantValidator::checkSINonTriviality(
-    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+    const SupportingInvariant& si) const
 {
     // Au moins un coefficient de variable doit être non-nul
     for (const auto& [var, coef] : si.coefficients) {
@@ -401,7 +403,7 @@ bool RankingAndInvariantValidator::checkSINonTriviality(
 
 // Cherche un contre-exemple où stem(x, x') ∧ ¬SI(x') est SAT
 bool RankingAndInvariantValidator::checkSIInitiation(
-    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const SupportingInvariant& si,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     std::map<std::string, double>& counterexample)
@@ -452,7 +454,7 @@ bool RankingAndInvariantValidator::checkSIInitiation(
 
 // Cherche un contre-exemple où SI(x) ∧ loop(x, x') ∧ ¬SI(x') est SAT
 bool RankingAndInvariantValidator::checkSIConsecution(
-    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const SupportingInvariant& si,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     std::map<std::string, double>& counterexample)
@@ -514,7 +516,7 @@ bool RankingAndInvariantValidator::checkSIConsecution(
 }
 
 bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
-    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const SupportingInvariant& si,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     std::map<std::string, double>& counterexample)
@@ -581,7 +583,7 @@ bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
 // ============================================================================
 
 bool RankingAndInvariantValidator::checkRFNonTriviality(
-    const GenericTerminationSynthesizer::RankingFunction& rf) const
+    const RankingFunction& rf) const
 {
     for (const auto& [var, coef] : rf.coefficients) {
         if (std::abs(coef) > 1e-9) {
@@ -592,7 +594,7 @@ bool RankingAndInvariantValidator::checkRFNonTriviality(
 }
 
 bool RankingAndInvariantValidator::checkRFBounded(
-    const GenericTerminationSynthesizer::RankingFunction& rf,
+    const RankingFunction& rf,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     std::map<std::string, double>& counterexample)
@@ -633,8 +635,8 @@ bool RankingAndInvariantValidator::checkRFBounded(
 }
 
 bool RankingAndInvariantValidator::checkRFDecreasing(
-    const GenericTerminationSynthesizer::RankingFunction& rf,
-    const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+    const RankingFunction& rf,
+    const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     double delta,

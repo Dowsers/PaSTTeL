@@ -10,27 +10,20 @@ extern VerbosityLevel VERBOSITY;
 // CONSTRUCTEUR
 // ============================================================================
 
-LexicographicTemplate::LexicographicTemplate(
-    int num_components, int num_si_strict, int num_si_nonstrict, int delta_value)
+LexicographicTemplate::LexicographicTemplate(int num_components, int delta_value)
     : num_components_(num_components)
-    , num_strict_invariants_(num_si_strict)
-    , num_nonstrict_invariants_(num_si_nonstrict)
-    , num_supporting_invariants_(num_si_strict + num_si_nonstrict)
-    , initialized_(false)
     , delta_value_(delta_value)
+    , initialized_(false)
 {
     if (num_components_ < 2) {
         throw std::invalid_argument("LexicographicTemplate requires at least 2 components");
     }
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "\n╔═══════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  LEXICOGRAPHIC TEMPLATE WITH SI (BMS INTEGRATED)  ║" << std::endl;
-        std::cout << "╚═══════════════════════════════════════════════════╝" << std::endl;
-        std::cout << "  Components:    " << num_components_ << std::endl;
-        std::cout << "  Strict SI:     " << num_strict_invariants_ << std::endl;
-        std::cout << "  Non-strict SI: " << num_nonstrict_invariants_ << std::endl;
-        std::cout << "  Total SI:      " << num_supporting_invariants_ << std::endl;
+        std::cout << "\n╔════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║  LEXICOGRAPHIC TEMPLATE                    ║" << std::endl;
+        std::cout << "╚════════════════════════════════════════════╝" << std::endl;
+        std::cout << "  Components: " << num_components_ << std::endl;
     }
 }
 
@@ -44,8 +37,8 @@ void LexicographicTemplate::init(const LassoProgram& lasso) {
     initialized_ = true;
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "  Variables:     " << lasso_.program_vars.size() << std::endl;
-        std::cout << "  Parameters:    " << getParameters().getTotalParameterCount() << std::endl;
+        std::cout << "  Variables:  " << lasso_.program_vars.size() << std::endl;
+        std::cout << "  RF params:  " << getParameters().getTotalParameterCount() << std::endl;
     }
 }
 
@@ -68,24 +61,15 @@ void LexicographicTemplate::initializeParameters() {
     for (int i = 0; i < num_components_; ++i) {
         delta_params_.push_back("LEX_DELTA_" + std::to_string(i));
     }
-
-    // Supporting invariant parameters
-    si_params_.clear();
-    for (int si_idx = 0; si_idx < num_supporting_invariants_; ++si_idx) {
-        std::vector<std::string> si_coeffs;
-        for (int i = 0; i < n; ++i) {
-            si_coeffs.push_back("SUP_INVAR_" + std::to_string(si_idx) + "_" + std::to_string(i));
-        }
-        si_coeffs.push_back("SUP_INVAR_" + std::to_string(si_idx) + "_const");
-        si_params_.push_back(si_coeffs);
-    }
 }
 
 // ============================================================================
 // IMPLEMENTATION DE L'INTERFACE
 // ============================================================================
 
-std::vector<RankingTemplate::MotzkinContext> LexicographicTemplate::getConstraints() const {
+std::vector<RankingTemplate::MotzkinContext> LexicographicTemplate::getConstraints(
+    const std::vector<LinearInequality>& /*si_preconditions*/) const
+{
     if (!initialized_) {
         throw std::runtime_error("LexicographicTemplate::getConstraints() called before init()");
     }
@@ -135,26 +119,13 @@ RankingTemplate::TemplateParameters LexicographicTemplate::getParameters() const
         }
     }
 
-    // Delta parameters (one per component) — use the first one as the "main" delta
+    // First delta as the "main" delta
     params.delta_param = delta_params_[0];
     params.delta_value = delta_value_;
 
-    // Add remaining delta params as ranking params (they will be synthesized)
+    // Remaining delta params treated as synthesized ranking params
     for (size_t i = 1; i < delta_params_.size(); ++i) {
         params.ranking_params.push_back(delta_params_[i]);
-    }
-
-    // Flatten SI params
-    for (const auto& si_param_set : si_params_) {
-        for (const auto& param : si_param_set) {
-            params.si_params.push_back(param);
-        }
-    }
-
-    // SI strictness
-    for (int si_idx = 0; si_idx < num_supporting_invariants_; ++si_idx) {
-        bool is_strict = (si_idx < num_strict_invariants_);
-        params.si_is_strict.push_back(is_strict);
     }
 
     return params;
@@ -162,23 +133,21 @@ RankingTemplate::TemplateParameters LexicographicTemplate::getParameters() const
 
 std::string LexicographicTemplate::getDescription() const {
     std::ostringstream oss;
-    oss << num_components_ << "-lex with " << num_supporting_invariants_ << " SI: ";
-    oss << "lexicographic decrease of " << num_components_ << " components";
+    oss << num_components_ << "-lex: lexicographic decrease of " << num_components_ << " components";
     return oss.str();
 }
 
 void LexicographicTemplate::printInfo() const {
-    std::cout << "\n┌─ Template Info ─────────┐" << std::endl;
-    std::cout << "│ Name: " << getName() << std::endl;
-    std::cout << "│ Components: " << num_components_ << std::endl;
-    std::cout << "│ Strict SI: " << num_strict_invariants_ << std::endl;
-    std::cout << "│ Non-strict SI: " << num_nonstrict_invariants_ << std::endl;
-    std::cout << "│ Total SI: " << num_supporting_invariants_ << std::endl;
-    if (initialized_) {
-        std::cout << "│ Variables: " << lasso_.program_vars.size() << std::endl;
-        std::cout << "│ Total params: " << getParameters().getTotalParameterCount() << std::endl;
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "\n┌─ Template Info ──────────┐" << std::endl;
+        std::cout << "│ Name: " << getName() << std::endl;
+        std::cout << "│ Components: " << num_components_ << std::endl;
+        if (initialized_) {
+            std::cout << "│ Variables: " << lasso_.program_vars.size() << std::endl;
+            std::cout << "│ RF params: " << getParameters().getTotalParameterCount() << std::endl;
+        }
+        std::cout << "└──────────────────────────┘" << std::endl;
     }
-    std::cout << "└─────────────────────────┘" << std::endl;
 }
 
 // ============================================================================
@@ -210,32 +179,6 @@ LinearInequality LexicographicTemplate::buildComponent(
     return result;
 }
 
-LinearInequality LexicographicTemplate::buildSupportingInvariant(
-    int si_index,
-    const std::vector<std::string>& vars,
-    bool is_strict) const
-{
-    LinearInequality result;
-    result.strict = is_strict;
-    result.motzkin_coef = LinearInequality::ANYTHING;
-
-    const auto& si_coeffs = si_params_[si_index];
-
-    for (size_t i = 0; i < vars.size(); ++i) {
-        AffineTerm coef;
-        coef.coefficients[si_coeffs[i]] = 1.0;
-        coef.constant = 0.0;
-        result.setCoefficient(vars[i], coef);
-    }
-
-    AffineTerm const_term;
-    const_term.coefficients[si_coeffs.back()] = 1.0;
-    const_term.constant = 0.0;
-    result.constant = const_term;
-
-    return result;
-}
-
 // ============================================================================
 // phi_bound: BOUNDEDNESS — loop(x,x') -> fi(x) > 0 for each i
 // ============================================================================
@@ -244,42 +187,35 @@ std::vector<RankingTemplate::MotzkinContext>
 LexicographicTemplate::generateBoundedness() const {
     std::vector<MotzkinContext> contexts;
 
-    // For each component i
     for (int i = 0; i < num_components_; ++i) {
-        // For each polyhedron of the loop
         int poly_idx = 0;
         for (const auto& polyhedron : lasso_.loop.polyhedra) {
             MotzkinContext ctx;
             ctx.annotation = "phi_bound: f" + std::to_string(i) +
                             " > 0 (poly " + std::to_string(poly_idx) + ")";
 
-            // Add loop constraints as premises
             for (const auto& ineq : polyhedron) {
                 ctx.constraints.push_back(ineq);
             }
 
-            // Build input variables
             std::vector<std::string> loop_in_vars;
             for (const auto& var : lasso_.program_vars) {
                 loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
             }
 
-            // fi(x) > 0
-            // Negation: -fi(x) >= 0
+            // fi(x) > 0 — Negation: -fi(x) >= 0
             LinearInequality fi = buildComponent(i, loop_in_vars);
 
             LinearInequality neg_bound;
             neg_bound.strict = false;
             neg_bound.motzkin_coef = LinearInequality::ONE;
 
-            // -fi(x)
             for (size_t j = 0; j < loop_in_vars.size(); ++j) {
                 AffineTerm coef = fi.getCoefficient(loop_in_vars[j]);
                 coef.negate();
                 neg_bound.setCoefficient(loop_in_vars[j], coef);
             }
 
-            // Constant: -fi_const
             neg_bound.constant = fi.constant;
             neg_bound.constant.negate();
 
@@ -299,32 +235,23 @@ LexicographicTemplate::generateBoundedness() const {
 // Encoding as Motzkin negation:
 //   NOT( fi(x') <= fi(x)  OR  exists j<i : ... )
 //   = fi(x') > fi(x)  AND  forall j<i : fj(x) - fj(x') <= dj
-//
-// So the negated formula (for Motzkin) is:
-//   fi(x') - fi(x) - 1 >= 0       (fi increases strictly)
-//   AND for each j < i:
-//     dj - fj(x) + fj(x') >= 0    (fj does not decrease by more than dj)
 // ============================================================================
 
 std::vector<RankingTemplate::MotzkinContext>
 LexicographicTemplate::generateConsecution() const {
     std::vector<MotzkinContext> contexts;
 
-    // For each component i from 0 to k-2
     for (int i = 0; i < num_components_ - 1; ++i) {
-        // For each polyhedron of the loop
         int poly_idx = 0;
         for (const auto& polyhedron : lasso_.loop.polyhedra) {
             MotzkinContext ctx;
             ctx.annotation = "phi_consec: f" + std::to_string(i) +
                             " consecution (poly " + std::to_string(poly_idx) + ")";
 
-            // Add loop constraints as premises
             for (const auto& ineq : polyhedron) {
                 ctx.constraints.push_back(ineq);
             }
 
-            // Build input/output variables
             std::vector<std::string> loop_in_vars, loop_out_vars;
             for (const auto& var : lasso_.program_vars) {
                 loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
@@ -339,18 +266,15 @@ LexicographicTemplate::generateConsecution() const {
             neg_nonincr.strict = true;
             neg_nonincr.motzkin_coef = LinearInequality::ONE;
 
-            // +fi(x')
             for (size_t j = 0; j < loop_out_vars.size(); ++j) {
                 AffineTerm coef = fi_out.getCoefficient(loop_out_vars[j]);
                 neg_nonincr.setCoefficient(loop_out_vars[j], coef);
             }
-            // -fi(x)
             for (size_t j = 0; j < loop_in_vars.size(); ++j) {
                 AffineTerm coef = fi_in.getCoefficient(loop_in_vars[j]);
                 coef.negate();
                 neg_nonincr.setCoefficient(loop_in_vars[j], coef);
             }
-            // Constant: fi'_const - fi_const
             neg_nonincr.constant = fi_out.constant - fi_in.constant;
 
             ctx.constraints.push_back(neg_nonincr);
@@ -364,18 +288,15 @@ LexicographicTemplate::generateConsecution() const {
                 neg_decr_j.strict = false;
                 neg_decr_j.motzkin_coef = LinearInequality::ANYTHING;
 
-                // -fj(x)
                 for (size_t v = 0; v < loop_in_vars.size(); ++v) {
                     AffineTerm coef = fj_in.getCoefficient(loop_in_vars[v]);
                     coef.negate();
                     neg_decr_j.setCoefficient(loop_in_vars[v], coef);
                 }
-                // +fj(x')
                 for (size_t v = 0; v < loop_out_vars.size(); ++v) {
                     AffineTerm coef = fj_out.getCoefficient(loop_out_vars[v]);
                     neg_decr_j.setCoefficient(loop_out_vars[v], coef);
                 }
-                // Constant: fj'_const - fj_const + dj
                 neg_decr_j.constant = fj_out.constant - fj_in.constant;
                 neg_decr_j.constant.coefficients[delta_params_[j]] = 1.0;
 
@@ -393,34 +314,29 @@ LexicographicTemplate::generateConsecution() const {
 // ============================================================================
 // phi_decrement: DECREMENT — loop(x,x') -> exists i : fi(x) - fi(x') > di
 //
-// Negation: forall i : fi(x) - fi(x') <= di
-//   = forall i : di - fi(x) + fi(x') >= 0
+// Negation: forall i : di - fi(x) + fi(x') >= 0
 // ============================================================================
 
 std::vector<RankingTemplate::MotzkinContext>
 LexicographicTemplate::generateDecrement() const {
     std::vector<MotzkinContext> contexts;
 
-    // For each polyhedron of the loop
     int poly_idx = 0;
     for (const auto& polyhedron : lasso_.loop.polyhedra) {
         MotzkinContext ctx;
         ctx.annotation = "phi_decrement: at least one component decreases (poly "
                          + std::to_string(poly_idx) + ")";
 
-        // Add loop constraints as premises
         for (const auto& ineq : polyhedron) {
             ctx.constraints.push_back(ineq);
         }
 
-        // Build input/output variables
         std::vector<std::string> loop_in_vars, loop_out_vars;
         for (const auto& var : lasso_.program_vars) {
             loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
             loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
         }
 
-        // Negation of the disjunction: for each i, di - fi(x) + fi(x') >= 0
         for (int i = 0; i < num_components_; ++i) {
             LinearInequality fi_in = buildComponent(i, loop_in_vars);
             LinearInequality fi_out = buildComponent(i, loop_out_vars);
@@ -429,18 +345,15 @@ LexicographicTemplate::generateDecrement() const {
             neg_decr.strict = false;
             neg_decr.motzkin_coef = LinearInequality::ANYTHING;
 
-            // -fi(x)
             for (size_t j = 0; j < loop_in_vars.size(); ++j) {
                 AffineTerm coef = fi_in.getCoefficient(loop_in_vars[j]);
                 coef.negate();
                 neg_decr.setCoefficient(loop_in_vars[j], coef);
             }
-            // +fi(x')
             for (size_t j = 0; j < loop_out_vars.size(); ++j) {
                 AffineTerm coef = fi_out.getCoefficient(loop_out_vars[j]);
                 neg_decr.setCoefficient(loop_out_vars[j], coef);
             }
-            // Constant: fi'_const - fi_const + di
             neg_decr.constant = fi_out.constant - fi_in.constant;
             neg_decr.constant.coefficients[delta_params_[i]] = 1.0;
 
@@ -452,4 +365,31 @@ LexicographicTemplate::generateDecrement() const {
     }
 
     return contexts;
+}
+
+// ============================================================================
+// EXTRACTION DES RÉSULTATS
+// ============================================================================
+
+std::vector<RankingFunction> LexicographicTemplate::extractRankingFunctions(
+    std::shared_ptr<SMTSolver> solver,
+    const std::vector<std::string>& program_vars) const
+{
+    std::vector<RankingFunction> components;
+    size_t n = program_vars.size();
+
+    for (int i = 0; i < num_components_; ++i) {
+        RankingFunction rf;
+        for (size_t j = 0; j < n && j < component_params_[i].size() - 1; ++j) {
+            rf.coefficients[program_vars[j]] = solver->getValue(component_params_[i][j]);
+        }
+        if (!component_params_[i].empty()) {
+            rf.constant = solver->getValue(component_params_[i].back());
+        }
+        if (i < static_cast<int>(delta_params_.size())) {
+            rf.delta = solver->getValue(delta_params_[i]);
+        }
+        components.push_back(rf);
+    }
+    return components;
 }

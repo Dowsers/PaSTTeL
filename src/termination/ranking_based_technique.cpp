@@ -57,15 +57,17 @@ bool RankingBasedTechnique::validateConfiguration() const {
 
 RankingTemplate* RankingBasedTechnique::createTemplate(
     const std::string& template_name,
-    int num_si_strict,
-    int num_si_nonstrict) const {
+    int /*num_si_strict*/,
+    int /*num_si_nonstrict*/) const {
 
+    // Les SI sont maintenant gérés par SupportingInvariantGenerator dans le synthesizer.
+    // Les templates ne reçoivent plus les counts SI.
     if (template_name == "AffineTemplate") {
-        return new AffineTemplate(num_si_strict, num_si_nonstrict);
+        return new AffineTemplate();
     } else if (template_name == "NestedTemplate") {
-        return new NestedTemplate(num_components_nested_, num_si_strict, num_si_nonstrict);
+        return new NestedTemplate(num_components_nested_);
     } else if (template_name == "LexicographicTemplate") {
-        return new LexicographicTemplate(num_components_nested_, num_si_strict, num_si_nonstrict);
+        return new LexicographicTemplate(num_components_nested_);
     } else {
         throw std::invalid_argument("Unknown template name: " + template_name);
     }
@@ -109,7 +111,7 @@ TerminationResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solv
 
             // Copier les coefficients de la ranking function comme témoin
             if (last_synthesizer_) {
-                const auto& rf = last_synthesizer_->getRankingFunction();
+                const auto& rf = last_synthesizer_->getTerminationArgument().ranking_function;
                 result.witness = rf.coefficients;
                 if (!result.witness.empty()) {
                     std::ostringstream proof;
@@ -149,9 +151,10 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
     RankingTemplate* ranking_template = createTemplate(
         template_name, config.num_si_strict, config.num_si_nonstrict);
 
-    // Créer le synthesizer
+    // Créer le synthesizer — les SI sont gérés par SIG à l'intérieur
     auto synthesizer = std::make_unique<GenericTerminationSynthesizer>(
-        *lasso_, ranking_template, solver);
+        *lasso_, ranking_template, solver,
+        config.num_si_strict, config.num_si_nonstrict);
 
     // Lancer la synthèse
     auto synthesis_result = synthesizer->synthesize();

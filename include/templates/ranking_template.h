@@ -7,6 +7,7 @@
 
 #include "lasso_program.h"
 #include "linear_inequality.h"
+#include "termination/ranking_function.h"
 
 
 /**
@@ -35,16 +36,15 @@ public:
     
     /**
      * @brief Informations sur les paramètres du template pour SMT
+     * (uniquement les paramètres de la ranking function — les SI sont dans SupportingInvariantGenerator)
      */
     struct TemplateParameters {
         std::vector<std::string> ranking_params;    // Paramètres de la ranking function
-        std::vector<std::string> si_params;         // Paramètres des supporting invariants
-        std::vector<bool> si_is_strict;             // true = SI strict (>), false = non-strict (≥)
         std::string delta_param;                    // Nom du paramètre δ
         int delta_value;                            // Valeur de δ
-        
+
         int getTotalParameterCount() const {
-            return ranking_params.size() + si_params.size() + (delta_param.empty() ? 0 : 1);
+            return ranking_params.size() + (delta_param.empty() ? 0 : 1);
         }
     };
     
@@ -61,15 +61,37 @@ public:
     virtual void init(const LassoProgram& lasso) = 0;
     
     /**
-     * @brief Génère tous les contextes Motzkin (contraintes BMS)
-     * @return Liste de contextes, un par contrainte universelle
+     * @brief Génère les contextes Motzkin des contraintes de la ranking function
+     *
+     * Les φ1/φ2 (SI) sont générés par SupportingInvariantGenerator.
+     * Les si_preconditions (SI(x) ≥ 0) sont injectées comme prémisses dans φ3/φ4.
+     *
+     * @param si_preconditions SI(x) ≥ 0 pour chaque SI (vide si pas de SI)
      */
-    virtual std::vector<MotzkinContext> getConstraints() const = 0;
+    virtual std::vector<MotzkinContext> getConstraints(
+        const std::vector<LinearInequality>& si_preconditions = {}) const = 0;
     
     /**
      * @brief Retourne les informations sur les paramètres SMT
      */
     virtual TemplateParameters getParameters() const = 0;
+
+    /**
+     * @brief Extrait les composantes de la ranking function depuis le modèle SMT
+     *
+     * Appelé après un check-sat SAT pour construire le TerminationArgument.
+     * Chaque template connaît sa propre structure de paramètres :
+     * - AffineTemplate    → 1 composante
+     * - NestedTemplate    → k composantes (partageant un δ)
+     * - LexicographicTemplate → k composantes (avec δ par composante)
+     *
+     * @param solver       Solveur SMT (modèle disponible après SAT)
+     * @param program_vars Variables de programme dans l'ordre d'init()
+     * @return Vecteur de RankingFunction, une par composante
+     */
+    virtual std::vector<RankingFunction> extractRankingFunctions(
+        std::shared_ptr<SMTSolver> solver,
+        const std::vector<std::string>& program_vars) const = 0;
     
     /**
      * @brief Retourne le nom du template (pour logging)
@@ -84,17 +106,7 @@ public:
     // ========================================================================
     // MÉTHODES OPTIONNELLES - Peuvent être override si nécessaire
     // ========================================================================
-    
-    /**
-     * @brief Retourne le nombre de supporting invariants
-     */
-    virtual int getNumSupportingInvariants() const { return 0; }
-    
-    /**
-     * @brief Indique si le template supporte les SI stricts
-     */
-    virtual bool supportsStrictInvariants() const { return false; }
-    
+
     /**
      * @brief Valide la configuration du template
      * @return true si la configuration est valide

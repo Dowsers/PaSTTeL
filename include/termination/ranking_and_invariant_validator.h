@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "termination/generic_termination_synthesizer.h"
+#include "termination/termination_argument.h"
+#include "lasso_program.h"
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
@@ -73,8 +74,7 @@ public:
      * @return Résultat de validation détaillé
      */
     ValidationResult validate(
-        const GenericTerminationSynthesizer::RankingFunction& ranking_function,
-        const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+        const TerminationArgument& argument,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver);
     
@@ -83,12 +83,12 @@ public:
      */
     void printValidationResult(const ValidationResult& result) const;
 
-    const std::vector<GenericTerminationSynthesizer::SupportingInvariant>
+    const std::vector<SupportingInvariant>
         getValidSupportingInvariants() const { return valid_sis; };
 
 private:
 
-    std::vector<GenericTerminationSynthesizer::SupportingInvariant> valid_sis;
+    std::vector<SupportingInvariant> valid_sis;
 
     void registerProgramVariablesToSolver(
         std::shared_ptr<SMTSolver> solver,
@@ -106,7 +106,7 @@ private:
      * - Strict:     FAUX si c <= 0
      */
     bool checkSIIsFalse(
-        const GenericTerminationSynthesizer::SupportingInvariant& si) const;
+        const SupportingInvariant& si) const;
     
     /**
      * Vérifie si le SI est trivialement VRAI
@@ -116,13 +116,13 @@ private:
      * - Strict:     VRAI si c > 0
      */
     bool checkSIIsTrue(
-        const GenericTerminationSynthesizer::SupportingInvariant& si) const;
+        const SupportingInvariant& si) const;
     
     /**
      * Vérifie si le SI a au moins un coefficient de variable non-nul
      */
     bool checkSINonTriviality(
-        const GenericTerminationSynthesizer::SupportingInvariant& si) const;
+        const SupportingInvariant& si) const;
     
     // ========================================================================
     // VÉRIFICATIONS SMT (LOURDES) - SUPPORTING INVARIANTS
@@ -135,7 +135,7 @@ private:
      * Si UNSAT → le stem établit bien le SI
      */
     bool checkSIInitiation(
-        const GenericTerminationSynthesizer::SupportingInvariant& si,
+        const SupportingInvariant& si,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         std::map<std::string, double>& counterexample);
@@ -151,7 +151,7 @@ private:
      * @return true si SI ∧ loop_guard est SAT (compatible)
      */
     bool checkSICompatibleWithLoop(
-        const GenericTerminationSynthesizer::SupportingInvariant& si,
+        const SupportingInvariant& si,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         std::map<std::string, double>& counterexample);
@@ -163,7 +163,7 @@ private:
      * Si UNSAT → le SI est inductif
      */
     bool checkSIConsecution(
-        const GenericTerminationSynthesizer::SupportingInvariant& si,
+        const SupportingInvariant& si,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         std::map<std::string, double>& counterexample);
@@ -173,7 +173,7 @@ private:
      */
     SIValidationResult validateSingleSI(
         int si_index,
-        const GenericTerminationSynthesizer::SupportingInvariant& si,
+        const SupportingInvariant& si,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver);
     
@@ -185,13 +185,13 @@ private:
      * Vérifie que la RF a au moins un coefficient non-nul
      */
     bool checkRFNonTriviality(
-        const GenericTerminationSynthesizer::RankingFunction& rf) const;
+        const RankingFunction& rf) const;
     
     /**
      * Vérifie que f(x) >= 0 dans la garde du loop
      */
     bool checkRFBounded(
-        const GenericTerminationSynthesizer::RankingFunction& rf,
+        const RankingFunction& rf,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         std::map<std::string, double>& counterexample);
@@ -200,8 +200,8 @@ private:
      * Vérifie que f(x) - f(x') >= δ dans le loop
      */
     bool checkRFDecreasing(
-        const GenericTerminationSynthesizer::RankingFunction& rf,
-        const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+        const RankingFunction& rf,
+        const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         double delta,

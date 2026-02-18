@@ -59,6 +59,8 @@ COMMON_SRCS := \
 	$(SRC_DIR)/templates/nested_template.cpp \
 	$(SRC_DIR)/templates/lexicographic_template.cpp \
 	$(SRC_DIR)/termination/motzkin_transform.cpp \
+	$(SRC_DIR)/termination/ranking_function.cpp \
+	$(SRC_DIR)/termination/supporting_invariant.cpp \
 	$(SRC_DIR)/smtsolvers/SMTSolverZ3.cpp \
 	$(SRC_DIR)/smtsolvers/SMTSolverCVC5.cpp \
 	$(SRC_DIR)/termination/ranking_and_invariant_validator.cpp \
@@ -67,9 +69,8 @@ COMMON_SRCS := \
 	$(SRC_DIR)/nontermination/fixpoint_technique.cpp \
 	$(SRC_DIR)/nontermination/geometric_technique.cpp \
 	$(SRC_DIR)/nontermination/nontermination_analyzer.cpp \
-	$(SRC_DIR)/refinement/predicate_encoder.cpp \
+	$(SRC_DIR)/termination/supporting_invariant_generator.cpp \
 	$(SRC_DIR)/termination/generic_termination_synthesizer.cpp \
-	$(SRC_DIR)/refinement/interpolant_automaton_builder.cpp \
 	$(SRC_DIR)/parser/smt_parser.cpp \
 	$(SRC_DIR)/parser/json_trace_parser.cpp \
 	$(SRC_DIR)/linearization/formula_linearizer.cpp \
