@@ -11,10 +11,10 @@ LDFLAGS := -pthread
 # ========================
 
 # Exemple :
-#   export TERMINATOR=/home/a/Documents/Tools
+#   export PASTTEL=/home/a/Documents/Tools
 # Ce dossier doit contenir :
-#   $(TERMINATOR)/z3/include et $(TERMINATOR)/z3/lib
-#   $(TERMINATOR)/spot/include et $(TERMINATOR)/spot/lib
+#   $(PASTTEL)/z3/include et $(PASTTEL)/z3/lib
+#   $(PASTTEL)/spot/include et $(PASTTEL)/spot/lib
 #
 # Pour CVC5 (optionnel, peut être dans un autre dossier) :
 #   export CVC5_DIR=/path/to/cvc5
@@ -22,15 +22,15 @@ LDFLAGS := -pthread
 #   $(CVC5_DIR)/include/cvc5/cvc5.h
 #   $(CVC5_DIR)/lib/libcvc5.a
 
-Z3_CFLAGS := -I$(TERMINATOR)/include
-Z3_LIBS   := -L$(TERMINATOR)/lib -lz3
+Z3_CFLAGS := -I$(PASTTEL)/include
+Z3_LIBS   := -L$(PASTTEL)/lib -lz3
 
-SPOT_CFLAGS := -I$(TERMINATOR)/include
-SPOT_LIBS   := -L$(TERMINATOR)/lib -lspot -lbddx -lz
+SPOT_CFLAGS := -I$(PASTTEL)/include
+SPOT_LIBS   := -L$(PASTTEL)/lib -lspot -lbddx -lz
 
 # CVC5_DIR peut être défini via variable d'environnement
 # Si non défini, utiliser une valeur par défaut
-CVC5_DIR ?= $(TERMINATOR)
+CVC5_DIR ?= $(PASTTEL)
 CVC5_CFLAGS := -I$(CVC5_DIR)/include
 CVC5_LIBS   := $(CVC5_DIR)/lib/libcvc5.so $(CVC5_DIR)/lib/libcvc5parser.so $(CVC5_DIR)/lib/libpoly.so.0 $(CVC5_DIR)/lib/libpolyxx.so.0 $(CVC5_DIR)/lib/libpoly.so $(CVC5_DIR)/lib/libpolyxx.so -lgmp
 
@@ -99,8 +99,8 @@ TEST_OBJS := $(TEST_SRCS:.cpp=.o)
 # Fichier source principal
 # ========================
 
-MAIN_SRC := $(wildcard $(SRC_DIR)/terminator.cpp)
-MAIN := $(patsubst $(SRC_DIR)/terminator.cpp, $(BIN_DIR)/terminator, $(MAIN_SRC))
+MAIN_SRC := $(wildcard $(SRC_DIR)/pasttel.cpp)
+MAIN := $(patsubst $(SRC_DIR)/pasttel.cpp, $(BIN_DIR)/pasttel, $(MAIN_SRC))
 MAIN_OBJ := $(MAIN_SRC:.cpp=.o)
 
 # ========================

@@ -3,7 +3,7 @@
 # Test script for BOTH mode with cross-analysis communication
 # Tests both Z3 and CVC5 solvers
 
-TERMINATOR="./bin/terminator"
+PASTTEL="./bin/pasttel"
 PASSED=0
 FAILED=0
 
@@ -26,7 +26,7 @@ run_test() {
     echo "Expected: $expected"
     echo ""
 
-    OUTPUT=$($TERMINATOR -t both -c 2 -s $solver "$file" 2>&1)
+    OUTPUT=$($PASTTEL -t both -c 2 -s $solver "$file" 2>&1)
 
     if echo "$OUTPUT" | grep -q "$expected"; then
         echo "✓ PASSED"
@@ -67,7 +67,7 @@ echo "Test: Cancellation message verification (Z3)"
 echo "File: examples/test_geometric_doubling.json"
 echo ""
 
-OUTPUT=$($TERMINATOR -v -t both -c 2 -s z3 examples/test_geometric_doubling.json 2>&1)
+OUTPUT=$($PASTTEL -v -t both -c 2 -s z3 examples/test_geometric_doubling.json 2>&1)
 
 if echo "$OUTPUT" | grep -q "Cancelled (nontermination found by other analysis)"; then
     echo "✓ PASSED - Cancellation message found"
@@ -84,7 +84,7 @@ echo "Test: Cancellation message verification (CVC5)"
 echo "File: examples/test_geometric_doubling.json"
 echo ""
 
-OUTPUT=$($TERMINATOR -v -t both -c 2 -s cvc5 examples/test_geometric_doubling.json 2>&1)
+OUTPUT=$($PASTTEL -v -t both -c 2 -s cvc5 examples/test_geometric_doubling.json 2>&1)
 
 if echo "$OUTPUT" | grep -q "Cancelled (nontermination found by other analysis)"; then
     echo "✓ PASSED - Cancellation message found"
@@ -101,7 +101,7 @@ echo "Test: Parallel launch verification"
 echo "File: examples/test_simple_counter.json"
 echo ""
 
-OUTPUT=$($TERMINATOR -t both -c 2 -s z3 examples/test_simple_counter.json 2>&1)
+OUTPUT=$($PASTTEL -t both -c 2 -s z3 examples/test_simple_counter.json 2>&1)
 
 if echo "$OUTPUT" | grep -q "OVERALL RESULT: TERMINATING"; then
     echo "✓ PASSED - Both analyses launched in parallel"

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <chrono>
 
-#include "terminator.h"
+#include "pasttel.h"
 #include "parser/json_trace_parser.h"
 #include "templates/affine_template.h"
 #include "templates/nested_template.h"
@@ -23,13 +23,13 @@
 // ============================================================================
 std::string FILENAME;
 
-// Variables globales déclarées dans terminator.h
+// Variables globales déclarées dans pasttel.h
 AnalysisMode MODE = BOTH;
 VerbosityLevel VERBOSITY = VerbosityLevel::NORMAL;
 int CPUS = 1;
 SolverType SOLVER = Z3;
 
-// Les flags atomiques TERMINATION_FOUND et NONTERMINATION_FOUND sont définis inline dans terminator.h
+// Les flags atomiques TERMINATION_FOUND et NONTERMINATION_FOUND sont définis inline dans pasttel.h
 // Rapport d'analyse
 AnalysisReport report;
 
@@ -54,8 +54,8 @@ void printHelp(const char* programName) {
               << "  -c <int>                          Number of CPUs (default: 1)\n"
               << "  -h, --help                        Show this help message\n"
               << "\nExamples:\n"
-              << "  " << programName << " -t terminate -s z3 -c 4 input.txt\n"
-              << "  " << programName << " -t both -s cvc5 -v input.txt\n";
+              << "  " << programName << " -t terminate -s z3 -c 4 input.json\n"
+              << "  " << programName << " -t both -s cvc5 -v input.json\n";
 }
 
 // ============================================================================

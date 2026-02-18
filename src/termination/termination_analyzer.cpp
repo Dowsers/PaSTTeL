@@ -6,7 +6,7 @@
 
 #include "termination/termination_analyzer.h"
 #include "termination/ranking_based_technique.h"
-#include "terminator.h"
+#include "pasttel.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;

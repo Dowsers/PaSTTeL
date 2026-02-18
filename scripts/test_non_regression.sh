@@ -18,7 +18,7 @@ test_file() {
     
     echo ""
     echo "Test: $file (mode: $mode)"
-    output=$(./bin/terminator "$file" -t "$mode" -q -c $cpus 2>&1)
+    output=$(./bin/pasttel "$file" -t "$mode" -q -c $cpus 2>&1)
 
     if echo "$output" | grep "OVERALL RESULT" | grep -q "$expected"; then
         echo "✓ PASS"

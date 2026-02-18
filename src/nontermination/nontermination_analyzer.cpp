@@ -7,7 +7,7 @@
 #include "nontermination/nontermination_analyzer.h"
 #include "nontermination/fixpoint_technique.h"
 #include "nontermination/geometric_technique.h"
-#include "terminator.h"
+#include "pasttel.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;

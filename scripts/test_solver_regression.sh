@@ -62,10 +62,10 @@ test_example() {
     print_test "$description"
 
     # Test avec Z3
-    local result_z3=$(./bin/terminator "$example" -t "$mode" -s z3 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_z3=$(./bin/pasttel "$example" -t "$mode" -s z3 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Test avec CVC5
-    local result_cvc5=$(./bin/terminator "$example" -t "$mode" -s cvc5 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_cvc5=$(./bin/pasttel "$example" -t "$mode" -s cvc5 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Vérification
     if [ "$result_z3" == "$expected" ] && [ "$result_cvc5" == "$expected" ]; then
@@ -87,10 +87,10 @@ test_parallel() {
     print_test "$description (parallèle)"
 
     # Test avec Z3 parallèle
-    local result_z3=$(./bin/terminator "$example" -t "$mode" -s z3 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_z3=$(./bin/pasttel "$example" -t "$mode" -s z3 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Test avec CVC5 parallèle
-    local result_cvc5=$(./bin/terminator "$example" -t "$mode" -s cvc5 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_cvc5=$(./bin/pasttel "$example" -t "$mode" -s cvc5 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Vérification
     if [ "$result_z3" == "$expected" ] && [ "$result_cvc5" == "$expected" ]; then
@@ -107,14 +107,14 @@ test_parallel() {
 
 print_header "Tests de Non-Régression : Z3 vs CVC5"
 
-echo "Exécutable: ./bin/terminator"
+echo "Exécutable: ./bin/pasttel"
 echo "Date: $(date)"
 echo ""
 
 # Vérifier que l'exécutable existe
-if [ ! -f "./bin/terminator" ]; then
-    echo -e "${RED}ERREUR: ./bin/terminator n'existe pas${NC}"
-    echo "Compilez d'abord avec: make bin/terminator"
+if [ ! -f "./bin/pasttel" ]; then
+    echo -e "${RED}ERREUR: ./bin/pasttel n'existe pas${NC}"
+    echo "Compilez d'abord avec: make bin/pasttel"
     exit 1
 fi
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Benchmark Pipeline: Ultimate LassoRanker vs Terminator
+Benchmark Pipeline: Ultimate LassoRanker vs PaSTTeL
 
-Parses Ultimate lasso trace files, converts them to JSON for the terminator tool,
+Parses Ultimate lasso trace files, converts them to JSON for the pasttel tool,
 runs both tools, and produces a CSV comparison of results and timing.
 
 Usage:
-    python3 scripts/benchmark_ultimate_vs_terminator.py \
+    python3 scripts/benchmark_ultimate_vs_pasttel.py \
         --input-dir /path/to/lasso_traces/ \
-        --terminator-bin ./bin/terminator \
+        --pasttel-bin ./bin/pasttel \
         --output results.csv
 """
 
@@ -26,7 +26,7 @@ import sys
 # Algo NAME MAPPING
 # =============================================================================
 
-TERMINATOR_ALGO_MAP = {
+PASTTEL_ALGO_MAP = {
     "RankingBased(AffineTemplate)": "Affine template",
     "RankingBased(NestedTemplate)": "Nested template",
     "RankingBased(LexicographicTemplate)": "Lexicographic Template",
@@ -46,7 +46,7 @@ def normalize_european_float(s):
 
 
 def sanitize_identifier(s):
-    """Remove ~, #, | characters that cause issues in the terminator parser."""
+    """Remove ~, #, | characters that cause issues in the pasttel parser."""
     s = re.sub(r'old\(([^()]*)\)', r'old_\1_', s)
     return s.replace("|", "").replace("~", "").replace("#", "")
 
@@ -465,11 +465,11 @@ def parse_ultimate_trace(filepath, check_mode="lasso"):
 
 
 # =============================================================================
-# CONVERT TO JSON FOR TERMINATOR
+# CONVERT TO JSON FOR PASTTEL
 # =============================================================================
 
 def convert_to_json(parsed):
-    """Convert parsed Ultimate trace data to JSON dict for terminator."""
+    """Convert parsed Ultimate trace data to JSON dict for pasttel."""
     # Program variables: union of ALL variables from stem and loop InVars/OutVars.
     # The C++ parser generates fresh SSA vars for any program variable missing
     # from a transition's in/out mappings, so it's safe to include everything.
@@ -565,18 +565,18 @@ def convert_to_json(parsed):
 
 
 # =============================================================================
-# RUN TERMINATOR
+# RUN PASTTEL
 # =============================================================================
 
-def run_terminator(json_path, terminator_bin, cpus=2, timeout_s=60):
-    """Run the terminator binary on a JSON file and parse results.
+def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
+    """Run the pasttel binary on a JSON file and parse results.
 
     Returns dict with:
         result: TERMINATING | NON-TERMINATING | UNKNOWN
         time_ms: float
         algo: str
     """
-    cmd = [terminator_bin, "-t", "both", "-c", str(cpus), "-s" , "z3", json_path]
+    cmd = [pasttel_bin, "-t", "both", "-c", str(cpus), "-s" , "z3", json_path]
 
     try:
         proc = subprocess.run(
@@ -634,7 +634,7 @@ def run_terminator(json_path, terminator_bin, cpus=2, timeout_s=60):
             parts = stripped.split()
             if len(parts) >= 2:
                 raw_name = parts[0]
-                mapped = TERMINATOR_ALGO_MAP.get(raw_name)
+                mapped = PASTTEL_ALGO_MAP.get(raw_name)
                 if mapped is not None:
                     algo = mapped
                     break
@@ -646,22 +646,22 @@ def run_terminator(json_path, terminator_bin, cpus=2, timeout_s=60):
 # DETERMINE COMBINED RESULT AND Algo
 # =============================================================================
 
-def determine_result_code(ultimate, terminator):
+def determine_result_code(ultimate, pasttel):
     """Determine the Result Code for the CSV row.
 
-    Use Ultimate as ground truth if available, otherwise use terminator.
+    Use Ultimate as ground truth if available, otherwise use pasttel.
     """
     if ultimate["result"] != "UNKNOWN":
         return ultimate["result"]
-    if terminator["result"] != "UNKNOWN":
-        return terminator["result"]
+    if pasttel["result"] != "UNKNOWN":
+        return pasttel["result"]
     return "UNKNOWN"
 
 
-def determine_algo(ultimate, terminator):
+def determine_algo(ultimate, pasttel):
     """Determine the Algo column: both algorithms separated by /."""
     u_algo = ultimate["algo"] if ultimate["algo"] != "-" else None
-    t_algo = terminator["algo"] if terminator["algo"] != "-" else None
+    t_algo = pasttel["algo"] if pasttel["algo"] != "-" else None
 
     if u_algo and t_algo:
         return f"{u_algo} / {t_algo}"
@@ -682,7 +682,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     Points are colored:
       - Green: both agree TERMINATING
       - Blue: both agree NONTERMINATING
-      - Red: Ultimate has a result but Terminator disagrees or has no answer
+      - Red: Ultimate has a result but PaSTTeL disagrees or has no answer
 
     When one approach returns UNKNOWN while the other has a result,
     the UNKNOWN approach gets a PAR-2 penalty time (timeout * 2) in the plot.
@@ -705,7 +705,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     for row in rows:
         result = row["Result Code"].strip()
         u_time_str = row["Ultimate (ms)"].strip()
-        t_time_str = row["terminator (ms)"].strip()
+        t_time_str = row["pasttel (ms)"].strip()
         name = row["Trace Name"].strip()
 
         # Skip infeasible / unchecked / both unknown
@@ -721,7 +721,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
                     ty = float(t_time_str) if t_time_str != "-" else par2_ms
                 except ValueError:
                     continue
-                unknown_side = "Terminator" if t_time_str == "-" else "Ultimate"
+                unknown_side = "PaSTTeL" if t_time_str == "-" else "Ultimate"
                 red_x.append(ux)
                 red_y.append(ty)
                 red_labels.append(f"{name}<br>Ultimate: {result}<br>{unknown_side}: UNKNOWN (PAR-2={par2_ms:.0f}ms)")
@@ -733,15 +733,15 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
         except ValueError:
             continue
 
-        # Determine the Ultimate and Terminator individual results
+        # Determine the Ultimate and PaSTTeL individual results
         # The CSV "Result Code" is the combined result. We need to figure out
         # if they agree or disagree.  Heuristic: if result is TERMINATING or
         # NONTERMINATING and both have valid times, they likely agree unless
         # algo column hints otherwise.  A more robust approach: re-derive from
         # the result code + the fact that both returned a time.
         # Since determine_result_code picks Ultimate first, we check if
-        # terminator could contradict.  The simplest reliable signal: if
-        # result is TERMINATING, Ultimate said TERMINATING.  If terminator
+        # pasttel could contradict.  The simplest reliable signal: if
+        # result is TERMINATING, Ultimate said TERMINATING.  If pasttel
         # also returned a time, it found *something* — but it might have found
         # NONTERMINATING.  We can detect contradiction from the Algo field:
         # if Algo contains "Fixpoint" or "GNTA" it means nontermination was found
@@ -764,7 +764,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
         u_verdict = result  # Ultimate is ground truth for Result Code
         t_verdict = verdict_from_algo(t_algo) if t_algo else "UNKNOWN"
 
-        # If terminator has no algo info, it returned UNKNOWN (no answer/timeout)
+        # If pasttel has no algo info, it returned UNKNOWN (no answer/timeout)
         # Do NOT assume agreement — leave t_verdict as UNKNOWN so it goes to red
 
         # Classify
@@ -782,7 +782,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
             red_y.append(ty)
             red_labels.append(
                 f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
-                f"<br>Ultimate: {u_verdict}, Terminator: {t_verdict}"
+                f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
             )
 
     all_y = green_y + blue_y + red_y
@@ -798,7 +798,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 <html>
 <head>
 <meta charset="utf-8">
-<title>Ultimate vs Terminator - Scatter Plot</title>
+<title>Ultimate vs PaSTTeL - Scatter Plot</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
   body {{ font-family: Arial, sans-serif; margin: 20px; }}
@@ -806,7 +806,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 </style>
 </head>
 <body>
-<h2>Ultimate vs Terminator &mdash; Computation Time Comparison</h2>
+<h2>Ultimate vs PaSTTeL &mdash; Computation Time Comparison</h2>
 <p>
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
@@ -861,7 +861,7 @@ var layout = {{
     {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
   }},
   yaxis: {{
-    title: 'Terminator (ms)',
+    title: 'PaSTTeL (ms)',
     {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
   }},
   hovermode: 'closest',
@@ -884,15 +884,15 @@ Plotly.newPlot('plot', [diagonal, green, blue, red], layout);
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Benchmark Ultimate LassoRanker vs Terminator"
+        description="Benchmark Ultimate LassoRanker vs PaSTTeL"
     )
     parser.add_argument(
         "--input-dir", default=None,
         help="Directory starting with lass*.txt files"
     )
     parser.add_argument(
-        "--terminator-bin", default=None,
-        help="Path to the terminator binary"
+        "--pasttel-bin", default=None,
+        help="Path to the pasttel binary"
     )
     parser.add_argument(
         "--output", default="benchmark_results.csv",
@@ -900,11 +900,11 @@ def main():
     )
     parser.add_argument(
         "--cpus", type=int, default=2,
-        help="Number of CPUs for terminator (default: 2)"
+        help="Number of CPUs for pasttel (default: 2)"
     )
     parser.add_argument(
         "--timeout", type=int, default=60,
-        help="Timeout in seconds for each terminator run (default: 60)"
+        help="Timeout in seconds for each pasttel run (default: 60)"
     )
     parser.add_argument(
         "--plot", nargs="?", const=True, default=False,
@@ -933,9 +933,9 @@ def main():
         generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log)
         return
 
-    # Benchmark mode requires --input-dir and --terminator-bin
-    if not args.input_dir or not args.terminator_bin:
-        parser.error("--input-dir and --terminator-bin are required for benchmarking")
+    # Benchmark mode requires --input-dir and --pasttel-bin
+    if not args.input_dir or not args.pasttel_bin:
+        parser.error("--input-dir and --pasttel-bin are required for benchmarking")
 
     # Find all trace files
     pattern = os.path.join(args.input_dir, "lass*.txt")
@@ -947,9 +947,9 @@ def main():
 
     print(f"Found {len(trace_files)} trace file(s) in {args.input_dir}")
 
-    # Check terminator binary exists
-    if not os.path.isfile(args.terminator_bin):
-        print(f"Error: terminator binary not found at {args.terminator_bin}")
+    # Check pasttel binary exists
+    if not os.path.isfile(args.pasttel_bin):
+        print(f"Error: pasttel binary not found at {args.pasttel_bin}")
         sys.exit(1)
 
     # Create a directory next to the output CSV to store converted JSON files
@@ -979,7 +979,7 @@ def main():
                 "Result Code": "UNKNOWN",
                 "Ultimate-Fixpoint (ms)": "-",
                 "Ultimate (ms)": "-",
-                "terminator (ms)": "-",
+                "pasttel (ms)": "-",
                 "Stem Size": 0,
                 "Loop Size": 0,
                 "Total Size Trace": 0,
@@ -993,13 +993,13 @@ def main():
         print(f"  Trace size:      {ultimate['size']} transition(s)")
         
         if ultimate['size'] == 0:
-            print("  Skipping terminator run due to zero-size trace.")
+            print("  Skipping pasttel run due to zero-size trace.")
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
                 "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
                 "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
-                "terminator (ms)": "-",
+                "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1007,13 +1007,13 @@ def main():
             })
             continue
         if ultimate['result'] == "UNCHECKED" or ultimate['result'] == "UNKNOWN":
-            print("  Skipping terminator run due to unchecked or unknown trace.")
+            print("  Skipping pasttel run due to unchecked or unknown trace.")
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
                 "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
                 "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
-                "terminator (ms)": "-",
+                "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1021,13 +1021,13 @@ def main():
             })
             continue
         if ultimate['result'] == "INFEASIBLE":
-            print("  Skipping terminator run due to infeasible trace.")
+            print("  Skipping pasttel run due to infeasible trace.")
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
                 "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
                 "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
-                "terminator (ms)": "-",
+                "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1046,32 +1046,32 @@ def main():
 
         print(f"  JSON written to: {json_path}")
 
-        # 3. Run terminator
-        print(f"  Running terminator (-t both -c {args.cpus})...")
-        terminator = run_terminator(
-            json_path, args.terminator_bin, cpus=args.cpus, timeout_s=args.timeout
+        # 3. Run pasttel
+        print(f"  Running pasttel (-t both -c {args.cpus})...")
+        pasttel = run_pasttel(
+            json_path, args.pasttel_bin, cpus=args.cpus, timeout_s=args.timeout
         )
 
-        print(f"  Terminator result: {terminator['result']}")
-        print(f"  Terminator time:   {terminator['time_ms']:.2f} ms")
-        print(f"  Terminator algo:   {terminator['algo']}")
-        if "error" in terminator:
-            print(f"  Terminator error:  {terminator['error']}")
+        print(f"  PaSTTeL result: {pasttel['result']}")
+        print(f"  PaSTTeL time:   {pasttel['time_ms']:.2f} ms")
+        print(f"  PaSTTeL algo:   {pasttel['algo']}")
+        if "error" in pasttel:
+            print(f"  PaSTTeL error:  {pasttel['error']}")
 
         # 4. Build CSV row
-        result_code = determine_result_code(ultimate, terminator)
-        algo = determine_algo(ultimate, terminator)
+        result_code = determine_result_code(ultimate, pasttel)
+        algo = determine_algo(ultimate, pasttel)
 
         u_time = f"{ultimate['time_ms']:.2f}" if ultimate["time_ms"] >= 0 else "-"
         u_fixpoint_time = f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-"
-        t_time = f"{terminator['time_ms']:.2f}" if terminator["time_ms"] >= 0 else "-"
+        t_time = f"{pasttel['time_ms']:.2f}" if pasttel["time_ms"] >= 0 else "-"
 
         row = {
             "Trace Name": trace_file,
             "Result Code": result_code,
             "Ultimate-Fixpoint (ms)": u_fixpoint_time,
             "Ultimate (ms)": u_time,
-            "terminator (ms)": t_time,
+            "pasttel (ms)": t_time,
             "Stem Size": ultimate["stem_size"],
             "Loop Size": ultimate["loop_size"],
             "Total Size Trace": ultimate["stem_size"] + ultimate["loop_size"],
@@ -1086,7 +1086,7 @@ def main():
             "Result Code",
             "Ultimate-Fixpoint (ms)",
             "Ultimate (ms)",
-            "terminator (ms)",
+            "pasttel (ms)",
             "Stem Size",
             "Loop Size",
             "Total Size Trace",
@@ -1103,7 +1103,7 @@ def main():
         print(f"{'='*60}")
 
         # Print summary table
-        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'U-Fixpoint (ms)':<17} {'Ultimate (ms)':<15} {'terminator (ms)':<17} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
+        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'U-Fixpoint (ms)':<17} {'Ultimate (ms)':<15} {'pasttel (ms)':<17} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
         print("-" * 160)
         for row in results:
             print(
@@ -1111,7 +1111,7 @@ def main():
                 f"{row['Result Code']:<15} "
                 f"{str(row['Ultimate-Fixpoint (ms)']):<17} "
                 f"{str(row['Ultimate (ms)']):<15} "
-                f"{str(row['terminator (ms)']):<17} "
+                f"{str(row['pasttel (ms)']):<17} "
                 f"{str(row['Stem Size']):<6} "
                 f"{str(row['Loop Size']):<6} "
                 f"{str(row['Total Size Trace']):<7} "

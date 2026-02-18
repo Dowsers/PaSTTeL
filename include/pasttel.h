@@ -36,7 +36,7 @@ extern int CPUS;
 extern SolverType SOLVER;
 
 // Flags de communication entre analyses (pour mode BOTH)
-// Définis inline car utilisés par les tests qui ne linkent pas terminator.o
+// Définis inline car utilisés par les tests qui ne linkent pas pasttel.o
 inline std::atomic<bool> TERMINATION_FOUND{false};
 inline std::atomic<bool> NONTERMINATION_FOUND{false};
 
