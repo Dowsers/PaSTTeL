@@ -1,0 +1,770 @@
+#include <iostream>
+#include <cmath>
+#include <sstream>
+#include <iomanip>
+
+#include "termination/ranking_and_invariant_validator.h"
+#include "utiles.h"
+
+extern VerbosityLevel VERBOSITY;
+
+
+// ============================================================================
+// CONSTRUCTEUR
+// ============================================================================
+
+RankingAndInvariantValidator::RankingAndInvariantValidator() {
+}
+
+// ============================================================================
+// VALIDATION PRINCIPALE
+// ============================================================================
+
+RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validate(
+    const GenericTerminationSynthesizer::RankingFunction& ranking_function,
+    const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver)
+{
+    ValidationResult result;
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+    result.is_valid = false;
+    result.all_si_valid = false;
+    
+    if(verbose) {
+        std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║    VALIDATION POST-SYNTHÈSE                          ║" << std::endl;
+        std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+    }
+    // ========================================================================
+    // PARTIE 1 : VALIDATION DE LA FONCTION DE RANKING
+    // ========================================================================
+
+    registerProgramVariablesToSolver(solver, lasso);
+
+    if(verbose) {
+        std::cout << "\n╭─ Fonction de Ranking ─────────────────────────────────╮" << std::endl;
+        // Étape 1.1 : Non-trivialité
+        std::cout << "[1/3] Vérification de la non-trivialité..." << std::endl;
+    }
+    result.rf_non_trivial_check = checkRFNonTriviality(ranking_function);
+    
+    if (!result.rf_non_trivial_check) {
+        result.error_message = "Ranking function est triviale (tous les coefficients nuls)";
+        if(verbose) {
+            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
+            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+        }
+        return result;
+    }
+    if(verbose) {
+        std::cout << "  ✅ OK : Au moins un coefficient non-nul" << std::endl;
+
+        // Étape 1.2 : Bounded
+        std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 dans le loop)..." << std::endl;
+    }
+
+    result.rf_bounded_check = checkRFBounded(ranking_function, lasso, solver, result.rf_counterexample);
+    
+    if (!result.rf_bounded_check) {
+        if (verbose) {
+            result.error_message = "Ranking function n'est pas bornée : f(x) < 0 possible";
+            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
+            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+        }
+        return result;
+    }
+    if(verbose) {
+        std::cout << "  ✅ OK : f(x) ≥ 0 dans le loop" << std::endl;
+        // Étape 1.3 : Decreasing
+        std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
+    }
+
+    result.rf_decreasing_check = checkRFDecreasing(
+        ranking_function, supporting_invariants, lasso, solver, ranking_function.delta, result.rf_counterexample);
+    
+    if (!result.rf_decreasing_check) {
+        result.error_message = "Ranking function ne décroît pas strictement";
+        if(verbose) {
+            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
+            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+        }
+        return result;
+    }
+    if(verbose) {
+        std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta << std::endl;
+        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+    
+    // ========================================================================
+    // PARTIE 2 : VALIDATION DES SUPPORTING INVARIANTS
+    // ========================================================================
+    
+        std::cout << "╭─ Supporting Invariants ───────────────────────────────╮" << std::endl;
+        std::cout << "  Nombre de SI synthétisés : " << supporting_invariants.size() << std::endl;
+    }
+
+    if (supporting_invariants.empty()) {
+        if(verbose)
+            std::cout << "  ℹ️  Aucun SI synthétisé" << std::endl;
+        result.all_si_valid = true;  // Vacuously true
+    } else {
+        // Compteurs pour statistiques
+        int num_trivial_true = 0;
+        int num_trivial_false = 0;
+        int num_non_trivial = 0;
+        int num_valid_non_trivial = 0;
+        
+        for (size_t i = 0; i < supporting_invariants.size(); ++i) {
+            if(verbose)
+                std::cout << "\n  ┌─ SI #" << i << " ────────────────────────────────────┐" << std::endl;
+            SIValidationResult si_result = validateSingleSI(i, supporting_invariants[i], lasso, solver);
+            result.si_results.push_back(si_result);
+            
+            // Comptabiliser les résultats
+            if (si_result.is_false_check) {
+                num_trivial_false++;
+                if(verbose)
+                    std::cout << "  │ !  TRIVIAL FALSE" << std::endl;
+            } else if (si_result.is_true_check) {
+                num_trivial_true++;
+                if(verbose)
+                    std::cout << "  │ ✅ TRIVIAL TRUE" << std::endl;
+            } else {
+                num_non_trivial++;
+                if (si_result.is_valid) {
+                    num_valid_non_trivial++;
+                    valid_sis.push_back(supporting_invariants[i]);
+                    if(verbose)
+                        std::cout << "  │ ✅ VALIDE (non-trivial)" << std::endl;
+                } else {
+                    if(verbose)
+                        std::cout << "  │ ❌ INVALIDE : " << si_result.error_message << std::endl;
+                }
+            }
+            
+            if(verbose) {
+                std::cout << "  │   • isFalse()      : " << (si_result.is_false_check ? "❌ FAUX" : "✅") << std::endl;
+                std::cout << "  │   • isTrue()       : " << (si_result.is_true_check ? "✅ VRAI" : "➖") << std::endl;
+                
+                if (!si_result.is_false_check && !si_result.is_true_check) {
+                    std::cout << "  │   • Initiation     : " << (si_result.initiation_check ? "✅" : "❌") << std::endl;
+                    std::cout << "  │   • Compatible     : " << (si_result.compatible_check ? "✅" : "❌") << std::endl;
+                    std::cout << "  │   • Consécution    : " << (si_result.consecution_check ? "✅" : "❌") << std::endl;
+                }
+                
+                std::cout << "  └─────────────────────────────────────────────────┘" << std::endl;
+            }
+        }
+        // Logique :
+        // - On filtre les SI triviaux (isTrue/isFalse)
+        // - On garde les SI non-triviaux
+        // - Il faut AU MOINS 1 SI non-trivial valide (ou que tous soient triviaux)
+        
+        if(verbose) {
+            std::cout << "\n    Statistiques SI :" << std::endl;
+            std::cout << "     • Triviaux TRUE  : " << num_trivial_true << " (filtrés)" << std::endl;
+            std::cout << "     • Triviaux FALSE : " << num_trivial_false << " (rejetés)" << std::endl;
+            std::cout << "     • Non-triviaux   : " << num_non_trivial << std::endl;
+            std::cout << "     • Valides (non-t): " << num_valid_non_trivial << std::endl;
+        }        
+        // Critère de validation des SI :
+        // - Pas de SI trivialement FAUX
+        // - Si au moins une SI triviale vraie, OK
+        
+        if (num_trivial_false > 0) {
+            result.all_si_valid = false;
+            if(verbose) 
+                std::cout << "\n  ❌ Échec : " << num_trivial_false << " SI trivialement FAUX" << std::endl;
+        } else if (num_trivial_true > 0) {
+            // Au moins une SI triviale TRUE → OK
+            result.all_si_valid = true;
+            if(verbose) 
+                std::cout << "\n  ✅ SI triviale (vacuously true)" << std::endl;
+        } else if (num_valid_non_trivial > 0) {
+            // Au moins 1 SI non-trivial valide → OK
+            result.all_si_valid = true;
+            if(verbose) {
+                std::cout << "\n  ✅ " << num_valid_non_trivial << "/" << num_non_trivial
+                        << " SI non-triviaux valides" << std::endl;
+            }
+        } else {
+            // Tous les SI non-triviaux sont invalides → ÉCHEC
+            result.all_si_valid = false;
+            if(verbose) 
+                std::cout << "\n  ❌ Aucun SI non-trivial valide" << std::endl;
+        }
+    }
+    if(verbose) 
+        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+
+    // ========================================================================
+    // RÉSULTAT FINAL
+    // ========================================================================
+    
+    result.is_valid = result.all_si_valid
+                && result.rf_non_trivial_check
+                && result.rf_bounded_check
+                && result.rf_decreasing_check;
+    
+    if(verbose) {
+        if (result.is_valid) {
+            std::cout << "╔═══════════════════════════════════════════════════════╗" << std::endl;
+            std::cout << "║  ✅ VALIDATION RÉUSSIE !                             ║" << std::endl;
+            std::cout << "║     Argument de termination VALIDE                   ║" << std::endl;
+            std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+        } else if (!result.all_si_valid) {
+            result.error_message = "Un ou plusieurs Supporting Invariants sont invalides";
+            std::cout << "╔═══════════════════════════════════════════════════════╗" << std::endl;
+            std::cout << "║  ❌ VALIDATION ÉCHOUÉE                               ║" << std::endl;
+            if(!result.error_message.empty())
+            std::cout << "║     " << result.error_message << std::string(10, ' ') << "║" << std::endl;
+            std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+        }
+    }
+
+    return result;
+}
+
+// ============================================================================
+// ENREGISTREMENT DES VARIABLES INPUT ET OUTPUT DU PROGRAMME
+// ============================================================================
+
+void RankingAndInvariantValidator::registerProgramVariablesToSolver(
+    std::shared_ptr<SMTSolver> solver,
+    const LassoProgram& lasso) {
+
+    lasso.declareSolverContext(solver);
+}
+
+
+// ============================================================================
+// VALIDATION D'UN SEUL SI
+// ============================================================================
+
+RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::validateSingleSI(
+    int si_index,
+    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver)
+{
+    SIValidationResult result;
+    result.si_index = si_index;
+    result.is_valid = false;
+    result.is_false_check = false;
+    result.is_true_check = false;
+    result.initiation_check = false;
+    result.consecution_check = false;
+    
+    // ========================================================================
+    // ÉTAPE 1 : VÉRIFICATIONS TRIVIALES (RAPIDES) - Style Ultimate
+    // ========================================================================
+    
+    // 1.1 : Vérifier si le SI est trivialement FAUX
+    result.is_false_check = checkSIIsFalse(si);
+    if (result.is_false_check) {
+        result.error_message = "SI est trivialement FAUX (isFalse() == true)";
+        return result;
+    }
+    
+    // 1.2 : Vérifier si le SI est trivialement VRAI (on l'ignore alors)
+    result.is_true_check = checkSIIsTrue(si);
+    if (result.is_true_check) {
+        // SI trivial "true" → on l'accepte mais on ne fait pas de checks SMT
+        result.is_valid = true;
+        result.initiation_check = true;
+        result.consecution_check = true;
+        return result;
+    }
+    
+    // 1.3 : Vérifier la non-trivialité (au moins un coefficient de variable non-nul)
+    bool non_trivial = checkSINonTriviality(si);
+    if (!non_trivial) {
+        result.error_message = "SI a seulement une constante (pas de variables)";
+        // Note: ce cas devrait être couvert par isFalse() ou isTrue()
+        return result;
+    }
+    
+    // ========================================================================
+    // ÉTAPE 2 : VÉRIFICATIONS SMT - Seulement si pas trivial
+    // ========================================================================
+    
+    // 2.1 : Initiation (si pas de stem, on skip)
+    if (!lasso.hasNoStem()) {
+        result.initiation_check = checkSIInitiation(si, lasso, solver, result.counterexample);
+        if (!result.initiation_check) {
+            result.error_message = "Échec initiation : stem n'implique pas SI";
+            return result;
+        }
+    } else {
+        // Pas de stem → initiation vacuously true
+        result.initiation_check = true;
+    }
+    
+    // 2.2 : Compatibilité avec loop guard (vérifier pas vacuously valid)
+    result.compatible_check = checkSICompatibleWithLoop(si, lasso, solver, result.counterexample);
+    if (!result.compatible_check) {
+        result.error_message = "SI incompatible avec loop guard (vacuously valid)";
+        return result;
+    }
+    
+    // 2.3 : Consécution
+    result.consecution_check = checkSIConsecution(si, lasso, solver, result.counterexample);
+    if (!result.consecution_check) {
+        result.error_message = "Échec consécution : SI n'est pas inductif";
+        return result;
+    }
+    
+    // Tout est OK !
+    result.is_valid = true;
+    return result;
+}
+
+// ============================================================================
+// VÉRIFICATIONS TRIVIALES (RAPIDES) - SUPPORTING INVARIANTS
+// ============================================================================
+
+bool RankingAndInvariantValidator::checkSIIsFalse(
+    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+{
+    // SI est trivialement FAUX si :
+    // - Pas de variables (seulement une constante c)
+    // - Non-strict (>=) : c < 0
+    // - Strict (>)      : c <= 0
+    
+    bool has_variables = false;
+    for (const auto& [var, coef] : si.coefficients) {
+        if (std::abs(coef) > 1e-9) {
+            has_variables = true;
+            break;
+        }
+    }
+    
+    if (has_variables) {
+        return false;  // Pas trivialement faux si a des variables
+    }
+    
+    // Seulement une constante
+    if (si.is_strict) {
+        // SI: c > 0 est FAUX si c <= 0
+        return si.constant <= 1e-9;
+    } else {
+        // SI: c >= 0 est FAUX si c < 0
+        return si.constant < -1e-9;
+    }
+}
+
+bool RankingAndInvariantValidator::checkSIIsTrue(
+    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+{
+    // SI est trivialement VRAI si :
+    // - Pas de variables (seulement une constante c)
+    // - Non-strict (>=) : c >= 0
+    // - Strict (>)      : c > 0
+    
+    bool has_variables = false;
+    for (const auto& [var, coef] : si.coefficients) {
+        if (std::abs(coef) > 1e-9) {
+            has_variables = true;
+            break;
+        }
+    }
+    
+    if (has_variables) {
+        return false;  // Pas trivialement vrai si a des variables
+    }
+    
+    // Seulement une constante
+    if (si.is_strict) {
+        // SI: c > 0 est VRAI si c > 0
+        return si.constant > 1e-9;
+    } else {
+        // SI: c >= 0 est VRAI si c >= 0
+        return si.constant >= -1e-9;
+    }
+}
+
+bool RankingAndInvariantValidator::checkSINonTriviality(
+    const GenericTerminationSynthesizer::SupportingInvariant& si) const
+{
+    // Au moins un coefficient de variable doit être non-nul
+    for (const auto& [var, coef] : si.coefficients) {
+        if (std::abs(coef) > 1e-9) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// ============================================================================
+// VÉRIFICATIONS SMT - SUPPORTING INVARIANTS
+// ============================================================================
+
+// Cherche un contre-exemple où stem(x, x') ∧ ¬SI(x') est SAT
+bool RankingAndInvariantValidator::checkSIInitiation(
+    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    std::map<std::string, double>& counterexample)
+{
+    solver->push();
+    
+    // Ajouter les contraintes du stem
+    for (const auto& poly : lasso.stem.polyhedra) {
+        for (const auto& ineq : poly) {
+            std::string smt_constraint = ineq.toSMTLib2();
+            solver->addAssertion(smt_constraint);
+        }
+    }
+    
+    // Construire ¬SI(x) : SI(x) < 0 (non-strict) ou SI(x) <= 0 (strict)
+    std::ostringstream neg_si;
+    neg_si << "(" << (si.is_strict ? "<=" : "<") << " (+";
+    
+    bool has_terms = false;
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = si.coefficients.find(prog_var);
+        if (it != si.coefficients.end() && std::abs(it->second) > 1e-9) {
+            neg_si << " (* " << it->second << " " << lasso.stem.getSSAVar(prog_var, false) << ")";
+            has_terms = true;
+        }
+    }
+
+    if (std::abs(si.constant) > 1e-9 || !has_terms) {
+        neg_si << " " << si.constant;
+    }
+    
+    neg_si << ") 0)";
+    solver->addAssertion(neg_si.str());
+    bool sat = solver->checkSat();
+    
+    if (sat) {
+        // Extraire le contre-exemple
+        for (const auto& [var_prog, ssa_out] : lasso.stem.var_to_ssa_out) {
+            counterexample[var_prog] = solver->getValue(ssa_out);
+        }
+
+    }
+    
+    solver->pop();
+    return !sat;  // Valide si UNSAT
+}
+
+// Cherche un contre-exemple où SI(x) ∧ loop(x, x') ∧ ¬SI(x') est SAT
+bool RankingAndInvariantValidator::checkSIConsecution(
+    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    std::map<std::string, double>& counterexample)
+{
+    solver->push();
+    
+    std::ostringstream si_x;
+    si_x << "(" << (si.is_strict ? ">" : ">=") << " (+";
+    
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = si.coefficients.find(prog_var);
+        if (it != si.coefficients.end() && std::abs(it->second) > 1e-9) {
+            si_x << " (* " << it->second << " " << lasso.loop.getSSAVar(prog_var, false) << ")";
+        }
+    }
+    
+    si_x << " " << si.constant << ") 0)";
+    if (VERBOSITY == VerbosityLevel::VERBOSE)
+        std::cout<< si_x.str()<<std::endl;
+    solver->addAssertion(si_x.str());
+    
+    // Ajouter les contraintes du loop
+    for (const auto& poly : lasso.loop.polyhedra) {
+        for (const auto& ineq : poly) {
+            std::string smt_constraint = ineq.toSMTLib2();
+            solver->addAssertion(smt_constraint);
+        }
+    }
+    
+    // Ajouter ¬SI(x') avec out_vars de loop
+    std::ostringstream neg_si_xprime;
+    neg_si_xprime << "(" << (si.is_strict ? "<=" : "<") << " (+";
+    
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = si.coefficients.find(prog_var);
+        if (it != si.coefficients.end() && std::abs(it->second) > 1e-9) {
+            neg_si_xprime << " (* " << it->second << " " << lasso.loop.getSSAVar(prog_var, true) << ")";
+        }
+    }
+
+    neg_si_xprime << " " << si.constant << ") 0)";
+    solver->addAssertion(neg_si_xprime.str());
+    
+    bool sat = solver->checkSat();
+    
+    if (sat) {
+        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
+            counterexample[var_prog] = solver->getValue(ssa_in);
+        }
+        for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
+            counterexample[var_prog] = solver->getValue(ssa_out);
+        }
+    }
+    
+    solver->pop();
+    return !sat;  // Valide si UNSAT
+}
+
+bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
+    const GenericTerminationSynthesizer::SupportingInvariant& si,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    std::map<std::string, double>& counterexample)
+{
+    solver->push();
+    
+    // Construire SI(x) avec les variables d'entrée du loop
+    std::ostringstream si_x;
+    si_x << "(" << (si.is_strict ? ">" : ">=") << " (+";
+    
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = si.coefficients.find(prog_var);
+        if (it != si.coefficients.end() && std::abs(it->second) > 1e-9) {
+            si_x << " (* " << it->second << " " 
+                 << lasso.loop.getSSAVar(prog_var, false) << ")";
+        }
+    }
+    si_x << " " << si.constant << ") 0)";
+    
+    // Ajouter SI(x)
+    solver->addAssertion(si_x.str());
+    
+    // Ajouter UNIQUEMENT le loop guard (pas les updates)
+    // On veut vérifier : ∃x. loop_guard(x) ∧ SI(x)
+    for (const auto& poly : lasso.loop.polyhedra) {
+        for (const auto& ineq : poly) {
+            // Ne prendre que les contraintes sur les variables d'entrée
+            // (pas les contraintes d'égalité entre in et out)
+            bool is_guard = true;
+            for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
+                AffineTerm coef = ineq.getCoefficient(ssa_out);
+                if ( !coef.isZero() ) {
+                    is_guard = false;
+                    break;
+                }
+            }
+            
+            if (is_guard) {
+                std::string smt_constraint = ineq.toSMTLib2();
+                solver->addAssertion(smt_constraint);
+            }
+        }
+    }
+    
+    bool sat = solver->checkSat();
+    
+    if (!sat) {
+        // SI incompatible avec loop guard
+        // Pas de contre-exemple car UNSAT
+    } else {
+        // Compatible - on peut extraire un exemple
+        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
+            counterexample[var_prog] = solver->getValue(ssa_in);
+        }
+    }
+    
+    solver->pop();
+    return sat;  // Valide si SAT (compatible)
+}
+
+// ============================================================================
+// VÉRIFICATIONS - RANKING FUNCTION
+// ============================================================================
+
+bool RankingAndInvariantValidator::checkRFNonTriviality(
+    const GenericTerminationSynthesizer::RankingFunction& rf) const
+{
+    for (const auto& [var, coef] : rf.coefficients) {
+        if (std::abs(coef) > 1e-9) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool RankingAndInvariantValidator::checkRFBounded(
+    const GenericTerminationSynthesizer::RankingFunction& rf,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    std::map<std::string, double>& counterexample)
+{
+    solver->push();
+
+    // Ajouter les contraintes du loop
+    for (const auto& poly : lasso.loop.polyhedra) {
+        for (const auto& ineq : poly) {
+            solver->addAssertion(ineq.toSMTLib2());
+        }
+    }
+
+    // Chercher f(x) < 0
+    std::ostringstream f_negative;
+    f_negative << "(< (+";
+    
+    for (const auto& [var, coef] : rf.coefficients) {
+        if (std::abs(coef) > 1e-9) {
+            f_negative << " (* " << std::fixed << std::setprecision(9) << coef << " " << lasso.loop.getSSAVar(var, false) << ")";
+        }
+    }
+    
+    f_negative << " " << rf.constant << ") 0)";
+
+    solver->addAssertion(f_negative.str());
+
+    bool sat = solver->checkSat();
+    
+    if (sat) {
+        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
+            counterexample[var_prog] = solver->getValue(ssa_in);
+        }
+    }
+    
+    solver->pop();
+    return !sat;  // Valide si UNSAT
+}
+
+bool RankingAndInvariantValidator::checkRFDecreasing(
+    const GenericTerminationSynthesizer::RankingFunction& rf,
+    const std::vector<GenericTerminationSynthesizer::SupportingInvariant>& supporting_invariants,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    double delta,
+    std::map<std::string, double>& counterexample)
+{
+    solver->push();
+    
+    // Ajouter les contraintes du loop
+    for (const auto& poly : lasso.loop.polyhedra) {
+        for (const auto& ineq : poly) {
+            solver->addAssertion(ineq.toSMTLib2());
+        }
+    }
+
+    // La décroissance est conditionnée par les SI: SI(x) => f(x) - f(x') >= δ
+    for (const auto& si : supporting_invariants) {
+        std::ostringstream si_formula;
+        si_formula << "(";
+        si_formula << (si.is_strict ? ">" : ">=");
+        si_formula << " (+";
+        
+        // Ajouter les termes des variables (utiliser in_vars du loop)
+        for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+            const std::string& prog_var = lasso.program_vars[i];
+            auto it = si.coefficients.find(prog_var);
+            auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
+            if (it != si.coefficients.end() && std::abs(it->second) > 1e-9 &&
+                var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
+                si_formula << " (* " << it->second << " " << var_ssa_in->second << ")";
+            }
+        }
+        
+        si_formula << " " << si.constant << ") 0)";
+        solver->addAssertion(si_formula.str());
+    }
+
+    // Construire f(x) avec in_vars
+    std::ostringstream f_x;
+    f_x << "(+";
+    
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = rf.coefficients.find(prog_var);
+        auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
+        if (it != rf.coefficients.end() && std::abs(it->second) > 1e-9 && var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
+            // Utiliser in_vars du loop pour f(x)
+            f_x << " (* " << std::fixed << std::setprecision(9) << it->second << " " << var_ssa_in->second << ")";
+        }
+    }
+            
+    f_x << " " << std::fixed << std::setprecision(9) << rf.constant << ")";
+    
+    // Construire f(x') avec out_vars
+    std::ostringstream f_x_prime;
+    f_x_prime << "(+";
+    
+    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+        const std::string& prog_var = lasso.program_vars[i];
+        auto it = rf.coefficients.find(prog_var);
+        auto var_ssa_out = lasso.loop.var_to_ssa_out.find(prog_var);
+        if (it != rf.coefficients.end() && std::abs(it->second) > 1e-9 && var_ssa_out != lasso.loop.var_to_ssa_out.end()) {
+            // Utiliser out_vars du loop pour f(x')
+            f_x_prime << " (* " << std::fixed << std::setprecision(9) << it->second << " " << var_ssa_out->second << ")";
+        }
+    }
+    f_x_prime << " " << std::fixed << std::setprecision(9) << rf.constant << ")";
+    
+    // Chercher contre-exemple : f(x) - f(x') < δ
+    std::ostringstream decrease_check;
+    decrease_check << "(< (- " << f_x.str() << " " << f_x_prime.str() << ") " << std::fixed << std::setprecision(9) << delta << ")";
+
+    solver->addAssertion(decrease_check.str());
+
+    bool sat = solver->checkSat();
+    
+    if (sat) {
+        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
+            counterexample[var_prog] = solver->getValue(ssa_in);
+        }
+        for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
+            counterexample[var_prog] = solver->getValue(ssa_out);
+        }
+    }
+    
+    solver->pop();
+    return !sat;  // Valide si UNSAT
+}
+
+// ============================================================================
+// AFFICHAGE
+// ============================================================================
+
+void RankingAndInvariantValidator::printValidationResult(const ValidationResult& result) const
+{
+    std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
+    std::cout << "║    RÉSUMÉ DE VALIDATION                             ║" << std::endl;
+    std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+    
+    std::cout << "\n  Statut global : "
+            << (result.is_valid ? "✅ VALIDE" : "❌ INVALIDE") << std::endl;
+    
+    std::cout << "\n  ┌─ Fonction de Ranking ─────────────┐" << std::endl;
+    std::cout << "  │ Non-trivialité : "
+            << (result.rf_non_trivial_check ? "✅" : "❌") << std::endl;
+    std::cout << "  │ Bounded        : "
+            << (result.rf_bounded_check ? "✅" : "❌") << std::endl;
+    std::cout << "  │ Decreasing     : "
+            << (result.rf_decreasing_check ? "✅" : "❌") << std::endl;
+    std::cout << "  └────────────────────────────────────┘" << std::endl;
+    
+    std::cout << "\n  ┌─ Supporting Invariants ────────────┐" << std::endl;
+    std::cout << "  │ Nombre total : " << result.si_results.size() << std::endl;
+    std::cout << "  │ Tous valides : " << (result.all_si_valid ? "✅" : "❌") << std::endl;
+    
+    for (const auto& si_res : result.si_results) {
+        std::cout << "  │ ─ SI #" << si_res.si_index << " : "
+                << (si_res.is_valid ? "✅" : "❌");
+        if (si_res.is_false_check) {
+            std::cout << " (FAUX)";
+        } else if (si_res.is_true_check) {
+            std::cout << " (VRAI)";
+        }
+        std::cout << std::endl;
+    }
+    
+    std::cout << "  └────────────────────────────────────┘" << std::endl;
+    
+    if (!result.is_valid && !result.error_message.empty()) {
+        std::cout << "\n  !  Erreur : " << result.error_message << std::endl;
+    }
+    
+    std::cout << std::endl;
+}

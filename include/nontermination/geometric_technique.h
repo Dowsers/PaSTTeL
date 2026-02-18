@@ -1,0 +1,156 @@
+#ifndef GEOMETRIC_TECHNIQUE_H
+#define GEOMETRIC_TECHNIQUE_H
+
+#include "nontermination/nontermination_technique_interface.h"
+
+#include "lasso_program.h"
+#include "smtsolvers/SMTSolverInterface.h"
+
+/**
+ * @brief Paramètres pour l'analyse géométrique de non-terminaison
+ *
+ * Aligné sur INonTerminationAnalysisSettings d'Ultimate LassoRanker.
+ */
+struct GeometricNonTerminationSettings {
+    int num_gevs = 3;               // Nombre de vecteurs propres généralisés
+    bool allow_bounded = true;      // Autoriser λ ≥ 0 (true) ou forcer λ ≥ 1 (false)
+    bool nilpotent_components = true; // Autoriser les composantes nilpotentes νᵢ >= 0
+};
+
+/**
+ * @brief Synthétise des arguments géométriques de non-terminaison (GNTA)
+ *
+ * Implémente l'algorithme de non-terminaison géométrique d'Ultimate LassoRanker:
+ *
+ * Exécution infinie: x + Y·(Σᵢ Jⁱ)·1
+ * où Y = matrice des GEVs, J = forme de Jordan (eigenvalues + nilpotent)
+ *
+ * Stratégie en 2 phases
+ * - Phase 1: GEV=0 (recherche de point fixe simple géré par FixpointTechnique)
+ * - Phase 2: GEVs complets avec composantes nilpotentes
+ *
+ * Contraintes encodées:
+ * 1. Stem(x₀, x₁)                          [initiation]
+ * 2. Loop(x₁, x₁ + y₁ + ... + yₙ)          [première itération]  [point A(x₁, x₁ + Σᵢ y)]
+ * 3. Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) pour chaque i [comportement rayon]
+ * 4. Bornes sur λᵢ et νᵢ                   [domain]
+ *
+ * Basé sur:
+ * - "Proving Non-termination" (Gupta et al., POPL 2008)
+ * - "Geometric Nontermination Arguments" (Leike & Heizmann, TACAS 2018)
+ */
+class GeometricTechnique : public NonTerminationTechniqueInterface {
+public:
+    /**
+     * @brief Constructeur avec paramètres par défaut
+     * @param settings Paramètres de l'analyse géométrique
+     */
+    GeometricTechnique(const GeometricNonTerminationSettings& settings = GeometricNonTerminationSettings());
+
+    void init(const LassoProgram& lasso) override;
+
+    /**
+     * @brief Synthétise un GNTA pour le programme lasso donné
+     *
+     * GEVs > 0 → recherche géométrique avec nilpotent
+     *
+     * @param solver Le solveur SMT à utiliser
+     * @return GNTA trouvé, ou UNKNOWN si aucun
+     */
+    NonTerminationResult analyze(
+        std::shared_ptr<SMTSolver> solver);
+
+    std::string getName() const override {
+        return "Geometric(" + std::to_string(settings_.num_gevs) + ")";
+    }
+
+    std::string getDescription() const override {
+        return "Geometric nontermination with " +
+            std::to_string(settings_.num_gevs) + " GEV(s), nilpotent=" +
+            (settings_.nilpotent_components ? "on" : "off") + ", bounded=" +
+            (settings_.allow_bounded ? "on" : "off");
+    }
+
+    void printResult(const NonTerminationResult& result) const override;
+    bool validateConfiguration() const override;
+
+    // Accesseurs
+    void setSettings(const GeometricNonTerminationSettings& settings);
+    const GeometricNonTerminationSettings& getSettings() const;
+    int getNumGEVs() const;
+
+private:
+    GeometricNonTerminationSettings settings_;
+    const LassoProgram* lasso_;
+    bool initialized_;
+
+    // Résultats extraits
+    std::map<std::string, double> state_init;                // État initial x₀
+    std::map<std::string, double> state_honda;               // État honda x₁
+    std::vector<std::map<std::string, double>> eigenvectors; // Vecteurs propres (GEVs) y₁..yₙ
+    std::vector<double> lambdas;                             // Valeurs propres λ₁..λₙ
+    std::vector<double> nus;                                 // Composantes nilpotentes ν₁..νₙ₋₁
+
+    /**
+     * @brief Encode les contraintes pour un GNTA avec n GEVs
+     *
+     * Contraintes:
+     * 1. Stem(x₀, x₁) si stem présent
+     * 2. Loop(x₁, x₁ + y₁ + ... + yₙ) - première itération
+     * 3. Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) - rayon pour chaque GEV i
+     * 4. Bornes: λᵢ ≥ 0 (ou λᵢ ≥ 1), νᵢ ∈ {0,1}
+     *
+     * @param solver Le solveur SMT
+     * @param effective_num_gevs Nombre de GEVs à utiliser (> 0)
+     */
+    bool encodeConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Déclare les variables SMT: x₀, x₁, yᵢ, λᵢ, νᵢ
+     */
+    void declareVariables(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Ajoute les contraintes du stem: Stem(x₀, x₁)
+     */
+    void addStemConstraints(std::shared_ptr<SMTSolver> solver);
+
+    /**
+     * @brief Ajoute les contraintes de première itération: Loop(x₁, x₁ + Σyᵢ)
+     * Comme Ultimate: out_var → x₁ + y₁ + ... + yₙ
+     */
+    void addFirstIterationConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Ajoute les contraintes rayon pour chaque GEV
+     * Pour chaque i: Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) avec rays=true (constante=0)
+     */
+    void addRayConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Ajoute les contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
+     * Pour chaque variable identité x: sum(v_i_x) = 0 et v_i_x = λᵢ·v_i_x + νᵢ·v_{i+1}_x
+     */
+    void addIdentityVariableConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Ajoute les contraintes sur λᵢ et νᵢ
+     * - Si allow_bounded: λᵢ ≥ 0
+     * - Sinon: λᵢ ≥ 1 et (y₁ ≠ 0 ∨ ... ∨ yₙ ≠ 0)
+     * - Si nilpotent_components: νᵢ ∈ {0, 1}
+     * - Sinon: νᵢ = 0
+     */
+    void addEigenvalueAndNilpotentConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Extrait le GNTA depuis le modèle SAT
+     */
+    NonTerminationResult extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+
+    /**
+     * @brief Vérifie si c'est un fixpoint (tous les GEVs=0 ou tous les λ=0)
+     */
+    bool isFixpoint() const;
+};
+
+#endif // GEOMETRIC_TECHNIQUE_H
