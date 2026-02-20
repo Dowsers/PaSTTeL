@@ -52,49 +52,128 @@ void MotzkinTransformation::addConstraintsToSolver(
     // ────────────────────────────────────────────────────────────────────────
     m_inequalities = constraints;
     m_program_vars = std::set<std::string>(program_vars.begin(), program_vars.end());
-    
+
     if (m_inequalities.empty()) {
         if (VERBOSITY == VerbosityLevel::VERBOSE)
             std::cout << "  ⚠ Motzkin: No constraints to transform" << std::endl;
         return;
     }
-    
+
     // ────────────────────────────────────────────────────────────────────────
-    // 2. ENREGISTREMENT DES COEFFICIENTS DE MOTZKIN
+    // 2. COEFFICIENTS DE MOTZKIN — MODE LINÉAIRE (alignement Ultimate)
     // ────────────────────────────────────────────────────────────────────────
-    
+    // Comme Ultimate MotzkinTransformation (LINEAR mode) :
+    //   needsMotzkinCoefficient(li) = li.allAffineTermsAreConstant()
+    //   Si false (coefficients non-constants, ex. SUP_INVAR) → "fixed" :
+    //     énumération {0, 1} au lieu d'une variable libre → reste LRA.
+
     registerMotzkinCoefficients();
 
-    // Déclarer les coefficients de Motzkin dans le solveur
-    for (const auto& lambda : m_motzkin_coefficients) {
-        if (!solver->variableExists(lambda)) {
+    // Indices "fixed" : ANYTHING ou ZERO_AND_ONE avec affine non-constant
+    // Ces indices seront énumérés dans {0,1} pour éviter le produit bilinéaire
+    // motzkin_free × SUP_INVAR qui forcerait Z3 en NRA/NLSAT.
+    std::vector<size_t> fixed_indices;
+    for (size_t i = 0; i < m_inequalities.size(); ++i) {
+        auto mc = m_inequalities[i].motzkin_coef;
+        if (mc != LinearInequality::ONE && !allAffineTermsAreConstant(m_inequalities[i])) {
+            fixed_indices.push_back(i);
+        }
+    }
+
+    // Déclarer uniquement les variables libres non-fixed (≠ "1.0" et ≠ fixed)
+    for (size_t i = 0; i < m_motzkin_coefficients.size(); ++i) {
+        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
+                        != fixed_indices.end();
+        if (is_fixed) continue;
+        const auto& lambda = m_motzkin_coefficients[i];
+        if (lambda != "1.0" && !solver->variableExists(lambda)) {
             solver->declareVariable(lambda, "Real");
         }
     }
+
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "    " << annotation << std::endl;
         std::cout << "     Constraints: " << m_inequalities.size()
-                << ", Program vars: " << m_program_vars.size()
-                << ", Motzkin coeffs: " << m_motzkin_coefficients.size() << std::endl;
+                  << ", Program vars: " << m_program_vars.size()
+                  << ", Motzkin coeffs: " << m_motzkin_coefficients.size()
+                  << ", Fixed (enum): " << fixed_indices.size() << std::endl;
     }
+
     // ────────────────────────────────────────────────────────────────────────
-    // 3. GÉNÉRATION DES CONTRAINTES MOTZKIN
+    // 3. CONTRAINTES HORS ÉNUMÉRATION (positivité + ZERO_AND_ONE constant)
     // ────────────────────────────────────────────────────────────────────────
-    
-    // 3.1 Positivité: λ_i ≥ 0
-    generatePositivityConstraints(solver);
-    
-    // 3.2 Contraintes spéciales sur certains λ_i (ONE, ZERO_AND_ONE)
-    generateMotzkinCoefficientConstraints(solver);
-    
-    // 3.3 Égalité: Σ_i λ_i * coef_i(var) = 0 pour chaque variable de programme
-    generateEqualityConstraints(solver);
-    
-    // 3.4 Constante: Σ_i λ_i * b_i ≤ 0
-    generateConstantConstraint(solver);
-    
-    // 3.5 Strictness: (Σ_i λ_i * b_i < 0) ∨ (Σ_j μ_j > 0)
-    generateStrictConstraint(solver);
+
+    // 3.1 Positivité λ_i ≥ 0 pour les variables libres non-fixed
+    for (size_t i = 0; i < m_motzkin_coefficients.size(); ++i) {
+        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
+                        != fixed_indices.end();
+        if (is_fixed) continue;
+        const auto& lambda = m_motzkin_coefficients[i];
+        if (lambda != "1.0") {
+            solver->addAssertion("(>= " + lambda + " 0.0)");
+        }
+    }
+
+    // 3.2 ZERO_AND_ONE pour les contraintes non-fixed à affine constant
+    //     (ces contraintes ont des coefficients numériques → λ*c reste LRA)
+    for (size_t i = 0; i < m_inequalities.size(); ++i) {
+        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
+                        != fixed_indices.end();
+        if (is_fixed) continue;
+        if (m_inequalities[i].motzkin_coef == LinearInequality::ZERO_AND_ONE) {
+            const auto& lambda = m_motzkin_coefficients[i];
+            solver->addAssertion("(or (= " + lambda + " 0.0) (= " + lambda + " 1.0))");
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // 4. ÉGALITÉ + CONSTANTE + STRICTNESS
+    // ────────────────────────────────────────────────────────────────────────
+
+    if (fixed_indices.empty()) {
+        // Chemin simple : aucun indice à énumérer, assertions directes (LRA)
+        generateEqualityConstraints(solver);
+        generateConstantConstraint(solver);
+        generateStrictConstraint(solver);
+
+    } else {
+        // Chemin d'énumération (LINEAR mode) :
+        // Pour k indices fixed, générer 2^k branches et asserter (or branch_0 ...)
+        // Chaque branche est entièrement LRA car les fixed sont 0.0 ou 1.0.
+        size_t k = fixed_indices.size();
+        std::vector<std::string> combo_ands;
+
+        for (size_t combo = 0; combo < (1u << k); ++combo) {
+            // Construire le vecteur de coefficients pour cette combinaison
+            std::vector<std::string> coef_for = m_motzkin_coefficients;
+            for (size_t bit = 0; bit < k; ++bit) {
+                coef_for[fixed_indices[bit]] = ((combo >> bit) & 1) ? "1.0" : "0.0";
+            }
+
+            auto formulas = generateAllFormulas(coef_for);
+            if (formulas.empty()) continue;
+
+            if (formulas.size() == 1) {
+                combo_ands.push_back(formulas[0]);
+            } else {
+                std::string and_str = "(and";
+                for (const auto& f : formulas) and_str += " " + f;
+                and_str += ")";
+                combo_ands.push_back(and_str);
+            }
+        }
+
+        if (!combo_ands.empty()) {
+            if (combo_ands.size() == 1) {
+                solver->addAssertion(combo_ands[0]);
+            } else {
+                std::string or_str = "(or";
+                for (const auto& s : combo_ands) or_str += " " + s;
+                or_str += ")";
+                solver->addAssertion(or_str);
+            }
+        }
+    }
 }
 
 // ============================================================================
@@ -103,13 +182,15 @@ void MotzkinTransformation::addConstraintsToSolver(
 
 void MotzkinTransformation::registerMotzkinCoefficients() {
     m_motzkin_coefficients.clear();
-    
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
-        std::ostringstream oss;
-        oss << "motzkin_" << s_motzkin_counter << "_" << i;
-        m_motzkin_coefficients.push_back(oss.str());
+        if (m_inequalities[i].motzkin_coef == LinearInequality::ONE) {
+            m_motzkin_coefficients.push_back("1.0");  // littéral, pas de variable
+        } else {
+            std::ostringstream oss;
+            oss << "motzkin_" << s_motzkin_counter << "_" << i;
+            m_motzkin_coefficients.push_back(oss.str());
+        }
     }
-    
     s_motzkin_counter++;
 }
 
@@ -120,6 +201,7 @@ void MotzkinTransformation::registerMotzkinCoefficients() {
 void MotzkinTransformation::generatePositivityConstraints(std::shared_ptr<SMTSolver> solver) {
     // Pour chaque coefficient de Motzkin: λ_i ≥ 0
     for (const auto& lambda : m_motzkin_coefficients) {
+        if (lambda == "1.0") continue;  // pas de λ ≥ 0 pour les littéraux
         std::ostringstream constraint;
         constraint << "(>= " << lambda << " 0.0)";
         solver->addAssertion(constraint.str());
@@ -135,11 +217,6 @@ void MotzkinTransformation::generateMotzkinCoefficientConstraints(std::shared_pt
         switch (ineq.motzkin_coef) {
             case LinearInequality::ONE:
                 // λ_i = 1 (coefficient fixe)
-                {
-                    std::ostringstream constraint;
-                    constraint << "(= " << lambda << " 1.0)";
-                    solver->addAssertion(constraint.str());
-                }
                 break;
                 
             case LinearInequality::ZERO_AND_ONE:
@@ -376,6 +453,10 @@ std::string MotzkinTransformation::multiplyByMotzkin(
     const AffineTerm& term,
     const std::string& motzkin) const
 {
+    if (motzkin == "1.0") {
+        return affineTermToSMT(term);  // 1.0 × term = term → LRA
+    }
+
     if (term.isZero()) {
         return "0";
     }
@@ -416,7 +497,7 @@ std::string MotzkinTransformation::multiplyByMotzkin(
     if (std::abs(term.constant) > 1e-10) {
         summands.push_back("(* " + formatSMTNumber(term.constant) + " " + motzkin + ")");
     }
-    
+
     if (summands.empty()) {
         return "0";
     } else if (summands.size() == 1) {
@@ -429,4 +510,121 @@ std::string MotzkinTransformation::multiplyByMotzkin(
         result += ")";
         return result;
     }
+}
+
+// ============================================================================
+// MODE LINÉAIRE — alignement avec Ultimate MotzkinTransformation (LINEAR mode)
+// ============================================================================
+
+bool MotzkinTransformation::allAffineTermsAreConstant(
+    const LinearInequality& ineq) const
+{
+    // Correspond à LinearInequality.allAffineTermsAreConstant() dans Ultimate.
+    // Un AffineTerm est "constant" si son map coefficients{} est vide
+    // (aucun nom de paramètre template : SUP_INVAR_*, RANKING_C_*, ...).
+
+    if (!ineq.constant.coefficients.empty()) return false;
+
+    for (const auto& var : m_program_vars) {
+        AffineTerm coef = ineq.getCoefficient(var);
+        if (!coef.coefficients.empty()) return false;
+    }
+    return true;
+}
+
+std::vector<std::string> MotzkinTransformation::generateAllFormulas(
+    const std::vector<std::string>& coef_for) const
+{
+    // Version "string-collecting" de generateEquality + generateConstant +
+    // generateStrict, paramétrée par coef_for[i] (peut être "0.0", "1.0" ou
+    // un nom de variable libre). Les entrées "0.0" sont ignorées.
+
+    std::vector<std::string> formulas;
+
+    // ── Égalité : Σ coef_for[i] * coef_i(var) = 0  (une contrainte par var)
+    for (const auto& var : m_program_vars) {
+        std::vector<std::string> summands;
+        for (size_t i = 0; i < m_inequalities.size(); ++i) {
+            if (coef_for[i] == "0.0") continue;
+            AffineTerm coef = m_inequalities[i].getCoefficient(var);
+            if (coef.isZero()) continue;
+            summands.push_back(multiplyByMotzkin(coef, coef_for[i]));
+        }
+        if (summands.empty()) continue;
+
+        std::string f = "(= ";
+        if (summands.size() == 1) {
+            f += summands[0];
+        } else {
+            f += "(+";
+            for (const auto& s : summands) f += " " + s;
+            f += ")";
+        }
+        f += " 0.0)";
+        formulas.push_back(f);
+    }
+
+    // ── Constante : Σ coef_for[i] * b_i <= 0
+    {
+        std::vector<std::string> summands;
+        for (size_t i = 0; i < m_inequalities.size(); ++i) {
+            if (coef_for[i] == "0.0") continue;
+            if (m_inequalities[i].constant.isZero()) continue;
+            summands.push_back(
+                multiplyByMotzkin(m_inequalities[i].constant, coef_for[i]));
+        }
+        if (!summands.empty()) {
+            std::string f = "(<= ";
+            if (summands.size() == 1) {
+                f += summands[0];
+            } else {
+                f += "(+";
+                for (const auto& s : summands) f += " " + s;
+                f += ")";
+            }
+            f += " 0.0)";
+            formulas.push_back(f);
+        }
+    }
+
+    // ── Strictness : (Σ non-strict * b_i < 0) ∨ (Σ strict coeffs > 0)
+    {
+        std::vector<std::string> ns_summands;
+        for (size_t i = 0; i < m_inequalities.size(); ++i) {
+            if (coef_for[i] == "0.0" || m_inequalities[i].strict) continue;
+            if (m_inequalities[i].constant.isZero()) continue;
+            ns_summands.push_back(
+                multiplyByMotzkin(m_inequalities[i].constant, coef_for[i]));
+        }
+        std::string classical;
+        if (ns_summands.empty()) {
+            classical = "(< 0.0 0.0)";
+        } else if (ns_summands.size() == 1) {
+            classical = "(< " + ns_summands[0] + " 0.0)";
+        } else {
+            classical = "(< (+";
+            for (const auto& s : ns_summands) classical += " " + s;
+            classical += ") 0.0)";
+        }
+
+        std::vector<std::string> s_coeffs;
+        for (size_t i = 0; i < m_inequalities.size(); ++i) {
+            if (coef_for[i] == "0.0") continue;
+            if (m_inequalities[i].strict) s_coeffs.push_back(coef_for[i]);
+        }
+        std::string non_classical;
+        if (s_coeffs.empty()) {
+            non_classical = "(> 0.0 0.0)";
+        } else if (s_coeffs.size() == 1) {
+            non_classical = "(> " + s_coeffs[0] + " 0.0)";
+        } else {
+            non_classical = "(> (+";
+            for (const auto& s : s_coeffs) non_classical += " " + s;
+            non_classical += ") 0.0)";
+        }
+
+        formulas.push_back("(or " + classical + " " + non_classical + ")");
+    }
+
+    return formulas;
 }

@@ -127,23 +127,54 @@ private:
     // ========================================================================
     // UTILITAIRES SMT
     // ========================================================================
-    
+
     /**
      * Convertit un AffineTerm en expression SMT-LIB2
-     * 
+     *
      * Exemple: {RANKING_C_0: 2, constant: 3} → "(+ (* 2 RANKING_C_0) 3)"
      */
     std::string affineTermToSMT(const AffineTerm& term) const;
-    
+
     /**
      * Multiplie un AffineTerm par un coefficient de Motzkin
-     * 
+     *
      * Exemple: term={RANKING_C_0: 2}, motzkin="λ_0"
      *          → "(* λ_0 (* 2 RANKING_C_0))" simplifié en "(* 2 (* λ_0 RANKING_C_0))"
      */
     std::string multiplyByMotzkin(
         const AffineTerm& term,
         const std::string& motzkin) const;
+
+    // ========================================================================
+    // MODE LINÉAIRE — alignement avec Ultimate MotzkinTransformation
+    // ========================================================================
+
+    /**
+     * Vérifie si tous les termes affines d'une inégalité sont des constantes
+     * numériques pures (pas de paramètres template comme SUP_INVAR, RANKING_C).
+     *
+     * Correspond à LinearInequality.allAffineTermsAreConstant() dans Ultimate.
+     * En mode linéaire : si false → le coefficient Motzkin doit être énuméré
+     * dans {0, 1} au lieu d'être une variable libre (pour rester en LRA).
+     */
+    bool allAffineTermsAreConstant(const LinearInequality& ineq) const;
+
+    /**
+     * Génère toutes les formules SMT Motzkin (égalité + constante + strictness)
+     * pour un vecteur de coefficients donné, et retourne les formules comme
+     * strings (sans les ajouter au solveur).
+     *
+     * Utilisé par le chemin d'énumération pour construire les branches {0, 1}
+     * avant de les envelopper dans (or branch_0 branch_1 ...).
+     *
+     * Les entrées coef_for[i] == "0.0" sont ignorées (contribution nulle).
+     *
+     * @param coef_for Coefficient Motzkin à utiliser pour chaque inégalité :
+     *                 "0.0", "1.0", ou un nom de variable libre (motzkin_k_i)
+     * @return Vecteur de formules SMT-LIB2 à combiner en (and ...)
+     */
+    std::vector<std::string> generateAllFormulas(
+        const std::vector<std::string>& coef_for) const;
 };
 
 #endif // MOTZKIN_TRANSFORM_H
