@@ -60,11 +60,9 @@ void MotzkinTransformation::addConstraintsToSolver(
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // 2. COEFFICIENTS DE MOTZKIN — MODE LINÉAIRE (alignement Ultimate)
+    // 2. COEFFICIENTS DE MOTZKIN — MODE LINÉAIRE 
     // ────────────────────────────────────────────────────────────────────────
-    // Comme Ultimate MotzkinTransformation (LINEAR mode) :
-    //   needsMotzkinCoefficient(li) = li.allAffineTermsAreConstant()
-    //   Si false (coefficients non-constants, ex. SUP_INVAR) → "fixed" :
+    //   Si coefficients non-constants (ex. SUP_INVAR) → "fixed" :
     //     énumération {0, 1} au lieu d'une variable libre → reste LRA.
 
     registerMotzkinCoefficients();
@@ -513,13 +511,12 @@ std::string MotzkinTransformation::multiplyByMotzkin(
 }
 
 // ============================================================================
-// MODE LINÉAIRE — alignement avec Ultimate MotzkinTransformation (LINEAR mode)
+// MODE LINÉAIRE
 // ============================================================================
 
 bool MotzkinTransformation::allAffineTermsAreConstant(
     const LinearInequality& ineq) const
 {
-    // Correspond à LinearInequality.allAffineTermsAreConstant() dans Ultimate.
     // Un AffineTerm est "constant" si son map coefficients{} est vide
     // (aucun nom de paramètre template : SUP_INVAR_*, RANKING_C_*, ...).
 

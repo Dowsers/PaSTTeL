@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include "parser/smt_parser.h"
+#include "nla_handling.h"
 
 
 DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula) {
@@ -90,7 +91,20 @@ std::vector<LinearInequality> SMTParser::parseAtomicFormula(const std::string& f
     // After RewriteEquality and ArrayHandler preprocessing, the only
     // atomic formulas reaching here are inequalities: >=, <=, >, <
     std::vector<LinearInequality> result;
-    result.push_back(parseInequality(formula));
+    try {
+        result.push_back(parseInequality(formula));
+    } catch (const NlaTermException& e) {
+        switch (NLA_HANDLING) {
+            case NlaHandling::OVERAPPROXIMATE:
+                result.push_back(LinearInequality());              // 0 >= 0 (tautologie)
+                break;
+            case NlaHandling::UNDERAPPROXIMATE:
+                result.push_back(LinearInequality::constructFalse()); // -1 >= 0 (faux)
+                break;
+            case NlaHandling::EXCEPTION:
+                throw;
+        }
+    }
     return result;
 }
 
@@ -231,9 +245,8 @@ AffineTerm SMTParser::parseArithExpr(const std::string& expr) {
                 inner *= coef;
                 return inner;
             } else {
-                throw std::runtime_error(
-                    "SMTParser::parseArithExpr: non-linear multiplication: " + cleaned +
-                    "\nBoth operands are non-constant. Ensure NonLinearMultiplicationHandler is applied before parsing.");
+                throw NlaTermException(
+                    "SMTParser::parseArithExpr: non-linear multiplication: " + cleaned);
             }
         }
     }

@@ -48,8 +48,6 @@ struct LinearizationResult {
  * Les algorithmes qui n'ont pas besoin de linearite (fixpoint, geometric)
  * peuvent utiliser les formules originales en n'ajoutant aucun handler.
  *
- * Inspire de MapEliminator dans Ultimate Automizer / LassoRanker.
- *
  * Usage :
  *   FormulaLinearizer linearizer;
  *   linearizer.addHandler(std::make_unique<UFHandler>(function_names));

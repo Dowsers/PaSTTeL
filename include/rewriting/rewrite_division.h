@@ -12,7 +12,7 @@
  * RewriteDivision - Replace integer division and modulo by auxiliary variables
  *                   with equivalent linear constraints.
  *
- * Follows the approach of Ultimate LassoRanker's RewriteDivision:
+ * RewriteDivision:
  *
  *   (div dividend divisor) is replaced by fresh variable q, with constraints:
  *     (or

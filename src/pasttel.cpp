@@ -28,6 +28,7 @@ AnalysisMode MODE = BOTH;
 VerbosityLevel VERBOSITY = VerbosityLevel::NORMAL;
 int CPUS = 1;
 SolverType SOLVER = Z3;
+NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
 
 // Les flags atomiques TERMINATION_FOUND et NONTERMINATION_FOUND sont définis inline dans pasttel.h
 // Rapport d'analyse
@@ -52,6 +53,8 @@ void printHelp(const char* programName) {
               << "  -q                                Quiet mode (silence output)\n"
               << "  -v                                Verbose mode (more output)\n"
               << "  -c <int>                          Number of CPUs (default: 1)\n"
+              << "  -nla <overapproximate|underapproximate|exception>\n"
+              << "                                    Non-linear arithmetic handling (default: overapproximate)\n"
               << "  -h, --help                        Show this help message\n"
               << "\nExamples:\n"
               << "  " << programName << " -t terminate -s z3 -c 4 input.json\n"
@@ -208,6 +211,16 @@ std::string setParameters(int argc, char** argv) {
         }
         else if (arg == "-v") {
             VERBOSITY = VerbosityLevel::VERBOSE;
+        }
+        else if (arg == "-nla" && i + 1 < args.size()) {
+            std::string val = args[++i];
+            if      (val == "overapproximate")  NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
+            else if (val == "underapproximate") NLA_HANDLING = NlaHandling::UNDERAPPROXIMATE;
+            else if (val == "exception")        NLA_HANDLING = NlaHandling::EXCEPTION;
+            else {
+                std::cerr << "Error: Invalid -nla mode '" << val << "'. See --help.\n";
+                std::exit(EXIT_FAILURE);
+            }
         }
         else if (arg == "-c" && i + 1 < args.size()) {
             try {

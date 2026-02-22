@@ -21,7 +21,6 @@
  * Les SI (φ1/φ2) sont gérés par SupportingInvariantGenerator.
  * Les si_preconditions sont injectées via getConstraints(si_preconditions).
  *
- * Source: "Lexicographic Ranking Functions" (Ultimate LassoRanker)
  */
 class LexicographicTemplate : public RankingTemplate {
 public:

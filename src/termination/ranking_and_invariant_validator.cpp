@@ -258,7 +258,7 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
     result.consecution_check = false;
     
     // ========================================================================
-    // ÉTAPE 1 : VÉRIFICATIONS TRIVIALES (RAPIDES) - Style Ultimate
+    // ÉTAPE 1 : VÉRIFICATIONS TRIVIALES
     // ========================================================================
     
     // 1.1 : Vérifier si le SI est trivialement FAUX

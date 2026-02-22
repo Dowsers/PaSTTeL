@@ -328,6 +328,13 @@ cvc5::Term SMTSolverCVC5::getVariable(const std::string& name) {
     return it->second;
 }
 
+void SMTSolverCVC5::interrupt() {
+    // m_solver.interrupt();
+    if (m_verbose) {
+        std::cout << "[CVC5] CheckSat interrompu" << std::endl;
+    }
+}
+
 void SMTSolverCVC5::printStatistics() const {
     std::cout << "\n╔══════════════════════════════════════╗" << std::endl;
     std::cout << "║  CVC5 Solveur - Statistiques        ║" << std::endl;

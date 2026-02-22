@@ -61,7 +61,6 @@ public:
      * @brief Récupère l'argument de terminaison (après synthesize() == SAT)
      *
      * Regroupe la ranking function et les supporting invariants.
-     * Équivalent de getArgument() dans Ultimate/TerminationArgumentSynthesizer.
      */
     const TerminationArgument& getTerminationArgument() const;
 

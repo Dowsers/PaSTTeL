@@ -17,7 +17,6 @@
  *   - Remplace (select array index) par des variables fraiches
  *     arr__select__0 avec assertion (= arr__select__0 (select array index))
  *
- * Inspire du MapEliminator / ArrayTemplate dans Ultimate Automizer.
  */
 class ArrayHandler : public NonLinearTermHandler {
 public:

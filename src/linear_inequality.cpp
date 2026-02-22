@@ -9,6 +9,14 @@
 LinearInequality::LinearInequality()
     : constant(AffineTerm(0.0)), strict(false), motzkin_coef(ANYTHING) {}
 
+// Construit une inégalité trivialement fausse : -1 >= 0
+LinearInequality LinearInequality::constructFalse() {
+    LinearInequality li;
+    li.constant = AffineTerm(-1.0);
+    li.strict = false;
+    return li;
+}
+
 // Constructeur de copie
 LinearInequality::LinearInequality(const LinearInequality& other)
     : coefficients(other.coefficients),

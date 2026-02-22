@@ -9,20 +9,24 @@
 /**
  * @brief Paramètres pour l'analyse géométrique de non-terminaison
  *
- * Aligné sur INonTerminationAnalysisSettings d'Ultimate LassoRanker.
  */
 struct GeometricNonTerminationSettings {
+    // Type d'analyse des eigenvalues 
+    // LINEAR : lambda fixe = 1 → contraintes purement lineaires (LIA/LRA)
+    // NONLINEAR : lambda variable libre → NIA/NRA
+    enum class AnalysisType { LINEAR, NONLINEAR };
+
     int num_gevs = 3;               // Nombre de vecteurs propres généralisés
     bool allow_bounded = true;      // Autoriser λ ≥ 0 (true) ou forcer λ ≥ 1 (false)
     bool nilpotent_components = true; // Autoriser les composantes nilpotentes νᵢ >= 0
+    AnalysisType analysis_type = AnalysisType::LINEAR;
 };
 
 /**
  * @brief Synthétise des arguments géométriques de non-terminaison (GNTA)
  *
- * Implémente l'algorithme de non-terminaison géométrique d'Ultimate LassoRanker:
- *
- * Exécution infinie: x + Y·(Σᵢ Jⁱ)·1
+ * Un GNTA est une preuve de non-terminaison basée sur la construction d'une
+ * exécution infinie: x + Y·(Σᵢ Jⁱ)·1
  * où Y = matrice des GEVs, J = forme de Jordan (eigenvalues + nilpotent)
  *
  * Stratégie en 2 phases
@@ -117,7 +121,7 @@ private:
 
     /**
      * @brief Ajoute les contraintes de première itération: Loop(x₁, x₁ + Σyᵢ)
-     * Comme Ultimate: out_var → x₁ + y₁ + ... + yₙ
+     * out_var → x₁ + y₁ + ... + yₙ
      */
     void addFirstIterationConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
 

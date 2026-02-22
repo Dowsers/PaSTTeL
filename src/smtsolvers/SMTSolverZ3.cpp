@@ -335,6 +335,13 @@ z3::expr SMTSolverZ3::getVariable(const std::string& name) {
     return it->second;
 }
 
+void SMTSolverZ3::interrupt() {
+    m_context.interrupt();
+    if (m_verbose) {
+        std::cout << "[Z3] CheckSat interrompu" << std::endl;
+    }
+}
+
 void SMTSolverZ3::printStatistics() const {
     std::cout << "\n╔══════════════════════════════════════╗" << std::endl;
     std::cout << "║  Z3 Solveur - Statistiques          ║" << std::endl;

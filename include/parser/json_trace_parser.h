@@ -13,7 +13,7 @@
 class RewriteDivision;
 
 /**
- * Structure pour représenter une transition Ultimate avec ses métadonnées
+ * Structure pour représenter une transition avec ses métadonnées
  * Cette structure correspond exactement à une ligne du fichier counter.txt
  */
 struct UltimateTransitionLine {

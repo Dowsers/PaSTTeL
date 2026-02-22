@@ -146,14 +146,13 @@ private:
         const std::string& motzkin) const;
 
     // ========================================================================
-    // MODE LINÉAIRE — alignement avec Ultimate MotzkinTransformation
+    // MODE LINÉAIRE
     // ========================================================================
 
     /**
      * Vérifie si tous les termes affines d'une inégalité sont des constantes
      * numériques pures (pas de paramètres template comme SUP_INVAR, RANKING_C).
      *
-     * Correspond à LinearInequality.allAffineTermsAreConstant() dans Ultimate.
      * En mode linéaire : si false → le coefficient Motzkin doit être énuméré
      * dans {0, 1} au lieu d'être une variable libre (pour rester en LRA).
      */

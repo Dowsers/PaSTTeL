@@ -154,6 +154,12 @@ public:
     z3::expr getVariable(const std::string& name);
     
     /**
+     * @brief Interrompt immédiatement tout checkSat() en cours dans ce contexte Z3.
+     * Thread-safe : utilise z3::context::interrupt().
+     */
+    void interrupt() override;
+
+    /**
      * @brief Affiche les statistiques du solveur
      */
     void printStatistics() const;

@@ -19,7 +19,6 @@
  *   - Générer φ2 (loop consecution) : SI(x) ∧ loop(x,x') → SI(x') ≥ 0
  *   - Fournir SI(x) ≥ 0 comme prémisses pour φ3/φ4 des templates RF
  *
- * Équivalent de SupportingInvariantGenerator dans Ultimate/LassoRanker.
  */
 class SupportingInvariantGenerator {
 public:

@@ -143,8 +143,7 @@ std::string RewriteDivision::getOrCreateDivVar(
     abs.sort = "Int";
     m_aux_vars.push_back(abs);
 
-    // Generate linear constraints (following Ultimate's computeDivAuxTerms):
-    //
+    // Generate linear constraints dividend/divisor
     // (or
     //   (and (>= divisor 1)
     //        (<= (* q divisor) dividend)
@@ -205,7 +204,7 @@ std::string RewriteDivision::getOrCreateModVar(
     abs.sort = "Int";
     m_aux_vars.push_back(abs);
 
-    // Generate linear constraints (following Ultimate's computeModAuxTerms):
+    // Generate linear constraints
     //
     // (or
     //   (and (>= divisor 1)

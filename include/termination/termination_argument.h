@@ -12,7 +12,6 @@
  * Regroupe la fonction de ranking et les supporting invariants
  * synthétisés pour un programme lasso donné.
  *
- * Équivalent de TerminationArgument dans Ultimate/LassoRanker.
  */
 struct TerminationArgument {
     RankingFunction ranking_function;                   // première composante (rétrocompatibilité)

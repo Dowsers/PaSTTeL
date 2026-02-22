@@ -6,7 +6,6 @@
 /**
  * RewriteEquality - Syntactic rewriting of equality predicates.
  *
- * Follows the approach of Ultimate LassoRanker's RewriteEquality:
  *   (= a b)  -->  (and (<= a b) (>= a b))
  *
  * This is applied recursively on the S-expression BEFORE parsing to DNF,

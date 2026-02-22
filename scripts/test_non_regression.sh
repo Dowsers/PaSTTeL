@@ -98,6 +98,13 @@ echo "========================================="
 test_file "examples/test_lexicographic_simple.json" "TERMINATING" "terminate"
 
 echo ""
+echo "Testing phi1 (stem initiation) with non-empty stem..."
+echo "========================================="
+
+# Test phi1 verification: stem sets k=5, loop does n' = n - k
+test_file "examples/test_stem_si_phi1.json" "TERMINATING" "terminate"
+
+echo ""
 echo "========================================="
 echo "Résultats: $tests_passed passed, $tests_failed failed"
 echo "========================================="

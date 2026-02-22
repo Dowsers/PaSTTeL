@@ -34,6 +34,9 @@ public:
     // Prédicats
     bool isConstant() const;
     bool isTautology() const;
+
+    // Construct a trivially false inequality: -1 >= 0
+    static LinearInequality constructFalse();
     
     // Export
     std::string toString() const;

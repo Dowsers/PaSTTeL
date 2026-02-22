@@ -11,7 +11,6 @@
 #include "linearization/formula_linearizer.h"
 #include "linearization/uf_handler.h"
 #include "linearization/array_handler.h"
-#include "linearization/nonlinear_mul_handler.h"
 #include "rewriting/rewrite_let.h"
 #include "rewriting/rewrite_division.h"
 #include "rewriting/rewrite_equality.h"
@@ -232,40 +231,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         std::cout << "Detected div/mod operations in formulas" << std::endl;
     }
 
-    // 3f. Check for non-linear multiplication (* var1 var2)
-    // These occur when both operands of multiplication are variables (not constants)
-    bool has_nonlinear_mul = false;
-    auto checkNonLinearMul = [](const nlohmann::json& transitions) -> bool {
-        if (!transitions.is_array()) return false;
-        // Regex to detect (* followed by a non-numeric token
-        // This is a heuristic: if we see (* (expr) or (* var, it might be non-linear
-        static const std::regex mul_pattern(R"(\(\*\s+(?!\d|-?\d))");
-        for (const auto& trans : transitions) {
-            if (trans.contains("formula") && trans["formula"].is_string()) {
-                std::string formula = trans["formula"].get<std::string>();
-                // Check for patterns like (* var or (* (expr) - first operand is not a number
-                if (std::regex_search(formula, mul_pattern)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    if (j.contains("stem")) has_nonlinear_mul = has_nonlinear_mul || checkNonLinearMul(j["stem"]);
-    if (j.contains("loop")) has_nonlinear_mul = has_nonlinear_mul || checkNonLinearMul(j["loop"]);
-
-    // RewriteDivision generates constraints with (* q divisor) which are non-linear
-    // when the divisor is a variable. Ensure the NonLinearMultiplicationHandler is active.
-    if (has_divmod) {
-        has_nonlinear_mul = true;
-    }
-
-    if (has_nonlinear_mul && VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "Detected potential non-linear multiplication in formulas" << std::endl;
-    }
-
-    // 3g. Create RewriteDivision for div/mod rewriting (like Ultimate)
+    // 3f. Create RewriteDivision for div/mod rewriting
     // This replaces (div x y) and (mod x y) with auxiliary variables
     // and conjoins equivalent linear constraints directly into the formula.
     std::unique_ptr<RewriteDivision> div_rewriter;
@@ -281,7 +247,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     // The linearizer replaces non-linear terms with fresh variables
     // so that the formulas become linear for Motzkin transformation.
     std::unique_ptr<FormulaLinearizer> linearizer;
-    bool needs_linearizer = !lasso.functions.empty() || has_arrays || has_nonlinear_mul;
+    bool needs_linearizer = !lasso.functions.empty() || has_arrays;
 
     if (needs_linearizer) {
         linearizer = std::make_unique<FormulaLinearizer>();
@@ -326,15 +292,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
             }
         }
 
-        // Add NonLinearMultiplicationHandler for (* var var) operations
-        if (has_nonlinear_mul) {
-            auto mul_handler = std::make_unique<NonLinearMultiplicationHandler>();
-            linearizer->addHandler(std::move(mul_handler));
-
-            if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                std::cout << "FormulaLinearizer: NonLinearMultiplicationHandler added" << std::endl;
-            }
-        }
     }
 
     // 4. Parse STEM transitions
@@ -493,7 +450,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     //     the ranking function coefficients cancel out. This prevents using loop guard
     //     constraints (like y+1 <= x) in the termination proof.
     //     Fix: create a fresh output variable and add equality constraints to polyhedra.
-    //     This matches Ultimate LassoRanker's approach of always using distinct SSA names.
     {
         std::vector<std::pair<std::string, std::string>> identity_equalities;
         // identity_equalities: pairs of (fresh_out_ssa, original_ssa)

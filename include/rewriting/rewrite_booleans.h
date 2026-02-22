@@ -7,8 +7,7 @@
 /**
  * RewriteBooleans - Replace boolean variables with integer comparisons.
  *
- * Follows Ultimate LassoRanker's approach: boolean variables are treated
- * as integers where true = 1 and false = 0.
+ * Boolean variables are treated as integers where true = 1 and false = 0.
  *
  * Rewrites:
  *   bare boolean var `v`     -->  (>= v 1)     (meaning v is true)

@@ -36,6 +36,14 @@ public:
      * @return Un nouveau solver du même type avec les mêmes paramètres
      */
     virtual std::shared_ptr<SMTSolver> clone() const = 0;
+
+    /**
+     * @brief Interrompt immédiatement toute résolution SMT en cours
+     * Thread-safe : peut être appelé depuis un autre thread.
+     * Utilisé pour annuler un checkSat() bloquant quand une solution
+     * a été trouvée par un autre thread.
+     */
+    virtual void interrupt() {}
 };
 
 #endif

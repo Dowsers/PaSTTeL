@@ -11,7 +11,6 @@
  * Remplace les appels de fonctions comme (keccak256 v_x_1) par des
  * variables fraîches uf__keccak256__0 avec assertion (= uf__keccak256__0 (keccak256 v_x_1)).
  *
- * Inspiré du MapEliminator dans Ultimate Automizer / LassoRanker.
  */
 class UFHandler : public NonLinearTermHandler {
 public:

@@ -151,6 +151,12 @@ public:
     cvc5::Term getVariable(const std::string& name);
 
     /**
+     * @brief Interrompt immédiatement tout checkSat() en cours dans ce contexte CVC5.
+     * Thread-safe : utilise cvc5::Solver::interrupt().
+     */
+    void interrupt() override;
+
+    /**
      * @brief Affiche les statistiques du solveur
      */
     void printStatistics() const;

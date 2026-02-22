@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "utiles.h"
+#include "nla_handling.h"
 #include "termination/generic_termination_synthesizer.h"
 #include "termination/termination_technique_interface.h"
 #include "nontermination/nontermination_analyzer.h"

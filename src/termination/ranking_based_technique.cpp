@@ -20,6 +20,7 @@ RankingBasedTechnique::RankingBasedTechnique(
     , num_components_nested_(num_components_nested)
     , lasso_(nullptr)
     , cancelled_(false) {
+    solver_ = nullptr; // Initialisé dans analyze()
 }
 
 // ============================================================================
@@ -81,6 +82,8 @@ TerminationResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solv
     if (!validateConfiguration()) {
         return TerminationResult();
     }
+
+    solver_ = solver;
 
     // Récupérer le niveau de verbosité depuis les variables globales
     extern VerbosityLevel VERBOSITY;
@@ -204,8 +207,11 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
 // ANNULATION
 // ============================================================================
 
+
 void RankingBasedTechnique::cancel() {
     cancelled_.store(true);
+    solver_->interrupt();  // Interrompre le solveur SMT en cours
+    std::cout<<"interruption ranking templates !!"<<std::endl;
 }
 
 // ============================================================================

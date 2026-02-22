@@ -1,0 +1,63 @@
+{
+  "program_vars": [
+    "n",
+    "k"
+  ],
+  "var_types": {
+    "n": "Int",
+    "k": "Int"
+  },
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(= v_k_1 5)",
+      "in_vars": {
+        "n": "v_n_1",
+        "k": "v_k_1"
+      },
+      "out_vars": {
+        "n": "v_n_1",
+        "k": "v_k_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "k"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(> v_n_2 0)",
+      "in_vars": {
+        "n": "v_n_2",
+        "k": "v_k_2"
+      },
+      "out_vars": {
+        "n": "v_n_2",
+        "k": "v_k_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(= v_n_3 (- v_n_4 v_k_4))",
+      "in_vars": {
+        "n": "v_n_4",
+        "k": "v_k_4"
+      },
+      "out_vars": {
+        "n": "v_n_3",
+        "k": "v_k_4"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "n"
+      ]
+    }
+  ]
+}

@@ -68,6 +68,9 @@ private:
     std::vector<TemplateConfig> configs_;
     int num_components_nested_;
 
+    // Instance du solveur
+    std::shared_ptr<SMTSolver> solver_;
+
     // État
     const LassoProgram* lasso_;
     std::atomic<bool> cancelled_;

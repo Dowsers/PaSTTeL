@@ -6,7 +6,6 @@
 /**
  * RewriteLet - Inline (expand) let bindings in SMT-LIB2 formulas.
  *
- * Inspired by Ultimate's FormulaUnLet:
  *   (let ((.cse0 (+ x 1)) (.cse1 (- y 2)))
  *     (and (= .cse0 y) (>= .cse1 0)))
  *   -->

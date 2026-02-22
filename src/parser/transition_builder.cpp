@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "parser/transition_builder.h"
-#include "parser/json_trace_parser.h"  // for UltimateTransitionLine
+#include "parser/json_trace_parser.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;
@@ -15,7 +15,7 @@ LinearTransition TransitionBuilder::buildFromLines(
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n--- Building transition from " << lines.size()
-                  << " Ultimate transitions ---" << std::endl;
+                  << " JSON transitions ---" << std::endl;
     }
 
     LinearTransition accumulated;
