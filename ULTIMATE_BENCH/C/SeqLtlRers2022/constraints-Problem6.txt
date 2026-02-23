@@ -1,0 +1,33 @@
+#inputs [iA, iB, iC, iD, iE, iF, iG, iH, iI, iJ]
+#outputs [oU, oV, oW, oX, oY, oZ]
+
+#1:
+( (! (true U (oZ & X (true U oW))) | (! oZ U iB)) )
+
+#2:
+( (! (true U (oV & X (true U oY))) | (! oV U oW)) )
+
+#3:
+( (false R (! (oY & (true U iB)) | (! ((oV & ! iB) & X (! iB U (oW & ! iB))) U (iB | oZ)))) )
+
+#4:
+( (! (true U oU) | (! oV U (oU | ((iD & ! oV) & X (! oV U iH))))) )
+
+#5:
+( ((false R ! oY) | (! oY U (oY & (! (true U oU) | (! oU U ((iB & ! oU) & X (! oU U oX))))))) )
+
+#6:
+( ((false R ! iF) | (! iF U (iF & (! (true U oX) | (! oX U ((iI & ! oX) & X (! oX U oY))))))) )
+
+#7:
+( (! (true U iH) | (! oY U (iH | ((iG & ! oY) & X (! oY U iD))))) )
+
+#8:
+( (! (true U iE) | (! ((oU & ! iE) & X (! iE U (oV & ! iE))) U (iE | oW))) )
+
+#9:
+( (false R (! (iF & (true U iC)) | ((! iA | (! iC U ((oV & ! iC) & X (! iC U oX)))) U iC))) )
+
+#10:
+( ((false R ! oV) | (! oV U (oV & (! (true U (oX & X (true U oY))) | (! oX U iD))))) )
+

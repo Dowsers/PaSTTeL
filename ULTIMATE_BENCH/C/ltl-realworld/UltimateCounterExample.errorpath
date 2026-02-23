@@ -1,0 +1,26 @@
+Stem:
+[L31]               int WarmPollPeriod;
+[L32]               int status;
+[L33]               int polling;
+[L34]               int PowerStateIsAC;
+[L35]               unsigned int Count;
+[L36]               LARGE_INTEGER   timeOut1;
+[L37]               UCHAR           deviceStatus;
+[L38]               PCHAR           devId;
+[L39]               BOOLEAN         requestRescan;
+[L43]               int __INITIALIZED = 0;
+[L55]   CALL        env_init()
+[L45]               WarmPollPeriod = __VERIFIER_nondet_int()
+[L46]               status = __VERIFIER_nondet_int()
+[L47]               polling = __VERIFIER_nondet_int()
+[L48]               PowerStateIsAC = __VERIFIER_nondet_int()
+[L49]               Count = __VERIFIER_nondet_unsigned()
+[L50]               __INITIALIZED = 1
+[L55]   RET         env_init()
+[L56]   COND FALSE  !(NT_SUCCESS( status ))
+        VAL         [PowerStateIsAC=0, WarmPollPeriod=0, __INITIALIZED=1, devId=0, deviceStatus=0, polling=0, requestRescan=0, status=0, timeOut1=0]
+[L139]              polling = 1
+        VAL         [PowerStateIsAC=0, WarmPollPeriod=0, __INITIALIZED=1, devId=0, deviceStatus=0, polling=1, requestRescan=0, status=0, timeOut1=0]
+Loop:
+[L140]  COND TRUE  1
+End of lasso representation.
