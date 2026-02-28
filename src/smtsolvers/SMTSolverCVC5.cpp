@@ -431,40 +431,7 @@ std::shared_ptr<SMTSolver> SMTSolverCVC5::clone() const {
 // ============================================================================
 
 cvc5::Term SMTSolverCVC5::parseSmtLib2(const std::string& smt_string) {
-    // Construire un contexte SMT-LIB2 complet avec les déclarations
-    std::ostringstream full_smt;
-
-    // Ajouter toutes les déclarations de variables
-    for (const auto& [name, term] : m_variables) {
-        std::string sort_name;
-        if (term.getSort().isInteger()) {
-            sort_name = "Int";
-        } else if (term.getSort().isReal()) {
-            sort_name = "Real";
-        } else if (term.getSort().isBoolean()) {
-            sort_name = "Bool";
-        } else {
-            sort_name = term.getSort().toString();
-        }
-        full_smt << "(declare-const " << name << " " << sort_name << ")\n";
-    }
-
-    // Ajouter l'assertion
-    full_smt << "(assert " << smt_string << ")\n";
-
-    try {
-        // Parser avec CVC5
-        std::vector<cvc5::Term> assertions = m_solver.getAssertions();
-
-        // Utiliser l'API CVC5 pour parser l'expression
-        // Note: CVC5 ne fournit pas de parser SMT-LIB2 direct comme Z3
-        // On va donc utiliser une approche manuelle
-        return parseSmtLib2Manual(smt_string);
-
-    } catch (const cvc5::CVC5ApiException& e) {
-        // Si le parsing échoue, essayer une approche manuelle
-        return parseSmtLib2Manual(smt_string);
-    }
+    return parseSmtLib2Manual(smt_string);
 }
 
 // Fonction auxiliaire pour tokenizer une S-expression
