@@ -100,9 +100,10 @@ bool LassoProgram::hasNoStem() const {
 }
 
 // Vérifie s'il n'y a pas de partie loop (aucune transition parsée)
-// polyhedra vide = pas de disjonct = aucune transition dans le loop
+// polyhedra vide (0 polyèdres) = pas de disjonct = aucune transition dans le loop
+// NB: isTrue() (1 polyèdre vide) = loop formula "true" = boucle infinie sans garde
 bool LassoProgram::hasNoLoop() const {
-    return loop.isTrue();
+    return loop.polyhedra.empty();
 }
 
 std::string LassoProgram::toString() const {

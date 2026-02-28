@@ -42,11 +42,21 @@ NonTerminationResult FixpointTechnique::analyze(
     }
 
     NonTerminationResult result;
-    
+
     if (verbose){
         std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
         std::cout << "║     FIXPOINT CHECKER (Non-termination Analysis)      ║" << std::endl;
         std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+    }
+
+    // Cas trivial : loop = "true" → boucle infinie sans contrainte
+    if (lasso_->loop.isTrue()) {
+        if (verbose)
+            std::cout << "\n  Loop is 'true' → trivial fixpoint (any state loops forever)" << std::endl;
+        result.is_nonterminating = true;
+        result.description = "Loop guard is 'true': the loop runs forever unconditionally.";
+        result.type = NonTerminationResult::Type::FIXPOINT;
+        return result;
     }
 
     // Créer un contexte SMT propre
@@ -319,6 +329,9 @@ std::map<std::string, double> FixpointTechnique::extractFixpoint(
         std::cout << "\n  Point fixe trouvé:" << std::endl;
     
     for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
+        auto it = lasso_->var_sorts.find(var_prog);
+        if (it != lasso_->var_sorts.end() && it->second.find("Array") != std::string::npos)
+            continue;
         double value = solver->getValue(ssa_in);
         fixpoint[ssa_in] = value;
         if (verbose)

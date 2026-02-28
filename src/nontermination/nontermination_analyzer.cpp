@@ -48,13 +48,26 @@ NonTerminationResult NonTerminationAnalyzer::analyze(
     std::shared_ptr<SMTSolver> solver,
     bool parallel) {
 
-    // Cas trivial : pas de loop → pas de non-terminaison possible
+    // Cas trivial : pas de loop (0 polyèdres) → pas de non-terminaison possible
     if (lasso.hasNoLoop()) {
         NonTerminationResult result;
         result.type = NonTerminationResult::Type::UNKNOWN;
         result.is_nonterminating = false;
         result.description = "No loop body: nontermination is impossible.";
         result.technique_name = "EmptyLoop";
+        all_results_.clear();
+        all_results_.push_back(result);
+        return result;
+    }
+
+    // Cas trivial : loop = "true" (1 polyèdre vide, aucune contrainte)
+    // → la boucle s'exécute infiniment depuis n'importe quel état atteignable
+    if (lasso.loop.isTrue()) {
+        NonTerminationResult result;
+        result.type = NonTerminationResult::Type::FIXPOINT;
+        result.is_nonterminating = true;
+        result.description = "Loop guard is 'true': the loop runs forever unconditionally.";
+        result.technique_name = "TrivialFixpoint";
         all_results_.clear();
         all_results_.push_back(result);
         return result;
