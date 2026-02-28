@@ -103,6 +103,13 @@ private:
     static std::vector<std::string> splitSExpr(const std::string& expr) {
         return SExprUtils::splitSExpr(expr);
     }
+
+    /**
+     * Returns true if s is a positive integer literal (e.g. "256", "1").
+     * Sets value to the parsed integer. Used to detect constant divisors
+     * and avoid generating spurious disjunctions in div/mod constraints.
+     */
+    static bool isPositiveIntLiteral(const std::string& s, long long& value);
 };
 
 #endif // REWRITE_DIVISION_H

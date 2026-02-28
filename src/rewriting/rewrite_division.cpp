@@ -1,5 +1,6 @@
 #include <sstream>
 #include <iostream>
+#include <cctype>
 
 #include "rewriting/rewrite_division.h"
 #include "utiles.h"
@@ -143,8 +144,13 @@ std::string RewriteDivision::getOrCreateDivVar(
     abs.sort = "Int";
     m_aux_vars.push_back(abs);
 
-    // Generate linear constraints dividend/divisor
-    // (or
+    // Generate linear constraints for dividend/divisor.
+    // If divisor is a known positive constant, emit only the positive branch
+    // (no disjunction) — equivalent to what Ultimate's SimplifyPreprocessor
+    // achieves by asking Z3 to simplify away the dead negative branch.
+    // This avoids exponential DNF blowup when many div/mod share a constant divisor.
+    //
+    // General case (or
     //   (and (>= divisor 1)
     //        (<= (* q divisor) dividend)
     //        (<= dividend (- (* (+ q 1) divisor) 1)))
@@ -153,16 +159,24 @@ std::string RewriteDivision::getOrCreateDivVar(
     //        (<= dividend (- (* (- q 1) divisor) 1))))
 
     // Put divisor first in (* divisor q) so that when divisor is a numeric
-    // constant (e.g., 2), the result (* 2 q) is recognized as linear by the
-    // parser and NOT abstracted by NonLinearMultiplicationHandler.
+    // constant (e.g., 256), the result (* 256 q) is recognized as linear by
+    // the parser and NOT abstracted by NonLinearMultiplicationHandler.
     std::ostringstream constraint;
-    constraint << "(or "
-               << "(and (>= " << divisor << " 1) "
-               <<       "(<= (* " << divisor << " " << q << ") " << dividend << ") "
-               <<       "(<= " << dividend << " (- (* " << divisor << " (+ " << q << " 1)) 1))) "
-               << "(and (<= " << divisor << " (- 0 1)) "
-               <<       "(<= (* " << divisor << " " << q << ") " << dividend << ") "
-               <<       "(<= " << dividend << " (- (* " << divisor << " (- " << q << " 1)) 1))))";
+    long long divisor_val = 0;
+    if (isPositiveIntLiteral(divisor, divisor_val)) {
+        // Positive constant divisor: emit only the positive branch (no disjunction)
+        constraint << "(and "
+                   << "(<= (* " << divisor << " " << q << ") " << dividend << ") "
+                   << "(<= " << dividend << " (- (* " << divisor << " (+ " << q << " 1)) 1)))";
+    } else {
+        constraint << "(or "
+                   << "(and (>= " << divisor << " 1) "
+                   <<       "(<= (* " << divisor << " " << q << ") " << dividend << ") "
+                   <<       "(<= " << dividend << " (- (* " << divisor << " (+ " << q << " 1)) 1))) "
+                   << "(and (<= " << divisor << " (- 0 1)) "
+                   <<       "(<= (* " << divisor << " " << q << ") " << dividend << ") "
+                   <<       "(<= " << dividend << " (- (* " << divisor << " (- " << q << " 1)) 1))))";
+    }
 
     m_aux_constraints.push_back(constraint.str());
 
@@ -204,9 +218,11 @@ std::string RewriteDivision::getOrCreateModVar(
     abs.sort = "Int";
     m_aux_vars.push_back(abs);
 
-    // Generate linear constraints
+    // Generate linear constraints for mod.
+    // Same optimization as div: if divisor is a known positive constant,
+    // emit only the positive branch (no disjunction).
     //
-    // (or
+    // General case (or
     //   (and (>= divisor 1)
     //        (<= 0 r) (<= r (- divisor 1))
     //        (= dividend (+ (* q divisor) r)))
@@ -216,15 +232,24 @@ std::string RewriteDivision::getOrCreateModVar(
 
     // Same as div: put divisor first in (* divisor q) for linearity detection.
     std::ostringstream constraint;
-    constraint << "(or "
-               << "(and (>= " << divisor << " 1) "
-               <<       "(<= 0 " << r << ") "
-               <<       "(<= " << r << " (- " << divisor << " 1)) "
-               <<       "(= " << dividend << " (+ (* " << divisor << " " << q << ") " << r << "))) "
-               << "(and (<= " << divisor << " (- 0 1)) "
-               <<       "(<= 0 " << r << ") "
-               <<       "(<= " << r << " (- (- 0 " << divisor << ") 1)) "
-               <<       "(= " << dividend << " (+ (* " << divisor << " " << q << ") " << r << "))))";
+    long long divisor_val = 0;
+    if (isPositiveIntLiteral(divisor, divisor_val)) {
+        // Positive constant divisor: emit only the positive branch (no disjunction)
+        constraint << "(and "
+                   << "(<= 0 " << r << ") "
+                   << "(<= " << r << " (- " << divisor << " 1)) "
+                   << "(= " << dividend << " (+ (* " << divisor << " " << q << ") " << r << ")))";
+    } else {
+        constraint << "(or "
+                   << "(and (>= " << divisor << " 1) "
+                   <<       "(<= 0 " << r << ") "
+                   <<       "(<= " << r << " (- " << divisor << " 1)) "
+                   <<       "(= " << dividend << " (+ (* " << divisor << " " << q << ") " << r << "))) "
+                   << "(and (<= " << divisor << " (- 0 1)) "
+                   <<       "(<= 0 " << r << ") "
+                   <<       "(<= " << r << " (- (- 0 " << divisor << ") 1)) "
+                   <<       "(= " << dividend << " (+ (* " << divisor << " " << q << ") " << r << "))))";
+    }
 
     m_aux_constraints.push_back(constraint.str());
 
@@ -245,6 +270,19 @@ std::string RewriteDivision::getOrCreateModVar(
 
 std::string RewriteDivision::createFreshVar(const std::string& prefix) {
     return prefix + "_" + std::to_string(m_counter++);
+}
+
+bool RewriteDivision::isPositiveIntLiteral(const std::string& s, long long& value) {
+    if (s.empty()) return false;
+    for (char c : s) {
+        if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+    }
+    try {
+        value = std::stoll(s);
+        return value > 0;
+    } catch (...) {
+        return false;
+    }
 }
 
 // splitSExpr() is now inline in the header, delegating to SExprUtils.
