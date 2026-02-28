@@ -108,6 +108,12 @@ public:
      * @return Valeur de la variable (convertie en double)
      */
     double getValue(const std::string& var_name) override;
+
+    /**
+     * @brief Retourne la valeur exacte comme rationnel (numérateur, dénominateur)
+     * Utilise directement l'API Z3 pour éviter la perte de précision.
+     */
+    std::pair<int64_t, int64_t> getRationalValue(const std::string& var_name) override;
     
     /**
      * @brief Compte le nombre d'assertions

@@ -576,7 +576,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
         time_ms: float
         algo: str
     """
-    cmd = [pasttel_bin, "-t", "both", "-c", str(cpus), "-s" , "z3", json_path]
+    cmd = [pasttel_bin, "-t", "nonterminate", "-c", str(cpus), "-s" , "z3", json_path]
 
     try:
         proc = subprocess.run(
@@ -593,7 +593,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
 
     # If output contains a Warning, treat as UNKNOWN (parsing limitation)
     if re.search(r'Warning', output):
-        return {"result": "UNKNOWN", "time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
+        return {"result": "NOT SUPPORTED", "time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
 
     # Parse OVERALL RESULT
     result = "UNKNOWN"
@@ -701,6 +701,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     green_x, green_y, green_labels = [], [], []
     blue_x, blue_y, blue_labels = [], [], []
     red_x, red_y, red_labels = [], [], []
+    orange_x, orange_y, orange_labels = [], [], []
 
     for row in rows:
         result = row["Result Code"].strip()
@@ -709,7 +710,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
         name = row["Trace Name"].strip()
 
         # Skip infeasible / unchecked / both unknown
-        if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN"):
+        if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN", "NOT SUPPORTED"):
             continue
 
         # Handle cases where one approach has no time (UNKNOWN/timeout)
@@ -776,6 +777,13 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
             blue_x.append(ux)
             blue_y.append(ty)
             blue_labels.append(f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms")
+        elif u_verdict != t_verdict and t_verdict != "UNKNOWN" and u_verdict != "UNKNOWN":
+            orange_x.append(ux)
+            orange_y.append(ty)
+            orange_labels.append(
+                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
+                f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
+            )
         else:
             # Disagreement or unexpected combo
             red_x.append(ux)
@@ -785,8 +793,8 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
             )
 
-    all_y = green_y + blue_y + red_y
-    all_x = green_x + blue_x + red_x
+    all_y = green_y + blue_y + red_y + orange_y
+    all_x = green_x + blue_x + red_x + orange_x
     if not all_x:
         print("No plottable data points found (all INFEASIBLE/UNCHECKED or missing times).")
         return
@@ -842,6 +850,16 @@ var red = {{
   type: 'scatter',
   name: 'Unknown ({len(red_x)})',
   marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
+  hoverinfo: 'text'
+}};
+var orange = {{
+  x: {json.dumps(orange_x)},
+  y: {json.dumps(orange_y)},
+  text: {json.dumps(orange_labels)},
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Contradiction ({len(orange_x)})',
+  marker: {{ color: 'orange', size: 10, opacity: 0.85, symbol: 'x' }},
   hoverinfo: 'text'
 }};
 var diag_max = {max_val * 1.05};

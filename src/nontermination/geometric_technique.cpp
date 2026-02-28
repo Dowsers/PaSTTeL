@@ -237,23 +237,18 @@ bool GeometricTechnique::encodeConstraints(
             std::cout << "    • No stem - direct loop analysis" << std::endl;
     }
 
-    // 2. Première itération: Loop(x₁, x₁ + y₁ + ... + yₙ)
+    // 2. Première itération + rays avec cohérence de branche DNF
     if (verbose)
-        std::cout << "    • Adding first iteration: Loop(x1, x1 + y1 + ... + y"
-                  << effective_num_gevs << ")" << std::endl;
-    addFirstIterationConstraints(solver, effective_num_gevs);
+        std::cout << "    • Adding combined loop constraints (branch-consistent, "
+                  << lasso_->loop.polyhedra.size() << " polyhedron/polyhedra)" << std::endl;
+    addCombinedLoopConstraints(solver, effective_num_gevs);
 
-    // 3. Contraintes rayon pour chaque GEV
-    if (verbose)
-        std::cout << "    • Adding ray constraints for " << effective_num_gevs << " GEV(s)" << std::endl;
-    addRayConstraints(solver, effective_num_gevs);
-
-    // 4. Contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
+    // 3. Contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
     if (verbose)
         std::cout << "    • Adding identity variable constraints" << std::endl;
     addIdentityVariableConstraints(solver, effective_num_gevs);
 
-    // 5. Contraintes sur eigenvalues et nilpotent
+    // 4. Contraintes sur eigenvalues et nilpotent
     if (verbose)
         std::cout << "    • Adding eigenvalue and nilpotent constraints" << std::endl;
     addEigenvalueAndNilpotentConstraints(solver, effective_num_gevs);
@@ -364,284 +359,6 @@ void GeometricTechnique::addStemConstraints(
 
     if (VERBOSITY == VerbosityLevel::VERBOSE)
         std::cout << "      Added " << constraint_count << " stem constraints" << std::endl;
-}
-
-// ============================================================================
-// PREMIÈRE ITÉRATION: Loop(x₁, x₁ + y₁ + ... + yₙ) avec rays=FALSE
-//
-//   A_loop * (x₁, x₁ + y₁ + ... + yₙ) <= b_loop
-// ============================================================================
-
-void GeometricTechnique::addFirstIterationConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
-{
-    int constraint_count = 0;
-
-    // Collecter les contraintes par polyèdre (DNF)
-    std::vector<std::vector<std::string>> poly_constraints;
-
-    for (const auto& poly : lasso_->loop.polyhedra) {
-        std::vector<std::string> clause_constraints;
-
-        for (const auto& ineq : poly) {
-            std::ostringstream lhs;
-            lhs << "(+";
-            bool has_terms = false;
-
-            // Pour chaque inégalité du polyèdre :
-            for (const auto& [var, coef] : ineq.coefficients) {
-                if (!coef.isConstant() || std::abs(coef.constant) <= 1e-9) continue;
-
-                bool is_input = false;
-                bool is_output = false;
-                std::string prog_var;
-                for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
-                    if (ssa_in == var) { is_input = true; prog_var = var_prog; break; }
-                }
-                for (const auto& [var_prog, ssa_out] : lasso_->loop.var_to_ssa_out) {
-                    if (ssa_out == var) { is_output = true; prog_var = var_prog; break; }
-                }
-
-                if (is_input && is_output) {
-                    // Identity variable (x_in = x_out, same SSA)
-                    // Treat as INPUT only; identity constraints added separately
-                    lhs << " (* " << formatNumber(coef.constant) << " x1_" << prog_var << ")";
-                    has_terms = true;
-                } else if (is_output) {
-                    // out_var → x₁ + y₁ + ... + yₙ
-                    std::ostringstream sum;
-                    sum << "(+ x1_" << prog_var;
-                    for (int i = 0; i < effective_num_gevs; ++i) {
-                        sum << " v" << i << "_" << prog_var;
-                    }
-                    sum << ")";
-                    lhs << " (* " << formatNumber(coef.constant) << " " << sum.str() << ")";
-                    has_terms = true;
-                } else if (is_input) {
-                    // in_var → x₁
-                    lhs << " (* " << coef.constant << " x1_" << prog_var << ")";
-                    has_terms = true;
-                } else {
-                    // Variable AUXILIAIRE (div_aux, mod_aux, etc.)
-                    // Renommer pour isoler le contexte "première itération"
-                    std::string iter_var = var + "__gnta_iter";
-                    if (!solver->variableExists(iter_var)) {
-                        solver->declareVariable(iter_var, "Int"); // TODO: ne doit pas être en dur pour les variables auxiliaires
-                    }
-                    lhs << " (* " << coef.constant << " " << iter_var << ")";
-                    has_terms = true;
-                }
-            }
-
-            // RAYS=FALSE : Garder la constante
-            if (ineq.constant.isConstant()) {
-                lhs << " " << formatNumber(ineq.constant.constant);
-                has_terms = true;
-            }
-
-            lhs << ")";
-
-            if (has_terms) {
-                std::ostringstream constraint;
-                constraint << "(" << (ineq.strict ? ">" : ">=") << " " << lhs.str() << " 0)";
-                clause_constraints.push_back(constraint.str());
-            }
-        }
-
-        if (!clause_constraints.empty())
-            poly_constraints.push_back(clause_constraints);
-    }
-
-    // Émettre en DNF
-    if (poly_constraints.size() == 1) {
-        for (const auto& c : poly_constraints[0]) {
-            solver->addAssertion(c);
-            constraint_count++;
-        }
-    } else if (poly_constraints.size() > 1) {
-        std::ostringstream dnf;
-        dnf << "(or";
-        for (const auto& clause : poly_constraints) {
-            dnf << " (and";
-            for (const auto& c : clause) {
-                dnf << " " << c;
-            }
-            dnf << ")";
-        }
-        dnf << ")";
-        solver->addAssertion(dnf.str());
-        constraint_count++;
-    }
-
-    if (VERBOSITY == VerbosityLevel::VERBOSE)
-        std::cout << "      Added " << constraint_count << " first iteration constraints" << std::endl;
-}
-
-// ============================================================================
-// CONTRAINTES RAYON POUR CHAQUE GEV
-//
-// Pour chaque GEV i (0..n-1):
-//   Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) avec rays=true (constante=0)
-//
-// Pour le dernier GEV (i = n-1), pas de composante nilpotente:
-//   Loop(yₙ₋₁, λₙ₋₁·yₙ₋₁)
-//
-// ============================================================================
-
-void GeometricTechnique::addRayConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
-{
-    int constraint_count = 0;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    const bool linear_mode = (settings_.analysis_type ==
-        GeometricNonTerminationSettings::AnalysisType::LINEAR);
-
-    for (int gev_idx = 0; gev_idx < effective_num_gevs; ++gev_idx) {
-
-        bool has_next_gev = (gev_idx < effective_num_gevs - 1);
-        bool use_nilpotent = settings_.nilpotent_components && has_next_gev;
-
-        if (verbose) {
-            if (use_nilpotent)
-                std::cout << "      GEV " << gev_idx << ": Loop(y" << gev_idx
-                          << ", lambda_" << gev_idx << "*y" << gev_idx
-                          << " + nu_" << gev_idx << "*y" << (gev_idx + 1) << ")" << std::endl;
-            else
-                std::cout << "      GEV " << gev_idx << ": Loop(y" << gev_idx
-                          << ", lambda_" << gev_idx << "*y" << gev_idx << ")" << std::endl;
-        }
-
-        // En mode LINEAR avec composante nilpotente : énumérer nu ∈ {0, 1} comme constantes
-        // concrètes pour rester dans QF_LIA (pas de produit non-linéaire nu * v_{i+1}).
-        // Chaque branche (polyèdre × valeur_nu) devient une clause de la DNF finale.
-        // Sans nilpotent ou en mode non-LINEAR : une seule sentinelle -1.
-        std::vector<int> nu_vals;
-        if (linear_mode && use_nilpotent) {
-            nu_vals = {0, 1};
-        } else {
-            nu_vals = {-1};  // sentinelle : pas d'énumération de nu
-        }
-
-        // Collecter toutes les branches (nu_val × polyèdre) pour la DNF globale
-        std::vector<std::vector<std::string>> all_branches;
-
-        for (int nu_enum : nu_vals) {
-            for (const auto& poly : lasso_->loop.polyhedra) {
-                std::vector<std::string> clause_constraints;
-
-                for (const auto& ineq : poly) {
-                    std::ostringstream lhs;
-                    lhs << "(+";
-                    bool has_terms = false;
-
-                    for (const auto& [var, coef] : ineq.coefficients) {
-                        if (!coef.isConstant() || std::abs(coef.constant) <= 1e-9) continue;
-
-                        bool is_input = false;
-                        bool is_output = false;
-                        std::string prog_var;
-                        for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
-                            if (ssa_in == var) { is_input = true; prog_var = var_prog; break; }
-                        }
-                        for (const auto& [var_prog, ssa_out] : lasso_->loop.var_to_ssa_out) {
-                            if (ssa_out == var) { is_output = true; prog_var = var_prog; break; }
-                        }
-
-                        if (is_input && is_output) {
-                            // Variable identité (in_ssa == out_ssa) : traiter comme input
-                            std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
-                            lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
-                            has_terms = true;
-                        } else if (is_output) {
-                            // out_var → λᵢ·yᵢ [+ νᵢ·yᵢ₊₁]
-                            std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
-
-                            if (use_nilpotent) {
-                                std::string next_gev_var = "v" + std::to_string(gev_idx + 1) + "_" + prog_var;
-                                if (linear_mode) {
-                                    // nu_enum ∈ {0, 1} concret → pas de produit non-linéaire
-                                    if (nu_enum == 0) {
-                                        // nu=0 : out_var → gev_var
-                                        lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
-                                    } else {
-                                        // nu=1 : out_var → gev_var + next_gev_var
-                                        lhs << " (* " << formatNumber(coef.constant)
-                                            << " (+ " << gev_var << " " << next_gev_var << "))";
-                                    }
-                                } else {
-                                    // Mode non-LINEAR : nu_var est une variable SMT libre
-                                    std::string nu_var = "nu_" + std::to_string(gev_idx);
-                                    std::string lambda_var = "lambda_" + std::to_string(gev_idx);
-                                    lhs << " (* " << coef.constant
-                                        << " (+ (* " << lambda_var << " " << gev_var << ")"
-                                        << " (* " << nu_var << " " << next_gev_var << ")))";
-                                }
-                            } else {
-                                if (linear_mode) {
-                                    // λ=1, sans nilpotent : out_var = gev_var
-                                    lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
-                                } else {
-                                    std::string lambda_var = "lambda_" + std::to_string(gev_idx);
-                                    lhs << " (* " << coef.constant
-                                        << " (* " << lambda_var << " " << gev_var << "))";
-                                }
-                            }
-                            has_terms = true;
-                        } else if (is_input) {
-                            std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
-                            lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
-                            has_terms = true;
-                        } else {
-                            // Variable auxiliaire — copie fraîche par GEV
-                            std::string ray_var = var + "__gnta_ray_" + std::to_string(gev_idx);
-                            if (!solver->variableExists(ray_var)) {
-                                solver->declareVariable(ray_var, "Int");
-                            }
-                            lhs << " (* " << coef.constant << " " << ray_var << ")";
-                            has_terms = true;
-                        }
-                    }
-
-                    // RAYS=TRUE : PAS de constante (homogène)
-                    lhs << ")";
-
-                    if (has_terms) {
-                        std::ostringstream constraint;
-                        constraint << "(" << (ineq.strict ? ">" : ">=") << " " << lhs.str() << " 0)";
-                        clause_constraints.push_back(constraint.str());
-                    }
-                }
-
-                if (!clause_constraints.empty())
-                    all_branches.push_back(clause_constraints);
-            }
-        }
-
-        // Émettre en DNF : (or (and clause0) (and clause1) ...)
-        if (all_branches.size() == 1) {
-            for (const auto& c : all_branches[0]) {
-                solver->addAssertion(c);
-                constraint_count++;
-            }
-        } else if (all_branches.size() > 1) {
-            std::ostringstream dnf;
-            dnf << "(or";
-            for (const auto& clause : all_branches) {
-                dnf << " (and";
-                for (const auto& c : clause) {
-                    dnf << " " << c;
-                }
-                dnf << ")";
-            }
-            dnf << ")";
-            solver->addAssertion(dnf.str());
-            constraint_count++;
-        }
-    }
-
-    if (verbose)
-        std::cout << "      Added " << constraint_count << " ray constraints total" << std::endl;
 }
 
 // ============================================================================
@@ -763,6 +480,243 @@ void GeometricTechnique::addIdentityVariableConstraints(
 
     if (verbose)
         std::cout << "      Added " << constraint_count << " identity variable constraints" << std::endl;
+}
+
+// ============================================================================
+// HELPERS PAR POLYÈDRE (utilisés par addCombinedLoopConstraints)
+// ============================================================================
+
+std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
+    const std::vector<LinearInequality>& poly,
+    int effective_num_gevs,
+    std::shared_ptr<SMTSolver> solver)
+{
+    std::vector<std::string> result;
+
+    for (const auto& ineq : poly) {
+        std::ostringstream lhs;
+        lhs << "(+";
+        bool has_terms = false;
+
+        for (const auto& [var, coef] : ineq.coefficients) {
+            if (!coef.isConstant() || std::abs(coef.constant) <= 1e-9) continue;
+
+            bool is_input = false, is_output = false;
+            std::string prog_var;
+            for (const auto& [vp, ssa_in] : lasso_->loop.var_to_ssa_in) {
+                if (ssa_in == var) { is_input = true; prog_var = vp; break; }
+            }
+            for (const auto& [vp, ssa_out] : lasso_->loop.var_to_ssa_out) {
+                if (ssa_out == var) { is_output = true; prog_var = vp; break; }
+            }
+
+            if (is_input && is_output) {
+                lhs << " (* " << formatNumber(coef.constant) << " x1_" << prog_var << ")";
+                has_terms = true;
+            } else if (is_output) {
+                std::ostringstream sum;
+                sum << "(+ x1_" << prog_var;
+                for (int i = 0; i < effective_num_gevs; ++i)
+                    sum << " v" << i << "_" << prog_var;
+                sum << ")";
+                lhs << " (* " << formatNumber(coef.constant) << " " << sum.str() << ")";
+                has_terms = true;
+            } else if (is_input) {
+                lhs << " (* " << coef.constant << " x1_" << prog_var << ")";
+                has_terms = true;
+            } else {
+                std::string iter_var = var + "__gnta_iter";
+                if (!solver->variableExists(iter_var))
+                    solver->declareVariable(iter_var, "Int");
+                lhs << " (* " << coef.constant << " " << iter_var << ")";
+                has_terms = true;
+            }
+        }
+
+        if (ineq.constant.isConstant()) {
+            lhs << " " << formatNumber(ineq.constant.constant);
+            has_terms = true;
+        }
+        lhs << ")";
+
+        if (has_terms) {
+            std::ostringstream c;
+            c << "(" << (ineq.strict ? ">" : ">=") << " " << lhs.str() << " 0)";
+            result.push_back(c.str());
+        }
+    }
+    return result;
+}
+
+std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsForPoly(
+    const std::vector<LinearInequality>& poly,
+    int gev_idx,
+    int effective_num_gevs,
+    std::shared_ptr<SMTSolver> solver)
+{
+    const bool linear_mode = (settings_.analysis_type ==
+        GeometricNonTerminationSettings::AnalysisType::LINEAR);
+    const bool has_next_gev = (gev_idx < effective_num_gevs - 1);
+    const bool use_nilpotent = settings_.nilpotent_components && has_next_gev;
+
+    // Enumerate nu values: {0,1} in linear-nilpotent mode, {-1} (sentinel) otherwise
+    std::vector<int> nu_vals = (linear_mode && use_nilpotent) ? std::vector<int>{0, 1}
+                                                               : std::vector<int>{-1};
+
+    std::vector<std::vector<std::string>> all_branches;
+
+    for (int nu_enum : nu_vals) {
+        std::vector<std::string> branch;
+
+        for (const auto& ineq : poly) {
+            std::ostringstream lhs;
+            lhs << "(+";
+            bool has_terms = false;
+
+            for (const auto& [var, coef] : ineq.coefficients) {
+                if (!coef.isConstant() || std::abs(coef.constant) <= 1e-9) continue;
+
+                bool is_input = false, is_output = false;
+                std::string prog_var;
+                for (const auto& [vp, ssa_in] : lasso_->loop.var_to_ssa_in) {
+                    if (ssa_in == var) { is_input = true; prog_var = vp; break; }
+                }
+                for (const auto& [vp, ssa_out] : lasso_->loop.var_to_ssa_out) {
+                    if (ssa_out == var) { is_output = true; prog_var = vp; break; }
+                }
+
+                if (is_input && is_output) {
+                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
+                    has_terms = true;
+                } else if (is_output) {
+                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    if (use_nilpotent) {
+                        std::string next_gev = "v" + std::to_string(gev_idx + 1) + "_" + prog_var;
+                        if (linear_mode) {
+                            // nu ∈ {0,1} enumerated as concrete constants
+                            if (nu_enum == 0)
+                                lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
+                            else
+                                lhs << " (* " << formatNumber(coef.constant)
+                                    << " (+ " << gev_var << " " << next_gev << "))";
+                        } else {
+                            std::string nu_var    = "nu_"     + std::to_string(gev_idx);
+                            std::string lam_var   = "lambda_" + std::to_string(gev_idx);
+                            lhs << " (* " << coef.constant
+                                << " (+ (* " << lam_var << " " << gev_var << ")"
+                                << " (* " << nu_var << " " << next_gev << ")))";
+                        }
+                    } else {
+                        if (linear_mode)
+                            lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
+                        else {
+                            std::string lam_var = "lambda_" + std::to_string(gev_idx);
+                            lhs << " (* " << coef.constant
+                                << " (* " << lam_var << " " << gev_var << "))";
+                        }
+                    }
+                    has_terms = true;
+                } else if (is_input) {
+                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
+                    has_terms = true;
+                } else {
+                    std::string ray_var = var + "__gnta_ray_" + std::to_string(gev_idx);
+                    if (!solver->variableExists(ray_var))
+                        solver->declareVariable(ray_var, "Int");
+                    lhs << " (* " << coef.constant << " " << ray_var << ")";
+                    has_terms = true;
+                }
+            }
+
+            // RAYS=TRUE: no constant (homogeneous), always non-strict
+            // For a ray direction y: if the original loop has a*x > c (strict),
+            // the condition for y to stay in the half-space is a*y >= 0 (non-strict),
+            // because a*(x + t*y) > c holds for all t >= 0 iff a*y >= 0.
+            lhs << ")";
+
+            if (has_terms) {
+                std::ostringstream c;
+                c << "(>= " << lhs.str() << " 0)";
+                branch.push_back(c.str());
+            }
+        }
+        all_branches.push_back(branch);
+    }
+    return all_branches;
+}
+
+// ============================================================================
+// COMBINED LOOP CONSTRAINTS (branch-consistent)
+//
+//   for polyhedron in loop.polyhedra:
+//       t_honda = generateConstraint(loop, polyhedron, x1, x1+y, false)
+//       t_gev_i = generateConstraint(loop, polyhedron, y_i, lambda*y_i, true)
+//       disjunction.add(AND(t_honda, t_gev_0, ..., t_gev_n))
+//   assert OR(disjunction)
+//
+// Garantit que la première itération et TOUS les rays utilisent le MÊME polyèdre.
+// ============================================================================
+
+void GeometricTechnique::addCombinedLoopConstraints(
+    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+{
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+
+    std::vector<std::vector<std::string>> per_poly_clauses;
+
+    for (const auto& poly : lasso_->loop.polyhedra) {
+        std::vector<std::string> clause;
+
+        // Première itération : Loop(x1, x1 + y0 + ... + yn) avec ce polyèdre
+        auto fi = buildFirstIterConstraintsForPoly(poly, effective_num_gevs, solver);
+        clause.insert(clause.end(), fi.begin(), fi.end());
+
+        // Rays pour chaque GEV avec LE MÊME polyèdre
+        for (int gev_idx = 0; gev_idx < effective_num_gevs; ++gev_idx) {
+            auto ray_branches = buildRayConstraintsForPoly(poly, gev_idx, effective_num_gevs, solver);
+
+            if (ray_branches.size() == 1) {
+                // Cas standard (pas d'énumération nu) : ajouter directement à la clause
+                clause.insert(clause.end(), ray_branches[0].begin(), ray_branches[0].end());
+            } else if (ray_branches.size() > 1) {
+                // Mode linear-nilpotent : sous-disjonction sur nu ∈ {0,1}
+                std::ostringstream sub_dnf;
+                sub_dnf << "(or";
+                for (const auto& branch : ray_branches) {
+                    sub_dnf << " (and";
+                    for (const auto& c : branch) sub_dnf << " " << c;
+                    sub_dnf << ")";
+                }
+                sub_dnf << ")";
+                clause.push_back(sub_dnf.str());
+            }
+        }
+
+        if (!clause.empty())
+            per_poly_clauses.push_back(clause);
+    }
+
+    if (verbose)
+        std::cout << "      Combined loop constraints: " << per_poly_clauses.size()
+                  << " polyhedron/polyhedra" << std::endl;
+
+    // Émettre en DNF externe
+    if (per_poly_clauses.size() == 1) {
+        for (const auto& c : per_poly_clauses[0])
+            solver->addAssertion(c);
+    } else if (per_poly_clauses.size() > 1) {
+        std::ostringstream dnf;
+        dnf << "(or";
+        for (const auto& clause : per_poly_clauses) {
+            dnf << " (and";
+            for (const auto& c : clause) dnf << " " << c;
+            dnf << ")";
+        }
+        dnf << ")";
+        solver->addAssertion(dnf.str());
+    }
 }
 
 // ============================================================================

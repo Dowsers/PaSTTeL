@@ -16,10 +16,7 @@
 struct TerminationResult {
     enum class Type {
         UNKNOWN,                    // Aucune preuve trouvée
-        RANKING_BASED,              // Preuve par ranking function
-        MODEL_CHECKING,             // Preuve par model checking (futur)
-        ABSTRACT_INTERPRETATION,    // Preuve par interprétation abstraite (futur)
-        SIZE_CHANGE,                // Size-change termination (futur)
+        RANKING_BASED              // Preuve par ranking function
     };
 
     Type type;

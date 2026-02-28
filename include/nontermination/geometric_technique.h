@@ -1,9 +1,13 @@
 #ifndef GEOMETRIC_TECHNIQUE_H
 #define GEOMETRIC_TECHNIQUE_H
 
+#include <string>
+#include <vector>
+
 #include "nontermination/nontermination_technique_interface.h"
 
 #include "lasso_program.h"
+#include "linear_inequality.h"
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
@@ -120,16 +124,34 @@ private:
     void addStemConstraints(std::shared_ptr<SMTSolver> solver);
 
     /**
-     * @brief Ajoute les contraintes de première itération: Loop(x₁, x₁ + Σyᵢ)
-     * out_var → x₁ + y₁ + ... + yₙ
+     * @brief Version branch-consistante de (première itération + rays).
+     *
+     * Pour chaque polyèdre p, on combine en un seul (and fi_p ray0_p ray1_p ...),
+     * puis on émet le (or ...) externe.
+     *
+     * Garantit que la première itération et tous les rays utilisent le MÊME polyèdre,
+     * éliminant les preuves spurieuses dues au mélange de branches DNF.
      */
-    void addFirstIterationConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    void addCombinedLoopConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
 
     /**
-     * @brief Ajoute les contraintes rayon pour chaque GEV
-     * Pour chaque i: Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) avec rays=true (constante=0)
+     * @brief Construit les contraintes de première itération pour UN polyèdre.
+     * @return Vecteur de chaînes SMT-LIB (une par inégalité satisfaite)
      */
-    void addRayConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    std::vector<std::string> buildFirstIterConstraintsForPoly(
+        const std::vector<LinearInequality>& poly,
+        int effective_num_gevs,
+        std::shared_ptr<SMTSolver> solver);
+
+    /**
+     * @brief Construit les contraintes rayon pour UN polyèdre et UN GEV.
+     * @return Vecteur de branches (une par nu_val) — chaque branche est un vecteur de contraintes
+     */
+    std::vector<std::vector<std::string>> buildRayConstraintsForPoly(
+        const std::vector<LinearInequality>& poly,
+        int gev_idx,
+        int effective_num_gevs,
+        std::shared_ptr<SMTSolver> solver);
 
     /**
      * @brief Ajoute les contraintes d'identité pour variables inchangées (in_ssa == out_ssa)

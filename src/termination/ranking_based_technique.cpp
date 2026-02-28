@@ -178,23 +178,22 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
     }
     // VALIDATION POST-SYNTHÈSE (CRITIQUE)
     // TODO: filtrer et garder (s'il y en a) les SI non tiviaux et valides
-    // RankingAndInvariantValidator validator;
-    // auto validation_result = validator.validate(
-    //     synthesizer->getRankingFunction(),
-    //     synthesizer->getSupportingInvariants(),
-    //     *lasso_,
-    //     solver
-    // );
+    RankingAndInvariantValidator validator;
+    auto validation_result = validator.validate(
+        synthesizer->getTerminationArgument(),
+        *lasso_,
+        solver
+    );
 
-    // if (!validation_result.is_valid) {
-    //     if (verbosity) {
-    //         std::cout << "\nValidation failed!" << std::endl;
-    //     }
-    //     return false;  // Échec de validation
-    // }
+    if (!validation_result.is_valid) {
+        if (verbosity) {
+            std::cout << "\nValidation failed!" << std::endl;
+        }
+        return false;  // Échec de validation
+    }
 
-    // if (verbosity) 
-    //    validator.printValidationResult(validation_result);
+    if (verbosity) 
+       validator.printValidationResult(validation_result);
 
     // Succès ! Sauvegarder le résultat
     last_synthesis_result_ = synthesis_result;

@@ -82,25 +82,13 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
     }
 
-    result.rf_decreasing_check = checkRFDecreasing(
-        ranking_function, supporting_invariants, lasso, solver, ranking_function.delta, result.rf_counterexample);
-    
-    if (!result.rf_decreasing_check) {
-        result.error_message = "Ranking function ne décroît pas strictement";
-        if(verbose) {
-            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
-            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-        }
-        return result;
-    }
     if(verbose) {
-        std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta << std::endl;
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-    
+
     // ========================================================================
     // PARTIE 2 : VALIDATION DES SUPPORTING INVARIANTS
     // ========================================================================
-    
+
         std::cout << "╭─ Supporting Invariants ───────────────────────────────╮" << std::endl;
         std::cout << "  Nombre de SI synthétisés : " << supporting_invariants.size() << std::endl;
     }
@@ -115,13 +103,13 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         int num_trivial_false = 0;
         int num_non_trivial = 0;
         int num_valid_non_trivial = 0;
-        
+
         for (size_t i = 0; i < supporting_invariants.size(); ++i) {
             if(verbose)
                 std::cout << "\n  ┌─ SI #" << i << " ────────────────────────────────────┐" << std::endl;
             SIValidationResult si_result = validateSingleSI(i, supporting_invariants[i], lasso, solver);
             result.si_results.push_back(si_result);
-            
+
             // Comptabiliser les résultats
             if (si_result.is_false_check) {
                 num_trivial_false++;
@@ -143,66 +131,78 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
                         std::cout << "  │ ❌ INVALIDE : " << si_result.error_message << std::endl;
                 }
             }
-            
+
             if(verbose) {
                 std::cout << "  │   • isFalse()      : " << (si_result.is_false_check ? "❌ FAUX" : "✅") << std::endl;
                 std::cout << "  │   • isTrue()       : " << (si_result.is_true_check ? "✅ VRAI" : "➖") << std::endl;
-                
+
                 if (!si_result.is_false_check && !si_result.is_true_check) {
                     std::cout << "  │   • Initiation     : " << (si_result.initiation_check ? "✅" : "❌") << std::endl;
                     std::cout << "  │   • Compatible     : " << (si_result.compatible_check ? "✅" : "❌") << std::endl;
                     std::cout << "  │   • Consécution    : " << (si_result.consecution_check ? "✅" : "❌") << std::endl;
                 }
-                
+
                 std::cout << "  └─────────────────────────────────────────────────┘" << std::endl;
             }
         }
-        // Logique :
-        // - On filtre les SI triviaux (isTrue/isFalse)
-        // - On garde les SI non-triviaux
-        // - Il faut AU MOINS 1 SI non-trivial valide (ou que tous soient triviaux)
-        
+
         if(verbose) {
             std::cout << "\n    Statistiques SI :" << std::endl;
             std::cout << "     • Triviaux TRUE  : " << num_trivial_true << " (filtrés)" << std::endl;
             std::cout << "     • Triviaux FALSE : " << num_trivial_false << " (rejetés)" << std::endl;
             std::cout << "     • Non-triviaux   : " << num_non_trivial << std::endl;
             std::cout << "     • Valides (non-t): " << num_valid_non_trivial << std::endl;
-        }        
-        // Critère de validation des SI :
-        // - Pas de SI trivialement FAUX
-        // - Si au moins une SI triviale vraie, OK
-        
+        }
+
         if (num_trivial_false > 0) {
             result.all_si_valid = false;
-            if(verbose) 
+            if(verbose)
                 std::cout << "\n  ❌ Échec : " << num_trivial_false << " SI trivialement FAUX" << std::endl;
-        } else if (num_trivial_true > 0) {
-            // Au moins une SI triviale TRUE → OK
-            result.all_si_valid = true;
-            if(verbose) 
-                std::cout << "\n  ✅ SI triviale (vacuously true)" << std::endl;
-        } else if (num_valid_non_trivial > 0) {
-            // Au moins 1 SI non-trivial valide → OK
+        } else {
+            // Tous les SI non-triviaux invalides sont ignorés :
+            // on retente la décroissance RF avec seulement les valid_sis
             result.all_si_valid = true;
             if(verbose) {
-                std::cout << "\n  ✅ " << num_valid_non_trivial << "/" << num_non_trivial
-                        << " SI non-triviaux valides" << std::endl;
+                if (num_trivial_true > 0)
+                    std::cout << "\n  ✅ SI triviale(s) TRUE acceptée(s)" << std::endl;
+                if (num_valid_non_trivial > 0)
+                    std::cout << "\n  ✅ " << num_valid_non_trivial << "/" << num_non_trivial
+                            << " SI non-triviaux valides" << std::endl;
+                if (num_valid_non_trivial == 0 && num_trivial_true == 0)
+                    std::cout << "\n  ℹ️  Aucun SI valide — vérification RF sans SI" << std::endl;
             }
-        } else {
-            // Tous les SI non-triviaux sont invalides → ÉCHEC
-            result.all_si_valid = false;
-            if(verbose) 
-                std::cout << "\n  ❌ Aucun SI non-trivial valide" << std::endl;
         }
     }
-    if(verbose) 
+    if(verbose)
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+
+    // ========================================================================
+    // PARTIE 3 : VÉRIFICATION RF DECREASING avec seulement les SI valides
+    // ========================================================================
+
+    if(verbose) {
+        std::cout << "╭─ Décroissance RF (avec " << valid_sis.size() << " SI valide(s)) ────────────╮" << std::endl;
+        std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
+    }
+
+    result.rf_decreasing_check = checkRFDecreasing(
+        ranking_function, valid_sis, lasso, solver, ranking_function.delta, result.rf_counterexample);
+
+    if (!result.rf_decreasing_check) {
+        result.error_message = "Ranking function ne décroît pas strictement (même sans SI invalides)";
+        if(verbose) {
+            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
+            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+        }
+    } else if(verbose) {
+        std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta << std::endl;
+        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+    }
 
     // ========================================================================
     // RÉSULTAT FINAL
     // ========================================================================
-    
+
     result.is_valid = result.all_si_valid
                 && result.rf_non_trivial_check
                 && result.rf_bounded_check

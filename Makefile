@@ -14,7 +14,6 @@ LDFLAGS := -pthread
 #   export PASTTEL=/home/a/Documents/Tools
 # Ce dossier doit contenir :
 #   $(PASTTEL)/z3/include et $(PASTTEL)/z3/lib
-#   $(PASTTEL)/spot/include et $(PASTTEL)/spot/lib
 #
 # Pour CVC5 (optionnel, peut être dans un autre dossier) :
 #   export CVC5_DIR=/path/to/cvc5
@@ -25,9 +24,6 @@ LDFLAGS := -pthread
 Z3_CFLAGS := -I$(PASTTEL)/include
 Z3_LIBS   := -L$(PASTTEL)/lib -lz3
 
-SPOT_CFLAGS := -I$(PASTTEL)/include
-SPOT_LIBS   := -L$(PASTTEL)/lib -lspot -lbddx -lz
-
 # CVC5_DIR peut être défini via variable d'environnement
 # Si non défini, utiliser une valeur par défaut
 CVC5_DIR ?= $(PASTTEL)
@@ -35,8 +31,8 @@ CVC5_CFLAGS := -I$(CVC5_DIR)/include
 CVC5_LIBS   := $(CVC5_DIR)/lib/libcvc5.so $(CVC5_DIR)/lib/libcvc5parser.so $(CVC5_DIR)/lib/libpoly.so.0 $(CVC5_DIR)/lib/libpolyxx.so.0 $(CVC5_DIR)/lib/libpoly.so $(CVC5_DIR)/lib/libpolyxx.so -lgmp
 
 
-CXXFLAGS += $(Z3_CFLAGS) $(SPOT_CFLAGS) $(CVC5_CFLAGS)
-LDFLAGS  += $(Z3_LIBS) $(SPOT_LIBS) $(CVC5_LIBS)
+CXXFLAGS += $(Z3_CFLAGS) $(CVC5_CFLAGS)
+LDFLAGS  += $(Z3_LIBS) $(CVC5_LIBS)
 
 # ========================
 # Répertoires
@@ -71,6 +67,7 @@ COMMON_SRCS := \
 	$(SRC_DIR)/nontermination/nontermination_analyzer.cpp \
 	$(SRC_DIR)/termination/supporting_invariant_generator.cpp \
 	$(SRC_DIR)/termination/generic_termination_synthesizer.cpp \
+	$(SRC_DIR)/termination/affine_function_generator.cpp \
 	$(SRC_DIR)/parser/smt_parser.cpp \
 	$(SRC_DIR)/parser/json_trace_parser.cpp \
 	$(SRC_DIR)/linearization/formula_linearizer.cpp \

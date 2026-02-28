@@ -43,7 +43,7 @@ MotzkinTransformation::MotzkinTransformation() {
 
 void MotzkinTransformation::addConstraintsToSolver(
     const std::vector<LinearInequality>& constraints,
-    const std::vector<std::string>& program_vars,
+    const std::unordered_set<std::string>& program_vars,
     std::shared_ptr<SMTSolver> solver,
     const std::string& annotation)
 {
@@ -51,7 +51,7 @@ void MotzkinTransformation::addConstraintsToSolver(
     // 1. INITIALISATION
     // ────────────────────────────────────────────────────────────────────────
     m_inequalities = constraints;
-    m_program_vars = std::set<std::string>(program_vars.begin(), program_vars.end());
+    m_program_vars = program_vars;
 
     if (m_inequalities.empty()) {
         if (VERBOSITY == VerbosityLevel::VERBOSE)
@@ -60,33 +60,35 @@ void MotzkinTransformation::addConstraintsToSolver(
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // 2. COEFFICIENTS DE MOTZKIN — MODE LINÉAIRE 
+    // 2. COEFFICIENTS DE MOTZKIN
     // ────────────────────────────────────────────────────────────────────────
     //   Si coefficients non-constants (ex. SUP_INVAR) → "fixed" :
     //     énumération {0, 1} au lieu d'une variable libre → reste LRA.
 
     registerMotzkinCoefficients();
 
-    // Indices "fixed" : ANYTHING ou ZERO_AND_ONE avec affine non-constant
-    // Ces indices seront énumérés dans {0,1} pour éviter le produit bilinéaire
-    // motzkin_free × SUP_INVAR qui forcerait Z3 en NRA/NLSAT.
+    // Fixed indices: coefficients assignés "1.0" par registerMotzkinCoefficients
+    // mais dont motzkin_coef != ONE (ANYTHING ou ZERO_AND_ONE avec termes non-constants).
+    // Ces indices seront énumérés en {0,1} pour rester en LRA.
+    // Matching Ultimate: !needsMotzkinCoefficient(li) && li.mMotzkinCoefficient != ONE
     std::vector<size_t> fixed_indices;
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
-        auto mc = m_inequalities[i].motzkin_coef;
-        if (mc != LinearInequality::ONE && !allAffineTermsAreConstant(m_inequalities[i])) {
+        const auto& li = m_inequalities[i];
+        bool has_free_var = (m_motzkin_coefficients[i] != "1.0");
+        if (!has_free_var && li.motzkin_coef != LinearInequality::ONE) {
             fixed_indices.push_back(i);
         }
     }
 
-    // Déclarer uniquement les variables libres non-fixed (≠ "1.0" et ≠ fixed)
+    // Déclarer les variables libres et asserter λ >= 0 (hors énumération)
     for (size_t i = 0; i < m_motzkin_coefficients.size(); ++i) {
-        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
-                        != fixed_indices.end();
-        if (is_fixed) continue;
         const auto& lambda = m_motzkin_coefficients[i];
-        if (lambda != "1.0" && !solver->variableExists(lambda)) {
+        if (lambda == "1.0") continue;
+        if (!solver->variableExists(lambda)) {
             solver->declareVariable(lambda, "Real");
         }
+        // λ >= 0 toujours asserté hors énumération
+        solver->addAssertion("(>= " + lambda + " 0.0)");
     }
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
@@ -98,28 +100,13 @@ void MotzkinTransformation::addConstraintsToSolver(
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // 3. CONTRAINTES HORS ÉNUMÉRATION (positivité + ZERO_AND_ONE constant)
+    // 3. CONTRAINTES HORS ÉNUMÉRATION (ZERO_AND_ONE sur variables libres)
     // ────────────────────────────────────────────────────────────────────────
-
-    // 3.1 Positivité λ_i ≥ 0 pour les variables libres non-fixed
-    for (size_t i = 0; i < m_motzkin_coefficients.size(); ++i) {
-        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
-                        != fixed_indices.end();
-        if (is_fixed) continue;
-        const auto& lambda = m_motzkin_coefficients[i];
-        if (lambda != "1.0") {
-            solver->addAssertion("(>= " + lambda + " 0.0)");
-        }
-    }
-
-    // 3.2 ZERO_AND_ONE pour les contraintes non-fixed à affine constant
-    //     (ces contraintes ont des coefficients numériques → λ*c reste LRA)
+    // Pour les variables libres avec ZERO_AND_ONE (termes constants) : (or (= λ 0) (= λ 1))
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
-        bool is_fixed = std::find(fixed_indices.begin(), fixed_indices.end(), i)
-                        != fixed_indices.end();
-        if (is_fixed) continue;
+        const auto& lambda = m_motzkin_coefficients[i];
+        if (lambda == "1.0") continue;  // pas de variable libre → rien à faire ici
         if (m_inequalities[i].motzkin_coef == LinearInequality::ZERO_AND_ONE) {
-            const auto& lambda = m_motzkin_coefficients[i];
             solver->addAssertion("(or (= " + lambda + " 0.0) (= " + lambda + " 1.0))");
         }
     }
@@ -142,7 +129,6 @@ void MotzkinTransformation::addConstraintsToSolver(
         std::vector<std::string> combo_ands;
 
         for (size_t combo = 0; combo < (1u << k); ++combo) {
-            // Construire le vecteur de coefficients pour cette combinaison
             std::vector<std::string> coef_for = m_motzkin_coefficients;
             for (size_t bit = 0; bit < k; ++bit) {
                 coef_for[fixed_indices[bit]] = ((combo >> bit) & 1) ? "1.0" : "0.0";
@@ -181,12 +167,20 @@ void MotzkinTransformation::addConstraintsToSolver(
 void MotzkinTransformation::registerMotzkinCoefficients() {
     m_motzkin_coefficients.clear();
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
-        if (m_inequalities[i].motzkin_coef == LinearInequality::ONE) {
-            m_motzkin_coefficients.push_back("1.0");  // littéral, pas de variable
-        } else {
+        const auto& li = m_inequalities[i];
+        // Matching Ultimate needsMotzkinCoefficient():
+        // Une variable libre est créée seulement si :
+        //   - motzkin_coef != ONE  (pas déjà fixé à 1)
+        //   - ET tous les termes affines sont des constantes numériques
+        //     (sinon λ×paramètre_template serait NLA → on énumérera {0,1})
+        bool needs_variable = (li.motzkin_coef != LinearInequality::ONE)
+                              && allAffineTermsAreConstant(li);
+        if (needs_variable) {
             std::ostringstream oss;
             oss << "motzkin_" << s_motzkin_counter << "_" << i;
             m_motzkin_coefficients.push_back(oss.str());
+        } else {
+            m_motzkin_coefficients.push_back("1.0");
         }
     }
     s_motzkin_counter++;
@@ -359,7 +353,6 @@ void MotzkinTransformation::generateStrictConstraint(std::shared_ptr<SMTSolver> 
         }
         classical_part += ") 0.0)";
     }
-    
     // ────────────────────────────────────────────────────────────────────────
     // PARTIE 2: Σ_j μ_j > 0 (inégalités strictes uniquement)
     // ────────────────────────────────────────────────────────────────────────
@@ -387,14 +380,13 @@ void MotzkinTransformation::generateStrictConstraint(std::shared_ptr<SMTSolver> 
         }
         non_classical_part += ") 0.0)";
     }
-    
+
     // ────────────────────────────────────────────────────────────────────────
     // DISJONCTION FINALE
     // ────────────────────────────────────────────────────────────────────────
     
     std::ostringstream constraint;
     constraint << "(or " << classical_part << " " << non_classical_part << ")";
-    
     solver->addAssertion(constraint.str());
 }
 
@@ -585,6 +577,9 @@ std::vector<std::string> MotzkinTransformation::generateAllFormulas(
     }
 
     // ── Strictness : (Σ non-strict * b_i < 0) ∨ (Σ strict coeffs > 0)
+    // Matching Ultimate doTransform: toujours incluse.
+    // Quand les deux listes sont vides → (or false false) = false : correct,
+    // une branche sans inégalité active ne prouve pas l'insatisfiabilité.
     {
         std::vector<std::string> ns_summands;
         for (size_t i = 0; i < m_inequalities.size(); ++i) {
@@ -619,7 +614,6 @@ std::vector<std::string> MotzkinTransformation::generateAllFormulas(
             for (const auto& s : s_coeffs) non_classical += " " + s;
             non_classical += ") 0.0)";
         }
-
         formulas.push_back("(or " + classical + " " + non_classical + ")");
     }
 

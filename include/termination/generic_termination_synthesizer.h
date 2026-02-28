@@ -13,24 +13,24 @@
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
- * @brief Synthesizer générique fonctionnant avec n'importe quel RankingTemplate
+ * @brief Synthesizer generique fonctionnant avec n'importe quel RankingTemplate
  *
- * Workflow:
- * 1. SIG génère φ1/φ2 (SI constraints) + fournit SI(x) ≥ 0 comme prémisses
- * 2. Template génère les contraintes RF (MotzkinContext) avec SI injectés
- * 3. Synthesizer applique Motzkin et encode en SMT
- * 4. Résolution SMT
- * 5. Extraction des résultats (RankingFunction + SupportingInvariants)
+ * Workflow (matching Ultimate TerminationArgumentSynthesizer) :
+ * 1. template_->declareParameters(solver) + sig_.declareParameters(solver)
+ * 2. buildConstraints() : construit phi1+phi2+phi3+phi4
+ * 3. applyMotzkinTransformations()
+ * 4. checkSat()
+ * 5. extractResults()
  */
 class GenericTerminationSynthesizer {
 public:
     /**
-     * @brief Résultat de la synthèse
+     * @brief Resultat de la synthese
      */
     struct SynthesisResult {
         bool is_valid;                              // True si SAT
-        std::map<std::string, double> parameters;   // Valeurs des paramètres (raw)
-        std::string template_name;                  // Nom du template utilisé
+        std::map<std::string, double> parameters;   // Valeurs des parametres (raw)
+        std::string template_name;                  // Nom du template utilise
         std::string description;                    // Description
 
         SynthesisResult() : is_valid(false) {}
@@ -39,10 +39,10 @@ public:
     /**
      * @brief Constructeur
      * @param lasso Programme lasso
-     * @param template_ptr Template à utiliser
+     * @param template_ptr Template a utiliser
      * @param solver Solveur SMT
-     * @param num_si_strict Nombre de SI stricts (gérés par SIG)
-     * @param num_si_nonstrict Nombre de SI non-stricts (gérés par SIG)
+     * @param num_si_strict Nombre de SI stricts (geres par SIG)
+     * @param num_si_nonstrict Nombre de SI non-stricts (geres par SIG)
      */
     GenericTerminationSynthesizer(
         const LassoProgram& lasso,
@@ -52,72 +52,87 @@ public:
         int num_si_nonstrict = 0);
 
     /**
-     * @brief Lance la synthèse
-     * @return Résultat avec paramètres si SAT
+     * @brief Lance la synthese
+     * @return Resultat avec parametres si SAT
      */
     SynthesisResult synthesize();
 
     /**
-     * @brief Récupère l'argument de terminaison (après synthesize() == SAT)
-     *
-     * Regroupe la ranking function et les supporting invariants.
+     * @brief Nombre total de SIGs locaux crees (pour tests)
+     */
+    int getNumLocalSIGs() const { return static_cast<int>(local_sigs_.size()); }
+
+    /**
+     * @brief Recupere l'argument de terminaison (apres synthesize() == SAT)
      */
     const TerminationArgument& getTerminationArgument() const;
 
     /**
-     * @brief Récupère le template utilisé
+     * @brief Recupere le template utilise
      */
     const RankingTemplate& getTemplate() const { return *template_; }
 
     /**
-     * @brief Affiche les résultats
+     * @brief Affiche les resultats
      */
     void printResults(const SynthesisResult& result) const;
 
 private:
-    // Données
+    // Donnees
     const LassoProgram& lasso_;
     RankingTemplate* template_;
     std::shared_ptr<SMTSolver> solver_;
-    SupportingInvariantGenerator sig_;
+    int num_si_strict_;
+    int num_si_nonstrict_;
 
-    // État
+    // SIGs locaux : un par (poly_loop × template_part), crees par createLocalSIGs()
+    std::vector<std::shared_ptr<SupportingInvariantGenerator>> local_sigs_;
+
+    // Etat
     bool synthesized_;
     SynthesisResult last_result_;
 
-    // Résultat structuré
+    // Resultat structure
     TerminationArgument termination_argument_;
 
     // ========================================================================
-    // PIPELINE DE SYNTHÈSE
+    // PIPELINE DE SYNTHESE (Option C : 3 methodes independantes)
     // ========================================================================
 
     /**
-     * @brief Déclare les paramètres SMT du template (RF + delta)
+     * @brief Cree et declare les SIGs locaux (un par poly_loop x template_part).
+     * Remplit local_sigs_. Doit etre appele avant buildPhi34Contexts/buildPhi12Contexts.
+     * Matching Ultimate: new SIG per (loopConj x templatePart).
      */
-    void declareParameters(const RankingTemplate::TemplateParameters& params);
+    void createLocalSIGs();
 
     /**
-     * @brief Applique Motzkin à tous les contextes
+     * @brief Construit les contextes phi3/phi4 (dec + bounded) en utilisant local_sigs_.
+     * Chaque contexte inclut les premisses SI du SIG local correspondant.
+     */
+    std::vector<RankingTemplate::MotzkinContext> buildPhi34Contexts() const;
+
+    /**
+     * @brief Construit les contextes phi1/phi2 pour tous les SIGs locaux.
+     * phi1 : stem -> SI(stem_out) >= 0
+     * phi2 : SI(x) /\ loop -> SI(x') >= 0
+     */
+    std::vector<RankingTemplate::MotzkinContext> buildPhi12Contexts() const;
+
+    /**
+     * @brief Applique Motzkin a tous les contextes
      */
     void applyMotzkinTransformations(
         const std::vector<RankingTemplate::MotzkinContext>& contexts);
 
     /**
-     * @brief Ajoute les contraintes de non-trivialité
-     */
-    void addNonTrivialityConstraints(
-        const RankingTemplate::TemplateParameters& params);
-
-    /**
-     * @brief Extrait les valeurs des paramètres depuis le modèle SAT
+     * @brief Extrait les valeurs des parametres depuis le modele SAT
      */
     std::map<std::string, double> extractParameters(
         const RankingTemplate::TemplateParameters& params);
 
     /**
-     * @brief Extrait la ranking function et les SI depuis le modèle SAT
-     * La RF est déléguée à template_->extractRankingFunctions(), les SI au SIG.
+     * @brief Extrait la ranking function et les SI depuis le modele SAT
      */
     void extractResults();
 
@@ -125,26 +140,14 @@ private:
     // NORMALISATION GCD
     // ========================================================================
 
-    /**
-     * @brief Calcule le GCD de tous les coefficients (incluant constante)
-     */
     long long computeGCD(
         const std::vector<double>& coefficients,
         double constant) const;
 
-    /**
-     * @brief Algorithme d'Euclide pour calculer GCD(a, b)
-     */
     long long gcd(long long a, long long b) const;
 
-    /**
-     * @brief Normalise une RankingFunction par son GCD
-     */
     void normalizeRankingFunction(RankingFunction& rf, long long gcd_value) const;
 
-    /**
-     * @brief Normalise un SupportingInvariant par son GCD
-     */
     void normalizeSupportingInvariant(SupportingInvariant& si, long long gcd_value) const;
 };
 

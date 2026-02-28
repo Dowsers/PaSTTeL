@@ -1,6 +1,11 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <unordered_set>
+#include <atomic>
+#include <cstdint>
+#include <utility>
+#include <numeric>
 
 #include "termination/generic_termination_synthesizer.h"
 #include "utiles.h"
@@ -20,7 +25,8 @@ GenericTerminationSynthesizer::GenericTerminationSynthesizer(
     : lasso_(lasso)
     , template_(template_ptr)
     , solver_(solver)
-    , sig_(num_si_strict, num_si_nonstrict)
+    , num_si_strict_(num_si_strict)
+    , num_si_nonstrict_(num_si_nonstrict)
     , synthesized_(false)
 {
     if (!template_) {
@@ -39,7 +45,7 @@ GenericTerminationSynthesizer::GenericTerminationSynthesizer(
 }
 
 // ============================================================================
-// SYNTHÈSE PRINCIPALE
+// SYNTHESE PRINCIPALE
 // ============================================================================
 
 GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::synthesize() {
@@ -57,52 +63,43 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
     result.description = template_->getDescription();
 
     try {
-        // Étape 1: Initialiser le template et le SIG
+        // Etape 1: Initialiser le template
         if (verbose)
-            std::cout << "\n[1/4] Initializing template and SIG..." << std::endl;
+            std::cout << "\n[1/4] Initializing template..." << std::endl;
         template_->init(lasso_);
-        sig_.init(lasso_);
         if (verbose)
             template_->printInfo();
 
-        // Étape 2: Déclarer les paramètres SMT
+        // Etape 2: Declarer les parametres SMT du template
         if (verbose)
             std::cout << "\n[2/4] Declaring SMT parameters..." << std::endl;
-        auto params = template_->getParameters();
-        declareParameters(params);
-        sig_.declareParameters(solver_);
+        template_->declareParameters(solver_);
 
-        // Étape 3: Appliquer les transformations de Motzkin
+        // Creer les SIGs locaux (un par poly_loop x template_part) et declarer leurs params
+        createLocalSIGs();
+
+        // Etape 3: Construire et appliquer les transformations de Motzkin
         if (verbose)
             std::cout << "\n[3/4] Applying Motzkin transformations..." << std::endl;
 
-        // Construire les prémisses SI pour les templates RF
-        std::vector<std::string> loop_in_vars;
-        for (const auto& var : lasso_.program_vars) {
-            loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
-        }
-        auto si_preconditions = sig_.buildPreconditions(loop_in_vars);
+        // phi3/phi4 : loop /\ SI_premises -> dec/bounded
+        auto phi34_contexts = buildPhi34Contexts();
+        // phi1/phi2 : stem -> SI(x') >= 0 et SI(x) /\ loop -> SI(x') >= 0
+        auto phi12_contexts = buildPhi12Contexts();
 
-        // Collecter tous les contextes Motzkin
         std::vector<RankingTemplate::MotzkinContext> all_contexts;
-
-        auto phi1 = sig_.generatePhi1();
-        auto phi2 = sig_.generatePhi2();
-        auto rf_contexts = template_->getConstraints(si_preconditions);
+        all_contexts.insert(all_contexts.end(), phi34_contexts.begin(), phi34_contexts.end());
+        all_contexts.insert(all_contexts.end(), phi12_contexts.begin(), phi12_contexts.end());
 
         if (verbose) {
-            std::cout << "  φ1 (SI initiation):   " << phi1.size() << std::endl;
-            std::cout << "  φ2 (SI consecution):  " << phi2.size() << std::endl;
-            std::cout << "  RF contexts:          " << rf_contexts.size() << std::endl;
+            std::cout << "  phi34 contexts: " << phi34_contexts.size() << std::endl;
+            std::cout << "  phi12 contexts: " << phi12_contexts.size() << std::endl;
+            std::cout << "  Total Motzkin contexts: " << all_contexts.size() << std::endl;
         }
-
-        all_contexts.insert(all_contexts.end(), phi1.begin(), phi1.end());
-        all_contexts.insert(all_contexts.end(), phi2.begin(), phi2.end());
-        all_contexts.insert(all_contexts.end(), rf_contexts.begin(), rf_contexts.end());
 
         applyMotzkinTransformations(all_contexts);
 
-        // Étape 4: Résoudre avec le solveur SMT
+        // Etape 4: Resoudre avec le solveur SMT
         if (verbose) {
             std::cout << "\n[4/4] Solving with SMT..." << std::endl;
             std::cout << "  Total assertions: " << solver_->getAssertionCount() << std::endl;
@@ -110,21 +107,14 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
 
         result.is_valid = solver_->checkSat();
 
-        // Extraire les paramètres du modèle si SAT
         if (result.is_valid) {
+            auto params = template_->getParameters();
             result.parameters = extractParameters(params);
-            // Paramètres nuls → échec de synthèse (solution triviale)
-            // if (result.parameters.empty()) {
-            //     result.is_valid = false;
-            //     if (verbose)
-            //         std::cout << "  ⚠ Warning: Null coefficients extracted from the model" << std::endl;
-            // } else {
-                if (verbose)
-                    std::cout << "\n✓ SAT - Termination argument found!" << std::endl;
-                extractResults();  // Extrait RankingFunction et SI
-                synthesized_ = true;
-                last_result_ = result;
-            // }
+            if (verbose)
+                std::cout << "\n✓ SAT - Termination argument found!" << std::endl;
+            extractResults();
+            synthesized_ = true;
+            last_result_ = result;
         } else {
             if (verbose)
                 std::cout << "\n✗ UNSAT - No termination argument exists" << std::endl;
@@ -140,68 +130,279 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
 }
 
 // ============================================================================
-// DÉCLARATION DES PARAMÈTRES RF
+// createLocalSIGs -- un SIG par (poly_loop x template_part)
+// Matching Ultimate: new SupportingInvariantGenerator per (loopConj x templatePart)
 // ============================================================================
 
-// TODO: should we add an option on the sort (Int, Real) ? - for now we assume Real
-void GenericTerminationSynthesizer::declareParameters(
-    const RankingTemplate::TemplateParameters& params)
-{
+void GenericTerminationSynthesizer::createLocalSIGs() {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    // Déclarer les paramètres de ranking
-    for (const auto& param : params.ranking_params) {
-        solver_->declareVariable(param, "Real");
-    }
-    if (verbose)
-        std::cout << "  Ranking params: " << params.ranking_params.size() << std::endl;
+    local_sigs_.clear();
 
-    // Déclarer delta si présent
-    if (!params.delta_param.empty()) {
-        solver_->declareVariable(params.delta_param, "Real");
-
-        // Contrainte: δ ≥ 1 empêchant d'avoir des solutions triviales avec RANKING_C_i = 0 et δ = 0
-        std::ostringstream delta_constraint;
-        delta_constraint << "(>= " << params.delta_param << " " << params.delta_value << ")";
-        solver_->addAssertion(delta_constraint.str());
-
+    int num_si = num_si_strict_ + num_si_nonstrict_;
+    if (num_si == 0) {
         if (verbose)
-            std::cout << "  Delta: " << params.delta_param << " (≥ " << params.delta_value << ")" << std::endl;
-    }
-
-    if (verbose)
-        std::cout << "  Total RF parameters: " << params.getTotalParameterCount() << std::endl;
-}
-
-// ============================================================================
-// CONTRAINTES DE NON-TRIVIALITÉ
-// ============================================================================
-
-// TODO: inutile ?
-void GenericTerminationSynthesizer::addNonTrivialityConstraints(
-    const RankingTemplate::TemplateParameters& params)
-{
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    // Au moins un coefficient de ranking non-nul
-    if (params.ranking_params.empty()) {
-        if (verbose)
-            std::cout << "  ⚠ No ranking parameters - skipping non-triviality constraint" << std::endl;
+            std::cout << "  No SIs requested, skipping SIG creation." << std::endl;
         return;
     }
 
-    std::ostringstream constraint;
-    constraint << "(or";
+    int num_loop_polys = static_cast<int>(lasso_.loop.polyhedra.size());
 
-    for (const auto& param : params.ranking_params) {
-        constraint << " (not (= " << param << " 0.0))";
+    // Nombre de parties du template : dec_list.size() + 1 (bounded)
+    // On doit appeler init() pour savoir combien de composantes dec il y a.
+    // On utilise une variable loop_in bidon juste pour compter.
+    std::vector<std::string> loop_in_vars, loop_out_vars;
+    for (const auto& var : lasso_.program_vars) {
+        loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
+        loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
+    }
+    auto dec_list = template_->getConstraintsDec(loop_in_vars, loop_out_vars);
+    int num_template_parts = static_cast<int>(dec_list.size()) + 1; // +1 pour bounded
+
+    // Compteur atomique global pour unicite des noms SMT entre appels (thread-safe)
+    static std::atomic<int> instance_counter{0};
+
+    if (verbose) {
+        std::cout << "  Creating local SIGs: "
+                  << num_loop_polys << " polys x "
+                  << num_template_parts << " template parts x "
+                  << num_si << " SI(s) = "
+                  << (num_loop_polys * num_template_parts) << " SIGs"
+                  << std::endl;
     }
 
-    constraint << ")";
-    solver_->addAssertion(constraint.str());
+    for (int p = 0; p < num_loop_polys; ++p) {
+        for (int m = 0; m < num_template_parts; ++m) {
+            int id = instance_counter++;
+            auto sig = std::make_shared<SupportingInvariantGenerator>(
+                num_si_strict_, num_si_nonstrict_, id);
+            sig->init(lasso_);
+            sig->declareParameters(solver_);
+            local_sigs_.push_back(sig);
+        }
+    }
+}
 
-    if (verbose)
-        std::cout << "  ✓ Ranking function non-triviality constraint added" << std::endl;
+// ============================================================================
+// buildPhi34Contexts -- phi3 (dec) et phi4 (bounded) avec SI locaux
+// Chaque (poly_loop x template_part) utilise son SIG dedié.
+// ============================================================================
+
+std::vector<RankingTemplate::MotzkinContext>
+GenericTerminationSynthesizer::buildPhi34Contexts() const
+{
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+    std::vector<RankingTemplate::MotzkinContext> contexts;
+
+    // Variables SSA de la boucle
+    std::vector<std::string> loop_in_vars, loop_out_vars;
+    for (const auto& var : lasso_.program_vars) {
+        loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
+        loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
+    }
+
+    // Conclusions positives du template (avant negation)
+    auto dec_list = template_->getConstraintsDec(loop_in_vars, loop_out_vars);
+    LinearInequality bounded = template_->getConstraintsBounded(loop_in_vars);
+
+    // Negation logique des conclusions
+    for (auto& dec : dec_list) {
+        dec.negate();
+        dec.strict = !dec.strict;
+        dec.motzkin_coef = LinearInequality::ONE;
+    }
+    bounded.negate();
+    bounded.strict = !bounded.strict;
+    bounded.motzkin_coef = LinearInequality::ONE;
+
+    int num_dec = static_cast<int>(dec_list.size());
+    int num_template_parts = num_dec + 1; // +1 pour bounded
+
+    bool has_sigs = !local_sigs_.empty();
+
+    // phi3 : un contexte par (dec_part x poly_loop)
+    for (int m = 0; m < num_dec; ++m) {
+        int p = 0;
+        for (const auto& polyhedron : lasso_.loop.polyhedra) {
+            RankingTemplate::MotzkinContext ctx;
+            ctx.annotation = "phi3: RF decrement part " + std::to_string(m)
+                           + " (poly " + std::to_string(p) + ")";
+
+            for (const auto& ineq : polyhedron) {
+                ctx.constraints.push_back(ineq);
+            }
+
+            // Premisses SI locales : SI strict -> ANYTHING, non-strict -> ONE
+            if (has_sigs) {
+                int sig_idx = p * num_template_parts + m;
+                const auto& sig = local_sigs_[sig_idx];
+                int num_si = sig->getNumSI();
+                for (int k = 0; k < num_si; ++k) {
+                    LinearInequality si_p = sig->buildSI(k, loop_in_vars);
+                    si_p.strict = sig->isStrict(k);
+                    si_p.motzkin_coef = sig->isStrict(k)
+                        ? LinearInequality::ANYTHING
+                        : LinearInequality::ONE;
+                    ctx.constraints.push_back(si_p);
+                }
+            }
+
+            ctx.constraints.push_back(dec_list[m]);
+
+            if (verbose)
+                std::cout << "  [phi34] " << ctx.annotation << std::endl;
+
+            contexts.push_back(ctx);
+            p++;
+        }
+    }
+
+    // phi4 : un contexte par poly_loop (bounded)
+    {
+        int m_bounded = num_dec; // index de la partie bounded
+        int p = 0;
+        for (const auto& polyhedron : lasso_.loop.polyhedra) {
+            RankingTemplate::MotzkinContext ctx;
+            ctx.annotation = "phi4: RF boundedness (poly " + std::to_string(p) + ")";
+
+            for (const auto& ineq : polyhedron) {
+                ctx.constraints.push_back(ineq);
+            }
+
+            if (has_sigs) {
+                int sig_idx = p * num_template_parts + m_bounded;
+                const auto& sig = local_sigs_[sig_idx];
+                int num_si = sig->getNumSI();
+                for (int k = 0; k < num_si; ++k) {
+                    LinearInequality si_p = sig->buildSI(k, loop_in_vars);
+                    si_p.strict = sig->isStrict(k);
+                    si_p.motzkin_coef = sig->isStrict(k)
+                        ? LinearInequality::ANYTHING
+                        : LinearInequality::ONE;
+                    ctx.constraints.push_back(si_p);
+                }
+            }
+
+            ctx.constraints.push_back(bounded);
+
+            if (verbose)
+                std::cout << "  [phi34] " << ctx.annotation << std::endl;
+
+            contexts.push_back(ctx);
+            p++;
+        }
+    }
+
+    return contexts;
+}
+
+// ============================================================================
+// buildPhi12Contexts -- phi1 (stem initiation) et phi2 (loop consecution)
+// Un contexte par SIG local. Chaque SIG a ses propres variables SMT.
+// ============================================================================
+
+std::vector<RankingTemplate::MotzkinContext>
+GenericTerminationSynthesizer::buildPhi12Contexts() const
+{
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+    std::vector<RankingTemplate::MotzkinContext> contexts;
+
+    if (local_sigs_.empty()) {
+        return contexts;
+    }
+
+    // Variables SSA
+    std::vector<std::string> loop_in_vars, loop_out_vars, stem_out_vars;
+    for (const auto& var : lasso_.program_vars) {
+        loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
+        loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
+        stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
+    }
+
+    // Nombre de parties du template (pour retrouver l'indice poly depuis sig_idx)
+    std::vector<std::string> tmp_in = loop_in_vars, tmp_out = loop_out_vars;
+    auto dec_list = template_->getConstraintsDec(tmp_in, tmp_out);
+    int num_template_parts = static_cast<int>(dec_list.size()) + 1;
+
+    // Pour chaque SIG local (indexé par sig_idx = p * num_template_parts + m)
+    for (int sig_idx = 0; sig_idx < static_cast<int>(local_sigs_.size()); ++sig_idx) {
+        const auto& sig = local_sigs_[sig_idx];
+        int num_si = sig->getNumSI();
+        if (num_si == 0) continue;
+
+        // Retrouver le poly_idx depuis sig_idx
+        int p = sig_idx / num_template_parts;
+
+        // ----------------------------------------------------------------
+        // phi1 : pour chaque polyedre du stem et chaque SI k du SIG local
+        // stem(x,x') -> SI_k(x') >= 0
+        // ----------------------------------------------------------------
+        for (int k = 0; k < num_si; ++k) {
+            int stem_poly_idx = 0;
+            for (const auto& polyhedron : lasso_.stem.polyhedra) {
+                RankingTemplate::MotzkinContext ctx;
+                ctx.annotation = "phi1: SIG" + std::to_string(sig_idx)
+                               + " SI_" + std::to_string(k)
+                               + " initiation (stem poly " + std::to_string(stem_poly_idx) + ")";
+
+                for (const auto& ineq : polyhedron) {
+                    ctx.constraints.push_back(ineq);
+                }
+
+                LinearInequality neg_si = sig->buildSI(k, stem_out_vars);
+                neg_si.negate();
+                neg_si.strict = !sig->isStrict(k);
+                neg_si.motzkin_coef = LinearInequality::ONE;
+                ctx.constraints.push_back(neg_si);
+
+                if (verbose)
+                    std::cout << "  [phi12] " << ctx.annotation << std::endl;
+
+                contexts.push_back(ctx);
+                stem_poly_idx++;
+            }
+        }
+
+        // ----------------------------------------------------------------
+        // phi2 : pour le polyedre de boucle correspondant (poly p) et chaque SI k
+        // SI_k(x) /\ loop(x,x') -> SI_k(x') >= 0
+        // Note: le SIG local est associé au poly_loop p, on utilise ce poly.
+        // ----------------------------------------------------------------
+        for (int k = 0; k < num_si; ++k) {
+            if (p >= static_cast<int>(lasso_.loop.polyhedra.size())) continue;
+            const auto& polyhedron = lasso_.loop.polyhedra[p];
+
+            RankingTemplate::MotzkinContext ctx;
+            ctx.annotation = "phi2: SIG" + std::to_string(sig_idx)
+                           + " SI_" + std::to_string(k)
+                           + " consecution (loop poly " + std::to_string(p) + ")";
+
+            for (const auto& ineq : polyhedron) {
+                ctx.constraints.push_back(ineq);
+            }
+
+            // Premise : SI_k(x) >= 0 (ou > 0 si strict)
+            LinearInequality si_prem = sig->buildSI(k, loop_in_vars);
+            si_prem.strict = sig->isStrict(k);
+            si_prem.motzkin_coef = LinearInequality::ANYTHING;
+            ctx.constraints.push_back(si_prem);
+
+            // Conclusion negee : neg(SI_k(x') >= 0)
+            // Matching Ultimate (LINEAR mode): ZERO_AND_ONE
+            LinearInequality neg_si_prime = sig->buildSI(k, loop_out_vars);
+            neg_si_prime.negate();
+            neg_si_prime.strict = !sig->isStrict(k);
+            neg_si_prime.motzkin_coef = LinearInequality::ZERO_AND_ONE;
+            ctx.constraints.push_back(neg_si_prime);
+
+            if (verbose)
+                std::cout << "  [phi12] " << ctx.annotation << std::endl;
+
+            contexts.push_back(ctx);
+        }
+    }
+
+    return contexts;
 }
 
 // ============================================================================
@@ -216,41 +417,37 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
     if (verbose)
         std::cout << "  Motzkin contexts: " << contexts.size() << std::endl;
 
-    // Construire la liste des variables à éliminer (x et x' — loop et stem)
-    std::vector<std::string> all_vars;
+    std::unordered_set<std::string> all_vars;
 
     for (const auto& [var_prog, ssa_in] : lasso_.loop.var_to_ssa_in) {
-        all_vars.push_back(ssa_in);
+        all_vars.insert(ssa_in);
     }
     for (const auto& [var_prog, ssa_out] : lasso_.loop.var_to_ssa_out) {
-        all_vars.push_back(ssa_out);
+        all_vars.insert(ssa_out);
     }
     for (const auto& [var_prog, ssa_in] : lasso_.stem.var_to_ssa_in) {
-        all_vars.push_back(ssa_in);
+        all_vars.insert(ssa_in);
     }
     for (const auto& [var_prog, ssa_out] : lasso_.stem.var_to_ssa_out) {
-        all_vars.push_back(ssa_out);
+        all_vars.insert(ssa_out);
     }
 
-    // Ajouter les variables d'abstraction de fonctions (uf__f__0, uf__keccak256__1, etc.)
     for (const auto& abs : lasso_.function_abstractions) {
-        all_vars.push_back(abs.fresh_var);
+        all_vars.insert(abs.fresh_var);
     }
 
-    // Debug: afficher quelques contextes
     if (verbose) {
         std::cout << "\n  First few contexts:" << std::endl;
-        int display_count = std::min(5, (int)contexts.size());
+        int display_count = std::min(6, (int)contexts.size());
         for (int i = 0; i < display_count; ++i) {
             std::cout << "  [" << i << "] " << contexts[i].annotation << std::endl;
             std::cout << "      Constraints: " << contexts[i].constraints.size() << std::endl;
         }
-        if (contexts.size() > 5) {
-            std::cout << "  ... and " << (contexts.size() - 5) << " more" << std::endl;
+        if (contexts.size() > 6) {
+            std::cout << "  ... and " << (contexts.size() - 6) << " more" << std::endl;
         }
     }
 
-    // Appliquer Motzkin sur chaque contexte
     for (const auto& ctx : contexts) {
         MotzkinTransformation motzkin;
         motzkin.addConstraintsToSolver(
@@ -260,7 +457,6 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
             ctx.annotation);
     }
 
-    // Réinitialiser le compteur Motzkin pour être déterministe
     MotzkinTransformation::init_counter();
 
     if (verbose)
@@ -268,7 +464,7 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
 }
 
 // ============================================================================
-// EXTRACTION DES RÉSULTATS
+// EXTRACTION DES RESULTATS
 // ============================================================================
 
 std::map<std::string, double> GenericTerminationSynthesizer::extractParameters(
@@ -282,7 +478,6 @@ std::map<std::string, double> GenericTerminationSynthesizer::extractParameters(
     std::map<std::string, double> values;
     bool has_non_zero_coeff_param = false;
 
-    // Extraire les paramètres de ranking
     for (const auto& param : params.ranking_params) {
         double value = solver_->getValue(param);
         values[param] = value;
@@ -292,18 +487,19 @@ std::map<std::string, double> GenericTerminationSynthesizer::extractParameters(
     }
 
     if (!has_non_zero_coeff_param) {
-        return {};  // Tous les paramètres sont nuls - retourner une map vide
+        return {};
     }
 
-    // Extraire les paramètres de SI (depuis SIG)
-    for (const auto& param : sig_.getSIParams()) {
-        double value = solver_->getValue(param);
-        values[param] = value;
-        if (verbose)
-            std::cout << "│ " << param << " = " << value << std::endl;
+    // Extraire les params SI du premier SIG (representatif)
+    if (!local_sigs_.empty()) {
+        for (const auto& param : local_sigs_.front()->getSIParams()) {
+            double value = solver_->getValue(param);
+            values[param] = value;
+            if (verbose)
+                std::cout << "│ " << param << " = " << value << std::endl;
+        }
     }
 
-    // Extraire delta si présent
     if (!params.delta_param.empty()) {
         double value = solver_->getValue(params.delta_param);
         values[params.delta_param] = value;
@@ -333,40 +529,46 @@ long long GenericTerminationSynthesizer::gcd(long long a, long long b) const {
 }
 
 long long GenericTerminationSynthesizer::computeGCD(
-    const std::vector<double>& coefficients,
-    double constant) const
+    const std::vector<double>& /*coefficients*/,
+    double /*constant*/) const
 {
-    const long long SCALE = 1000000;
-    std::vector<long long> int_coeffs;
+    return 1; // Remplacé par normalizeFromRationals
+}
 
-    for (double c : coefficients) {
-        if (std::abs(c) > 1e-9) {
-            long long int_val = static_cast<long long>(std::round(c * SCALE));
-            if (int_val != 0) {
-                int_coeffs.push_back(std::abs(int_val));
-            }
-        }
+// Normalise une liste de rationnels (num, den) en entiers simplifiés.
+// Retourne le vecteur des numérateurs normalisés et le dénominateur commun utilisé.
+static std::vector<long long> rationalListToIntegers(
+    const std::vector<std::pair<int64_t, int64_t>>& rationals)
+{
+    if (rationals.empty()) return {};
+
+    // LCM de tous les dénominateurs
+    long long lcm = 1;
+    for (const auto& [num, den] : rationals) {
+        if (den == 0) continue;
+        long long g = std::gcd(std::abs(lcm), std::abs(den));
+        lcm = lcm / g * den;
+    }
+    if (lcm < 0) lcm = -lcm;
+
+    // Multiplier chaque numérateur par lcm/den
+    std::vector<long long> integers;
+    integers.reserve(rationals.size());
+    for (const auto& [num, den] : rationals) {
+        integers.push_back(num * (lcm / den));
     }
 
-    if (std::abs(constant) > 1e-9) {
-        long long int_const = static_cast<long long>(std::round(constant * SCALE));
-        if (int_const != 0) {
-            int_coeffs.push_back(std::abs(int_const));
-        }
+    // GCD de tous les entiers non nuls
+    long long g = 0;
+    for (long long v : integers) {
+        if (v != 0) g = std::gcd(g, std::abs(v));
     }
+    if (g == 0) g = 1;
 
-    if (int_coeffs.empty()) {
-        return 1;
-    }
+    // Diviser par le GCD
+    for (auto& v : integers) v /= g;
 
-    long long result = int_coeffs[0];
-    for (size_t i = 1; i < int_coeffs.size(); ++i) {
-        result = gcd(result, int_coeffs[i]);
-        if (result == 1) break;
-    }
-
-    result = result / SCALE;
-    return (result == 0) ? 1 : result;
+    return integers;
 }
 
 // ============================================================================
@@ -378,9 +580,7 @@ void GenericTerminationSynthesizer::normalizeRankingFunction(
     long long gcd_value) const
 {
     if (gcd_value <= 1) return;
-
     double divisor = static_cast<double>(gcd_value);
-
     for (auto& [var, coef] : rf.coefficients) {
         coef /= divisor;
     }
@@ -393,9 +593,7 @@ void GenericTerminationSynthesizer::normalizeSupportingInvariant(
     long long gcd_value) const
 {
     if (gcd_value <= 1) return;
-
     double divisor = static_cast<double>(gcd_value);
-
     for (auto& [var, coef] : si.coefficients) {
         coef /= divisor;
     }
@@ -403,7 +601,7 @@ void GenericTerminationSynthesizer::normalizeSupportingInvariant(
 }
 
 // ============================================================================
-// EXTRACTION DES RÉSULTATS STRUCTURÉS
+// EXTRACTION DES RESULTATS STRUCTURES
 // ============================================================================
 
 void GenericTerminationSynthesizer::extractResults()
@@ -411,13 +609,9 @@ void GenericTerminationSynthesizer::extractResults()
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     if (verbose)
-        std::cout << "\n╭─ Extraction des résultats ────────────────╮" << std::endl;
+        std::cout << "\n╭─ Extraction des resultats ────────────────╮" << std::endl;
 
     size_t num_vars = lasso_.program_vars.size();
-
-    // ========================================================================
-    // PARTIE 1: DÉLÉGATION AU TEMPLATE — chaque template sait extraire ses composantes
-    // ========================================================================
 
     termination_argument_.components =
         template_->extractRankingFunctions(solver_, lasso_.program_vars);
@@ -425,44 +619,64 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "  ✓ Composantes extraites : " << termination_argument_.components.size() << std::endl;
 
-    // ========================================================================
-    // PARTIE 2: NORMALISATION GCD — une passe par composante
-    // ========================================================================
-
     if (verbose)
         std::cout << "\n   Normalisation GCD par composante:" << std::endl;
 
-    for (size_t ci = 0; ci < termination_argument_.components.size(); ++ci) {
-        auto& rf = termination_argument_.components[ci];
-        std::vector<double> raw_coeffs;
-        for (const auto& [var, coef] : rf.coefficients) {
-            raw_coeffs.push_back(coef);
+    // Normalisation rationnelle : recuperer les params RF et delta
+    {
+        auto params = template_->getParameters();
+        // Collecter tous les rationnels : [ranking_params..., delta]
+        std::vector<std::pair<int64_t, int64_t>> all_rationals;
+        for (const auto& p : params.ranking_params) {
+            all_rationals.push_back(solver_->getRationalValue(p));
         }
-        long long g = computeGCD(raw_coeffs, rf.constant);
-        if (verbose)
-            std::cout << "    f" << ci << ": GCD = " << g;
-        if (g > 1) {
-            normalizeRankingFunction(rf, g);
-            if (verbose) std::cout << " (normalisé)";
+        if (!params.delta_param.empty()) {
+            all_rationals.push_back(solver_->getRationalValue(params.delta_param));
         }
-        if (verbose)
-            std::cout << " → " << rf.toString(lasso_.program_vars) << std::endl;
+        std::vector<long long> integers = rationalListToIntegers(all_rationals);
+
+        // Redistribuer les entiers dans les composantes RF
+        // params.ranking_params : N_vars+1 params par composante (coefs + const)
+        size_t num_comps = termination_argument_.components.size();
+        if (!integers.empty() && !params.ranking_params.empty()) {
+            size_t params_per_comp = params.ranking_params.size() / num_comps;
+            for (size_t ci = 0; ci < num_comps; ++ci) {
+                auto& rf = termination_argument_.components[ci];
+                size_t base = ci * params_per_comp;
+                size_t nv = lasso_.program_vars.size();
+                for (size_t i = 0; i < nv && base + i < integers.size(); ++i) {
+                    rf.coefficients[lasso_.program_vars[i]] = static_cast<double>(integers[base + i]);
+                }
+                if (base + nv < integers.size()) {
+                    rf.constant = static_cast<double>(integers[base + nv]);
+                }
+                // delta : dernier element si present
+                if (!params.delta_param.empty() && integers.size() == all_rationals.size()) {
+                    rf.delta = static_cast<double>(integers.back());
+                }
+                if (verbose)
+                    std::cout << "    f" << ci << " (normalized) -> " << rf.toString(lasso_.program_vars) << std::endl;
+            }
+        }
     }
 
-    // Composante primaire : rétrocompatibilité avec ranking_function
     if (!termination_argument_.components.empty()) {
         termination_argument_.ranking_function = termination_argument_.components[0];
     }
 
-    // ========================================================================
-    // PARTIE 3: EXTRACTION BRUTE - SUPPORTING INVARIANTS (via SIG)
-    // ========================================================================
-
     termination_argument_.supporting_invariants.clear();
 
-    int num_si = sig_.getNumSI();
-    auto si_is_strict = sig_.getSIIsStrict();
-    auto si_params = sig_.getSIParams();
+    // Extraire les SI du premier SIG local (representatif)
+    if (local_sigs_.empty()) {
+        if (verbose)
+            std::cout << "╰───────────────────────────────────────────╯\n" << std::endl;
+        return;
+    }
+
+    const auto& rep_sig = local_sigs_.front();
+    int num_si = rep_sig->getNumSI();
+    auto si_is_strict = rep_sig->getSIIsStrict();
+    auto si_params = rep_sig->getSIParams();
     int params_per_si = static_cast<int>(num_vars) + 1;
 
     if (verbose)
@@ -477,34 +691,28 @@ void GenericTerminationSynthesizer::extractResults()
             si.is_strict = false;
         }
 
-        std::vector<double> si_raw_coeffs;
         int start_idx = si_idx * params_per_si;
 
+        // Collecte des rationnels exacts pour ce SI
+        std::vector<std::pair<int64_t, int64_t>> si_rationals;
         for (size_t i = 0; i < num_vars && start_idx + (int)i < (int)si_params.size(); ++i) {
-            double coef = solver_->getValue(si_params[start_idx + i]);
-            si.coefficients[lasso_.program_vars[i]] = coef;
-            si_raw_coeffs.push_back(coef);
+            si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + i]));
         }
-
-        double si_raw_const = 0.0;
         if (start_idx + (int)num_vars < (int)si_params.size()) {
-            si_raw_const = solver_->getValue(si_params[start_idx + num_vars]);
-            si.constant = si_raw_const;
+            si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + num_vars]));
         }
 
-        long long si_gcd = computeGCD(si_raw_coeffs, si_raw_const);
+        std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
 
-        if (verbose)
-            std::cout << "    SI_" << si_idx << ": GCD = " << si_gcd;
-
-        if (si_gcd > 1) {
-            normalizeSupportingInvariant(si, si_gcd);
-            if (verbose)
-                std::cout << " (normalisé)";
+        for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
+            si.coefficients[lasso_.program_vars[i]] = static_cast<double>(si_integers[i]);
+        }
+        if (num_vars < si_integers.size()) {
+            si.constant = static_cast<double>(si_integers[num_vars]);
         }
 
         if (verbose) {
-            std::cout << " → " << si.toString(lasso_.program_vars);
+            std::cout << " -> " << si.toString(lasso_.program_vars);
             std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
         }
         termination_argument_.supporting_invariants.push_back(si);
@@ -527,7 +735,7 @@ GenericTerminationSynthesizer::getTerminationArgument() const {
 }
 
 // ============================================================================
-// AFFICHAGE DES RÉSULTATS
+// AFFICHAGE DES RESULTATS
 // ============================================================================
 
 void GenericTerminationSynthesizer::printResults(const SynthesisResult& result) const {
@@ -554,7 +762,7 @@ void GenericTerminationSynthesizer::printResults(const SynthesisResult& result) 
             else
                 std::cout << "  f(x) = ";
             std::cout << rf.toString(lasso_.program_vars) << std::endl;
-            std::cout << "  δ" << (multi ? std::to_string(ci) : "") << " = " << rf.delta << std::endl;
+            std::cout << "  delta" << (multi ? std::to_string(ci) : "") << " = " << rf.delta << std::endl;
         }
     }
 

@@ -1,30 +1,29 @@
 #ifndef AFFINE_TEMPLATE_REFACTORED_H
 #define AFFINE_TEMPLATE_REFACTORED_H
 
+#include <memory>
 #include "templates/ranking_template.h"
+#include "termination/affine_function_generator.h"
 
 /**
- * @brief Template Affine pour ranking functions linéaires
+ * @brief Template Affine pour ranking functions lineaires
  *
- * Génère les contraintes RF (sans SI) :
- * φ3: loop(x,x') ∧ Σ SI(x) ≥ 0 → f(x) - f(x') ≥ δ   (Decrement)
- * φ4: loop(x,x') ∧ Σ SI(x) ≥ 0 → f(x) ≥ 0             (Boundedness)
+ * Genere les conclusions positives (avant negation) :
+ * dec  : f(x) - f(x') - delta > 0   (strict)
+ * bound: f(x) >= 0                   (non-strict)
  *
- * Les SI (φ1/φ2) sont gérés par SupportingInvariantGenerator.
- * Les si_preconditions sont injectées via getConstraints(si_preconditions).
+ * Les SI (phi1/phi2) et la construction des contextes Motzkin sont
+ * deleguees a GenericTerminationSynthesizer::buildConstraints().
  */
 class AffineTemplate : public RankingTemplate {
 public:
-    explicit AffineTemplate(int delta_value = 1);
+    explicit AffineTemplate(int delta_value = 0);
 
     // ========================================================================
-    // IMPLÉMENTATION DE L'INTERFACE RankingTemplate
+    // INTERFACE RankingTemplate -- methodes abstraites
     // ========================================================================
 
     void init(const LassoProgram& lasso) override;
-
-    std::vector<MotzkinContext> getConstraints(
-        const std::vector<LinearInequality>& si_preconditions = {}) const override;
 
     TemplateParameters getParameters() const override;
 
@@ -35,33 +34,43 @@ public:
     std::string getName() const override { return "Affine"; }
 
     std::string getDescription() const override {
-        return "Linear ranking function: f(x) = c⊺·x + c₀";
+        return "Linear ranking function: f(x) = c*x + c0";
     }
 
     void printInfo() const override;
 
+    // ========================================================================
+    // NOUVELLE INTERFACE -- matching Ultimate/lassoranker
+    // ========================================================================
+
+    /**
+     * @brief Conclusion positive de decroissance : f(x) - f(x')  >= delta
+     * (strict=false, motzkin_coef=ONE)
+     */
+    std::vector<LinearInequality> getConstraintsDec(
+        const std::vector<std::string>& in_vars,
+        const std::vector<std::string>& out_vars) const override;
+
+    /**
+     * @brief Conclusion positive de bornage : f(x) >= 0
+     * (strict=false, motzkin_coef=ONE)
+     */
+    LinearInequality getConstraintsBounded(
+        const std::vector<std::string>& in_vars) const override;
+
+    /**
+     * @brief Declare les parametres SMT (coefficients + delta) dans le solveur
+     */
+    void declareParameters(std::shared_ptr<SMTSolver> solver) const override;
+
 private:
     int delta_value_;
+    std::string delta_param_;
 
     LassoProgram lasso_;
     bool initialized_;
 
-    std::vector<std::string> ranking_params_;
-    std::string delta_param_;
-
-    // ========================================================================
-    // GÉNÉRATION DES CONTRAINTES RF
-    // ========================================================================
-
-    std::vector<MotzkinContext> generatePhi3_RankingDecrement(
-        const std::vector<LinearInequality>& si_preconditions) const;
-
-    std::vector<MotzkinContext> generatePhi4_RankingBoundedness(
-        const std::vector<LinearInequality>& si_preconditions) const;
-
-    LinearInequality buildRankingFunction(const std::vector<std::string>& vars) const;
-
-    void initializeParameters();
+    std::unique_ptr<AffineFunctionGenerator> generator_;
 };
 
 #endif // AFFINE_TEMPLATE_REFACTORED_H

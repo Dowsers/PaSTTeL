@@ -1,30 +1,31 @@
 #ifndef NESTED_TEMPLATE_H
 #define NESTED_TEMPLATE_H
 
+#include <memory>
+#include <vector>
 #include "templates/ranking_template.h"
+#include "termination/affine_function_generator.h"
 
 /**
- * @brief Template Nested pour ranking functions à k composantes
+ * @brief Template Nested pour ranking functions a k composantes
  *
- * Génère les contraintes RF (sans SI) :
- * φ0: loop(x,x') ∧ Σ SI(x) ≥ 0 → f₀(x) - f₀(x') ≥ δ
- * φᵢ: loop(x,x') ∧ Σ SI(x) ≥ 0 → fᵢ(x) - fᵢ(x') + fᵢ₋₁(x) > 0  (i > 0)
- * φₙ: loop(x,x') ∧ Σ SI(x) ≥ 0 → fₙ₋₁(x) ≥ 0
+ * Genere les conclusions positives (avant negation) :
+ * i=0 : f0(x) - f0(x') - delta > 0            (strict)
+ * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0       (strict, verifie dans Ultimate)
+ * bound: f_{n-1}(x) >= 0                        (non-strict)
  *
- * Les SI (φ1/φ2) sont gérés par SupportingInvariantGenerator.
+ * Les SI (phi1/phi2) et la construction des contextes Motzkin sont
+ * deleguees a GenericTerminationSynthesizer::buildConstraints().
  */
 class NestedTemplate : public RankingTemplate {
 public:
     explicit NestedTemplate(int num_components = 2, int delta_value = 1);
 
     // ========================================================================
-    // IMPLÉMENTATION DE L'INTERFACE RankingTemplate
+    // INTERFACE RankingTemplate -- methodes abstraites
     // ========================================================================
 
     void init(const LassoProgram& lasso) override;
-
-    std::vector<MotzkinContext> getConstraints(
-        const std::vector<LinearInequality>& si_preconditions = {}) const override;
 
     TemplateParameters getParameters() const override;
 
@@ -42,33 +43,41 @@ public:
 
     int getNumComponents() const { return num_components_; }
 
+    // ========================================================================
+    // NOUVELLE INTERFACE -- matching Ultimate/lassoranker
+    // ========================================================================
+
+    /**
+     * @brief num_components conclusions positives de decroissance (non negees).
+     *
+     * i=0 : f0(x) - f0(x')  >= delta   (strict=false, ONE)
+     * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0  (strict=true, ONE)
+     */
+    std::vector<LinearInequality> getConstraintsDec(
+        const std::vector<std::string>& in_vars,
+        const std::vector<std::string>& out_vars) const override;
+
+    /**
+     * @brief Conclusion positive de bornage : f_{n-1}(x) >= 0
+     * (strict=false, motzkin_coef=ONE)
+     */
+    LinearInequality getConstraintsBounded(
+        const std::vector<std::string>& in_vars) const override;
+
+    /**
+     * @brief Declare les parametres SMT (tous coefficients + delta) dans le solveur
+     */
+    void declareParameters(std::shared_ptr<SMTSolver> solver) const override;
+
 private:
     int num_components_;
     int delta_value_;
+    std::string delta_param_;
 
     LassoProgram lasso_;
     bool initialized_;
 
-    std::vector<std::vector<std::string>> component_params_;
-    std::string delta_param_;
-
-    // ========================================================================
-    // GÉNÉRATION DES CONTRAINTES RF
-    // ========================================================================
-
-    std::vector<MotzkinContext> generatePhi0_Decrement0(
-        const std::vector<LinearInequality>& si_preconditions) const;
-
-    std::vector<MotzkinContext> generatePhiI_DecrementI(
-        int i,
-        const std::vector<LinearInequality>& si_preconditions) const;
-
-    std::vector<MotzkinContext> generatePhiN_Boundedness(
-        const std::vector<LinearInequality>& si_preconditions) const;
-
-    LinearInequality buildComponent(int idx, const std::vector<std::string>& vars) const;
-
-    void initializeParameters();
+    std::vector<std::unique_ptr<AffineFunctionGenerator>> generators_;
 };
 
 #endif // NESTED_TEMPLATE_H

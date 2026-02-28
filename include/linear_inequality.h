@@ -21,6 +21,7 @@ public:
     
     LinearInequality();
     LinearInequality(const LinearInequality& other);
+    LinearInequality& operator=(const LinearInequality&) = default;
     
     // Ajout/modification de coefficients
     void setCoefficient(const std::string& var, const AffineTerm& coef);

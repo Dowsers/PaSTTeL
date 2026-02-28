@@ -5,6 +5,7 @@
 #include <string>
 #include <set>
 #include <memory>
+#include <unordered_set>
 
 #include "linear_inequality.h"
 #include "smtsolvers/SMTSolverInterface.h"
@@ -61,7 +62,7 @@ public:
      */
     void addConstraintsToSolver(
         const std::vector<LinearInequality>& constraints,
-        const std::vector<std::string>& program_vars,
+        const std::unordered_set<std::string>& program_vars,
         std::shared_ptr<SMTSolver> solver,
         const std::string& annotation = "");
     static void init_counter();
@@ -69,7 +70,7 @@ public:
 private:
     // État interne
     std::vector<LinearInequality> m_inequalities;
-    std::set<std::string> m_program_vars;
+    std::unordered_set<std::string> m_program_vars;
     std::vector<std::string> m_motzkin_coefficients;  // λ_0, λ_1, ..., λ_n
     
     // Compteur global pour noms uniques

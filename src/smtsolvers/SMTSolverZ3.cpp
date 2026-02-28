@@ -21,6 +21,9 @@ SMTSolverZ3::SMTSolverZ3(bool verbose)
     
     // Configuration du solveur pour optimiser les performances
     // z3::params params(m_context);
+    // params.set("logic", "QF_LRA");
+    // params.set("auto_config", false);
+    // m_solver.set(params);
     // params.set("timeout", 300000u);  // 5 minutes timeout
     // m_solver.set(params);
 }
@@ -313,6 +316,41 @@ double SMTSolverZ3::getValue(const std::string& var_name) {
     }
     
     return result;
+}
+
+std::pair<int64_t, int64_t> SMTSolverZ3::getRationalValue(const std::string& var_name) {
+    if (!variableExists(var_name)) {
+        throw std::runtime_error("SMTSolverZ3::getRationalValue() : variable '" + var_name + "' non declaree");
+    }
+    z3::model model = m_solver.get_model();
+    z3::expr var = getVariable(var_name);
+    z3::expr value = model.eval(var, true);
+
+    if (value.is_int() && value.is_numeral()) {
+        return { value.get_numeral_int64(), 1 };
+    } else if (value.is_real() && value.is_numeral()) {
+        try {
+            int64_t num = value.numerator().get_numeral_int64();
+            int64_t den = value.denominator().get_numeral_int64();
+            if (den < 0) { num = -num; den = -den; }
+            return { num, den };
+        } catch (...) {
+            std::string s = value.to_string();
+            size_t slash = s.find('/');
+            if (slash != std::string::npos) {
+                int64_t num = std::stoll(s.substr(0, slash));
+                int64_t den = std::stoll(s.substr(slash + 1));
+                if (den < 0) { num = -num; den = -den; }
+                return { num, den };
+            }
+            return { static_cast<int64_t>(std::round(std::stod(s))), 1 };
+        }
+    }
+    // Fallback
+    double v = getValue(var_name);
+    int64_t den = 1;
+    while (std::abs(v * den - std::round(v * den)) > 1e-9 && den < (1LL << 20)) den *= 2;
+    return { static_cast<int64_t>(std::round(v * den)), den };
 }
 
 // ============================================================================

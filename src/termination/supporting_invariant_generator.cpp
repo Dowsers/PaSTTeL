@@ -5,10 +5,11 @@
 // ============================================================================
 
 SupportingInvariantGenerator::SupportingInvariantGenerator(
-    int num_si_strict, int num_si_nonstrict)
+    int num_si_strict, int num_si_nonstrict, int instance_id)
     : num_strict_(num_si_strict)
     , num_nonstrict_(num_si_nonstrict)
     , num_si_(num_si_strict + num_si_nonstrict)
+    , instance_id_(instance_id)
     , initialized_(false)
 {}
 
@@ -18,86 +19,66 @@ SupportingInvariantGenerator::SupportingInvariantGenerator(
 
 void SupportingInvariantGenerator::init(const LassoProgram& lasso) {
     lasso_ = lasso;
-    initializeParameters();
+    initializeGenerators();
     initialized_ = true;
 }
 
-void SupportingInvariantGenerator::initializeParameters() {
+void SupportingInvariantGenerator::initializeGenerators() {
     int n = static_cast<int>(lasso_.program_vars.size());
-    si_params_.clear();
-
-    for (int si_idx = 0; si_idx < num_si_; ++si_idx) {
-        std::vector<std::string> si_coeffs;
-        for (int i = 0; i < n; ++i) {
-            si_coeffs.push_back(
-                "SUP_INVAR_" + std::to_string(si_idx) + "_" + std::to_string(i));
-        }
-        si_coeffs.push_back("SUP_INVAR_" + std::to_string(si_idx) + "_const");
-        si_params_.push_back(si_coeffs);
+    generators_.clear();
+    for (int k = 0; k < num_si_; ++k) {
+        // Si instance_id_ >= 0 : "SUP_INVAR_<instance_id>_<k>"  (SIG local, unique)
+        // Sinon               : "SUP_INVAR_<k>"                  (ancien schema, compatibilite)
+        std::string prefix = (instance_id_ >= 0)
+            ? "SUP_INVAR_" + std::to_string(instance_id_) + "_" + std::to_string(k)
+            : "SUP_INVAR_" + std::to_string(k);
+        generators_.push_back(std::make_unique<AffineFunctionGenerator>(prefix, n));
     }
 }
 
 // ============================================================================
-// DÉCLARATION DES PARAMÈTRES SMT
+// DECLARATION DES PARAMETRES SMT
 // ============================================================================
 
 void SupportingInvariantGenerator::declareParameters(
     std::shared_ptr<SMTSolver> solver) const
 {
-    for (const auto& si_param_set : si_params_) {
-        for (const auto& param : si_param_set) {
-            solver->declareVariable(param, "Real");
-        }
+    for (const auto& gen : generators_) {
+        gen->declareParameters(solver);
     }
 }
 
 // ============================================================================
-// CONSTRUCTION D'UN TERME SI
+// CONSTRUCTION D'UN TERME SI (PUBLIC -- pour buildConstraints du synthesizer)
 // ============================================================================
 
 LinearInequality SupportingInvariantGenerator::buildSI(
     int si_idx,
-    const std::vector<std::string>& vars,
-    bool is_strict) const
+    const std::vector<std::string>& vars) const
 {
-    LinearInequality result;
-    result.strict = is_strict;
-    result.motzkin_coef = LinearInequality::ANYTHING;
-
-    const auto& si_coeffs = si_params_[si_idx];
-
-    for (size_t i = 0; i < vars.size(); ++i) {
-        AffineTerm coef;
-        coef.coefficients[si_coeffs[i]] = 1.0;
-        coef.constant = 0.0;
-        result.setCoefficient(vars[i], coef);
-    }
-
-    AffineTerm const_term;
-    const_term.coefficients[si_coeffs.back()] = 1.0;
-    const_term.constant = 0.0;
-    result.constant = const_term;
-
-    return result;
+    // generate() retourne strict=false, motzkin_coef=ANYTHING par defaut
+    return generators_[si_idx]->generate(vars);
 }
 
 // ============================================================================
-// PRÉMISSES POUR LES TEMPLATES RF
+// PREMISSES POUR LES TEMPLATES RF
 // ============================================================================
 
 std::vector<LinearInequality> SupportingInvariantGenerator::buildPreconditions(
     const std::vector<std::string>& vars) const
 {
     std::vector<LinearInequality> preconditions;
-    for (int si_idx = 0; si_idx < num_si_; ++si_idx) {
-        bool is_strict = (si_idx < num_strict_);
-        preconditions.push_back(buildSI(si_idx, vars, is_strict));
+    for (int k = 0; k < num_si_; ++k) {
+        LinearInequality li = buildSI(k, vars);
+        li.strict = isStrict(k);
+        // motzkin_coef = ANYTHING (default from generate())
+        preconditions.push_back(li);
     }
     return preconditions;
 }
 
 // ============================================================================
-// φ1 : STEM INITIATION — stem(x,x') → SI(x') ≥ 0
+// phi1 : STEM INITIATION -- stem(x,x') -> SI(x') >= 0
 // ============================================================================
 
 std::vector<RankingTemplate::MotzkinContext>
@@ -105,13 +86,11 @@ SupportingInvariantGenerator::generatePhi1() const
 {
     std::vector<RankingTemplate::MotzkinContext> contexts;
 
-    for (int si_idx = 0; si_idx < num_si_; ++si_idx) {
-        bool is_strict = (si_idx < num_strict_);
-
+    for (int k = 0; k < num_si_; ++k) {
         int poly_idx = 0;
         for (const auto& polyhedron : lasso_.stem.polyhedra) {
             RankingTemplate::MotzkinContext ctx;
-            ctx.annotation = "φ1: SI_" + std::to_string(si_idx)
+            ctx.annotation = "phi1: SI_" + std::to_string(k)
                            + " initiation (poly " + std::to_string(poly_idx) + ")";
 
             for (const auto& ineq : polyhedron) {
@@ -123,10 +102,10 @@ SupportingInvariantGenerator::generatePhi1() const
                 stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
             }
 
-            // ¬(SI(x') ≥ 0) = -SI(x') > 0
-            LinearInequality neg_si = buildSI(si_idx, stem_out_vars, is_strict);
+            // neg(SI(x') >= 0) = -SI(x') > 0  (or -SI(x') >= 0 if SI is strict)
+            LinearInequality neg_si = buildSI(k, stem_out_vars);
             neg_si.negate();
-            neg_si.strict = !is_strict;
+            neg_si.strict = !isStrict(k);
             neg_si.motzkin_coef = LinearInequality::ONE;
 
             ctx.constraints.push_back(neg_si);
@@ -139,7 +118,7 @@ SupportingInvariantGenerator::generatePhi1() const
 }
 
 // ============================================================================
-// φ2 : LOOP CONSECUTION — SI(x) ∧ loop(x,x') → SI(x') ≥ 0
+// phi2 : LOOP CONSECUTION -- SI(x) /\ loop(x,x') -> SI(x') >= 0
 // ============================================================================
 
 std::vector<RankingTemplate::MotzkinContext>
@@ -147,13 +126,11 @@ SupportingInvariantGenerator::generatePhi2() const
 {
     std::vector<RankingTemplate::MotzkinContext> contexts;
 
-    for (int si_idx = 0; si_idx < num_si_; ++si_idx) {
-        bool is_strict = (si_idx < num_strict_);
-
+    for (int k = 0; k < num_si_; ++k) {
         int poly_idx = 0;
         for (const auto& polyhedron : lasso_.loop.polyhedra) {
             RankingTemplate::MotzkinContext ctx;
-            ctx.annotation = "φ2: SI_" + std::to_string(si_idx)
+            ctx.annotation = "phi2: SI_" + std::to_string(k)
                            + " consecution (poly " + std::to_string(poly_idx) + ")";
 
             for (const auto& ineq : polyhedron) {
@@ -166,15 +143,17 @@ SupportingInvariantGenerator::generatePhi2() const
                 loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
             }
 
-            // Prémisse : SI(x) ≥ 0
-            LinearInequality si_precond = buildSI(si_idx, loop_in_vars, is_strict);
+            // Premise : SI(x) >= 0 (or > 0 if strict)
+            LinearInequality si_precond = buildSI(k, loop_in_vars);
+            si_precond.strict = isStrict(k);
+            si_precond.motzkin_coef = LinearInequality::ANYTHING;
             ctx.constraints.push_back(si_precond);
 
-            // Conclusion inversée : ¬(SI(x') ≥ 0)
-            LinearInequality neg_si_prime = buildSI(si_idx, loop_out_vars, is_strict);
+            // Negated conclusion : neg(SI(x') >= 0)
+            LinearInequality neg_si_prime = buildSI(k, loop_out_vars);
             neg_si_prime.negate();
-            neg_si_prime.strict = !is_strict;
-            neg_si_prime.motzkin_coef = LinearInequality::ONE;
+            neg_si_prime.strict = !isStrict(k);
+            neg_si_prime.motzkin_coef = LinearInequality::ZERO_AND_ONE;  // critical
             ctx.constraints.push_back(neg_si_prime);
 
             contexts.push_back(ctx);
@@ -191,18 +170,17 @@ SupportingInvariantGenerator::generatePhi2() const
 
 std::vector<std::string> SupportingInvariantGenerator::getSIParams() const {
     std::vector<std::string> flat;
-    for (const auto& si_param_set : si_params_) {
-        for (const auto& param : si_param_set) {
-            flat.push_back(param);
-        }
+    for (const auto& gen : generators_) {
+        const auto& names = gen->getParamNames();
+        flat.insert(flat.end(), names.begin(), names.end());
     }
     return flat;
 }
 
 std::vector<bool> SupportingInvariantGenerator::getSIIsStrict() const {
     std::vector<bool> result;
-    for (int si_idx = 0; si_idx < num_si_; ++si_idx) {
-        result.push_back(si_idx < num_strict_);
+    for (int k = 0; k < num_si_; ++k) {
+        result.push_back(isStrict(k));
     }
     return result;
 }

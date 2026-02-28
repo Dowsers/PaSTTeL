@@ -418,21 +418,6 @@ void TerminationAnalyzer::printResult(const TerminationResult& result) const {
             }
             break;
 
-        case TerminationResult::Type::MODEL_CHECKING:
-            std::cout << "TERMINATING (Model Checking)" << std::endl;
-            std::cout << "  Method: " << result.technique_name << std::endl;
-            break;
-
-        case TerminationResult::Type::ABSTRACT_INTERPRETATION:
-            std::cout << "TERMINATING (Abstract Interpretation)" << std::endl;
-            std::cout << "  Method: " << result.technique_name << std::endl;
-            break;
-
-        case TerminationResult::Type::SIZE_CHANGE:
-            std::cout << "TERMINATING (Size-Change Termination)" << std::endl;
-            std::cout << "  Method: " << result.technique_name << std::endl;
-            break;
-
         case TerminationResult::Type::UNKNOWN:
             std::cout << "UNKNOWN" << std::endl;
             std::cout << "  Method: All analyses failed" << std::endl;
