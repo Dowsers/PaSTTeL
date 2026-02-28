@@ -576,7 +576,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
         time_ms: float
         algo: str
     """
-    cmd = [pasttel_bin, "-t", "nonterminate", "-c", str(cpus), "-s" , "z3", json_path]
+    cmd = [pasttel_bin, "-t", "terminate", "-c", str(cpus), "-s" , "z3", json_path]
 
     try:
         proc = subprocess.run(
@@ -680,14 +680,16 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     """Read the benchmark CSV and generate an interactive HTML scatter plot.
 
     Points are colored:
-      - Green: both agree TERMINATING
-      - Blue: both agree NONTERMINATING
-      - Red: Ultimate has a result but PaSTTeL disagrees or has no answer
+      - Green:  both agree TERMINATING
+      - Blue:   both agree NONTERMINATING
+      - Orange: PaSTTeL timeout (no answer within time limit)
+      - Red:    contradiction — Ultimate says TERMINATING but PaSTTeL does not
+      - Purple: NOT SUPPORTED — PaSTTeL does not handle this trace type
 
-    When one approach returns UNKNOWN while the other has a result,
-    the UNKNOWN approach gets a PAR-2 penalty time (timeout * 2) in the plot.
+    When PaSTTeL times out or is not supported, a PAR-2 penalty time
+    (timeout * 2) is used on the Y axis.
 
-    Rows with INFEASIBLE / UNCHECKED / missing times are skipped.
+    Rows with INFEASIBLE / UNCHECKED / Ultimate-UNKNOWN are skipped.
     A dashed y=x line is drawn for reference.
     """
     par2_ms = timeout_s * 2 * 1000.0  # PAR-2 penalty in ms
@@ -702,90 +704,95 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     blue_x, blue_y, blue_labels = [], [], []
     red_x, red_y, red_labels = [], [], []
     orange_x, orange_y, orange_labels = [], [], []
+    purple_x, purple_y, purple_labels = [], [], []
+
+    def verdict_from_algo(a):
+        a = a.strip().lower()
+        if a in ("fixpoint", "gnta"):
+            return "NONTERMINATING"
+        if "template" in a:
+            return "TERMINATING"
+        return "UNKNOWN"
 
     for row in rows:
         result = row["Result Code"].strip()
         u_time_str = row["Ultimate (ms)"].strip()
         t_time_str = row["pasttel (ms)"].strip()
         name = row["Trace Name"].strip()
+        algo = row.get("Algo", "").strip()
+        pasttel_status = row.get("PaSTTeL Status", "").strip()
 
-        # Skip infeasible / unchecked / both unknown
-        if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN", "NOT SUPPORTED"):
+        # Skip infeasible / unchecked / Ultimate-unknown
+        if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN"):
+            continue
+        # Skip rows where Ultimate has no time
+        if u_time_str == "-":
             continue
 
-        # Handle cases where one approach has no time (UNKNOWN/timeout)
-        # Use PAR-2 penalty for the UNKNOWN approach
-        if u_time_str == "-" or t_time_str == "-":
-            if result in ("TERMINATING", "NONTERMINATING"):
-                try:
-                    ux = float(u_time_str) if u_time_str != "-" else par2_ms
-                    ty = float(t_time_str) if t_time_str != "-" else par2_ms
-                except ValueError:
-                    continue
-                unknown_side = "PaSTTeL" if t_time_str == "-" else "Ultimate"
-                red_x.append(ux)
-                red_y.append(ty)
-                red_labels.append(f"{name}<br>Ultimate: {result}<br>{unknown_side}: UNKNOWN (PAR-2={par2_ms:.0f}ms)")
-            continue
+        u_verdict = result  # Ultimate is ground truth for Result Code
 
+        # Derive PaSTTeL verdict from the algo column
+        algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
+        t_algo = algo_parts[-1] if len(algo_parts) >= 2 else ""
+        t_verdict = verdict_from_algo(t_algo) if t_algo else "UNKNOWN"
+
+        # Determine PaSTTeL status (use dedicated column when available)
+        if pasttel_status:
+            p_status = pasttel_status
+        elif t_time_str == "-":
+            p_status = "UNKNOWN"
+        else:
+            p_status = t_verdict
+
+        # Compute times (PAR-2 penalty when PaSTTeL has no answer)
         try:
             ux = float(u_time_str)
-            ty = float(t_time_str)
+            ty = float(t_time_str) if t_time_str != "-" else par2_ms
         except ValueError:
             continue
 
-        # Determine the Ultimate and PaSTTeL individual results
-        # The CSV "Result Code" is the combined result. We need to figure out
-        # if they agree or disagree.  Heuristic: if result is TERMINATING or
-        # NONTERMINATING and both have valid times, they likely agree unless
-        # algo column hints otherwise.  A more robust approach: re-derive from
-        # the result code + the fact that both returned a time.
-        # Since determine_result_code picks Ultimate first, we check if
-        # pasttel could contradict.  The simplest reliable signal: if
-        # result is TERMINATING, Ultimate said TERMINATING.  If pasttel
-        # also returned a time, it found *something* — but it might have found
-        # NONTERMINATING.  We can detect contradiction from the Algo field:
-        # if Algo contains "Fixpoint" or "GNTA" it means nontermination was found
-        # by that tool.
+        # --- Classify ---
+        if p_status == "NOT_SUPPORTED":
+            # PaSTTeL does not handle this trace type
+            purple_x.append(ux)
+            purple_y.append(ty)
+            purple_labels.append(
+                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms"
+                f"<br>Ultimate: {u_verdict}, PaSTTeL: NOT SUPPORTED"
+            )
 
-        algo = row.get("Algo", "").strip()
-        # Determine per-tool verdicts from algo string
-        algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
-
-        t_algo = algo_parts[-1] if len(algo_parts) >= 2 else ""
-
-        def verdict_from_algo(a):
-            a = a.strip().lower()
-            if a in ("fixpoint", "gnta"):
-                return "NONTERMINATING"
-            if "template" in a:
-                return "TERMINATING"
-            return "UNKNOWN"
-
-        u_verdict = result  # Ultimate is ground truth for Result Code
-        t_verdict = verdict_from_algo(t_algo) if t_algo else "UNKNOWN"
-
-        # If pasttel has no algo info, it returned UNKNOWN (no answer/timeout)
-        # Do NOT assume agreement — leave t_verdict as UNKNOWN so it goes to red
-
-        # Classify
-        if u_verdict == "TERMINATING" and t_verdict == "TERMINATING":
+        elif u_verdict == "TERMINATING" and t_verdict == "TERMINATING":
+            # Both agree: terminating
             green_x.append(ux)
             green_y.append(ty)
             green_labels.append(f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms")
+
         elif u_verdict == "NONTERMINATING" and t_verdict == "NONTERMINATING":
+            # Both agree: non-terminating
             blue_x.append(ux)
             blue_y.append(ty)
             blue_labels.append(f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms")
-        elif u_verdict != t_verdict and t_verdict != "UNKNOWN" and u_verdict != "UNKNOWN":
+
+        elif u_verdict == "TERMINATING" and t_verdict != "TERMINATING" and p_status != "TIMEOUT":
+            # Explicit contradiction: Ultimate=TERMINATING, PaSTTeL says otherwise
+            red_x.append(ux)
+            red_y.append(ty)
+            red_labels.append(
+                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
+                f"<br>Ultimate: TERMINATING, PaSTTeL: {t_verdict}"
+            )
+
+        elif p_status == "TIMEOUT" or t_time_str == "-":
+            # PaSTTeL timed out (no answer within the time limit)
             orange_x.append(ux)
             orange_y.append(ty)
             orange_labels.append(
-                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
-                f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
+                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms"
+                f"<br>Ultimate: {u_verdict}, PaSTTeL: TIMEOUT (PAR-2={par2_ms:.0f}ms)"
             )
+
         else:
-            # Disagreement or unexpected combo
+            # Other disagreement (e.g. Ultimate=NONTERMINATING, PaSTTeL=TERMINATING)
             red_x.append(ux)
             red_y.append(ty)
             red_labels.append(
@@ -793,8 +800,8 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
             )
 
-    all_y = green_y + blue_y + red_y + orange_y
-    all_x = green_x + blue_x + red_x + orange_x
+    all_y = green_y + blue_y + red_y + orange_y + purple_y
+    all_x = green_x + blue_x + red_x + orange_x + purple_x
     if not all_x:
         print("No plottable data points found (all INFEASIBLE/UNCHECKED or missing times).")
         return
@@ -818,7 +825,9 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 <p>
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
-  <span style="color:red;">&#9679;</span> Unknown
+  <span style="color:orange;">&#9679;</span> Timeout PaSTTeL &nbsp;
+  <span style="color:red;">&#9679;</span> Contradiction (U=TERM, P&ne;TERM) &nbsp;
+  <span style="color:purple;">&#9679;</span> Not supported by PaSTTeL
 </p>
 <div id="plot"></div>
 <script>
@@ -842,24 +851,34 @@ var blue = {{
   marker: {{ color: 'blue', size: 8, opacity: 0.7 }},
   hoverinfo: 'text'
 }};
-var red = {{
-  x: {json.dumps(red_x)},
-  y: {json.dumps(red_y)},
-  text: {json.dumps(red_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Unknown ({len(red_x)})',
-  marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
-  hoverinfo: 'text'
-}};
 var orange = {{
   x: {json.dumps(orange_x)},
   y: {json.dumps(orange_y)},
   text: {json.dumps(orange_labels)},
   mode: 'markers',
   type: 'scatter',
-  name: 'Contradiction ({len(orange_x)})',
-  marker: {{ color: 'orange', size: 10, opacity: 0.85, symbol: 'x' }},
+  name: 'Timeout PaSTTeL ({len(orange_x)})',
+  marker: {{ color: 'orange', size: 9, opacity: 0.85, symbol: 'circle-open' }},
+  hoverinfo: 'text'
+}};
+var red = {{
+  x: {json.dumps(red_x)},
+  y: {json.dumps(red_y)},
+  text: {json.dumps(red_labels)},
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Contradiction U=TERM ({len(red_x)})',
+  marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
+  hoverinfo: 'text'
+}};
+var purple = {{
+  x: {json.dumps(purple_x)},
+  y: {json.dumps(purple_y)},
+  text: {json.dumps(purple_labels)},
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Not supported ({len(purple_x)})',
+  marker: {{ color: 'purple', size: 9, opacity: 0.85, symbol: 'diamond-open' }},
   hoverinfo: 'text'
 }};
 var diag_max = {max_val * 1.05};
@@ -886,7 +905,7 @@ var layout = {{
   legend: {{ x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)' }},
   margin: {{ l: 70, r: 30, t: 30, b: 70 }}
 }};
-Plotly.newPlot('plot', [diagonal, green, blue, red], layout);
+Plotly.newPlot('plot', [diagonal, green, blue, orange, red, purple], layout);
 </script>
 </body>
 </html>"""
@@ -1084,12 +1103,25 @@ def main():
         u_fixpoint_time = f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-"
         t_time = f"{pasttel['time_ms']:.2f}" if pasttel["time_ms"] >= 0 else "-"
 
+        # Determine PaSTTeL status for scatter plot coloring
+        if pasttel.get("error") == "TIMEOUT":
+            p_status = "TIMEOUT"
+        elif pasttel["result"] == "NOT SUPPORTED":
+            p_status = "NOT_SUPPORTED"
+        elif pasttel["result"] == "TERMINATING":
+            p_status = "TERMINATING"
+        elif pasttel["result"] == "NONTERMINATING":
+            p_status = "NONTERMINATING"
+        else:
+            p_status = "UNKNOWN"
+
         row = {
             "Trace Name": trace_file,
             "Result Code": result_code,
             "Ultimate-Fixpoint (ms)": u_fixpoint_time,
             "Ultimate (ms)": u_time,
             "pasttel (ms)": t_time,
+            "PaSTTeL Status": p_status,
             "Stem Size": ultimate["stem_size"],
             "Loop Size": ultimate["loop_size"],
             "Total Size Trace": ultimate["stem_size"] + ultimate["loop_size"],
@@ -1105,6 +1137,7 @@ def main():
             "Ultimate-Fixpoint (ms)",
             "Ultimate (ms)",
             "pasttel (ms)",
+            "PaSTTeL Status",
             "Stem Size",
             "Loop Size",
             "Total Size Trace",
