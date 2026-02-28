@@ -8,6 +8,23 @@
 
 extern VerbosityLevel VERBOSITY;
 
+// Helper : extrait la valeur scalaire d'une variable SSA, en ignorant les Array.
+// var_prog : nom de programme (ex: "balance"), ssa : nom SSA (ex: "v_balance_1")
+static void extractScalarValue(
+    const std::string& var_prog,
+    const std::string& ssa,
+    const LassoProgram& lasso,
+    std::shared_ptr<SMTSolver> solver,
+    std::map<std::string, double>& counterexample)
+{
+    auto it = lasso.var_sorts.find(var_prog);
+    if (it != lasso.var_sorts.end()) {
+        const std::string& sort = it->second;
+        if (sort.find("Array") != std::string::npos) return;
+    }
+    counterexample[var_prog] = solver->getValue(ssa);
+}
+
 
 // ============================================================================
 // CONSTRUCTEUR
@@ -441,11 +458,9 @@ bool RankingAndInvariantValidator::checkSIInitiation(
     bool sat = solver->checkSat();
     
     if (sat) {
-        // Extraire le contre-exemple
         for (const auto& [var_prog, ssa_out] : lasso.stem.var_to_ssa_out) {
-            counterexample[var_prog] = solver->getValue(ssa_out);
+            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
         }
-
     }
     
     solver->pop();
@@ -504,15 +519,15 @@ bool RankingAndInvariantValidator::checkSIConsecution(
     
     if (sat) {
         for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            counterexample[var_prog] = solver->getValue(ssa_in);
+            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
         }
         for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-            counterexample[var_prog] = solver->getValue(ssa_out);
+            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
         }
     }
-    
+
     solver->pop();
-    return !sat;  // Valide si UNSAT
+    return !sat;
 }
 
 bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
@@ -568,9 +583,8 @@ bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
         // SI incompatible avec loop guard
         // Pas de contre-exemple car UNSAT
     } else {
-        // Compatible - on peut extraire un exemple
         for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            counterexample[var_prog] = solver->getValue(ssa_in);
+            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
         }
     }
     
@@ -626,12 +640,12 @@ bool RankingAndInvariantValidator::checkRFBounded(
     
     if (sat) {
         for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            counterexample[var_prog] = solver->getValue(ssa_in);
+            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
         }
     }
-    
+
     solver->pop();
-    return !sat;  // Valide si UNSAT
+    return !sat;
 }
 
 bool RankingAndInvariantValidator::checkRFDecreasing(
@@ -714,15 +728,15 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
     
     if (sat) {
         for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            counterexample[var_prog] = solver->getValue(ssa_in);
+            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
         }
         for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-            counterexample[var_prog] = solver->getValue(ssa_out);
+            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
         }
     }
-    
+
     solver->pop();
-    return !sat;  // Valide si UNSAT
+    return !sat;
 }
 
 // ============================================================================
