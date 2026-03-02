@@ -146,6 +146,24 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
+    // 3b3b. Filter Array vars from program_vars (no linear coefficient possible).
+    // Bool vars are KEPT — their 0/1 bounds are injected by rewriteWithBounds.
+    {
+        auto it = lasso.program_vars.begin();
+        while (it != lasso.program_vars.end()) {
+            auto sort_it = lasso.var_sorts.find(*it);
+            if (sort_it != lasso.var_sorts.end() &&
+                sort_it->second.find("Array") != std::string::npos) {
+                if (VERBOSITY == VerbosityLevel::VERBOSE)
+                    std::cout << "  Filtered Array var from program_vars: "
+                              << *it << " (" << sort_it->second << ")" << std::endl;
+                it = lasso.program_vars.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+
     // 3b4. Compute integer_mode from var_sorts
     // integer_mode = true if ANY variable has genuine "Int" type (not Bool rewritten to Int)
     // This ensures geometric nontermination declares all coefficients as Int for soundness.
@@ -622,6 +640,35 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
+    // 8c. Register free_vars from all transitions as function_abstractions (Int, no assertion).
+    // These are SSA variables present in the formula but not in in_vars/out_vars —
+    // typically Ultimate's precomputed div_aux/mod_aux variables from PREPROCESSED traces.
+    // They must be declared in the solver but carry no ranking-function coefficient.
+    {
+        std::set<std::string> already_declared;
+        for (const auto& abs : lasso.function_abstractions) {
+            already_declared.insert(abs.fresh_var);
+        }
+        auto registerFreeVars = [&](const std::vector<UltimateTransitionLine>& lines) {
+            for (const auto& line : lines) {
+                for (const auto& fv : line.free_vars) {
+                    if (already_declared.insert(fv).second) {
+                        FunctionAbstraction abs;
+                        abs.fresh_var = fv;
+                        abs.sort = "Int";
+                        abs.original_call = "";
+                        lasso.function_abstractions.push_back(abs);
+                        if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                            std::cout << "  Free aux var declared: " << fv << " (Int)" << std::endl;
+                        }
+                    }
+                }
+            }
+        };
+        registerFreeVars(stem_lines);
+        registerFreeVars(loop_lines);
+    }
+
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
     }
@@ -660,6 +707,15 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
         trans.out_vars = parseVarsMapping(trans_json["out_vars"]);
     }
 
+    // Parse aux_vars (free SSA variables present in formula but not in in_vars/out_vars)
+    if (trans_json.contains("aux_vars") && trans_json["aux_vars"].is_array()) {
+        for (const auto& v : trans_json["aux_vars"]) {
+            if (v.is_string()) {
+                trans.free_vars.push_back(v.get<std::string>());
+            }
+        }
+    }
+
     // Parse formula to DNF
     // Pipeline: RewriteBooleans -> RewriteDivision -> RewriteEquality -> Linearizer -> DNF
     if (!trans.formula.empty() && trans.formula != "true") {
@@ -686,7 +742,7 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
 
                 if (!bool_ssa_vars.empty()) {
                     RewriteBooleans bool_rewriter(bool_ssa_vars);
-                    formula_to_parse = bool_rewriter.rewrite(formula_to_parse);
+                    formula_to_parse = bool_rewriter.rewriteWithBounds(formula_to_parse);
 
                     if (VERBOSITY == VerbosityLevel::VERBOSE) {
                         std::cout << "  [RewriteBooleans] Rewrote " << bool_ssa_vars.size()

@@ -35,6 +35,12 @@ struct UltimateTransitionLine {
     
     // Variables booléennes si présentes
     std::map<std::string, bool> bool_vars;
+
+    // Variables SSA libres dans la formule (ni in_vars ni out_vars).
+    // Typiquement les variables auxiliaires Ultimate (div_aux, mod_aux, etc.)
+    // du mode PREPROCESSED LINEAR TRACE.  Elles doivent être déclarées dans
+    // le solver mais n'ont pas de coefficient dans la fonction de ranking.
+    std::vector<std::string> free_vars;
 };
 
 /**

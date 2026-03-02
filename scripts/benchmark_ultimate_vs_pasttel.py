@@ -48,7 +48,39 @@ def normalize_european_float(s):
 def sanitize_identifier(s):
     """Remove ~, #, | characters that cause issues in the pasttel parser."""
     s = re.sub(r'old\(([^()]*)\)', r'old_\1_', s)
-    return s.replace("|", "").replace("~", "").replace("#", "")
+    return s #s.replace("|", "").replace("~", "").replace("#", "").replace(", ",",")
+
+
+def extract_formula_ssa_vars(formula):
+    """Extract all SSA variable names from a linearized formula.
+
+    Handles both plain names (v_foo_42) and SMT-LIB2 quoted identifiers (|v_...|).
+    Returns a set of raw SSA names (with pipes if quoted).
+    """
+    vars_found = set()
+    i = 0
+    n = len(formula)
+    while i < n:
+        if formula[i] == '|':
+            # Quoted identifier: collect until closing pipe
+            j = i + 1
+            while j < n and formula[j] != '|':
+                j += 1
+            if j < n:
+                vars_found.add(formula[i:j+1])  # include both pipes
+                i = j + 1
+            else:
+                i = j
+        elif formula[i] == 'v' and i + 1 < n and formula[i+1] == '_':
+            # Unquoted SSA name starting with v_
+            j = i
+            while j < n and (formula[j].isalnum() or formula[j] in ('_', '~', '$', '.')):
+                j += 1
+            vars_found.add(formula[i:j])
+            i = j
+        else:
+            i += 1
+    return vars_found
 
 
 def collect_ssa_vars(in_vars, out_vars):
@@ -135,8 +167,8 @@ def parse_vars_mapping(text):
 
     Variable names and SSA names can contain |...|, #, ~, . characters.
     """
-    # Find the content between { and }
-    m = re.search(r'\{(.*)\}', text)
+    # Find the content between the first { and its matching }
+    m = re.search(r'\{([^}]*)\}', text)
     if not m:
         return {}
     content = m.group(1).strip()
@@ -211,7 +243,108 @@ def parse_transformula_block(lines):
     }
 
 
-def parse_ultimate_trace(filepath, check_mode="lasso"):
+def parse_preprocessed_linear_trace_section(lines, start_idx):
+    """Parse a PREPROCESSED LINEAR TRACE section from lines starting at start_idx.
+
+    Returns (stem_data, loop_data) where each is a dict with formula/in_vars/out_vars
+    or None if not found.
+
+    Format:
+        Stem (linearized):
+          Formula:  (or (and ...) ...)
+          InVars:   {var=ssa, ...}
+          OutVars:  {var=ssa, ...}
+
+        Loop (linearized):
+          Formula:  ...
+          InVars:   {...}
+          OutVars:  {...}
+    """
+    stem_data = None
+    loop_data = None
+
+    current = None  # 'stem' or 'loop'
+    current_fields = {}  # accumulated field lines per field name
+
+    def finalize_block(fields):
+        """Build a stem/loop data dict from accumulated field lines."""
+        formula = fields.get("Formula", "").strip()
+        invars_text = fields.get("InVars", "").strip()
+        outvars_text = fields.get("OutVars", "").strip()
+        if not formula:
+            return None
+        in_vars = parse_vars_mapping("{" + invars_text.strip("{}") + "}") if invars_text else {}
+        out_vars = parse_vars_mapping("{" + outvars_text.strip("{}") + "}") if outvars_text else {}
+        return {
+            "formula": formula,
+            "in_vars": in_vars,
+            "out_vars": out_vars,
+            "aux_vars": [],
+            "assigned_vars": [],
+        }
+
+    current_field = None  # which field we are accumulating
+
+    for i in range(start_idx + 1, len(lines)):
+        line = lines[i]
+        stripped = line.strip()
+
+        # Section end: another "---" header or empty sentinel
+        if stripped.startswith("---"):
+            break
+
+        # Start of Stem block
+        if re.match(r'Stem\s*\(linearized\)\s*:', stripped):
+            if current is not None and current_fields:
+                block = finalize_block(current_fields)
+                if current == "stem":
+                    stem_data = block
+                else:
+                    loop_data = block
+            current = "stem"
+            current_fields = {}
+            current_field = None
+            continue
+
+        # Start of Loop block
+        if re.match(r'Loop\s*\(linearized\)\s*:', stripped):
+            if current is not None and current_fields:
+                block = finalize_block(current_fields)
+                if current == "stem":
+                    stem_data = block
+                else:
+                    loop_data = block
+            current = "loop"
+            current_fields = {}
+            current_field = None
+            continue
+
+        if current is None:
+            continue
+
+        # Named field line: "  Formula:  ..." / "  InVars:   ..." / "  OutVars:  ..."
+        m = re.match(r'\s+(Formula|InVars|OutVars)\s*:\s*(.*)', line)
+        if m:
+            current_field = m.group(1)
+            current_fields[current_field] = m.group(2)
+            continue
+
+        # Continuation line for current field (long formula wrapped)
+        if current_field is not None and stripped:
+            current_fields[current_field] += stripped
+
+    # Finalize last block
+    if current is not None and current_fields:
+        block = finalize_block(current_fields)
+        if current == "stem":
+            stem_data = block
+        else:
+            loop_data = block
+
+    return stem_data, loop_data
+
+
+def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
     """Parse an Ultimate lasso trace .txt file.
 
     Args:
@@ -260,43 +393,54 @@ def parse_ultimate_trace(filepath, check_mode="lasso"):
     stem_data = None
     loop_data = None
 
-    # Find the LINEARIZED TRACE section
-    linearized_idx = None
-    for i, line in enumerate(lines):
-        if "LINEARIZED TRACE" in line:
-            linearized_idx = i
-            break
-
-    if linearized_idx is not None:
-        # Find Stem TransFormula
-        stem_lines = []
-        loop_lines = []
-        current = None
-        for i in range(linearized_idx + 1, len(lines)):
-            line = lines[i]
-            if line.strip().startswith("---") and "RAW TRACE" in line:
+    if parse_mode == "preprocess":
+        # Find the PREPROCESSED LINEAR TRACE section
+        preproc_idx = None
+        for i, line in enumerate(lines):
+            if "PREPROCESSED LINEAR TRACE" in line:
+                preproc_idx = i
                 break
-            if line.strip().startswith("---"):
+        if preproc_idx is not None:
+            stem_data, loop_data = parse_preprocessed_linear_trace_section(lines, preproc_idx)
+    else:
+        # Find the LINEARIZED TRACE section (normal mode)
+        # Skip "PREPROCESSED LINEAR TRACE" lines to get the first plain "LINEARIZED TRACE"
+        linearized_idx = None
+        for i, line in enumerate(lines):
+            if "LINEARIZED TRACE" in line and "PREPROCESSED" not in line:
+                linearized_idx = i
                 break
-            if "Stem TransFormula:" in line:
-                current = "stem"
-                # The rest of this line might contain N/A
-                rest = line.split("Stem TransFormula:", 1)[1].strip()
-                if rest:
-                    stem_lines.append(rest)
-                continue
-            if "Loop TransFormula:" in line:
-                current = "loop"
-                continue
-            if current == "stem" and line.strip():
-                stem_lines.append(line)
-            elif current == "loop" and line.strip():
-                loop_lines.append(line)
 
-        if stem_lines:
-            stem_data = parse_transformula_block(stem_lines)
-        if loop_lines:
-            loop_data = parse_transformula_block(loop_lines)
+        if linearized_idx is not None:
+            # Find Stem TransFormula
+            stem_lines = []
+            loop_lines = []
+            current = None
+            for i in range(linearized_idx + 1, len(lines)):
+                line = lines[i]
+                if line.strip().startswith("---") and "RAW TRACE" in line:
+                    break
+                if line.strip().startswith("---"):
+                    break
+                if "Stem TransFormula:" in line:
+                    current = "stem"
+                    # The rest of this line might contain N/A
+                    rest = line.split("Stem TransFormula:", 1)[1].strip()
+                    if rest:
+                        stem_lines.append(rest)
+                    continue
+                if "Loop TransFormula:" in line:
+                    current = "loop"
+                    continue
+                if current == "stem" and line.strip():
+                    stem_lines.append(line)
+                elif current == "loop" and line.strip():
+                    loop_lines.append(line)
+
+            if stem_lines:
+                stem_data = parse_transformula_block(stem_lines)
+            if loop_lines:
+                loop_data = parse_transformula_block(loop_lines)
 
     # --- Parse RAW TRACE for Stem/Loop sizes ---
     stem_size = 0
@@ -503,6 +647,26 @@ def convert_to_json(parsed):
     if array_vars:
         json_data["array_vars"] = array_vars
 
+    def build_transition_aux_vars(trans_data):
+        """Return the aux_vars list for a transition.
+
+        If aux_vars is already populated (normal mode), use it.
+        Otherwise (preprocess mode), derive free SSA vars from the formula:
+        variables present in the formula but absent from in_vars and out_vars.
+        """
+        if trans_data["aux_vars"]:
+            return trans_data["aux_vars"]
+        mapped_ssa = set(trans_data["in_vars"].values()) | set(trans_data["out_vars"].values())
+        # Normalise: strip surrounding pipes for comparison (in_vars/out_vars values may have pipes)
+        mapped_ssa_norm = {v.strip("|") for v in mapped_ssa}
+        formula_vars = extract_formula_ssa_vars(trans_data["formula"])
+        free = []
+        for v in sorted(formula_vars):
+            norm = v.strip("|")
+            if norm not in mapped_ssa_norm:
+                free.append(v)
+        return free
+
     # Build stem transitions - keep all variables faithfully
     stem = []
     if parsed["stem"] is not None:
@@ -515,7 +679,7 @@ def convert_to_json(parsed):
             "formula": stem_formula,
             "in_vars": s["in_vars"],
             "out_vars": s["out_vars"],
-            "aux_vars": s["aux_vars"],
+            "aux_vars": build_transition_aux_vars(s),
             "assigned_vars": s["assigned_vars"],
         })
     json_data["stem"] = stem
@@ -532,7 +696,7 @@ def convert_to_json(parsed):
             "formula": loop_formula,
             "in_vars": l["in_vars"],
             "out_vars": l["out_vars"],
-            "aux_vars": l["aux_vars"],
+            "aux_vars": build_transition_aux_vars(l),
             "assigned_vars": l["assigned_vars"],
         })
     json_data["loop"] = loop
@@ -568,7 +732,7 @@ def convert_to_json(parsed):
 # RUN PASTTEL
 # =============================================================================
 
-def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
+def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate"):
     """Run the pasttel binary on a JSON file and parse results.
 
     Returns dict with:
@@ -576,7 +740,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60):
         time_ms: float
         algo: str
     """
-    cmd = [pasttel_bin, "-t", "terminate", "-c", str(cpus), "-s" , "z3", json_path]
+    cmd = [pasttel_bin, "-t", strat, "-c", str(cpus), "-s", "z3", json_path]
 
     try:
         proc = subprocess.run(
@@ -954,9 +1118,20 @@ def main():
         help="Use logarithmic scale for the scatter plot axes"
     )
     parser.add_argument(
+        "--strat", choices=["terminate", "nonterminate"], default="terminate",
+        help="Analysis strategy passed to pasttel: 'terminate' or 'nonterminate' (default: terminate)"
+    )
+    parser.add_argument(
         "--check", choices=["loop", "lasso"], default="lasso",
         help="Which Ultimate result field to use: 'loop' uses Loop termination, "
              "'lasso' uses Lasso termination (default: lasso)"
+    )
+    parser.add_argument(
+        "--parse", choices=["normal", "preprocess"], default="normal",
+        help="Which trace section to parse from .txt files: "
+             "'normal' parses LINEARIZED TRACE (not fully linearized), "
+             "'preprocess' parses PREPROCESSED LINEAR TRACE (fully linearized by Ultimate) "
+             "(default: normal)"
     )
     args = parser.parse_args()
 
@@ -1008,7 +1183,7 @@ def main():
 
         # 1. Parse Ultimate trace
         try:
-            ultimate = parse_ultimate_trace(trace_file, check_mode=args.check)
+            ultimate = parse_ultimate_trace(trace_file, check_mode=args.check, parse_mode=args.parse)
         except Exception as e:
             print(f"  ERROR parsing Ultimate trace: {e}")
             results.append({
@@ -1084,9 +1259,10 @@ def main():
         print(f"  JSON written to: {json_path}")
 
         # 3. Run pasttel
-        print(f"  Running pasttel (-t both -c {args.cpus})...")
+        print(f"  Running pasttel (--strat {args.strat} -c {args.cpus})...")
         pasttel = run_pasttel(
-            json_path, args.pasttel_bin, cpus=args.cpus, timeout_s=args.timeout
+            json_path, args.pasttel_bin, cpus=args.cpus, timeout_s=args.timeout,
+            strat=args.strat
         )
 
         print(f"  PaSTTeL result: {pasttel['result']}")

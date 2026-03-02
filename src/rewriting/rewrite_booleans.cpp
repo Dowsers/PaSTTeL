@@ -17,6 +17,24 @@ std::string RewriteBooleans::rewrite(const std::string& formula) const {
     return rewriteExpr(trimmed);
 }
 
+std::string RewriteBooleans::rewriteWithBounds(const std::string& formula) const {
+    if (m_bool_vars.empty()) return formula;
+
+    std::string rewritten = rewrite(formula);
+
+    // Inject 0/1 bounds for each Bool SSA var.
+    // This linearizes ite(b, 1, 0), matching Ultimate's replacement semantics.
+    std::string bounds;
+    for (const auto& bv : m_bool_vars) {
+        std::string bound = "(and (>= " + bv + " 0) (<= " + bv + " 1))";
+        bounds = bounds.empty() ? bound : "(and " + bounds + " " + bound + ")";
+    }
+
+    if (bounds.empty()) return rewritten;
+    if (rewritten == "true" || rewritten.empty()) return bounds;
+    return "(and " + rewritten + " " + bounds + ")";
+}
+
 std::string RewriteBooleans::rewriteExpr(const std::string& expr) const {
     std::string trimmed = SExprUtils::trim(expr);
 

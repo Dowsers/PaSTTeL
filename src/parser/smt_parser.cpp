@@ -213,6 +213,14 @@ AffineTerm SMTParser::parseArithExpr(const std::string& expr) {
         return AffineTerm(std::stod(cleaned));
     }
     
+    // SMT-LIB2 quoted identifier |...| — treat as an atomic variable regardless
+    // of any parentheses or special characters inside the pipes.
+    if (cleaned.size() >= 2 && cleaned.front() == '|' && cleaned.back() == '|') {
+        AffineTerm result;
+        result.coefficients[cleaned] = 1.0;
+        return result;
+    }
+
     if (cleaned.find('(') == std::string::npos) {
         AffineTerm result;
         result.coefficients[cleaned] = 1.0;

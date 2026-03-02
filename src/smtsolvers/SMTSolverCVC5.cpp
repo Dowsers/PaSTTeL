@@ -442,7 +442,19 @@ static std::vector<std::string> tokenize_sexp(const std::string& sexp) {
     for (size_t i = 0; i < sexp.length(); ++i) {
         char c = sexp[i];
 
-        if (c == '(' || c == ')') {
+        if (c == '|') {
+            // SMT-LIB2 quoted identifier: consume until closing '|'
+            // treating all internal characters (including parentheses) as part of the token.
+            current += c;
+            ++i;
+            while (i < sexp.length() && sexp[i] != '|') {
+                current += sexp[i];
+                ++i;
+            }
+            if (i < sexp.length()) {
+                current += sexp[i]; // closing '|'
+            }
+        } else if (c == '(' || c == ')') {
             if (!current.empty()) {
                 tokens.push_back(current);
                 current.clear();

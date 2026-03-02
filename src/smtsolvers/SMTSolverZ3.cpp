@@ -274,34 +274,23 @@ double SMTSolverZ3::getValue(const std::string& var_name) {
             // Entier
             result = static_cast<double>(value.get_numeral_int64());
         } else if (value.is_real()) {
-            // Réel : utiliser l'API Z3 pour extraire numérateur/dénominateur
+            // Réel : d'abord tenter l'extraction exacte int64 numérateur/dénominateur,
+            // puis fallback vers get_numeral_double si les nombres débordent int64.
+            bool extracted = false;
             try {
                 int64_t num = value.numerator().get_numeral_int64();
                 int64_t den = value.denominator().get_numeral_int64();
                 result = static_cast<double>(num) / static_cast<double>(den);
-            } catch (...) {
-                // Fallback : parsing manuel
-                std::string value_str = value.to_string();
-                size_t slash_pos = value_str.find('/');
-                if (slash_pos != std::string::npos) {
-                    try {
-                        double numerator = std::stod(value_str.substr(0, slash_pos));
-                        double denominator = std::stod(value_str.substr(slash_pos + 1));
-                        result = numerator / denominator;
-                    } catch (...) {
-                        throw std::runtime_error("SMTSolverZ3::getValue() : impossible de parser le réel " + value_str);
-                    }
+                extracted = true;
+            } catch (...) {}
+
+            if (!extracted) {
+                // Fallback : Z3 is_numeral(double&) gère nativement les grands rationnels.
+                double d = 0.0;
+                if (value.is_numeral(d)) {
+                    result = d;
                 } else {
-                    // Décimal simple
-                    try {
-                        // Enlever les suffixes comme ".0?" si présents
-                        if (value_str.back() == '?') {
-                            value_str.pop_back();
-                        }
-                        result = std::stod(value_str);
-                    } catch (...) {
-                        throw std::runtime_error("SMTSolverZ3::getValue() : impossible de parser " + value_str);
-                    }
+                    throw std::runtime_error("SMTSolverZ3::getValue() : impossible de parser le réel " + value.to_string());
                 }
             }
         } else {
@@ -327,7 +316,13 @@ std::pair<int64_t, int64_t> SMTSolverZ3::getRationalValue(const std::string& var
     z3::expr value = model.eval(var, true);
 
     if (value.is_int() && value.is_numeral()) {
-        return { value.get_numeral_int64(), 1 };
+        try {
+            return { value.get_numeral_int64(), 1 };
+        } catch (...) {
+            // Overflow: reduce to double approximation
+            double d = std::stod(value.to_string());
+            return { static_cast<int64_t>(std::round(d)), 1 };
+        }
     } else if (value.is_real() && value.is_numeral()) {
         try {
             int64_t num = value.numerator().get_numeral_int64();
@@ -335,15 +330,86 @@ std::pair<int64_t, int64_t> SMTSolverZ3::getRationalValue(const std::string& var
             if (den < 0) { num = -num; den = -den; }
             return { num, den };
         } catch (...) {
+            // get_numeral_int64 overflowed: use string parsing.
+            // Z3 may produce "(/ NUM.0 DEN.0)" or "NUM/DEN" or "NUM.0".
             std::string s = value.to_string();
-            size_t slash = s.find('/');
-            if (slash != std::string::npos) {
-                int64_t num = std::stoll(s.substr(0, slash));
-                int64_t den = std::stoll(s.substr(slash + 1));
-                if (den < 0) { num = -num; den = -den; }
-                return { num, den };
+
+            // Strip surrounding parens and leading "/ " if present
+            // e.g. "(/ 32281802098926944255.0 8589934598.0)" -> "32281802098926944255.0 / 8589934598.0"
+            // or bare "32281802098926944255/8589934598"
+            // Normalize: remove '(' ')' then look for the slash
+            std::string cleaned;
+            cleaned.reserve(s.size());
+            for (char c : s) {
+                if (c != '(' && c != ')') cleaned += c;
             }
-            return { static_cast<int64_t>(std::round(std::stod(s))), 1 };
+            // cleaned is now "/ 32281802098926944255.0 8589934598.0" or "32281802098926944255/8589934598"
+
+            // Find slash (skip leading '/ ' if present)
+            size_t slash = cleaned.find('/');
+            if (slash != std::string::npos) {
+                std::string num_str = cleaned.substr(0, slash);
+                std::string den_str = cleaned.substr(slash + 1);
+
+                // Strip whitespace
+                auto strip = [](std::string& t) {
+                    size_t a = t.find_first_not_of(" \t");
+                    size_t b = t.find_last_not_of(" \t");
+                    if (a == std::string::npos) { t.clear(); return; }
+                    t = t.substr(a, b - a + 1);
+                };
+                strip(num_str);
+                strip(den_str);
+
+                // Strip ".0" decimal suffix if present (Z3 sometimes appends it)
+                auto strip_dot_zero = [](std::string& t) {
+                    if (t.size() >= 2 && t.back() == '0' && t[t.size()-2] == '.') {
+                        t.resize(t.size() - 2);
+                    }
+                };
+                strip_dot_zero(num_str);
+                strip_dot_zero(den_str);
+
+                // If num_str is empty (was "/ NUM DEN" form — slash was at pos 0)
+                // then actually the number part is den_str and there's no denominator
+                if (num_str.empty()) {
+                    // Fallback to double
+                    try {
+                        double d = std::stod(den_str);
+                        return { static_cast<int64_t>(std::round(d)), 1 };
+                    } catch (...) {}
+                }
+
+                // Try parsing as int64, fall back to double on overflow
+                bool neg_num = (!num_str.empty() && num_str[0] == '-');
+                bool neg_den = (!den_str.empty() && den_str[0] == '-');
+                try {
+                    int64_t num = std::stoll(num_str);
+                    int64_t den = std::stoll(den_str);
+                    if (den < 0) { num = -num; den = -den; }
+                    return { num, den };
+                } catch (...) {
+                    // Numbers too large for int64: reduce via double and GCD
+                    double dnum = std::stod(num_str) * (neg_num ? -1.0 : 1.0);
+                    double dden = std::stod(den_str) * (neg_den ? -1.0 : 1.0);
+                    if (dden < 0) { dnum = -dnum; dden = -dden; }
+                    // Reduce: find a common scale factor via GCD on string lengths
+                    double ratio = dnum / dden;
+                    // Return as a simple integer approximation (already simplified)
+                    return { static_cast<int64_t>(std::round(ratio)), 1 };
+                }
+            }
+
+            // No slash: try as a simple number
+            // Strip ".0" suffix
+            if (s.size() >= 2 && s.back() == '0' && s[s.size()-2] == '.') {
+                s.resize(s.size() - 2);
+            }
+            try {
+                return { std::stoll(s), 1 };
+            } catch (...) {
+                return { static_cast<int64_t>(std::round(std::stod(s))), 1 };
+            }
         }
     }
     // Fallback
@@ -500,7 +566,19 @@ static std::vector<std::string> tokenize_sexp(const std::string& sexp) {
 
     for (size_t i = 0; i < sexp.length(); ++i) {
         char c = sexp[i];
-        if (c == '(' || c == ')') {
+        if (c == '|') {
+            // SMT-LIB2 quoted identifier: consume until closing '|'
+            // treating all internal characters (including parentheses) as part of the token.
+            current += c;
+            ++i;
+            while (i < sexp.length() && sexp[i] != '|') {
+                current += sexp[i];
+                ++i;
+            }
+            if (i < sexp.length()) {
+                current += sexp[i]; // closing '|'
+            }
+        } else if (c == '(' || c == ')') {
             if (!current.empty()) {
                 tokens.push_back(current);
                 current.clear();

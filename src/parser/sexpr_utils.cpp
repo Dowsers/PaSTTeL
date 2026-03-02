@@ -26,7 +26,19 @@ std::vector<std::string> splitSExpr(const std::string& expr) {
 
     for (size_t i = 0; i < cleaned.size(); ++i) {
         char c = cleaned[i];
-        if (c == '(') {
+        if (c == '|') {
+            // SMT-LIB2 quoted identifier: |...| — consume until closing pipe,
+            // treating all internal characters (including parentheses) as part of the token.
+            current += c;
+            ++i;
+            while (i < cleaned.size() && cleaned[i] != '|') {
+                current += cleaned[i];
+                ++i;
+            }
+            if (i < cleaned.size()) {
+                current += cleaned[i]; // closing '|'
+            }
+        } else if (c == '(') {
             parens.push(i);
             current += c;
         } else if (c == ')') {
