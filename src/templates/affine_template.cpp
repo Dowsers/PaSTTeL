@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 #include "templates/affine_template.h"
@@ -123,12 +124,12 @@ std::vector<RankingFunction> AffineTemplate::extractRankingFunctions(
     size_t n = program_vars.size();
 
     for (size_t i = 0; i < n && i < values.size(); ++i) {
-        rf.coefficients[program_vars[i]] = values[i];
+        rf.coefficients[program_vars[i]] = static_cast<int64_t>(std::round(values[i]));
     }
     if (values.size() > n) {
-        rf.constant = values[n];  // prefix_const
+        rf.constant = static_cast<int64_t>(std::round(values[n]));  // prefix_const
     }
-    rf.delta = solver->getValue(delta_param_);
+    rf.delta = static_cast<int64_t>(std::round(solver->getValue(delta_param_)));
 
     return {rf};
 }

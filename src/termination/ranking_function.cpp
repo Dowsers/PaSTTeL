@@ -1,5 +1,5 @@
 #include <sstream>
-#include <cmath>
+#include <cstdlib>
 
 #include "termination/ranking_function.h"
 
@@ -10,15 +10,15 @@ std::string RankingFunction::toString(const std::vector<std::string>& vars) cons
 
     for (const auto& var : vars) {
         auto it = coefficients.find(var);
-        if (it != coefficients.end() && std::abs(it->second) > 1e-9) {
+        if (it != coefficients.end() && it->second != 0) {
             if (!first && it->second > 0) {
                 oss << " + ";
             } else if (it->second < 0) {
                 oss << " - ";
             }
 
-            double abs_coef = std::abs(it->second);
-            if (std::abs(abs_coef - 1.0) > 1e-9) {
+            int64_t abs_coef = std::abs(it->second);
+            if (abs_coef != 1) {
                 oss << abs_coef << "·";
             }
             oss << var;
@@ -26,7 +26,7 @@ std::string RankingFunction::toString(const std::vector<std::string>& vars) cons
         }
     }
 
-    if (std::abs(constant) > 1e-9) {
+    if (constant != 0) {
         if (!first && constant > 0) {
             oss << " + ";
         } else if (constant < 0) {

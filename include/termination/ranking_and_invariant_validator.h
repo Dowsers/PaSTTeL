@@ -204,7 +204,7 @@ private:
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
-        double delta,
+        int64_t delta,
         std::map<std::string, double>& counterexample);
 };
 

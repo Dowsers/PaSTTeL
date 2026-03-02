@@ -1,6 +1,7 @@
 #ifndef RANKING_FUNCTION_H
 #define RANKING_FUNCTION_H
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -12,11 +13,11 @@
  * avec décroissance garantie de delta par itération.
  */
 struct RankingFunction {
-    std::map<std::string, double> coefficients;  // var → coefficient
-    double constant;
-    double delta;  // Décroissance minimale garantie (δ)
+    std::map<std::string, int64_t> coefficients;  // var → coefficient
+    int64_t constant;
+    int64_t delta;  // Décroissance minimale garantie (δ)
 
-    RankingFunction() : constant(0.0), delta(0.0) {}
+    RankingFunction() : constant(0), delta(0) {}
 
     /**
      * @brief Représentation lisible : "3·x + 2·y + 1"

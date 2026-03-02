@@ -121,7 +121,7 @@ TerminationResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solv
                     size_t count = 0;
                     for (const auto& [var, coef] : result.witness) {
                         if (coef == 0) continue; // Ignorer les termes nuls
-                        proof << std::fixed << std::setprecision(2) << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
+                        proof << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
                         count++;
                     }
                     result.proof_details = proof.str();

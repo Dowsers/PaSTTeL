@@ -1,6 +1,7 @@
 #ifndef TERMINATION_TECHNIQUE_INTERFACE_H
 #define TERMINATION_TECHNIQUE_INTERFACE_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <map>
@@ -25,7 +26,7 @@ struct TerminationResult {
     std::string technique_name;
 
     // Témoin (optionnel selon la technique)
-    std::map<std::string, double> witness;
+    std::map<std::string, int64_t> witness;
 
     // Temps d'exécution en millisecondes
     double execution_time_ms;

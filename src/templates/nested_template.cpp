@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <sstream>
 
@@ -157,12 +158,12 @@ std::vector<RankingFunction> NestedTemplate::extractRankingFunctions(
         RankingFunction rf;
         auto values = generators_[i]->extractValues(solver);
         for (size_t j = 0; j < n && j < values.size(); ++j) {
-            rf.coefficients[program_vars[j]] = values[j];
+            rf.coefficients[program_vars[j]] = static_cast<int64_t>(std::round(values[j]));
         }
         if (values.size() > n) {
-            rf.constant = values[n];
+            rf.constant = static_cast<int64_t>(std::round(values[n]));
         }
-        rf.delta = delta;
+        rf.delta = static_cast<int64_t>(std::round(delta));
         components.push_back(rf);
     }
     return components;

@@ -1,6 +1,7 @@
 #ifndef SUPPORTING_INVARIANT_H
 #define SUPPORTING_INVARIANT_H
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -12,11 +13,11 @@
  * où ⊳ est > (strict) ou ≥ (non-strict).
  */
 struct SupportingInvariant {
-    std::map<std::string, double> coefficients;  // var → coefficient
-    double constant;
+    std::map<std::string, int64_t> coefficients;  // var → coefficient
+    int64_t constant;
     bool is_strict;  // true → >, false → ≥
 
-    SupportingInvariant() : constant(0.0), is_strict(false) {}
+    SupportingInvariant() : constant(0), is_strict(false) {}
 
     /**
      * @brief Représentation lisible : "2·x - y + 3"

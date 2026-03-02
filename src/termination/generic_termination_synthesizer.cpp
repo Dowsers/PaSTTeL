@@ -12,6 +12,14 @@
 
 extern VerbosityLevel VERBOSITY;
 
+// std::gcd ne supporte pas __int128 en C++17 — implémentation locale
+static __int128 gcd128(__int128 a, __int128 b) {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (b) { __int128 t = b; b = a % b; a = t; }
+    return a;
+}
+
 // ============================================================================
 // CONSTRUCTEUR
 // ============================================================================
@@ -108,6 +116,43 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
         result.is_valid = solver_->checkSat();
 
         if (result.is_valid) {
+            // getSimplifiedAssignment: maximiser les zéros parmi les paramètres
+            // (inspiré de LassoRanker::getSimplifiedAssignment_TwoMode)
+            // Pour chaque paramètre, essayer de le fixer à 0 ; si SAT reste vrai, garder.
+            {
+                auto params = template_->getParameters();
+
+                // Collecter tous les noms de paramètres : RF + delta + SI
+                std::vector<std::string> all_params;
+                for (const auto& p : params.ranking_params)
+                    all_params.push_back(p);
+                if (!params.delta_param.empty())
+                    all_params.push_back(params.delta_param);
+                if (!local_sigs_.empty()) {
+                    auto si_params = local_sigs_.front()->getSIParams();
+                    for (const auto& p : si_params)
+                        all_params.push_back(p);
+                }
+
+                int zeroed = 0;
+                for (const auto& p : all_params) {
+                    solver_->push();
+                    solver_->addAssertion("(= " + p + " 0)");
+                    if (solver_->checkSat()) {
+                        // Garder : ce paramètre peut être zéro
+                        ++zeroed;
+                    } else {
+                        // Annuler : ce paramètre doit être non-nul
+                        solver_->pop();
+                    }
+                }
+
+                if (verbose && zeroed > 0)
+                    std::cout << "  getSimplifiedAssignment: " << zeroed
+                              << "/" << all_params.size()
+                              << " parameters zeroed" << std::endl;
+            }
+
             auto params = template_->getParameters();
             result.parameters = extractParameters(params);
             if (verbose)
@@ -536,68 +581,77 @@ long long GenericTerminationSynthesizer::computeGCD(
 }
 
 // Normalise une liste de rationnels (num, den) en entiers simplifiés.
-// Retourne le vecteur des numérateurs normalisés et le dénominateur commun utilisé.
+// Utilise __int128 pour les calculs intermédiaires afin d'éviter les overflows
+// quand Z3 retourne des rationnels avec de grands numérateurs/dénominateurs.
+// Retourne le vecteur des numérateurs normalisés (int64_t).
 static std::vector<long long> rationalListToIntegers(
     const std::vector<std::pair<int64_t, int64_t>>& rationals)
 {
     if (rationals.empty()) return {};
 
-    // LCM de tous les dénominateurs
-    long long lcm = 1;
+    using i128 = __int128;
+
+    // LCM de tous les dénominateurs (en __int128 pour éviter l'overflow)
+    i128 lcm = 1;
     for (const auto& [num, den] : rationals) {
         if (den == 0) continue;
-        long long g = std::gcd(std::abs(lcm), std::abs(den));
-        lcm = lcm / g * den;
+        i128 d = (den < 0) ? -(i128)den : (i128)den;
+        i128 l = (lcm < 0) ? -lcm : lcm;
+        i128 g = gcd128(l, d);
+        lcm = lcm / g * d;
     }
     if (lcm < 0) lcm = -lcm;
 
-    // Multiplier chaque numérateur par lcm/den
-    std::vector<long long> integers;
-    integers.reserve(rationals.size());
+    // Multiplier chaque numérateur par lcm/den (en __int128)
+    std::vector<i128> wide;
+    wide.reserve(rationals.size());
     for (const auto& [num, den] : rationals) {
-        integers.push_back(num * (lcm / den));
+        i128 d = (den < 0) ? -(i128)den : (i128)den;
+        i128 n = (i128)num;
+        if (den < 0) n = -n;
+        wide.push_back(n * (lcm / d));
     }
 
-    // GCD de tous les entiers non nuls
-    long long g = 0;
-    for (long long v : integers) {
-        if (v != 0) g = std::gcd(g, std::abs(v));
+    // GCD de tous les entiers non nuls (en __int128)
+    i128 g = 0;
+    for (i128 v : wide) {
+        if (v != 0) g = gcd128(g, v);
     }
     if (g == 0) g = 1;
 
-    // Diviser par le GCD
-    for (auto& v : integers) v /= g;
+    // Diviser par le GCD et réduire en int64_t
+    // Si le résultat dépasse INT64_MAX, saturer : c'est un signe que Z3
+    // a retourné un modèle non minimal (coefficients arbitrairement grands).
+    std::vector<long long> integers;
+    integers.reserve(wide.size());
+    constexpr i128 MAX64 = (i128)INT64_MAX;
+    constexpr i128 MIN64 = (i128)INT64_MIN;
+    for (i128 v : wide) {
+        i128 r = v / g;
+        if (r > MAX64) r = MAX64;
+        if (r < MIN64) r = MIN64;
+        integers.push_back((long long)r);
+    }
 
     return integers;
 }
 
 // ============================================================================
-// NORMALISATION
+// NORMALISATION (plus utilisée : la normalisation est faite dans rationalListToIntegers)
 // ============================================================================
 
 void GenericTerminationSynthesizer::normalizeRankingFunction(
-    RankingFunction& rf,
-    long long gcd_value) const
+    RankingFunction& /*rf*/,
+    long long /*gcd_value*/) const
 {
-    if (gcd_value <= 1) return;
-    double divisor = static_cast<double>(gcd_value);
-    for (auto& [var, coef] : rf.coefficients) {
-        coef /= divisor;
-    }
-    rf.constant /= divisor;
-    rf.delta /= divisor;
+    // No-op : coefficients are already int64_t integers after rationalListToIntegers
 }
 
 void GenericTerminationSynthesizer::normalizeSupportingInvariant(
-    SupportingInvariant& si,
-    long long gcd_value) const
+    SupportingInvariant& /*si*/,
+    long long /*gcd_value*/) const
 {
-    if (gcd_value <= 1) return;
-    double divisor = static_cast<double>(gcd_value);
-    for (auto& [var, coef] : si.coefficients) {
-        coef /= divisor;
-    }
-    si.constant /= divisor;
+    // No-op : coefficients are already int64_t integers after rationalListToIntegers
 }
 
 // ============================================================================
@@ -645,14 +699,14 @@ void GenericTerminationSynthesizer::extractResults()
                 size_t base = ci * params_per_comp;
                 size_t nv = lasso_.program_vars.size();
                 for (size_t i = 0; i < nv && base + i < integers.size(); ++i) {
-                    rf.coefficients[lasso_.program_vars[i]] = static_cast<double>(integers[base + i]);
+                    rf.coefficients[lasso_.program_vars[i]] = integers[base + i];
                 }
                 if (base + nv < integers.size()) {
-                    rf.constant = static_cast<double>(integers[base + nv]);
+                    rf.constant = integers[base + nv];
                 }
                 // delta : dernier element si present
                 if (!params.delta_param.empty() && integers.size() == all_rationals.size()) {
-                    rf.delta = static_cast<double>(integers.back());
+                    rf.delta = integers.back();
                 }
                 if (verbose)
                     std::cout << "    f" << ci << " (normalized) -> " << rf.toString(lasso_.program_vars) << std::endl;
@@ -705,10 +759,10 @@ void GenericTerminationSynthesizer::extractResults()
         std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
 
         for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
-            si.coefficients[lasso_.program_vars[i]] = static_cast<double>(si_integers[i]);
+            si.coefficients[lasso_.program_vars[i]] = si_integers[i];
         }
         if (num_vars < si_integers.size()) {
-            si.constant = static_cast<double>(si_integers[num_vars]);
+            si.constant = si_integers[num_vars];
         }
 
         if (verbose) {

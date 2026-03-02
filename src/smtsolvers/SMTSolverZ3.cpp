@@ -1,9 +1,18 @@
 #include <iostream>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 #include <cctype>
 
 #include "smtsolvers/SMTSolverZ3.h"
+
+// std::gcd ne supporte pas __int128 en C++17 — implémentation locale
+static __int128 gcd128(__int128 a, __int128 b) {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (b) { __int128 t = b; b = a % b; a = t; }
+    return a;
+}
 
 // ============================================================================
 // CONSTRUCTEUR / DESTRUCTEUR
@@ -319,9 +328,22 @@ std::pair<int64_t, int64_t> SMTSolverZ3::getRationalValue(const std::string& var
         try {
             return { value.get_numeral_int64(), 1 };
         } catch (...) {
-            // Overflow: reduce to double approximation
-            double d = std::stod(value.to_string());
-            return { static_cast<int64_t>(std::round(d)), 1 };
+            // Overflow: parse via __int128 and clamp to int64
+            using i128 = __int128;
+            std::string s = value.to_string();
+            bool neg = (!s.empty() && s[0] == '-');
+            i128 v = 0;
+            for (char c : s) {
+                if (c == '-' || c == '+') continue;
+                if (c < '0' || c > '9') break;
+                v = v * 10 + (c - '0');
+            }
+            if (neg) v = -v;
+            constexpr i128 MAX64 = (i128)INT64_MAX;
+            constexpr i128 MIN64 = (i128)INT64_MIN;
+            if (v > MAX64) v = MAX64;
+            if (v < MIN64) v = MIN64;
+            return { (int64_t)v, 1 };
         }
     } else if (value.is_real() && value.is_numeral()) {
         try {
@@ -380,23 +402,42 @@ std::pair<int64_t, int64_t> SMTSolverZ3::getRationalValue(const std::string& var
                     } catch (...) {}
                 }
 
-                // Try parsing as int64, fall back to double on overflow
-                bool neg_num = (!num_str.empty() && num_str[0] == '-');
-                bool neg_den = (!den_str.empty() && den_str[0] == '-');
+                // Try parsing as int64.
+                // If either number overflows int64, use __int128 to compute
+                // the reduced fraction (num/gcd, den/gcd) and clamp to int64.
+                (void)(!num_str.empty() && num_str[0] == '-');  // neg_num unused
+                (void)(!den_str.empty() && den_str[0] == '-');  // neg_den unused
                 try {
                     int64_t num = std::stoll(num_str);
                     int64_t den = std::stoll(den_str);
                     if (den < 0) { num = -num; den = -den; }
                     return { num, den };
                 } catch (...) {
-                    // Numbers too large for int64: reduce via double and GCD
-                    double dnum = std::stod(num_str) * (neg_num ? -1.0 : 1.0);
-                    double dden = std::stod(den_str) * (neg_den ? -1.0 : 1.0);
-                    if (dden < 0) { dnum = -dnum; dden = -dden; }
-                    // Reduce: find a common scale factor via GCD on string lengths
-                    double ratio = dnum / dden;
-                    // Return as a simple integer approximation (already simplified)
-                    return { static_cast<int64_t>(std::round(ratio)), 1 };
+                    // Numbers too large for int64: parse into __int128 and reduce.
+                    using i128 = __int128;
+                    auto parse_i128 = [](const std::string& s) -> i128 {
+                        bool neg = (!s.empty() && s[0] == '-');
+                        i128 v = 0;
+                        for (char c : s) {
+                            if (c == '-' || c == '+') continue;
+                            if (c < '0' || c > '9') break;
+                            v = v * 10 + (c - '0');
+                        }
+                        return neg ? -v : v;
+                    };
+                    i128 bn = parse_i128(num_str);
+                    i128 bd = parse_i128(den_str);
+                    if (bd < 0) { bn = -bn; bd = -bd; }
+                    if (bd == 0) bd = 1;
+                    i128 g = gcd128(bn, bd);
+                    if (g > 1) { bn /= g; bd /= g; }
+                    // Clamp to int64 (saturation)
+                    constexpr i128 MAX64 = (i128)INT64_MAX;
+                    constexpr i128 MIN64 = (i128)INT64_MIN;
+                    if (bn > MAX64) bn = MAX64;
+                    if (bn < MIN64) bn = MIN64;
+                    if (bd > MAX64) bd = MAX64;
+                    return { (int64_t)bn, (int64_t)bd };
                 }
             }
 

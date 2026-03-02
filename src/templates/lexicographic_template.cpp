@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <sstream>
 
@@ -381,13 +382,13 @@ std::vector<RankingFunction> LexicographicTemplate::extractRankingFunctions(
     for (int i = 0; i < num_components_; ++i) {
         RankingFunction rf;
         for (size_t j = 0; j < n && j < component_params_[i].size() - 1; ++j) {
-            rf.coefficients[program_vars[j]] = solver->getValue(component_params_[i][j]);
+            rf.coefficients[program_vars[j]] = static_cast<int64_t>(std::round(solver->getValue(component_params_[i][j])));
         }
         if (!component_params_[i].empty()) {
-            rf.constant = solver->getValue(component_params_[i].back());
+            rf.constant = static_cast<int64_t>(std::round(solver->getValue(component_params_[i].back())));
         }
         if (i < static_cast<int>(delta_params_.size())) {
-            rf.delta = solver->getValue(delta_params_[i]);
+            rf.delta = static_cast<int64_t>(std::round(solver->getValue(delta_params_[i])));
         }
         components.push_back(rf);
     }
