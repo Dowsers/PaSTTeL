@@ -24,7 +24,7 @@
  */
 class LexicographicTemplate : public RankingTemplate {
 public:
-    explicit LexicographicTemplate(int num_components = 2, int delta_value = 1);
+    explicit LexicographicTemplate(int num_components = 2, int delta_value = 0);
 
     // Interface RankingTemplate
     void init(const LassoProgram& lasso) override;

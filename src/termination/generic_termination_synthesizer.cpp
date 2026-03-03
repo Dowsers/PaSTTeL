@@ -134,13 +134,29 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
                         all_params.push_back(p);
                 }
 
+                // Seuil au-delà duquel un modèle est considéré non-minimal
+                // (Z3 a compensé un zéro forcé par une constante arbitrairement grande)
+                constexpr double COEFF_OVERFLOW_THRESHOLD = 1e12;
+
                 int zeroed = 0;
                 for (const auto& p : all_params) {
                     solver_->push();
                     solver_->addAssertion("(= " + p + " 0)");
                     if (solver_->checkSat()) {
-                        // Garder : ce paramètre peut être zéro
-                        ++zeroed;
+                        // Vérifier que les coefficients RF restants ne sont pas explosés
+                        bool model_ok = true;
+                        for (const auto& rp : params.ranking_params) {
+                            double v = solver_->getValue(rp);
+                            if (std::abs(v) > COEFF_OVERFLOW_THRESHOLD) {
+                                model_ok = false;
+                                break;
+                            }
+                        }
+                        if (model_ok) {
+                            ++zeroed;
+                        } else {
+                            solver_->pop();
+                        }
                     } else {
                         // Annuler : ce paramètre doit être non-nul
                         solver_->pop();
@@ -676,40 +692,47 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n   Normalisation GCD par composante:" << std::endl;
 
-    // Normalisation rationnelle : recuperer les params RF et delta
+    // Normalisation rationnelle : normaliser chaque composante RF séparément
+    // pour éviter que le LCM global amplifie les coefficients des composantes
+    // sous-contraintes (typique avec le template nested).
     {
         auto params = template_->getParameters();
-        // Collecter tous les rationnels : [ranking_params..., delta]
-        std::vector<std::pair<int64_t, int64_t>> all_rationals;
-        for (const auto& p : params.ranking_params) {
-            all_rationals.push_back(solver_->getRationalValue(p));
-        }
-        if (!params.delta_param.empty()) {
-            all_rationals.push_back(solver_->getRationalValue(params.delta_param));
-        }
-        std::vector<long long> integers = rationalListToIntegers(all_rationals);
-
-        // Redistribuer les entiers dans les composantes RF
-        // params.ranking_params : N_vars+1 params par composante (coefs + const)
         size_t num_comps = termination_argument_.components.size();
-        if (!integers.empty() && !params.ranking_params.empty()) {
+        size_t nv = lasso_.program_vars.size();
+
+        if (!params.ranking_params.empty() && num_comps > 0) {
             size_t params_per_comp = params.ranking_params.size() / num_comps;
+
             for (size_t ci = 0; ci < num_comps; ++ci) {
                 auto& rf = termination_argument_.components[ci];
                 size_t base = ci * params_per_comp;
-                size_t nv = lasso_.program_vars.size();
-                for (size_t i = 0; i < nv && base + i < integers.size(); ++i) {
-                    rf.coefficients[lasso_.program_vars[i]] = integers[base + i];
+
+                // Collecter les rationnels de cette seule composante
+                std::vector<std::pair<int64_t, int64_t>> comp_rationals;
+                for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
+                    comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
                 }
-                if (base + nv < integers.size()) {
-                    rf.constant = integers[base + nv];
+
+                std::vector<long long> integers = rationalListToIntegers(comp_rationals);
+
+                for (size_t i = 0; i < nv && i < integers.size(); ++i) {
+                    rf.coefficients[lasso_.program_vars[i]] = integers[i];
                 }
-                // delta : dernier element si present
-                if (!params.delta_param.empty() && integers.size() == all_rationals.size()) {
-                    rf.delta = integers.back();
+                if (nv < integers.size()) {
+                    rf.constant = integers[nv];
                 }
+
                 if (verbose)
                     std::cout << "    f" << ci << " (normalized) -> " << rf.toString(lasso_.program_vars) << std::endl;
+            }
+        }
+
+        // Delta : normalisé séparément (valeur scalaire)
+        if (!params.delta_param.empty()) {
+            auto [dnum, dden] = solver_->getRationalValue(params.delta_param);
+            long long delta_val = (dden != 0) ? (long long)(dnum / dden) : (long long)dnum;
+            for (auto& rf : termination_argument_.components) {
+                rf.delta = delta_val;
             }
         }
     }

@@ -19,7 +19,7 @@
  */
 class NestedTemplate : public RankingTemplate {
 public:
-    explicit NestedTemplate(int num_components = 2, int delta_value = 1);
+    explicit NestedTemplate(int num_components = 2, int delta_value = 0);
 
     // ========================================================================
     // INTERFACE RankingTemplate -- methodes abstraites
