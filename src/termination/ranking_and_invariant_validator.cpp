@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 
 #include "termination/ranking_and_invariant_validator.h"
@@ -79,22 +80,6 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
 
         // Étape 1.2 : Bounded
         std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 dans le loop)..." << std::endl;
-    }
-
-    result.rf_bounded_check = checkRFBounded(ranking_function, lasso, solver, result.rf_counterexample);
-    
-    if (!result.rf_bounded_check) {
-        if (verbose) {
-            result.error_message = "Ranking function n'est pas bornée : f(x) < 0 possible";
-            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
-            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-        }
-        return result;
-    }
-    if(verbose) {
-        std::cout << "  ✅ OK : f(x) ≥ 0 dans le loop" << std::endl;
-        // Étape 1.3 : Decreasing
-        std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
     }
 
     if(verbose) {
@@ -192,26 +177,42 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
 
     // ========================================================================
-    // PARTIE 3 : VÉRIFICATION RF DECREASING avec seulement les SI valides
+    // PARTIE 3 : VÉRIFICATION RF BOUNDED + DECREASING avec les SI valides
     // ========================================================================
 
     if(verbose) {
-        std::cout << "╭─ Décroissance RF (avec " << valid_sis.size() << " SI valide(s)) ────────────╮" << std::endl;
-        std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
+        std::cout << "╭─ RF bounded + décroissante (avec " << valid_sis.size() << " SI valide(s)) ─╮" << std::endl;
+        std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 sous les SI)..." << std::endl;
     }
 
-    result.rf_decreasing_check = checkRFDecreasing(
-        ranking_function, valid_sis, lasso, solver, ranking_function.delta, result.rf_counterexample);
+    result.rf_bounded_check = checkRFBounded(
+        ranking_function, valid_sis, lasso, solver, result.rf_counterexample);
 
-    if (!result.rf_decreasing_check) {
-        result.error_message = "Ranking function ne décroît pas strictement (même sans SI invalides)";
+    if (!result.rf_bounded_check) {
+        result.error_message = "Ranking function n'est pas bornée : f(x) < 0 possible";
         if(verbose) {
             std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
             std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
         }
-    } else if(verbose) {
-        std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta << std::endl;
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+    } else {
+        if(verbose) {
+            std::cout << "  ✅ OK : f(x) ≥ 0 sous les SI" << std::endl;
+            std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
+        }
+
+        result.rf_decreasing_check = checkRFDecreasing(
+            ranking_function, valid_sis, lasso, solver, ranking_function.delta, result.rf_counterexample);
+
+        if (!result.rf_decreasing_check) {
+            result.error_message = "Ranking function ne décroît pas strictement (même sans SI invalides)";
+            if(verbose) {
+                std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
+                std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+            }
+        } else if(verbose) {
+            std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta << std::endl;
+            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
+        }
     }
 
     // ========================================================================
@@ -433,16 +434,16 @@ bool RankingAndInvariantValidator::checkSIInitiation(
         }
     }
     
-    // Construire ¬SI(x) : SI(x) < 0 (non-strict) ou SI(x) <= 0 (strict)
+    // Construire ¬SI(x') : SI évalué sur les out_vars du stem (= in_vars du loop)
     std::ostringstream neg_si;
     neg_si << "(" << (si.is_strict ? "<=" : "<") << " (+";
-    
+
     bool has_terms = false;
     for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
         const std::string& prog_var = lasso.program_vars[i];
         auto it = si.coefficients.find(prog_var);
         if (it != si.coefficients.end() && it->second != 0) {
-            neg_si << " (* " << it->second << " " << lasso.stem.getSSAVar(prog_var, false) << ")";
+            neg_si << " (* " << it->second << " " << lasso.stem.getSSAVar(prog_var, true) << ")";
             has_terms = true;
         }
     }
@@ -607,6 +608,7 @@ bool RankingAndInvariantValidator::checkRFNonTriviality(
 
 bool RankingAndInvariantValidator::checkRFBounded(
     const RankingFunction& rf,
+    const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
     std::map<std::string, double>& counterexample)
@@ -620,10 +622,29 @@ bool RankingAndInvariantValidator::checkRFBounded(
         }
     }
 
+    // Conditionner par les SI : SI(x) => f(x) >= 0
+    for (const auto& si : supporting_invariants) {
+        std::ostringstream si_formula;
+        si_formula << "(";
+        si_formula << (si.is_strict ? ">" : ">=");
+        si_formula << " (+";
+        for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
+            const std::string& prog_var = lasso.program_vars[i];
+            auto it = si.coefficients.find(prog_var);
+            auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
+            if (it != si.coefficients.end() && it->second != 0 &&
+                var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
+                si_formula << " (* " << it->second << " " << var_ssa_in->second << ")";
+            }
+        }
+        si_formula << " " << si.constant << ") 0)";
+        solver->addAssertion(si_formula.str());
+    }
+
     // Chercher f(x) < 0
     std::ostringstream f_negative;
     f_negative << "(< (+";
-    
+
     for (const auto& [var, coef] : rf.coefficients) {
         if (coef != 0) {
             f_negative << " (* " << coef << " " << lasso.loop.getSSAVar(var, false) << ")";
@@ -651,7 +672,7 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
     const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver,
-    int64_t delta,
+    double delta,
     std::map<std::string, double>& counterexample)
 {
     solver->push();
@@ -718,6 +739,7 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
 
     // Chercher contre-exemple : f(x) - f(x') < δ
     std::ostringstream decrease_check;
+    decrease_check << std::fixed << std::setprecision(6);
     decrease_check << "(< (- " << f_x.str() << " " << f_x_prime.str() << ") " << delta << ")";
 
     solver->addAssertion(decrease_check.str());

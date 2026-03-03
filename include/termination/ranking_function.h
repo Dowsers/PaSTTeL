@@ -15,7 +15,7 @@
 struct RankingFunction {
     std::map<std::string, int64_t> coefficients;  // var → coefficient
     int64_t constant;
-    int64_t delta;  // Décroissance minimale garantie (δ)
+    double delta;  // Décroissance minimale garantie (δ)
 
     RankingFunction() : constant(0), delta(0) {}
 

@@ -62,7 +62,7 @@ void NestedTemplate::declareParameters(std::shared_ptr<SMTSolver> solver) const 
         gen->declareParameters(solver);
     }
     solver->declareVariable(delta_param_, "Real");
-    solver->addAssertion("(>= " + delta_param_ + " " + std::to_string(delta_value_) + ")");
+    solver->addAssertion("(> " + delta_param_ + " " + std::to_string(delta_value_) + ")");
 }
 
 // ============================================================================
@@ -97,14 +97,14 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
 
     std::vector<LinearInequality> result;
 
-    // i=0 : f0(x) - f0(x') - delta >= 0
+    // i=0 : f0(x) - f0(x') - delta > 0
     {
         LinearInequality li = generators_[0]->generate(in_vars);
         LinearInequality li2 = generators_[0]->generate(out_vars);
         li2.negate();
         li = li + li2;
         li.constant.coefficients[delta_param_] -= 1.0;
-        li.strict = false;
+        li.strict = true;
         li.motzkin_coef = LinearInequality::ONE;
         result.push_back(li);
     }
@@ -126,7 +126,7 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
 }
 
 // ============================================================================
-// CONCLUSION POSITIVE DE BORNAGE : f_{n-1}(x) >= 0
+// CONCLUSION POSITIVE DE BORNAGE : f_{n-1}(x) > 0
 // ============================================================================
 
 LinearInequality NestedTemplate::getConstraintsBounded(
@@ -137,7 +137,7 @@ LinearInequality NestedTemplate::getConstraintsBounded(
     }
 
     LinearInequality li = generators_[num_components_ - 1]->generate(in_vars);
-    li.strict = false;
+    li.strict = true;
     li.motzkin_coef = LinearInequality::ONE;
     return li;
 }

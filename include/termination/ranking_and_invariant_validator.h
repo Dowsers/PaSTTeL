@@ -192,6 +192,7 @@ private:
      */
     bool checkRFBounded(
         const RankingFunction& rf,
+        const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
         std::map<std::string, double>& counterexample);
@@ -204,7 +205,7 @@ private:
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver,
-        int64_t delta,
+        double delta,
         std::map<std::string, double>& counterexample);
 };
 
