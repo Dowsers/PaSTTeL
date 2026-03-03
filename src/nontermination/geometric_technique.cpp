@@ -448,11 +448,16 @@ void GeometricTechnique::addIdentityVariableConstraints(
             if (use_nilpotent) {
                 std::string next_gev_var = "v" + std::to_string(gev_idx + 1) + "_" + var;
                 if (linear_mode) {
-                    // λ=1, nu ∈ {0,1} énuméré (pas de variable SMT nu).
-                    // nu=0 : v_i_x = v_i_x → trivial
-                    // nu=1 : v_i_x = v_i_x + v_{i+1}_x → v_{i+1}_x = 0
-                    // La disjonction (or trivial (= next 0)) est toujours vraie :
-                    // pas de contrainte supplémentaire à émettre.
+                    // λ=1, nu ∈ {0,1} : v_i_x = v_i_x + nu * v_{i+1}_x
+                    // Pour une identity var, les ray constraints se neutralisent
+                    // (coef_out - coef_in = 0), donc on doit imposer v_i_x = 0
+                    // explicitement. Nu=1 forcerait aussi v_{i+1}_x = 0, mais
+                    // imposer v_i_x = 0 est suffisant et plus simple.
+                    solver->addAssertion("(= " + gev_var + " " + zero + ")");
+                    constraint_count++;
+                    if (verbose)
+                        std::cout << "      GEV " << gev_idx << ": " << gev_var
+                                  << " = 0 (identity var, linear+nilpotent mode)" << std::endl;
                     continue;
                 } else {
                     std::string nu_var = "nu_" + std::to_string(gev_idx);
@@ -461,7 +466,15 @@ void GeometricTechnique::addIdentityVariableConstraints(
                 }
             } else {
                 if (linear_mode) {
-                    // λ=1 : v_i_x = v_i_x → toujours vrai, rien à émettre
+                    // λ=1, pas de nilpotent : v_i_x = 1 * v_i_x → v_i_x = v_i_x
+                    // La contrainte ray homogène pour une identity var est :
+                    //   coef_out * v_i_x + coef_in * v_i_x >= 0  (les deux coefficients s'annulent)
+                    // ce qui est trivial. Il faut donc imposer explicitement v_i_x = 0.
+                    solver->addAssertion("(= " + gev_var + " " + zero + ")");
+                    constraint_count++;
+                    if (verbose)
+                        std::cout << "      GEV " << gev_idx << ": " << gev_var
+                                  << " = 0 (identity var, linear mode)" << std::endl;
                     continue;
                 } else {
                     std::string lambda_var = "lambda_" + std::to_string(gev_idx);
@@ -901,7 +914,11 @@ NonTerminationResult GeometricTechnique::extractGNTA(
         first = true;
         for (const auto& [var, val] : eigenvectors[i]) {
             if (!first) proof << ", ";
-            proof << var << "=" << val;
+            // Display as absolute point: honda + gev direction
+            double honda_val = 0.0;
+            auto it = state_honda.find(var);
+            if (it != state_honda.end()) honda_val = it->second;
+            proof << var << "=" << (honda_val + val);
             first = false;
         }
         proof << "}, L" << i << "=" << lambdas[i];
