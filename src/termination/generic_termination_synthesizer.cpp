@@ -116,58 +116,61 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
         result.is_valid = solver_->checkSat();
 
         if (result.is_valid) {
-            // getSimplifiedAssignment: maximiser les zéros parmi les paramètres
-            // (inspiré de LassoRanker::getSimplifiedAssignment_TwoMode)
-            // Pour chaque paramètre, essayer de le fixer à 0 ; si SAT reste vrai, garder.
-            {
-                auto params = template_->getParameters();
+            // getSimplifiedAssignment: maximiser les zéros parmi les paramètres.
+            // IMPORTANT: on ne zéroe PAS les coefficients de variables RF individuellement.
+            // Zéroer un coeff de variable pousse Z3 à compenser avec des ratios
+            // irrationnels dans les autres coefficients, produisant une RF invalide sur ℤ.
+            // On zéroe uniquement: constante RF, delta, SI params.
+            // {
+            //     auto params = template_->getParameters();
 
-                // Collecter tous les noms de paramètres : RF + delta + SI
-                std::vector<std::string> all_params;
-                for (const auto& p : params.ranking_params)
-                    all_params.push_back(p);
-                if (!params.delta_param.empty())
-                    all_params.push_back(params.delta_param);
-                if (!local_sigs_.empty()) {
-                    auto si_params = local_sigs_.front()->getSIParams();
-                    for (const auto& p : si_params)
-                        all_params.push_back(p);
-                }
+            //     // Séparer les ranking_params en "coefficients de variables" (à ne pas zéroer)
+            //     // et "constantes" (dernière entrée de chaque composante, suffixe "_const").
+            //     // Les constantes sont identifiables par le suffixe "_const".
+            //     std::vector<std::string> simplifiable_params;
+            //     for (const auto& p : params.ranking_params) {
+            //         if (p.size() >= 6 && p.substr(p.size() - 6) == "_const")
+            //             simplifiable_params.push_back(p);
+            //     }
+            //     if (!params.delta_param.empty())
+            //         simplifiable_params.push_back(params.delta_param);
+            //     if (!local_sigs_.empty()) {
+            //         auto si_params = local_sigs_.front()->getSIParams();
+            //         for (const auto& p : si_params)
+            //             simplifiable_params.push_back(p);
+            //     }
 
-                // Seuil au-delà duquel un modèle est considéré non-minimal
-                // (Z3 a compensé un zéro forcé par une constante arbitrairement grande)
-                constexpr double COEFF_OVERFLOW_THRESHOLD = 1e12;
+            //     // Tenter de minimiser delta à sa valeur minimale (delta_value + 1).
+            //     // Cela force Z3 à choisir des coefficients RF cohérents avec un petit delta,
+            //     // évitant des solutions arbitrairement grandes sous-contraintes.
+            //     if (!params.delta_param.empty()) {
+            //         solver_->push();
+            //         solver_->addAssertion("(= " + params.delta_param
+            //             + " " + std::to_string(params.delta_value + 1) + ")");
+            //         if (!solver_->checkSat()) {
+            //             solver_->pop(); // delta_value+1 impossible, garder la solution courante
+            //         } else if (verbose) {
+            //             std::cout << "  getSimplifiedAssignment: delta fixed to "
+            //                       << (params.delta_value + 1) << std::endl;
+            //         }
+            //     }
 
-                int zeroed = 0;
-                for (const auto& p : all_params) {
-                    solver_->push();
-                    solver_->addAssertion("(= " + p + " 0)");
-                    if (solver_->checkSat()) {
-                        // Vérifier que les coefficients RF restants ne sont pas explosés
-                        bool model_ok = true;
-                        for (const auto& rp : params.ranking_params) {
-                            double v = solver_->getValue(rp);
-                            if (std::abs(v) > COEFF_OVERFLOW_THRESHOLD) {
-                                model_ok = false;
-                                break;
-                            }
-                        }
-                        if (model_ok) {
-                            ++zeroed;
-                        } else {
-                            solver_->pop();
-                        }
-                    } else {
-                        // Annuler : ce paramètre doit être non-nul
-                        solver_->pop();
-                    }
-                }
+            //     int zeroed = 0;
+            //     for (const auto& p : simplifiable_params) {
+            //         solver_->push();
+            //         solver_->addAssertion("(= " + p + " 0)");
+            //         if (solver_->checkSat()) {
+            //             ++zeroed;
+            //         } else {
+            //             solver_->pop();
+            //         }
+            //     }
 
-                if (verbose && zeroed > 0)
-                    std::cout << "  getSimplifiedAssignment: " << zeroed
-                              << "/" << all_params.size()
-                              << " parameters zeroed" << std::endl;
-            }
+            //     if (verbose && zeroed > 0)
+            //         std::cout << "  getSimplifiedAssignment: " << zeroed
+            //                   << "/" << simplifiable_params.size()
+            //                   << " parameters zeroed" << std::endl;
+            // }
 
             auto params = template_->getParameters();
             result.parameters = extractParameters(params);
@@ -192,7 +195,6 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
 
 // ============================================================================
 // createLocalSIGs -- un SIG par (poly_loop x template_part)
-// Matching Ultimate: new SupportingInvariantGenerator per (loopConj x templatePart)
 // ============================================================================
 
 void GenericTerminationSynthesizer::createLocalSIGs() {
@@ -210,8 +212,6 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
     int num_loop_polys = static_cast<int>(lasso_.loop.polyhedra.size());
 
     // Nombre de parties du template : dec_list.size() + 1 (bounded)
-    // On doit appeler init() pour savoir combien de composantes dec il y a.
-    // On utilise une variable loop_in bidon juste pour compter.
     std::vector<std::string> loop_in_vars, loop_out_vars;
     for (const auto& var : lasso_.program_vars) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
@@ -231,6 +231,8 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
                   << (num_loop_polys * num_template_parts) << " SIGs"
                   << std::endl;
     }
+
+    num_template_parts_ = num_template_parts;
 
     for (int p = 0; p < num_loop_polys; ++p) {
         for (int m = 0; m < num_template_parts; ++m) {
@@ -277,7 +279,6 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
     bounded.motzkin_coef = LinearInequality::ONE;
 
     int num_dec = static_cast<int>(dec_list.size());
-    int num_template_parts = num_dec + 1; // +1 pour bounded
 
     bool has_sigs = !local_sigs_.empty();
 
@@ -294,9 +295,9 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
             }
 
             // Premisses SI locales : SI strict -> ANYTHING, non-strict -> ONE
+            // local_sigs_[p * num_template_parts_ + m] : SI dedie a la branche p
             if (has_sigs) {
-                int sig_idx = p * num_template_parts + m;
-                const auto& sig = local_sigs_[sig_idx];
+                const auto& sig = local_sigs_[p * num_template_parts_ + m];
                 int num_si = sig->getNumSI();
                 for (int k = 0; k < num_si; ++k) {
                     LinearInequality si_p = sig->buildSI(k, loop_in_vars);
@@ -331,8 +332,7 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
             }
 
             if (has_sigs) {
-                int sig_idx = p * num_template_parts + m_bounded;
-                const auto& sig = local_sigs_[sig_idx];
+                const auto& sig = local_sigs_[p * num_template_parts_ + m_bounded];
                 int num_si = sig->getNumSI();
                 for (int k = 0; k < num_si; ++k) {
                     LinearInequality si_p = sig->buildSI(k, loop_in_vars);
@@ -380,23 +380,20 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
         stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
     }
 
-    // Nombre de parties du template (pour retrouver l'indice poly depuis sig_idx)
-    std::vector<std::string> tmp_in = loop_in_vars, tmp_out = loop_out_vars;
-    auto dec_list = template_->getConstraintsDec(tmp_in, tmp_out);
-    int num_template_parts = static_cast<int>(dec_list.size()) + 1;
+    int num_loop_polys = static_cast<int>(lasso_.loop.polyhedra.size());
+    int ntp = (num_template_parts_ > 0) ? num_template_parts_ : 1;
 
-    // Pour chaque SIG local (indexé par sig_idx = p * num_template_parts + m)
+    // Pour chaque SIG local : sig_idx = p * ntp + m
     for (int sig_idx = 0; sig_idx < static_cast<int>(local_sigs_.size()); ++sig_idx) {
         const auto& sig = local_sigs_[sig_idx];
         int num_si = sig->getNumSI();
         if (num_si == 0) continue;
 
-        // Retrouver le poly_idx depuis sig_idx
-        int p = sig_idx / num_template_parts;
+        // Branche de boucle associee a ce SIG
+        int p = (num_loop_polys > 0) ? (sig_idx / ntp) : 0;
 
         // ----------------------------------------------------------------
-        // phi1 : pour chaque polyedre du stem et chaque SI k du SIG local
-        // stem(x,x') -> SI_k(x') >= 0
+        // phi1 : stem(x,x') -> SI_k(x') >= 0
         // ----------------------------------------------------------------
         for (int k = 0; k < num_si; ++k) {
             int stem_poly_idx = 0;
@@ -425,41 +422,37 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
         }
 
         // ----------------------------------------------------------------
-        // phi2 : pour le polyedre de boucle correspondant (poly p) et chaque SI k
-        // SI_k(x) /\ loop(x,x') -> SI_k(x') >= 0
-        // Note: le SIG local est associé au poly_loop p, on utilise ce poly.
+        // phi2 : SI_k(x) /\ branch_p(x,x') -> SI_k(x') >= 0
+        // Chaque SIG est inductive uniquement pour sa branche p.
         // ----------------------------------------------------------------
-        for (int k = 0; k < num_si; ++k) {
-            if (p >= static_cast<int>(lasso_.loop.polyhedra.size())) continue;
+        if (p < num_loop_polys) {
             const auto& polyhedron = lasso_.loop.polyhedra[p];
+            for (int k = 0; k < num_si; ++k) {
+                RankingTemplate::MotzkinContext ctx;
+                ctx.annotation = "phi2: SIG" + std::to_string(sig_idx)
+                               + " SI_" + std::to_string(k)
+                               + " consecution (loop poly " + std::to_string(p) + ")";
 
-            RankingTemplate::MotzkinContext ctx;
-            ctx.annotation = "phi2: SIG" + std::to_string(sig_idx)
-                           + " SI_" + std::to_string(k)
-                           + " consecution (loop poly " + std::to_string(p) + ")";
+                for (const auto& ineq : polyhedron) {
+                    ctx.constraints.push_back(ineq);
+                }
 
-            for (const auto& ineq : polyhedron) {
-                ctx.constraints.push_back(ineq);
+                LinearInequality si_prem = sig->buildSI(k, loop_in_vars);
+                si_prem.strict = sig->isStrict(k);
+                si_prem.motzkin_coef = LinearInequality::ANYTHING;
+                ctx.constraints.push_back(si_prem);
+
+                LinearInequality neg_si_prime = sig->buildSI(k, loop_out_vars);
+                neg_si_prime.negate();
+                neg_si_prime.strict = !sig->isStrict(k);
+                neg_si_prime.motzkin_coef = LinearInequality::ZERO_AND_ONE;
+                ctx.constraints.push_back(neg_si_prime);
+
+                if (verbose)
+                    std::cout << "  [phi12] " << ctx.annotation << std::endl;
+
+                contexts.push_back(ctx);
             }
-
-            // Premise : SI_k(x) >= 0 (ou > 0 si strict)
-            LinearInequality si_prem = sig->buildSI(k, loop_in_vars);
-            si_prem.strict = sig->isStrict(k);
-            si_prem.motzkin_coef = LinearInequality::ANYTHING;
-            ctx.constraints.push_back(si_prem);
-
-            // Conclusion negee : neg(SI_k(x') >= 0)
-            // Matching Ultimate (LINEAR mode): ZERO_AND_ONE
-            LinearInequality neg_si_prime = sig->buildSI(k, loop_out_vars);
-            neg_si_prime.negate();
-            neg_si_prime.strict = !sig->isStrict(k);
-            neg_si_prime.motzkin_coef = LinearInequality::ZERO_AND_ONE;
-            ctx.constraints.push_back(neg_si_prime);
-
-            if (verbose)
-                std::cout << "  [phi12] " << ctx.annotation << std::endl;
-
-            contexts.push_back(ctx);
         }
     }
 
@@ -707,12 +700,14 @@ void GenericTerminationSynthesizer::extractResults()
                 auto& rf = termination_argument_.components[ci];
                 size_t base = ci * params_per_comp;
 
-                // Collecter les rationnels de cette seule composante
+                // Normaliser les coefficients RF seuls (sans delta) par composante.
+                // Delta est traité séparément : le mélanger au LCM corrompt la normalisation
+                // car delta peut être un rationnel avec un dénominateur différent.
                 std::vector<std::pair<int64_t, int64_t>> comp_rationals;
                 for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
-                    comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
+                    auto r = solver_->getRationalValue(params.ranking_params[base + i]);
+                    comp_rationals.push_back(r);
                 }
-
                 std::vector<long long> integers = rationalListToIntegers(comp_rationals);
 
                 for (size_t i = 0; i < nv && i < integers.size(); ++i) {
@@ -727,13 +722,17 @@ void GenericTerminationSynthesizer::extractResults()
             }
         }
 
-        // Delta : normalisé séparément (valeur scalaire)
+        // Delta : valeur double exacte depuis le rationnel Z3.
         if (!params.delta_param.empty()) {
-            auto [dnum, dden] = solver_->getRationalValue(params.delta_param);
-            long long delta_val = (dden != 0) ? (long long)(dnum / dden) : (long long)dnum;
+            auto delta_r = solver_->getRationalValue(params.delta_param);
+            double delta_val = (delta_r.second != 0)
+                ? (double)delta_r.first / (double)delta_r.second
+                : (double)delta_r.first;
             for (auto& rf : termination_argument_.components) {
                 rf.delta = delta_val;
             }
+            if (verbose)
+                std::cout << "    delta (normalized) = " << delta_val << std::endl;
         }
     }
 
@@ -743,56 +742,62 @@ void GenericTerminationSynthesizer::extractResults()
 
     termination_argument_.supporting_invariants.clear();
 
-    // Extraire les SI du premier SIG local (representatif)
+    // Extraire les SI de chaque SIG local (un par template_part).
+    // local_sigs_[p * num_template_parts + m] : on itere sur m (template_parts)
+    // en prenant p=0 (premier poly_loop, representatif).
     if (local_sigs_.empty()) {
         if (verbose)
             std::cout << "╰───────────────────────────────────────────╯\n" << std::endl;
         return;
     }
 
-    const auto& rep_sig = local_sigs_.front();
-    int num_si = rep_sig->getNumSI();
-    auto si_is_strict = rep_sig->getSIIsStrict();
-    auto si_params = rep_sig->getSIParams();
+    int num_template_parts_ex = (num_template_parts_ > 0) ? num_template_parts_ : 1;
+
     int params_per_si = static_cast<int>(num_vars) + 1;
 
     if (verbose)
-        std::cout << "\n   Supporting Invariants: " << num_si << std::endl;
+        std::cout << "\n   Supporting Invariants (from " << num_template_parts_ex << " template parts):" << std::endl;
 
-    for (int si_idx = 0; si_idx < num_si; ++si_idx) {
-        SupportingInvariant si;
+    for (int m = 0; m < num_template_parts_ex; ++m) {
+        // SIG representatif : poly=0, template_part=m
+        int sig_idx = 0 * num_template_parts_ex + m;
+        if (sig_idx >= static_cast<int>(local_sigs_.size())) break;
+        const auto& sig = local_sigs_[sig_idx];
 
-        if (si_idx < static_cast<int>(si_is_strict.size())) {
-            si.is_strict = si_is_strict[si_idx];
-        } else {
-            si.is_strict = false;
+        int num_si = sig->getNumSI();
+        auto si_is_strict = sig->getSIIsStrict();
+        auto si_params = sig->getSIParams();
+
+        for (int si_idx = 0; si_idx < num_si; ++si_idx) {
+            SupportingInvariant si;
+            si.is_strict = (si_idx < static_cast<int>(si_is_strict.size()))
+                ? si_is_strict[si_idx] : false;
+
+            int start_idx = si_idx * params_per_si;
+
+            std::vector<std::pair<int64_t, int64_t>> si_rationals;
+            for (size_t i = 0; i < num_vars && start_idx + (int)i < (int)si_params.size(); ++i) {
+                si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + i]));
+            }
+            if (start_idx + (int)num_vars < (int)si_params.size()) {
+                si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + num_vars]));
+            }
+
+            std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
+
+            for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
+                si.coefficients[lasso_.program_vars[i]] = si_integers[i];
+            }
+            if (num_vars < si_integers.size()) {
+                si.constant = si_integers[num_vars];
+            }
+
+            if (verbose) {
+                std::cout << "   [part " << m << "] -> " << si.toString(lasso_.program_vars);
+                std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
+            }
+            termination_argument_.supporting_invariants.push_back(si);
         }
-
-        int start_idx = si_idx * params_per_si;
-
-        // Collecte des rationnels exacts pour ce SI
-        std::vector<std::pair<int64_t, int64_t>> si_rationals;
-        for (size_t i = 0; i < num_vars && start_idx + (int)i < (int)si_params.size(); ++i) {
-            si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + i]));
-        }
-        if (start_idx + (int)num_vars < (int)si_params.size()) {
-            si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + num_vars]));
-        }
-
-        std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
-
-        for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
-            si.coefficients[lasso_.program_vars[i]] = si_integers[i];
-        }
-        if (num_vars < si_integers.size()) {
-            si.constant = si_integers[num_vars];
-        }
-
-        if (verbose) {
-            std::cout << " -> " << si.toString(lasso_.program_vars);
-            std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
-        }
-        termination_argument_.supporting_invariants.push_back(si);
     }
 
     if (verbose)

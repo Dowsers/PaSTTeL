@@ -86,7 +86,9 @@ private:
     int num_si_nonstrict_;
 
     // SIGs locaux : un par (poly_loop × template_part), crees par createLocalSIGs()
+    // local_sigs_[p * num_template_parts_ + m] = SIG pour branche p, partie m
     std::vector<std::shared_ptr<SupportingInvariantGenerator>> local_sigs_;
+    int num_template_parts_ = 0;  // Nombre de parties du template (dec_list.size() + 1)
 
     // Etat
     bool synthesized_;
