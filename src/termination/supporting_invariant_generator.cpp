@@ -24,7 +24,8 @@ void SupportingInvariantGenerator::init(const LassoProgram& lasso) {
 }
 
 void SupportingInvariantGenerator::initializeGenerators() {
-    int n = static_cast<int>(lasso_.program_vars.size());
+    const auto& eff_vars = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+    int n = static_cast<int>(eff_vars.size());
     generators_.clear();
     for (int k = 0; k < num_si_; ++k) {
         // Si instance_id_ >= 0 : "SUP_INVAR_<instance_id>_<k>"  (SIG local, unique)
@@ -98,7 +99,8 @@ SupportingInvariantGenerator::generatePhi1() const
             }
 
             std::vector<std::string> stem_out_vars;
-            for (const auto& var : lasso_.program_vars) {
+            const auto& eff_vars_phi1 = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+            for (const auto& var : eff_vars_phi1) {
                 stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
             }
 
@@ -138,7 +140,8 @@ SupportingInvariantGenerator::generatePhi2() const
             }
 
             std::vector<std::string> loop_in_vars, loop_out_vars;
-            for (const auto& var : lasso_.program_vars) {
+            const auto& eff_vars_phi2 = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+            for (const auto& var : eff_vars_phi2) {
                 loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
                 loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
             }

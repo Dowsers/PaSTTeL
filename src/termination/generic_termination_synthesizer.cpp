@@ -213,7 +213,8 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
 
     // Nombre de parties du template : dec_list.size() + 1 (bounded)
     std::vector<std::string> loop_in_vars, loop_out_vars;
-    for (const auto& var : lasso_.program_vars) {
+    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+    for (const auto& var : eff_vars_) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
@@ -259,7 +260,8 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
 
     // Variables SSA de la boucle
     std::vector<std::string> loop_in_vars, loop_out_vars;
-    for (const auto& var : lasso_.program_vars) {
+    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+    for (const auto& var : eff_vars_) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
@@ -374,7 +376,8 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
 
     // Variables SSA
     std::vector<std::string> loop_in_vars, loop_out_vars, stem_out_vars;
-    for (const auto& var : lasso_.program_vars) {
+    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+    for (const auto& var : eff_vars_) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
         stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
@@ -674,10 +677,14 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n╭─ Extraction des resultats ────────────────╮" << std::endl;
 
-    size_t num_vars = lasso_.program_vars.size();
+    // Matching Ultimate: template vars = loop_vars (loop.out ∩ loop.in).
+    // Les variables hors loop ont des coefficients libres dans Z3 → on les exclut.
+    const auto& eff_vars = lasso_.loop_vars.empty()
+        ? lasso_.program_vars : lasso_.loop_vars;
+    size_t num_vars = eff_vars.size();
 
     termination_argument_.components =
-        template_->extractRankingFunctions(solver_, lasso_.program_vars);
+        template_->extractRankingFunctions(solver_, eff_vars);
 
     if (verbose)
         std::cout << "  ✓ Composantes extraites : " << termination_argument_.components.size() << std::endl;
@@ -685,13 +692,10 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n   Normalisation GCD par composante:" << std::endl;
 
-    // Normalisation rationnelle : normaliser chaque composante RF séparément
-    // pour éviter que le LCM global amplifie les coefficients des composantes
-    // sous-contraintes (typique avec le template nested).
     {
         auto params = template_->getParameters();
         size_t num_comps = termination_argument_.components.size();
-        size_t nv = lasso_.program_vars.size();
+        size_t nv = eff_vars.size();
 
         if (!params.ranking_params.empty() && num_comps > 0) {
             size_t params_per_comp = params.ranking_params.size() / num_comps;
@@ -700,25 +704,21 @@ void GenericTerminationSynthesizer::extractResults()
                 auto& rf = termination_argument_.components[ci];
                 size_t base = ci * params_per_comp;
 
-                // Normaliser les coefficients RF seuls (sans delta) par composante.
-                // Delta est traité séparément : le mélanger au LCM corrompt la normalisation
-                // car delta peut être un rationnel avec un dénominateur différent.
                 std::vector<std::pair<int64_t, int64_t>> comp_rationals;
                 for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
-                    auto r = solver_->getRationalValue(params.ranking_params[base + i]);
-                    comp_rationals.push_back(r);
+                    comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
                 }
                 std::vector<long long> integers = rationalListToIntegers(comp_rationals);
 
                 for (size_t i = 0; i < nv && i < integers.size(); ++i) {
-                    rf.coefficients[lasso_.program_vars[i]] = integers[i];
+                    rf.coefficients[eff_vars[i]] = integers[i];
                 }
                 if (nv < integers.size()) {
                     rf.constant = integers[nv];
                 }
 
                 if (verbose)
-                    std::cout << "    f" << ci << " (normalized) -> " << rf.toString(lasso_.program_vars) << std::endl;
+                    std::cout << "    f" << ci << " (normalized) -> " << rf.toString(eff_vars) << std::endl;
             }
         }
 
@@ -786,14 +786,14 @@ void GenericTerminationSynthesizer::extractResults()
             std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
 
             for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
-                si.coefficients[lasso_.program_vars[i]] = si_integers[i];
+                si.coefficients[eff_vars[i]] = si_integers[i];
             }
             if (num_vars < si_integers.size()) {
                 si.constant = si_integers[num_vars];
             }
 
             if (verbose) {
-                std::cout << "   [part " << m << "] -> " << si.toString(lasso_.program_vars);
+                std::cout << "   [part " << m << "] -> " << si.toString(eff_vars);
                 std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
             }
             termination_argument_.supporting_invariants.push_back(si);

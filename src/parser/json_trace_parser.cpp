@@ -434,6 +434,22 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
+    // 7b0. Calculer loop_vars AVANT ensureMapping :
+    //      intersection loop.var_to_ssa_in ∩ loop.var_to_ssa_out depuis le JSON original.
+    //      Matching Ultimate: template variables = loop.getOutVars() ∩ loop.getInVars().
+    //      Après ensureMapping, tous les program_vars sont dans les deux maps (via fresh vars),
+    //      donc l'intersection ne peut pas être faite après.
+    {
+        lasso.loop_vars.clear();
+        for (const auto& var : lasso.program_vars) {
+            bool in_loop_in  = lasso.loop.var_to_ssa_in.count(var) > 0;
+            bool in_loop_out = lasso.loop.var_to_ssa_out.count(var) > 0;
+            if (in_loop_in && in_loop_out) {
+                lasso.loop_vars.push_back(var);
+            }
+        }
+    }
+
     // 7b. Ensure all program_vars have SSA mappings in both stem and loop
     //     If a program variable is missing from in_vars or out_vars of the loop
     //     (e.g. it's only written but not read), generate a fresh SSA variable.
@@ -606,6 +622,9 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
+        std::cout << "Loop vars (in ∩ out): ";
+        for (const auto& v : lasso.loop_vars) std::cout << v << " ";
+        std::cout << std::endl;
     }
 
     return lasso;

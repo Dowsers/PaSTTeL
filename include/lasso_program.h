@@ -30,6 +30,11 @@ public:
     LinearTransition loop;
     std::vector<std::string> program_vars;
 
+    // Variables effectives du loop : intersection loop.var_to_ssa_in ∩ loop.var_to_ssa_out.
+    // Matching Ultimate: template variables = loop.getOutVars() ∩ loop.getInVars().
+    // Seules ces variables apparaissent dans la RF et les SI.
+    std::vector<std::string> loop_vars;
+
     // Constantes symboliques (ERC20, null, true, false, etc.)
     std::vector<DeclaredConstant> constants;
 

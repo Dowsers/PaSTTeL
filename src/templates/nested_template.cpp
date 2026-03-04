@@ -35,7 +35,8 @@ NestedTemplate::NestedTemplate(int num_components, int delta_value)
 
 void NestedTemplate::init(const LassoProgram& lasso) {
     lasso_ = lasso;
-    int n = static_cast<int>(lasso_.program_vars.size());
+    const auto& vars = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
+    int n = static_cast<int>(vars.size());
 
     generators_.clear();
     for (int i = 0; i < num_components_; ++i) {
