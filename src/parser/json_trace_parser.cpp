@@ -462,74 +462,9 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 7c. Resolve identity variables in the loop: introduce fresh output SSA vars
-    //     When var_to_ssa_in[var] == var_to_ssa_out[var] (identity variable),
-    //     the Motzkin transformation can't distinguish f(x_in) from f(x_out) because
-    //     the ranking function coefficients cancel out. This prevents using loop guard
-    //     constraints (like y+1 <= x) in the termination proof.
-    //     Fix: create a fresh output variable and add equality constraints to polyhedra.
-    {
-        std::vector<std::pair<std::string, std::string>> identity_equalities;
-        // identity_equalities: pairs of (fresh_out_ssa, original_ssa)
-
-        for (const auto& var : lasso.program_vars) {
-            // Skip non-arithmetic types (Array, Bool, etc.) - only Int vars need fresh output
-            // TODO: based on what ?
-            auto sort_it = lasso.var_sorts.find(var);
-            if (sort_it != lasso.var_sorts.end() && sort_it->second != "Int") {
-                continue;
-            }
-
-            auto it_in = lasso.loop.var_to_ssa_in.find(var);
-            auto it_out = lasso.loop.var_to_ssa_out.find(var);
-            if (it_in != lasso.loop.var_to_ssa_in.end() &&
-                it_out != lasso.loop.var_to_ssa_out.end() &&
-                it_in->second == it_out->second)
-            {
-                std::string original_ssa = it_in->second;
-                std::string fresh_ssa = original_ssa + "_out";
-                lasso.loop.var_to_ssa_out[var] = fresh_ssa;
-                identity_equalities.push_back({fresh_ssa, original_ssa});
-
-                if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                    std::cout << "  Identity var '" << var << "': "
-                              << original_ssa << " → out=" << fresh_ssa << std::endl;
-                }
-            }
-        }
-
-        // Add equality constraints (fresh_out = original) to each loop polyhedron
-        if (!identity_equalities.empty()) {
-            for (auto& poly : lasso.loop.polyhedra) {
-                for (const auto& [fresh_ssa, original_ssa] : identity_equalities) {
-                    // fresh_ssa - original_ssa >= 0
-                    LinearInequality geq;
-                    geq.strict = false;
-                    geq.motzkin_coef = LinearInequality::ANYTHING;
-                    AffineTerm one_coef;
-                    one_coef.constant = 1.0;
-                    AffineTerm neg_one_coef;
-                    neg_one_coef.constant = -1.0;
-                    geq.setCoefficient(fresh_ssa, one_coef);
-                    geq.setCoefficient(original_ssa, neg_one_coef);
-                    poly.push_back(geq);
-
-                    // original_ssa - fresh_ssa >= 0
-                    LinearInequality leq;
-                    leq.strict = false;
-                    leq.motzkin_coef = LinearInequality::ANYTHING;
-                    leq.setCoefficient(original_ssa, one_coef);
-                    leq.setCoefficient(fresh_ssa, neg_one_coef);
-                    poly.push_back(leq);
-                }
-            }
-
-            if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                std::cout << "  Added " << identity_equalities.size()
-                          << " identity equality constraint(s) to loop polyhedra" << std::endl;
-            }
-        }
-    }
+    // 7c. (supprimé) : Les variables non modifiées dans le loop (in == out) gardent
+    //     le même nom SSA. Le Motzkin gère correctement ce cas : le coefficient de
+    //     f(x') - f(x) pour une variable constante est zéro, ce qui est correct.
 
     // 8a. Store RewriteDivision auxiliary variables FIRST
     // These must be declared before linearizer abstractions because the linearizer's
