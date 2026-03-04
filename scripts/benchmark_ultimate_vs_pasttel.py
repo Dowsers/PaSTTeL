@@ -51,6 +51,20 @@ def sanitize_identifier(s):
     return s #s.replace("|", "").replace("~", "").replace("#", "").replace(", ",",")
 
 
+def smt_quote(name):
+    """Wrap name in |...| if it contains SMT-special characters and isn't already quoted.
+
+    Identifiers like 'v_rep(select #valid 0)_2' contain parentheses and spaces
+    which are invalid in unquoted SMT-LIB2 identifiers. Wrapping them in |...|
+    makes them valid atomic tokens throughout the solver and parser.
+    """
+    if name.startswith('|') and name.endswith('|'):
+        return name  # already quoted
+    if any(c in name for c in ('(', ')', ' ')):
+        return '|' + name + '|'
+    return name
+
+
 def extract_formula_ssa_vars(formula):
     """Extract all SSA variable names from a linearized formula.
 
@@ -702,28 +716,30 @@ def convert_to_json(parsed):
     json_data["loop"] = loop
 
     # Sanitize all identifiers: strip |, ~, # from variable names and formulas
-    json_data["program_vars"] = [sanitize_identifier(v) for v in json_data["program_vars"]]
+    # smt_quote wraps keys containing SMT-special chars (parens, spaces) in |...|
+    # so that identifiers like 'v_rep(select #valid 0)_2' become valid SMT tokens.
+    json_data["program_vars"] = [smt_quote(sanitize_identifier(v)) for v in json_data["program_vars"]]
     if "var_types" in json_data:
         json_data["var_types"] = {
-            sanitize_identifier(k): v for k, v in json_data["var_types"].items()
+            smt_quote(sanitize_identifier(k)): v for k, v in json_data["var_types"].items()
         }
     if "array_vars" in json_data:
         json_data["array_vars"] = {
-            sanitize_identifier(k): v for k, v in json_data["array_vars"].items()
+            smt_quote(sanitize_identifier(k)): v for k, v in json_data["array_vars"].items()
         }
     for transition_list in (json_data["stem"], json_data["loop"]):
         for t in transition_list:
             t["formula"] = sanitize_identifier(t["formula"])
             t["in_vars"] = {
-                sanitize_identifier(k): sanitize_identifier(v)
+                smt_quote(sanitize_identifier(k)): sanitize_identifier(v)
                 for k, v in t["in_vars"].items()
             }
             t["out_vars"] = {
-                sanitize_identifier(k): sanitize_identifier(v)
+                smt_quote(sanitize_identifier(k)): sanitize_identifier(v)
                 for k, v in t["out_vars"].items()
             }
             t["aux_vars"] = [sanitize_identifier(v) for v in t["aux_vars"]]
-            t["assigned_vars"] = [sanitize_identifier(v) for v in t["assigned_vars"]]
+            t["assigned_vars"] = [smt_quote(sanitize_identifier(v)) for v in t["assigned_vars"]]
 
     return json_data
 
