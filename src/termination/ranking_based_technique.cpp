@@ -176,11 +176,9 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         
         synthesizer->printResults(synthesis_result);
     }
-    // VALIDATION POST-SYNTHÈSE (seulement pour AffineTemplate)
-    // NestedTemplate/LexicographicTemplate : la correction est garantie par la synthèse SMT
-    // (le validator ne supporte pas encore la sémantique lexicographique nested)
+    // VALIDATION POST-SYNTHÈSE
+    RankingAndInvariantValidator validator;
     if (template_name == "AffineTemplate") {
-        RankingAndInvariantValidator validator;
         auto validation_result = validator.validate(
             synthesizer->getTerminationArgument(),
             *lasso_,
@@ -188,14 +186,29 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         );
 
         if (!validation_result.is_valid) {
-            if (verbosity) {
+            if (verbosity)
                 std::cout << "\nValidation failed!" << std::endl;
-            }
-            return false;  // Échec de validation
+            return false;
         }
 
         if (verbosity)
             validator.printValidationResult(validation_result);
+
+    } else if (template_name == "NestedTemplate") {
+        auto validation_result = validator.validateNested(
+            synthesizer->getTerminationArgument(),
+            *lasso_,
+            solver
+        );
+
+        if (!validation_result.is_valid) {
+            if (verbosity)
+                std::cout << "\nNested validation failed: " << validation_result.error_message << std::endl;
+            return false;
+        }
+
+        if (verbosity)
+            validator.printNestedValidationResult(validation_result);
     }
 
     // Succès ! Sauvegarder le résultat

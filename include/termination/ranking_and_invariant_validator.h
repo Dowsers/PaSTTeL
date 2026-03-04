@@ -65,6 +65,29 @@ public:
     RankingAndInvariantValidator();
     
     /**
+     * Résultat de validation pour un NestedTemplate (k composants)
+     */
+    struct NestedValidationResult {
+        bool is_valid;
+        std::string error_message;
+
+        // SI results (partagés entre composants)
+        bool all_si_valid;
+        std::vector<SIValidationResult> si_results;
+
+        // Par composant : non-trivialité, bounded (dernier seul), décroissance nested
+        struct ComponentResult {
+            int index;
+            bool non_trivial_check;
+            bool nested_decrease_check;  // fi(x)-fi(x')+f_{i-1}(x)>=0, ou f0-f0'>=delta
+            std::map<std::string, double> counterexample;
+        };
+        std::vector<ComponentResult> component_results;
+        bool last_component_bounded_check;  // f_{k-1}(x) >= 0
+        std::map<std::string, double> bounded_counterexample;
+    };
+
+    /**
      * Valide un argument de termination complet
      *
      * @param ranking_function La fonction de ranking synthétisée
@@ -77,11 +100,30 @@ public:
         const TerminationArgument& argument,
         const LassoProgram& lasso,
         std::shared_ptr<SMTSolver> solver);
-    
+
+    /**
+     * Valide un argument de termination produit par NestedTemplate
+     *
+     * Vérifie la sémantique nested :
+     *   - f0(x) - f0(x') >= delta
+     *   - fi(x) - fi(x') + f_{i-1}(x) >= 0  pour i > 0
+     *   - f_{k-1}(x) >= 0  (borne)
+     *   - Validité des SI (initiation, consécution, compatibilité)
+     */
+    NestedValidationResult validateNested(
+        const TerminationArgument& argument,
+        const LassoProgram& lasso,
+        std::shared_ptr<SMTSolver> solver);
+
     /**
      * Affiche les résultats de validation
      */
     void printValidationResult(const ValidationResult& result) const;
+
+    /**
+     * Affiche les résultats de validation nested
+     */
+    void printNestedValidationResult(const NestedValidationResult& result) const;
 
     const std::vector<SupportingInvariant>
         getValidSupportingInvariants() const { return valid_sis; };
