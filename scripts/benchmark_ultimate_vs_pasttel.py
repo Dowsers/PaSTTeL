@@ -1134,8 +1134,8 @@ def main():
         help="Use logarithmic scale for the scatter plot axes"
     )
     parser.add_argument(
-        "--strat", choices=["terminate", "nonterminate"], default="terminate",
-        help="Analysis strategy passed to pasttel: 'terminate' or 'nonterminate' (default: terminate)"
+        "--strat", choices=["terminate", "nonterminate", "both"], default="terminate",
+        help="Analysis strategy passed to pasttel: 'terminate', 'nonterminate' or 'both' (default: terminate)"
     )
     parser.add_argument(
         "--check", choices=["loop", "lasso"], default="lasso",
