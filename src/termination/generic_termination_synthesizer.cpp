@@ -514,8 +514,6 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
             ctx.annotation);
     }
 
-    MotzkinTransformation::init_counter();
-
     if (verbose)
         std::cout << "  ✓ Applied " << contexts.size() << " Motzkin transformations" << std::endl;
 }

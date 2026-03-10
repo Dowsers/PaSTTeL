@@ -24,17 +24,16 @@ static std::string formatSMTNumber(double v) {
 // STATIC MEMBERS
 // ============================================================================
 
-int MotzkinTransformation::s_motzkin_counter = 0;
-
-void MotzkinTransformation::init_counter(){
-    s_motzkin_counter = 0;
-}
 
 // ============================================================================
 // CONSTRUCTEUR
 // ============================================================================
 
-MotzkinTransformation::MotzkinTransformation() {
+std::atomic<int> MotzkinTransformation::s_instance_counter{0};
+
+MotzkinTransformation::MotzkinTransformation()
+    : m_instance_id(s_instance_counter.fetch_add(1))
+{
 }
 
 // ============================================================================
@@ -177,13 +176,12 @@ void MotzkinTransformation::registerMotzkinCoefficients() {
                               && allAffineTermsAreConstant(li);
         if (needs_variable) {
             std::ostringstream oss;
-            oss << "motzkin_" << s_motzkin_counter << "_" << i;
+            oss << "motzkin_" << m_instance_id << "_" << i;
             m_motzkin_coefficients.push_back(oss.str());
         } else {
             m_motzkin_coefficients.push_back("1.0");
         }
     }
-    s_motzkin_counter++;
 }
 
 // ============================================================================

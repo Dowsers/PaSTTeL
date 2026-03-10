@@ -6,6 +6,7 @@
 #include <set>
 #include <memory>
 #include <unordered_set>
+#include <atomic>
 
 #include "linear_inequality.h"
 #include "smtsolvers/SMTSolverInterface.h"
@@ -65,7 +66,6 @@ public:
         const std::unordered_set<std::string>& program_vars,
         std::shared_ptr<SMTSolver> solver,
         const std::string& annotation = "");
-    static void init_counter();
 
 private:
     // État interne
@@ -73,8 +73,9 @@ private:
     std::unordered_set<std::string> m_program_vars;
     std::vector<std::string> m_motzkin_coefficients;  // λ_0, λ_1, ..., λ_n
     
-    // Compteur global pour noms uniques
-    static int s_motzkin_counter;
+    // ID unique par instance, obtenu depuis un atomic global (thread-safe)
+    int m_instance_id;
+    static std::atomic<int> s_instance_counter;
 
     // ========================================================================
     // GÉNÉRATION DES CONTRAINTES MOTZKIN
