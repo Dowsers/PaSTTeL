@@ -60,11 +60,10 @@ COMMON_SRCS := \
 	$(SRC_DIR)/smtsolvers/SMTSolverZ3.cpp \
 	$(SRC_DIR)/smtsolvers/SMTSolverCVC5.cpp \
 	$(SRC_DIR)/termination/ranking_and_invariant_validator.cpp \
-	$(SRC_DIR)/termination/termination_analyzer.cpp \
 	$(SRC_DIR)/termination/ranking_based_technique.cpp \
 	$(SRC_DIR)/nontermination/fixpoint_technique.cpp \
 	$(SRC_DIR)/nontermination/geometric_technique.cpp \
-	$(SRC_DIR)/nontermination/nontermination_analyzer.cpp \
+	$(SRC_DIR)/portfolio_orchestrator.cpp \
 	$(SRC_DIR)/termination/supporting_invariant_generator.cpp \
 	$(SRC_DIR)/termination/generic_termination_synthesizer.cpp \
 	$(SRC_DIR)/termination/affine_function_generator.cpp \

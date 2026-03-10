@@ -1,19 +1,11 @@
 #include <iostream>
-#include <future>
 #include <sstream>
 #include <chrono>
 
 #include "pasttel.h"
 #include "parser/json_trace_parser.h"
-#include "templates/affine_template.h"
-#include "templates/nested_template.h"
-#include "templates/lexicographic_template.h"
 #include "nontermination/fixpoint_technique.h"
 #include "nontermination/geometric_technique.h"
-#include "nontermination/nontermination_analyzer.h"
-#include "termination/ranking_and_invariant_validator.h"
-#include "termination/termination_analyzer.h"
-#include "termination/ranking_based_technique.h"
 #include "smtsolvers/SMTSolverZ3.h"
 #include "smtsolvers/SMTSolverCVC5.h"
 
@@ -30,15 +22,13 @@ int CPUS = 1;
 SolverType SOLVER = Z3;
 NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
 
-// Les flags atomiques TERMINATION_FOUND et NONTERMINATION_FOUND sont définis inline dans pasttel.h
-// Rapport d'analyse
 AnalysisReport report;
 
 // Configurations par défaut pour les templates de ranking
 std::vector<TemplateConfig> configs = {
     {0, 1, "(0, 1)"},
-    {1, 0, "(1, 0)"},
-    {0, 0, "(0, 0)"},
+    // {1, 0, "(1, 0)"},
+    // {0, 0, "(0, 0)"},
     // {0, 2, "(0, 2)"},
     // {1, 1, "(1, 1)"},
     // {2, 0, "(2, 0)"},
@@ -85,12 +75,13 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << std::string(80, '-') << "\n";
 
         for (const auto& result : report.termination_results) {
+            bool is_terminating = (result.status == AnalysisResult::TerminationStatus::TERMINATING);
             std::cout << std::left
                       << std::setw(30) << result.technique_name
-                      << std::setw(15) << (result.is_terminating ? "TERMINATING" : "UNKNOWN")
+                      << std::setw(15) << (is_terminating ? "TERMINATING" : "UNKNOWN")
                       << std::setw(12) << std::fixed << std::setprecision(3) << (result.execution_time_ms / 1000.0);
 
-            if (result.is_terminating && !result.proof_details.empty()) {
+            if (is_terminating && !result.proof_details.empty()) {
                 std::string proof = result.proof_details;
                 std::istringstream stream(proof);
                 std::string line;
@@ -99,7 +90,6 @@ void printAnalysisReport(const AnalysisReport& report) {
                 while (std::getline(stream, line)) {
 
                     if (!first) {
-                        // Réaligner sous les colonnes précédentes
                         std::cout << "\n"
                                 << std::setw(30) << ""
                                 << std::setw(15) << ""
@@ -126,14 +116,14 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << std::string(80, '-') << "\n";
 
         for (const auto& result : report.nontermination_results) {
-
+            bool is_nonterminating = (result.status == AnalysisResult::TerminationStatus::NON_TERMINATING);
             std::cout << std::left
                     << std::setw(30) << result.technique_name
-                    << std::setw(15) << (result.is_nonterminating ? "NON-TERM" : "UNKNOWN")
+                    << std::setw(15) << (is_nonterminating ? "NON-TERM" : "UNKNOWN")
                     << std::setw(12) << std::fixed << std::setprecision(3)
                     << (result.execution_time_ms / 1000.0);
 
-            if (result.is_nonterminating && !result.proof_details.empty()) {
+            if (is_nonterminating && !result.proof_details.empty()) {
 
                 std::string proof = result.proof_details;
                 std::istringstream stream(proof);
@@ -143,7 +133,6 @@ void printAnalysisReport(const AnalysisReport& report) {
                 while (std::getline(stream, line)) {
 
                     if (!first) {
-                        // Réaligner sous les colonnes précédentes
                         std::cout << "\n"
                                 << std::setw(30) << ""
                                 << std::setw(15) << ""
@@ -254,128 +243,62 @@ std::string setParameters(int argc, char** argv) {
 
 
 // ============================================================================
-// FONCTIONS D'ANALYSE DE TERMINAISON ET VÉRIFICATION
+// FACTORY SOLVER + ANALYSE PRINCIPALE
 // ============================================================================
 
 /**
  * @brief Factory pour créer le solver SMT approprié
- * @param verbose Activer le mode verbose
- * @return Pointeur partagé vers le solver créé
  */
 std::shared_ptr<SMTSolver> createSMTSolver(bool verbose) {
-    std::shared_ptr<SMTSolver> solver;
+    if (SOLVER == Z3)   return std::make_shared<SMTSolverZ3>(verbose);
+    if (SOLVER == CVC5) return std::make_shared<SMTSolverCVC5>(verbose);
+    throw std::runtime_error("Unknown solver type");
+}
 
-    if (SOLVER == Z3) {
-        solver = std::make_shared<SMTSolverZ3>(verbose);
-    } else if (SOLVER == CVC5) {
-        solver = std::make_shared<SMTSolverCVC5>(verbose);
+AnalysisResult runAnalysis(const LassoProgram& lasso) {
+    PortfolioOrchestrator orchestrator(CPUS);
+
+    // Techniques de terminaison
+    if (MODE == TERMINATION || MODE == BOTH) {
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(
+            "AffineTemplate", configs, NUM_COMPONENTS_NESTED));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(
+            "NestedTemplate", configs, NUM_COMPONENTS_NESTED));
+        // orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(
+        //     "LexicographicTemplate", configs, NUM_COMPONENTS_NESTED));
+    }
+
+    // Techniques de non-terminaison
+    if (MODE == NONTERMINATION || MODE == BOTH) {
+        orchestrator.addTechnique(std::make_unique<FixpointTechnique>());
+        orchestrator.addTechnique(std::make_unique<GeometricTechnique>(
+            GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::LINEAR}));
+        orchestrator.addTechnique(std::make_unique<GeometricTechnique>(
+            GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
+    }
+
+    auto solver = createSMTSolver(VERBOSITY == VerbosityLevel::VERBOSE);
+    AnalysisResult winner = orchestrator.run(lasso, solver);
+
+    // Répartir les résultats conclusifs par catégorie
+    for (const auto& r : orchestrator.getAllResults()) {
+        if (r.status == AnalysisResult::TerminationStatus::TERMINATING)
+            report.termination_results.push_back(r);
+        else if (r.status == AnalysisResult::TerminationStatus::NON_TERMINATING)
+            report.nontermination_results.push_back(r);
+    }
+
+    if (winner.status == AnalysisResult::TerminationStatus::TERMINATING) {
+        report.overall_result = "TERMINATING";
+        report.terminating_time_ms = winner.execution_time_ms;
+    } else if (winner.status == AnalysisResult::TerminationStatus::NON_TERMINATING) {
+        report.overall_result = "NON-TERMINATING";
+        report.nonterminating_time_ms = winner.execution_time_ms;
     } else {
-        throw std::runtime_error("Unknown solver type");
-    }
-
-    return solver;
-}
-
-TerminationResult checkTermination(const LassoProgram& lasso){
-    // Créer l'analyseur de terminaison
-    TerminationAnalyzer analyzer;
-
-    // Ajouter une technique par template
-    // AffineTemplate
-    analyzer.addTechnique(std::make_unique<RankingBasedTechnique>(
-        "AffineTemplate",     // Template
-        configs,              // Configurations: (0,0), (1,0), (0,1), etc.
-        NUM_COMPONENTS_NESTED // Ignoré pour AffineTemplate
-    ));
-
-    // NestedTemplate
-    analyzer.addTechnique(std::make_unique<RankingBasedTechnique>(
-        "NestedTemplate",     // Template
-        configs,              // Configurations: (0,0), (1,0), (0,1), etc.
-        NUM_COMPONENTS_NESTED // Utilisé pour NestedTemplate
-    ));
-
-    // LexicographicTemplate
-    // analyzer.addTechnique(std::make_unique<RankingBasedTechnique>(
-    //     "LexicographicTemplate",     // Template
-    //     configs,              // Configurations: (0,0), (1,0), (0,1), etc.
-    //     NUM_COMPONENTS_NESTED // Utilisé pour NestedTemplate
-    // ));
-    
-    // Analyse (mode séquentiel si CPUS=1, parallèle sinon)
-    auto solver = createSMTSolver(VERBOSITY == VerbosityLevel::VERBOSE);
-    bool use_parallel = (CPUS > 1);
-
-    auto result = analyzer.analyze(lasso, solver, use_parallel);
-
-    // Collecter tous les résultats
-    if(result.is_terminating){
-        report.overall_result = "TERMINATING";
-        report.termination_results = analyzer.getAllResults();
-        TERMINATION_FOUND.store(true);
-        report.terminating_time_ms = result.execution_time_ms;
-    }
-    return result;
-}
-
-// ============================================================================
-// FONCTIONS D'ANALYSE DE NON-TERMINATION
-// ============================================================================
-
-NonTerminationResult checkNonTermination(const LassoProgram& lasso){
-    // Créer l'analyseur de non-terminaison
-    NonTerminationAnalyzer nt_analyzer;
-
-    // Ajouter les techniques (Fixpoint et Geometric)
-    nt_analyzer.addTechnique(std::make_unique<FixpointTechnique>());
-    nt_analyzer.addTechnique(std::make_unique<GeometricTechnique>(
-        GeometricNonTerminationSettings{NUM_GEVS, true, true}));
-
-    // Analyse (mode séquentiel si CPUS=1, parallèle sinon)
-    auto solver = createSMTSolver(VERBOSITY == VerbosityLevel::VERBOSE);
-    bool use_parallel = (CPUS > 1);
-
-
-    auto nt_result = nt_analyzer.analyze(lasso, solver, use_parallel);
-
-    // Collecter tous les résultats
-    if (nt_result.is_nonterminating) {
-        report.overall_result = "NON-TERMINATING";
-        report.nontermination_results = nt_analyzer.getAllResults();
-        NONTERMINATION_FOUND.store(true);
-        report.nonterminating_time_ms = nt_result.execution_time_ms;
-    }
-    return nt_result;
-}
-
-void checkBoth(const LassoProgram& lasso){
-  // Réinitialiser les flags globaux de communication
-    TERMINATION_FOUND.store(false);
-    NONTERMINATION_FOUND.store(false);
-
-    // Lancer les deux analyses en parallèle
-    auto termination_future = std::async(std::launch::async, [&]() -> TerminationResult {
-        return checkTermination(lasso);
-    });
-
-    auto nontermination_future = std::async(std::launch::async, [&]() -> NonTerminationResult {
-        return checkNonTermination(lasso);
-    });
-
-    // Attendre les deux analyses
-    auto term_analysis = termination_future.get();
-    auto nonterm_analysis = nontermination_future.get();
-
-    // Vérifier les résultats (priorité aux preuves définitives)
-    if (term_analysis.is_terminating) {
-        report.overall_result = "TERMINATING";
-    }
-    else if (nonterm_analysis.is_nonterminating) {
-        report.overall_result = "NON-TERMINATING";
-    }
-    else {
         report.overall_result = "UNKNOWN";
     }
+
+    return winner;
 }
 
 int main(int argc, char** argv) {
@@ -406,15 +329,7 @@ int main(int argc, char** argv) {
 
     auto total_start = std::chrono::high_resolution_clock::now();
 
-    if (MODE == TERMINATION) {
-        checkTermination(lasso);
-    }
-    else if(MODE == NONTERMINATION) {
-        checkNonTermination(lasso);
-    }
-    else if (MODE == BOTH) {
-        checkBoth(lasso);
-    }
+    runAnalysis(lasso);
 
     // Calculer le temps total
     auto total_end = std::chrono::high_resolution_clock::now();

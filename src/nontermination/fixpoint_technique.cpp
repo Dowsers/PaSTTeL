@@ -31,17 +31,18 @@ void FixpointTechnique::init(const LassoProgram& lasso) {
 // ============================================================================
 
 
-NonTerminationResult FixpointTechnique::analyze(
+AnalysisResult FixpointTechnique::analyze(
     std::shared_ptr<SMTSolver> solver) {
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-    
-    if (!initialized_ || !lasso_) {
-        return NonTerminationResult(NonTerminationResult::Type::UNKNOWN, false,
-                    "Technique not initialized");
-    }
 
-    NonTerminationResult result;
+    AnalysisResult result;
+    result.technique_name = getName();
+
+    if (!initialized_ || !lasso_) {
+        result.description = "Technique not initialized";
+        return result;
+    }
 
     if (verbose){
         std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
@@ -53,16 +54,13 @@ NonTerminationResult FixpointTechnique::analyze(
     if (lasso_->loop.isTrue()) {
         if (verbose)
             std::cout << "\n  Loop is 'true' → trivial fixpoint (any state loops forever)" << std::endl;
-        result.is_nonterminating = true;
+        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
         result.description = "Loop guard is 'true': the loop runs forever unconditionally.";
-        result.type = NonTerminationResult::Type::FIXPOINT;
         return result;
     }
 
-    // Créer un contexte SMT propre
     solver->push();
-    
-    // Étape 1 : Ajouter contraintes du stem (si présent)
+
     if (!lasso_->hasNoStem()) {
         if (verbose)
             std::cout << "\n[1/3] Ajout des contraintes du stem..." << std::endl;
@@ -71,18 +69,15 @@ NonTerminationResult FixpointTechnique::analyze(
         if (verbose)
             std::cout << "\n[1/3] Pas de stem - analyse directe de la boucle" << std::endl;
     }
-    
-    // Étape 2 : Ajouter contraintes de la boucle
+
     if (verbose)
         std::cout << "\n[2/3] Ajout des contraintes de la boucle..." << std::endl;
     addLoopConstraints(solver);
-    
-    // Étape 3 : Ajouter contraintes de point fixe (x = x')
+
     if (verbose)
         std::cout << "\n[3/3] Ajout des contraintes de point fixe (x = x')..." << std::endl;
     addFixpointConstraints(solver);
-    
-    // Vérifier satisfiabilité
+
     if (verbose)
         std::cout << "\n  • Vérification SAT..." << std::endl;
     bool sat = solver->checkSat();
@@ -90,10 +85,9 @@ NonTerminationResult FixpointTechnique::analyze(
     if (sat) {
         if (verbose)
             std::cout << "    SAT - Point fixe trouvé!" << std::endl;
-        result.is_nonterminating = true;
-        result.witness_state = extractFixpoint(solver);
-        result.description = "Fixpoint found:  Infinite loop with fixpoint state";
-        result.type = NonTerminationResult::Type::FIXPOINT;
+        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
+        result.nt_witness_state = extractFixpoint(solver);
+        result.description = "Fixpoint found: Infinite loop with fixpoint state";
         if (verbose){
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
             std::cout << "║  !  NON-TERMINATION PROVED (Fixpoint)              ║" << std::endl;
@@ -102,9 +96,7 @@ NonTerminationResult FixpointTechnique::analyze(
     } else {
         if (verbose)
             std::cout << "    UNSAT - Pas de point fixe" << std::endl;
-        result.is_nonterminating = false;
         result.description = "No fixpoint exists";
-        result.type = NonTerminationResult::Type::UNKNOWN;
         if (verbose)
             std::cout << "\n    Aucun point fixe trouvé (ne prouve pas la terminaison)" << std::endl;
     }
@@ -341,31 +333,6 @@ std::map<std::string, double> FixpointTechnique::extractFixpoint(
     return fixpoint;
 }
 
-// ============================================================================
-// AFFICHAGE
-// ============================================================================
-
-void FixpointTechnique::printResult(const NonTerminationResult& result) const {
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║    FIXPOINT ANALYSIS RESULT                         ║" << std::endl;
-    std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-    
-    if (result.is_nonterminating) {
-        std::cout << "\n  !  NON-TERMINATING: Fixpoint detected" << std::endl;
-        std::cout << "  " << result.description << std::endl;
-        
-        std::cout << "\n  Fixpoint state:" << std::endl;
-        for (const auto& [var, value] : result.witness_state) {
-            std::cout << "    • " << var << " = " << value << std::endl;
-        }
-        
-        std::cout << "\n  The program loops infinitely at this state." << std::endl;
-    } else {
-        std::cout << "\n  ✓ No fixpoint found" << std::endl;
-        std::cout << "  " << result.description << std::endl;
-        std::cout << "\n  (This does not prove termination)" << std::endl;
-    }
-}
 
 // ============================================================================
 // VALIDATION

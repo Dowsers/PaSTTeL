@@ -4,11 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "nontermination/nontermination_technique_interface.h"
-
 #include "lasso_program.h"
 #include "linear_inequality.h"
 #include "smtsolvers/SMTSolverInterface.h"
+#include "analysis_technique_interface.h"
 
 /**
  * @brief Paramètres pour l'analyse géométrique de non-terminaison
@@ -47,7 +46,7 @@ struct GeometricNonTerminationSettings {
  * - "Proving Non-termination" (Gupta et al., POPL 2008)
  * - "Geometric Nontermination Arguments" (Leike & Heizmann, TACAS 2018)
  */
-class GeometricTechnique : public NonTerminationTechniqueInterface {
+class GeometricTechnique : public AnalysisTechniqueInterface {
 public:
     /**
      * @brief Constructeur avec paramètres par défaut
@@ -65,21 +64,21 @@ public:
      * @param solver Le solveur SMT à utiliser
      * @return GNTA trouvé, ou UNKNOWN si aucun
      */
-    NonTerminationResult analyze(
-        std::shared_ptr<SMTSolver> solver);
+    AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
 
     std::string getName() const override {
-        return "Geometric(" + std::to_string(settings_.num_gevs) + ")";
+        std::string mode = (settings_.analysis_type == GeometricNonTerminationSettings::AnalysisType::LINEAR)
+            ? "L" : "NL";
+        return "Geometric" + mode + "(" + std::to_string(settings_.num_gevs) + ")";
     }
 
-    std::string getDescription() const override {
+    std::string getDescription() const {
         return "Geometric nontermination with " +
             std::to_string(settings_.num_gevs) + " GEV(s), nilpotent=" +
             (settings_.nilpotent_components ? "on" : "off") + ", bounded=" +
             (settings_.allow_bounded ? "on" : "off");
     }
 
-    void printResult(const NonTerminationResult& result) const override;
     bool validateConfiguration() const override;
 
     // Accesseurs
@@ -171,7 +170,7 @@ private:
     /**
      * @brief Extrait le GNTA depuis le modèle SAT
      */
-    NonTerminationResult extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    AnalysisResult extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
 
     /**
      * @brief Vérifie si c'est un fixpoint (tous les GEVs=0 ou tous les λ=0)

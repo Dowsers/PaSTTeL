@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #include "termination/ranking_based_technique.h"
 #include "termination/ranking_and_invariant_validator.h"
@@ -19,7 +20,8 @@ RankingBasedTechnique::RankingBasedTechnique(
     , configs_(configs)
     , num_components_nested_(num_components_nested)
     , lasso_(nullptr)
-    , cancelled_(false) {
+    , cancelled_(false)
+    , last_synthesizer_(nullptr) {
     solver_ = nullptr; // Initialisé dans analyze()
 }
 
@@ -78,60 +80,51 @@ RankingTemplate* RankingBasedTechnique::createTemplate(
 // ANALYSE PRINCIPALE
 // ============================================================================
 
-TerminationResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver) {
+AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver) {
+    AnalysisResult result;
+    result.technique_name = getName();
+
     if (!validateConfiguration()) {
-        return TerminationResult();
+        result.description = "Invalid configuration";
+        return result;
     }
 
     solver_ = solver;
 
-    // Récupérer le niveau de verbosité depuis les variables globales
     extern VerbosityLevel VERBOSITY;
     bool verbosity = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    // Boucle: essayer toutes les configurations pour ce template
     for (const auto& config : configs_) {
-        // Vérifier si annulé
         if (cancelled_.load()) {
-            if (verbosity) {
+            if (verbosity)
                 std::cout << "\n[RankingBased] Technique cancelled" << std::endl;
-            }
             break;
         }
-        solver->reset();  // Réinitialiser le solver avant chaque essai
-        // Essayer cette configuration
-        bool found = tryTemplateConfiguration(
-            template_name_, config, solver, verbosity);
+        solver->reset();
+        bool found = tryTemplateConfiguration(template_name_, config, solver, verbosity);
 
         if (found) {
-            // Succès ! Créer le résultat
-            TerminationResult result(
-                TerminationResult::Type::RANKING_BASED,
-                true,
-                "Termination proof found with " + template_name_ + config.description,
-                getName()
-            );
+            result.status = AnalysisResult::TerminationStatus::TERMINATING;
+            result.description = "Termination proof found with " + template_name_ + config.description;
 
-            // Copier les coefficients de la ranking function comme témoin
-            if (last_synthesizer_) {
-                const auto& rf = last_synthesizer_->getTerminationArgument().ranking_function;
-                result.witness = rf.coefficients;
-                if (!result.witness.empty()) {
-                    std::ostringstream proof;
-                    size_t count = 0;
-                    for (const auto& [var, coef] : result.witness) {
-                        if (coef == 0) continue; // Ignorer les termes nuls
-                        proof << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
-                        count++;
-                    }
-                    result.proof_details = proof.str();
+            assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
+            const auto& rf = last_synthesizer_->getTerminationArgument().ranking_function;
+            result.rf_witness = rf.coefficients;
+            if (!result.rf_witness.empty()) {
+                std::ostringstream proof;
+                size_t count = 0;
+                for (const auto& [var, coef] : result.rf_witness) {
+                    if (coef == 0) continue;
+                    proof << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
+                    count++;
                 }
+                result.proof_details = proof.str();
             }
             return result;
         }
     }
-    // Aucune preuve trouvée
-    return TerminationResult();
+    result.description = "No termination proof found";
+    return result;
 }
 
 // ============================================================================

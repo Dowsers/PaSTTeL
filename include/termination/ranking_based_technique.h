@@ -10,6 +10,7 @@
 #include "termination/generic_termination_synthesizer.h"
 #include "templates/ranking_template.h"
 #include "smtsolvers/SMTSolverInterface.h"
+#include "analysis_technique_interface.h"
 
 /**
  * @brief Configuration d'un template de ranking
@@ -33,7 +34,7 @@ struct TemplateConfig {
  *
  * Interruptible: peut être annulée via cancel() pour la parallélisation
  */
-class RankingBasedTechnique : public TerminationTechniqueInterface {
+class RankingBasedTechnique : public AnalysisTechniqueInterface {
 public:
     /**
      * @brief Constructeur
@@ -51,16 +52,26 @@ public:
     // ========================================================================
 
     void init(const LassoProgram& lasso) override;
-    TerminationResult analyze(std::shared_ptr<SMTSolver> solver) override;
+
+    /**
+     * @brief Analyse et retourne un AnalysisResult (interface PortfolioOrchestrator)
+     */
+    AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+
     std::string getName() const override;
-    std::string getDescription() const override;
-    void printResult(const TerminationResult& result) const override;
+    std::string getDescription() const;
+    void printResult(const TerminationResult& result) const;
 
     bool validateConfiguration() const override;
-    void printInfo() const override;
+    void printInfo() const;
 
     bool canBeCancelled() const override { return true; }
     void cancel() override;
+
+    /**
+     * @brief Accès au dernier argument de terminaison (pour validation post-synthèse)
+     */
+    const GenericTerminationSynthesizer& getLastSynthesizer() const { return *last_synthesizer_; }
 
 private:
     // Configuration

@@ -43,14 +43,17 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
 // Le fixpoint (GEV=0) est géré séparément par FixpointTechnique.
 // ============================================================================
 
-NonTerminationResult GeometricTechnique::analyze(
+AnalysisResult GeometricTechnique::analyze(
     std::shared_ptr<SMTSolver> solver) {
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
+    AnalysisResult result;
+    result.technique_name = getName();
+
     if (!initialized_ || !lasso_) {
-        return NonTerminationResult(NonTerminationResult::Type::UNKNOWN, false,
-                    "Technique not initialized");
+        result.description = "Technique not initialized";
+        return result;
     }
 
     if (verbose) {
@@ -63,15 +66,6 @@ NonTerminationResult GeometricTechnique::analyze(
         std::cout << "    • Allow bounded: " << (settings_.allow_bounded ? "yes" : "no") << std::endl;
         std::cout << "    • Nilpotent components: " << (settings_.nilpotent_components ? "yes" : "no") << std::endl;
     }
-
-    // ========================================================================
-    // Recherche géométrique avec n GEVs complets
-    // Contraintes:
-    //   1. Stem(x₀, x₁)
-    //   2. Loop(x₁, x₁ + y₁ + ... + yₙ)
-    //   3. Loop(yᵢ, λᵢ·yᵢ + νᵢ·yᵢ₊₁) pour chaque i
-    //   4. Bornes sur λᵢ et νᵢ
-    // ========================================================================
 
     solver->push();
 
@@ -87,27 +81,28 @@ NonTerminationResult GeometricTechnique::analyze(
         std::cout << "\n[3/4] Checking satisfiability..." << std::endl;
     bool sat = solver->checkSat();
 
-    NonTerminationResult result;
-
     if (sat) {
         if (verbose)
             std::cout << "    SAT - Geometric nontermination argument found!" << std::endl;
 
         if (verbose)
             std::cout << "\n[4/4] Extracting GNTA..." << std::endl;
-        result = extractGNTA(solver, settings_.num_gevs);
+        AnalysisResult nt = extractGNTA(solver, settings_.num_gevs);
 
         if (verbose) {
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
             std::cout << "║  NON-TERMINATION PROVED (Geometric)                  ║" << std::endl;
             std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
         }
+
+        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
+        result.description = nt.description;
+        result.proof_details = nt.proof_details;
+        result.nt_witness_state = nt.nt_witness_state;
     } else {
         if (verbose)
             std::cout << "    UNSAT - No geometric nontermination argument found" << std::endl;
-        result.is_nonterminating = false;
         result.description = "No geometric nontermination argument found";
-        result.type = NonTerminationResult::Type::UNKNOWN;
     }
 
     solver->pop();
@@ -824,11 +819,11 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
 // EXTRACTION DU GNTA
 // ============================================================================
 
-NonTerminationResult GeometricTechnique::extractGNTA(
+AnalysisResult GeometricTechnique::extractGNTA(
     std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
 {
-    NonTerminationResult result;
-    result.is_nonterminating = true;
+    AnalysisResult result;
+    result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // Nettoyer les résultats précédents
@@ -883,13 +878,11 @@ NonTerminationResult GeometricTechnique::extractGNTA(
 
     // Déterminer le type de résultat
     if (isFixpoint()) {
-        result.type = NonTerminationResult::Type::GEOMETRIC_FIXPOINT;
         result.description = "Fixpoint with infinite repetition";
-        result.witness_state = state_honda;
+        result.nt_witness_state = state_honda;
     } else {
-        result.type = NonTerminationResult::Type::GEOMETRIC_UNBOUNDED;
         result.description = "Geometric unbounded execution found";
-        result.witness_state = state_honda;
+        result.nt_witness_state = state_honda;
     }
 
     // Construire la preuve détaillée
@@ -957,36 +950,6 @@ NonTerminationResult GeometricTechnique::extractGNTA(
     }
 
     return result;
-}
-
-// ============================================================================
-// AFFICHAGE
-// ============================================================================
-
-void GeometricTechnique::printResult(const NonTerminationResult& result) const
-{
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║       GEOMETRIC NONTERMINATION ARGUMENT               ║" << std::endl;
-    std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-
-    if (!result.is_nonterminating) {
-        std::cout << "\n  No GNTA found" << std::endl;
-        std::cout << "  " << result.description << std::endl;
-        return;
-    }
-
-    std::cout << "\n  NON-TERMINATING: " << result.description << std::endl;
-    std::cout << "\n  Type: " << (isFixpoint() ? "Fixpoint" : "Unbounded Execution") << std::endl;
-    std::cout << "  Number of GEVs: " << getNumGEVs() << std::endl;
-    std::cout << "  Nilpotent components: " << (settings_.nilpotent_components ? "enabled" : "disabled") << std::endl;
-    std::cout << "  Allow bounded: " << (settings_.allow_bounded ? "yes" : "no") << std::endl;
-
-    std::cout << "\n  Infinite execution trace:" << std::endl;
-    std::cout << "    x0 -> x1 -> x1 + Y*(sum J^i)*1 -> ..." << std::endl;
-
-    if (!result.proof_details.empty()) {
-        std::cout << "\n  Proof: " << result.proof_details << std::endl;
-    }
 }
 
 // ============================================================================

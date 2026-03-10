@@ -59,7 +59,8 @@ struct TerminationResult {
  * - Exécution parallèle de plusieurs techniques avec early stopping
  * - Séparation claire entre logique métier et orchestration
  *
- * Pattern symétrique à NonTerminationTechniqueInterface
+ * Chaque technique implémente cette interface et est gérée par TerminationAnalyzer.
+ *
  */
 class TerminationTechniqueInterface {
 public:
