@@ -907,11 +907,7 @@ AnalysisResult GeometricTechnique::extractGNTA(
         first = true;
         for (const auto& [var, val] : eigenvectors[i]) {
             if (!first) proof << ", ";
-            // Display as absolute point: honda + gev direction
-            double honda_val = 0.0;
-            auto it = state_honda.find(var);
-            if (it != state_honda.end()) honda_val = it->second;
-            proof << var << "=" << (honda_val + val);
+            proof << var << "=" << val;
             first = false;
         }
         proof << "}, L" << i << "=" << lambdas[i];
