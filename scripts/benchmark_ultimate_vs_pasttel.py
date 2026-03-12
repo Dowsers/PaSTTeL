@@ -33,8 +33,8 @@ PASTTEL_ALGO_MAP = {
     "FixpointTechnique": "Fixpoint",
     "Fixpoint": "Fixpoint",
     "GeometricTechnique": "GNTA",
-    "Geometric(3)": "GNTA",
-    "Geometric(1)": "GNTA",
+    "GeometricL(3)": "GNTA",
+    "GeometricL(1)": "GNTA",
     "Unknown": None,  # skip unknown entries
 }
 
@@ -756,7 +756,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate")
         time_ms: float
         algo: str
     """
-    cmd = [pasttel_bin, "-t", strat, "-c", str(cpus), "-s", "z3", json_path]
+    cmd = [pasttel_bin, "-a", strat, "-c", str(cpus), "-s", "z3", json_path]
 
     try:
         proc = subprocess.run(

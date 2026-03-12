@@ -17,9 +17,6 @@ void PortfolioOrchestrator::addTechnique(
     techniques_.push_back(std::move(technique));
 }
 
-const std::vector<ProofCertificate>& PortfolioOrchestrator::getAllResults() const {
-    return all_results_;
-}
 
 std::vector<std::shared_ptr<SMTSolver>> PortfolioOrchestrator::prepareSolvers(
     std::shared_ptr<SMTSolver> solver, size_t count) const {
@@ -33,11 +30,15 @@ std::vector<std::shared_ptr<SMTSolver>> PortfolioOrchestrator::prepareSolvers(
     return solvers;
 }
 
-ProofCertificate PortfolioOrchestrator::solve(
+void PortfolioOrchestrator::solve(
     const LassoProgram& lasso,
     std::shared_ptr<SMTSolver> solver) {
 
     all_results_.clear();
+    futures_.clear();
+    conclusive_found_.store(false);
+    final_result_ = ProofCertificate{};
+
     lasso.declareSolverContext(solver);
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
@@ -53,26 +54,19 @@ ProofCertificate PortfolioOrchestrator::solve(
         std::cout << "\n";
     }
 
-    auto thread_solvers = prepareSolvers(solver, n);
-
-    std::atomic<bool> conclusive_found{false};
-    std::mutex result_mutex;
-    ProofCertificate final_result;
-
-    std::vector<std::future<ProofCertificate>> futures;
-    futures.reserve(n);
+    thread_solvers_ = prepareSolvers(solver, n);
+    futures_.reserve(n);
 
     for (size_t i = 0; i < n; ++i) {
-        futures.push_back(std::async(std::launch::async,
-            [this, &lasso, &conclusive_found, &result_mutex, &final_result,
-             i, &thread_solvers, verbose]() -> ProofCertificate {
+        futures_.push_back(std::async(std::launch::async,
+            [this, &lasso, i, verbose]() -> ProofCertificate {
 
                 auto& technique = techniques_[i];
                 std::string name = technique->getName();
 
-                if (conclusive_found.load()) {
+                if (conclusive_found_.load()) {
                     if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex);
+                        std::lock_guard<std::mutex> lock(result_mutex_);
                         std::cout << "[" << name << "] Skipped (result already found)\n";
                     }
                     ProofCertificate r;
@@ -84,7 +78,7 @@ ProofCertificate PortfolioOrchestrator::solve(
 
                 if (!technique->validateConfiguration()) {
                     if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex);
+                        std::lock_guard<std::mutex> lock(result_mutex_);
                         std::cout << "[" << name << "] Invalid configuration, skipping\n";
                     }
                     ProofCertificate r;
@@ -92,12 +86,12 @@ ProofCertificate PortfolioOrchestrator::solve(
                     return r;
                 }
 
-                auto thread_solver = thread_solvers[i];
+                auto thread_solver = thread_solvers_[i];
                 thread_solver->reset();
                 lasso.declareSolverContext(thread_solver);
 
                 if (verbose) {
-                    std::lock_guard<std::mutex> lock(result_mutex);
+                    std::lock_guard<std::mutex> lock(result_mutex_);
                     std::cout << "[" << name << "] Starting...\n";
                 }
 
@@ -111,15 +105,15 @@ ProofCertificate PortfolioOrchestrator::solve(
                         end - start).count());
 
                 {
-                    std::lock_guard<std::mutex> lock(result_mutex);
+                    std::lock_guard<std::mutex> lock(result_mutex_);
                     all_results_.push_back(proof);
                 }
 
-                if (proof.isConclusive() && !conclusive_found.load()) {
-                    conclusive_found.store(true);
+                if (proof.isConclusive() && !conclusive_found_.load()) {
+                    conclusive_found_.store(true);
 
                     if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex);
+                        std::lock_guard<std::mutex> lock(result_mutex_);
                         std::cout << "[" << name << "] Conclusive result: "
                                   << (verdict == AnalysisResult::TERMINATING
                                       ? "TERMINATING" : "NON-TERMINATING")
@@ -134,11 +128,11 @@ ProofCertificate PortfolioOrchestrator::solve(
                     }
 
                     {
-                        std::lock_guard<std::mutex> lock(result_mutex);
-                        final_result = proof;
+                        std::lock_guard<std::mutex> lock(result_mutex_);
+                        final_result_ = proof;
                     }
                 } else if (!proof.isConclusive() && verbose) {
-                    std::lock_guard<std::mutex> lock(result_mutex);
+                    std::lock_guard<std::mutex> lock(result_mutex_);
                     std::cout << "[" << name << "] No conclusive result (took "
                               << proof.execution_time_ms << "ms)\n";
                 }
@@ -147,17 +141,78 @@ ProofCertificate PortfolioOrchestrator::solve(
             }
         ));
     }
+}
 
-    for (auto& f : futures) {
-        try { f.get(); } catch (...) {}
+AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds) {
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+    bool timed_out = false;
+
+    if (timelimit_seconds > 0) {
+        auto deadline = std::chrono::steady_clock::now()
+                      + std::chrono::seconds(timelimit_seconds);
+
+        for (auto& f : futures_) {
+            if (std::chrono::steady_clock::now() >= deadline) {
+                timed_out = true;
+                break;
+            }
+            f.wait_until(deadline);
+        }
+
+        if (!timed_out && std::chrono::steady_clock::now() >= deadline)
+            timed_out = true;
+
+        if (timed_out) {
+            if (verbose)
+                std::cout << "\n=== Time limit reached — cancelling remaining techniques ===\n";
+            for (auto& t : techniques_)
+                if (t->canBeCancelled()) t->cancel();
+        }
+    } else {
+        for (auto& f : futures_) {
+            f.get();
+        }
     }
 
-    if (!conclusive_found.load()) {
-        if (verbose)
-            std::cout << "\n=== All techniques completed — result: UNKNOWN ===\n";
-        final_result.technique_name = "None";
-        final_result.description = "No proof found by any technique";
+    // Collect results from futures already done (timeout path)
+    for (auto& f : futures_) {
+        if (f.valid() &&
+            f.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            f.get();
+        }
     }
 
-    return final_result;
+    if (!conclusive_found_.load()) {
+        if (verbose) {
+            if (timed_out)
+                std::cout << "\n=== Time limit reached — result: UNKNOWN ===\n";
+            else
+                std::cout << "\n=== All techniques completed — result: UNKNOWN ===\n";
+        }
+        final_result_.technique_name = "None";
+        final_result_.description = timed_out
+            ? "Time limit reached"
+            : "No proof found by any technique";
+    }
+
+    // Build the report
+    AnalysisReport report;
+    report.winner = final_result_;
+
+    for (const auto& r : all_results_) {
+        if (r.status == AnalysisResult::TERMINATING)
+            report.termination_results.push_back(r);
+        else if (r.status == AnalysisResult::NON_TERMINATING)
+            report.nontermination_results.push_back(r);
+    }
+
+    if (final_result_.status == AnalysisResult::TERMINATING) {
+        report.overall_result = "TERMINATING";
+        report.terminating_time_ms = final_result_.execution_time_ms;
+    } else if (final_result_.status == AnalysisResult::NON_TERMINATING) {
+        report.overall_result = "NON-TERMINATING";
+        report.nonterminating_time_ms = final_result_.execution_time_ms;
+    }
+
+    return report;
 }

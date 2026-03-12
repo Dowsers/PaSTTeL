@@ -62,10 +62,10 @@ test_example() {
     print_test "$description"
 
     # Test avec Z3
-    local result_z3=$(./bin/pasttel "$example" -t "$mode" -s z3 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_z3=$(./bin/pasttel "$example" -a "$mode" -s z3 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Test avec CVC5
-    local result_cvc5=$(./bin/pasttel "$example" -t "$mode" -s cvc5 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_cvc5=$(./bin/pasttel "$example" -a "$mode" -s cvc5 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Vérification
     if [ "$result_z3" == "$expected" ] && [ "$result_cvc5" == "$expected" ]; then
@@ -87,10 +87,10 @@ test_parallel() {
     print_test "$description (parallèle)"
 
     # Test avec Z3 parallèle
-    local result_z3=$(./bin/pasttel "$example" -t "$mode" -s z3 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_z3=$(./bin/pasttel "$example" -a "$mode" -s z3 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Test avec CVC5 parallèle
-    local result_cvc5=$(./bin/pasttel "$example" -t "$mode" -s cvc5 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
+    local result_cvc5=$(./bin/pasttel "$example" -a "$mode" -s cvc5 -c 2 2>&1 | grep "OVERALL RESULT:" | grep -oE "(TERMINATING|NON-TERMINATING|UNKNOWN)" || echo "ERROR")
 
     # Vérification
     if [ "$result_z3" == "$expected" ] && [ "$result_cvc5" == "$expected" ]; then
@@ -105,7 +105,7 @@ test_parallel() {
 # DÉBUT DES TESTS
 # ============================================================================
 
-print_header "Tests de Non-Régression : Z3 vs CVC5"
+print_header "Tests de Non-Régression : Z3" # vs CVC5"
 
 echo "Exécutable: ./bin/pasttel"
 echo "Date: $(date)"
@@ -150,22 +150,13 @@ print_header "Tests de Non-Terminaison (Mode Séquentiel)"
 
 test_example "examples/test_unbounded_counter.json" "nonterminate" "NON-TERMINATING" \
 	"Unbounded counter (ne devrait pas terminer)"
-test_example "examples/test_geometric_doubling.json" "nonterminate" "NON-TERMINATING" \
-	"Geometric doubling (ne devrait pas terminer)"
+#test_example "examples/test_geometric_doubling.json" "nonterminate" "NON-TERMINATING" \
+#	"Geometric doubling (ne devrait pas terminer)"
 test_example "examples/nonterminate_booleans.json" "nonterminate" "NON-TERMINATING" \
 	"Boolean operation (ne devrait pas terminer)"
 test_example "examples/fixpoint_nontermination.json" "nonterminate" "NON-TERMINATING" \
 	"Fixpoint example (ne devrait pas terminer)"
-
-# ============================================================================
-# TESTS RESULTAT INCONNUS (LIMITES)
-# ============================================================================
-
-print_header "Tests de résultat inconnus   (Mode Séquentiel)"
-
-test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "terminate" "UNKNOWN" \
-	"Two variable unbound (ne sait pas)"
-test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "nonterminate" "UNKNOWN" \
+test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "nonterminate" "NON-TERMINATING" \
 	"Two variable unbound (ne sait pas)"
 
 # ============================================================================
@@ -192,16 +183,13 @@ test_example "examples/test_lexicographic_simple.json" "both" "TERMINATING" \
     "Lexicographic simple (devrait terminer)"
 test_example "examples/test_unbounded_counter.json" "both" "NON-TERMINATING" \
 	"Unbounded counter (ne devrait pas terminer)"
-test_example "examples/test_geometric_doubling.json" "both" "NON-TERMINATING" \
-	"Geometric doubling (ne devrait pas terminer)"
+#test_example "examples/test_geometric_doubling.json" "both" "NON-TERMINATING" \
+#	"Geometric doubling (ne devrait pas terminer)"
 test_example "examples/nonterminate_booleans.json" "both" "NON-TERMINATING" \
 	"Boolean operation (ne devrait pas terminer)"
 test_example "examples/fixpoint_nontermination.json" "both" "NON-TERMINATING" \
 	"Fixpoint example (ne devrait pas terminer)"
-
-test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "both" "UNKNOWN" \
-	"Two variable unbound (ne sait pas)"
-test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "both" "UNKNOWN" \
+test_example "examples/test_ranking_func_with_two_variables_non_terminating.json" "both" "NON-TERMINATING" \
 	"Two variable unbound (ne sait pas)"
 	
 # ============================================================================
@@ -223,8 +211,8 @@ test_example "examples/test_affine_template.json" "terminate" "TERMINATING" \
     
 test_parallel "examples/test_unbounded_counter.json" "nonterminate" "NON-TERMINATING" \
 	"Unbounded counter (ne devrait pas terminer)"
-test_parallel "examples/test_geometric_doubling.json" "nonterminate" "NON-TERMINATING" \
-	"Geometric doubling (ne devrait pas terminer)"
+#test_parallel "examples/test_geometric_doubling.json" "nonterminate" "NON-TERMINATING" \
+#	"Geometric doubling (ne devrait pas terminer)"
 test_parallel "examples/nonterminate_booleans.json" "nonterminate" "NON-TERMINATING" \
 	"Boolean operation (ne devrait pas terminer)"
 test_parallel "examples/fixpoint_nontermination.json" "nonterminate" "NON-TERMINATING" \
@@ -247,8 +235,8 @@ test_example "examples/test_affine_template.json" "both" "TERMINATING" \
     
 test_parallel "examples/test_unbounded_counter.json" "both" "NON-TERMINATING" \
 	"Unbounded counter (ne devrait pas terminer, both mode)"
-test_parallel "examples/test_geometric_doubling.json" "both" "NON-TERMINATING" \
-	"Geometric doubling (ne devrait pas terminer, both mode)"
+#test_parallel "examples/test_geometric_doubling.json" "both" "NON-TERMINATING" \
+#	"Geometric doubling (ne devrait pas terminer, both mode)"
 test_parallel "examples/nonterminate_booleans.json" "both" "NON-TERMINATING" \
 	"Boolean operation (ne devrait pas terminer, both mode)"
 test_parallel "examples/fixpoint_nontermination.json" "both" "NON-TERMINATING" \

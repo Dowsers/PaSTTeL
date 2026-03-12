@@ -18,7 +18,7 @@ test_file() {
     
     echo ""
     echo "Test: $file (mode: $mode)"
-    output=$(./bin/pasttel "$file" -t "$mode" -q -c $cpus 2>&1)
+    output=$(./bin/pasttel "$file" -a "$mode" -q -c $cpus 2>&1)
 
     if echo "$output" | grep "OVERALL RESULT" | grep -q "$expected"; then
         echo "✓ PASS"
@@ -45,10 +45,7 @@ test_file "examples/test_unbounded_counter.json" "NON-TERMINATING" "nonterminate
 test_file "examples/test_geometric_doubling.json" "NON-TERMINATING" "nonterminate"
 test_file "examples/nonterminate_booleans.json" "NON-TERMINATING" "nonterminate"
 test_file "examples/fixpoint_nontermination.json" "NON-TERMINATING" "nonterminate"
-
-# for now, unknown (JSON)
-test_file "examples/test_ranking_func_with_two_variables_non_terminating.json" "UNKNOWN" "terminate"
-test_file "examples/test_ranking_func_with_two_variables_non_terminating.json" "UNKNOWN" "nonterminate"
+test_file "examples/test_ranking_func_with_two_variables_non_terminating.json" "NON-TERMINATING" "nonterminate"
 
 
 

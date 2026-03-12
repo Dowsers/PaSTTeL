@@ -32,30 +32,16 @@ extern AnalysisMode MODE;
 extern VerbosityLevel VERBOSITY;
 extern int CPUS;
 extern SolverType SOLVER;
+extern int TIMELIMIT;
 
 // Configurations par défaut pour les templates de ranking
 extern std::vector<TemplateConfig> configs;
 
 // ============================================================================
-// STRUCTURES DE RAPPORT
-// ============================================================================
-
-struct AnalysisReport {
-    std::vector<ProofCertificate> termination_results;
-    std::vector<ProofCertificate> nontermination_results;
-    std::string overall_result; // "TERMINATING", "NON-TERMINATING", "UNKNOWN"
-    double total_time_ms = 0.0;
-    double terminating_time_ms = 0.0;
-    double nonterminating_time_ms = 0.0;
-
-    AnalysisReport() : overall_result("UNKNOWN") {}
-};
-
-// ============================================================================
 // FONCTIONS
 // ============================================================================
 
-ProofCertificate runAnalysis(const LassoProgram& lasso);
+AnalysisReport runAnalysis(const LassoProgram& lasso);
 
 void printAnalysisReport(const AnalysisReport& report);
 

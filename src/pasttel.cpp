@@ -21,8 +21,7 @@ VerbosityLevel VERBOSITY = VerbosityLevel::NORMAL;
 int CPUS = 1;
 SolverType SOLVER = Z3;
 NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
-
-AnalysisReport report;
+int TIMELIMIT = 6000;
 
 // Configurations par défaut pour les templates de ranking
 std::vector<TemplateConfig> configs = {
@@ -38,17 +37,18 @@ std::vector<TemplateConfig> configs = {
 void printHelp(const char* programName) {
     std::cout << "Usage: " << programName << " [options] <filename>\n\n"
               << "Options:\n"
-              << "  -t <terminate|nonterminate|both>   Set termination mode (default: both)\n"
-              << "  -s <z3|cvc5>                      Set SMT solver (default: z3)\n"
-              << "  -q                                Quiet mode (silence output)\n"
-              << "  -v                                Verbose mode (more output)\n"
-              << "  -c <int>                          Number of CPUs (default: 1)\n"
+              << "  -a <terminate|nonterminate|both>   Set analysis mode (default: both)\n"
+              << "  -t <int>                           Time limit in seconds (default: 6000)\n"
+              << "  -s <z3|cvc5>                       Set SMT solver (default: z3)\n"
+              << "  -q                                 Quiet mode (silence output)\n"
+              << "  -v                                 Verbose mode (more output)\n"
+              << "  -c <int>                           Number of CPUs (default: 1)\n"
               << "  -nla <overapproximate|underapproximate|exception>\n"
-              << "                                    Non-linear arithmetic handling (default: overapproximate)\n"
-              << "  -h, --help                        Show this help message\n"
+              << "                                     Non-linear arithmetic handling (default: overapproximate)\n"
+              << "  -h, --help                         Show this help message\n"
               << "\nExamples:\n"
-              << "  " << programName << " -t terminate -s z3 -c 4 input.json\n"
-              << "  " << programName << " -t both -s cvc5 -v input.json\n";
+              << "  " << programName << " -a terminate -s z3 -c 4 -t 300 input.json\n"
+              << "  " << programName << " -a both -s cvc5 -v input.json\n";
 }
 
 // ============================================================================
@@ -176,13 +176,22 @@ std::string setParameters(int argc, char** argv) {
             printHelp(argv[0]);
             std::exit(EXIT_SUCCESS);
         }
-        else if (arg == "-t" && i + 1 < args.size()) {
+        else if (arg == "-a" && i + 1 < args.size()) {
             std::string val = args[++i];
-            if (val == "terminate")        MODE = TERMINATION;
+            if (val == "terminate")         MODE = TERMINATION;
             else if (val == "nonterminate") MODE = NONTERMINATION;
             else if (val == "both")         MODE = BOTH;
             else {
                 std::cerr << "Error: Invalid mode '" << val << "'. See --help.\n";
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        else if (arg == "-t" && i + 1 < args.size()) {
+            try {
+                TIMELIMIT = std::stoi(args[++i]);
+                if (TIMELIMIT < 1) throw std::invalid_argument("must be >= 1");
+            } catch (...) {
+                std::cerr << "Error: Invalid time limit. See --help.\n";
                 std::exit(EXIT_FAILURE);
             }
         }
@@ -255,10 +264,10 @@ std::shared_ptr<SMTSolver> createSMTSolver(bool verbose) {
     throw std::runtime_error("Unknown solver type");
 }
 
-ProofCertificate runAnalysis(const LassoProgram& lasso) {
+AnalysisReport runAnalysis(const LassoProgram& lasso) {
     PortfolioOrchestrator orchestrator(CPUS);
 
-    // Techniques de terminaison
+    // Termination techniques
     if (MODE == TERMINATION || MODE == BOTH) {
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(
             "AffineTemplate", configs, NUM_COMPONENTS_NESTED));
@@ -268,7 +277,7 @@ ProofCertificate runAnalysis(const LassoProgram& lasso) {
         //     "LexicographicTemplate", configs, NUM_COMPONENTS_NESTED));
     }
 
-    // Techniques de non-terminaison
+    // Non-termination techniques
     if (MODE == NONTERMINATION || MODE == BOTH) {
         orchestrator.addTechnique(std::make_unique<FixpointTechnique>());
         orchestrator.addTechnique(std::make_unique<GeometricTechnique>(
@@ -278,27 +287,8 @@ ProofCertificate runAnalysis(const LassoProgram& lasso) {
     }
 
     auto solver = createSMTSolver(VERBOSITY == VerbosityLevel::VERBOSE);
-    ProofCertificate winner = orchestrator.solve(lasso, solver);
-
-    // Répartir les résultats conclusifs par catégorie
-    for (const auto& r : orchestrator.getAllResults()) {
-        if (r.status == AnalysisResult::TERMINATING)
-            report.termination_results.push_back(r);
-        else if (r.status == AnalysisResult::NON_TERMINATING)
-            report.nontermination_results.push_back(r);
-    }
-
-    if (winner.status == AnalysisResult::TERMINATING) {
-        report.overall_result = "TERMINATING";
-        report.terminating_time_ms = winner.execution_time_ms;
-    } else if (winner.status == AnalysisResult::NON_TERMINATING) {
-        report.overall_result = "NON-TERMINATING";
-        report.nonterminating_time_ms = winner.execution_time_ms;
-    } else {
-        report.overall_result = "UNKNOWN";
-    }
-
-    return winner;
+    orchestrator.solve(lasso, solver);
+    return orchestrator.join(TIMELIMIT);
 }
 
 int main(int argc, char** argv) {
@@ -329,15 +319,13 @@ int main(int argc, char** argv) {
 
     auto total_start = std::chrono::high_resolution_clock::now();
 
-    runAnalysis(lasso);
+    AnalysisReport report = runAnalysis(lasso);
 
-    // Calculer le temps total
     auto total_end = std::chrono::high_resolution_clock::now();
-    auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-        total_end - total_start).count();
-    report.total_time_ms = static_cast<double>(total_duration);
+    report.total_time_ms = static_cast<double>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            total_end - total_start).count());
 
-    // Afficher le rapport
     printAnalysisReport(report);
 
     return 0;

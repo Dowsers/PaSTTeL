@@ -1,21 +1,38 @@
 #ifndef PORTFOLIO_ORCHESTRATOR_H
 #define PORTFOLIO_ORCHESTRATOR_H
 
+#include <future>
 #include <memory>
 #include <vector>
 #include <string>
+#include <atomic>
+#include <mutex>
 
 #include "analysis_technique_interface.h"
 #include "lasso_program.h"
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
+ * @brief Summary of a complete portfolio analysis run
+ */
+struct AnalysisReport {
+    std::vector<ProofCertificate> termination_results;
+    std::vector<ProofCertificate> nontermination_results;
+    ProofCertificate winner;
+    std::string overall_result = "UNKNOWN";
+    double total_time_ms = 0.0;
+    double terminating_time_ms = 0.0;
+    double nonterminating_time_ms = 0.0;
+};
+
+/**
  * @brief Orchestrateur de techniques d'analyse en mode portfolio
  *
- * Lance toutes les techniques en parallèle (jusqu'à max_threads simultanément)
- * via std::async, chacune avec son propre clone du solver.
- * Dès qu'une technique retourne un résultat conclusif, annule les autres
- * via cancel() et retourne immédiatement.
+ * Utilisation en deux temps :
+ *   1. solve()  — lance toutes les techniques en parallèle (non-bloquant)
+ *   2. join(t)  — attend jusqu'à t secondes ; retourne le premier résultat
+ *                 conclusif trouvé, ou UNKNOWN si timeout ou aucun résultat.
+ *
  * Avec max_threads == 1, les futures s'exécutent séquentiellement.
  */
 class PortfolioOrchestrator {
@@ -25,17 +42,28 @@ public:
     void addTechnique(std::unique_ptr<AnalysisTechniqueInterface> technique);
 
     /**
-     * @brief Lance toutes les techniques et retourne le premier résultat conclusif
-     * @return Premier résultat conclusif, ou UNKNOWN si aucun
+     * @brief Lance toutes les techniques de façon asynchrone (non-bloquant)
      */
-    ProofCertificate solve(const LassoProgram& lasso, std::shared_ptr<SMTSolver> solver);
+    void solve(const LassoProgram& lasso, std::shared_ptr<SMTSolver> solver);
 
-    const std::vector<ProofCertificate>& getAllResults() const;
+    /**
+     * @brief Waits for the analysis to complete or the time limit to expire.
+     * @param timelimit_seconds Maximum wait time in seconds (0 = no limit)
+     * @return AnalysisReport with all results and the overall verdict
+     */
+    AnalysisReport join(int timelimit_seconds = 0);
 
 private:
     int max_threads_;
     std::vector<std::unique_ptr<AnalysisTechniqueInterface>> techniques_;
     std::vector<ProofCertificate> all_results_;
+
+    // State shared between solve() and join()
+    std::vector<std::future<ProofCertificate>> futures_;
+    std::vector<std::shared_ptr<SMTSolver>> thread_solvers_;
+    std::atomic<bool> conclusive_found_{false};
+    std::mutex result_mutex_;
+    ProofCertificate final_result_;
 
     std::vector<std::shared_ptr<SMTSolver>> prepareSolvers(
         std::shared_ptr<SMTSolver> solver, size_t count) const;
