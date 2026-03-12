@@ -36,12 +36,13 @@ AnalysisResult FixpointTechnique::analyze(
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    AnalysisResult result;
-    result.technique_name = getName();
+    ProofCertificate proof;
+    proof.technique_name = getName();
 
     if (!initialized_ || !lasso_) {
-        result.description = "Technique not initialized";
-        return result;
+        proof.description = "Technique not initialized";
+        proof_ = proof;
+        return proof_.status;
     }
 
     if (verbose){
@@ -54,9 +55,10 @@ AnalysisResult FixpointTechnique::analyze(
     if (lasso_->loop.isTrue()) {
         if (verbose)
             std::cout << "\n  Loop is 'true' → trivial fixpoint (any state loops forever)" << std::endl;
-        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
-        result.description = "Loop guard is 'true': the loop runs forever unconditionally.";
-        return result;
+        proof.status = AnalysisResult::NON_TERMINATING;
+        proof.description = "Loop guard is 'true': the loop runs forever unconditionally.";
+        proof_ = proof;
+        return proof_.status;
     }
 
     solver->push();
@@ -85,9 +87,9 @@ AnalysisResult FixpointTechnique::analyze(
     if (sat) {
         if (verbose)
             std::cout << "    SAT - Point fixe trouvé!" << std::endl;
-        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
-        result.nt_witness_state = extractFixpoint(solver);
-        result.description = "Fixpoint found: Infinite loop with fixpoint state";
+        proof.status = AnalysisResult::NON_TERMINATING;
+        proof.nt_witness_state = extractFixpoint(solver);
+        proof.description = "Fixpoint found: Infinite loop with fixpoint state";
         if (verbose){
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
             std::cout << "║  !  NON-TERMINATION PROVED (Fixpoint)              ║" << std::endl;
@@ -96,14 +98,15 @@ AnalysisResult FixpointTechnique::analyze(
     } else {
         if (verbose)
             std::cout << "    UNSAT - Pas de point fixe" << std::endl;
-        result.description = "No fixpoint exists";
+        proof.description = "No fixpoint exists";
         if (verbose)
             std::cout << "\n    Aucun point fixe trouvé (ne prouve pas la terminaison)" << std::endl;
     }
 
     solver->pop();
 
-    return result;
+    proof_ = proof;
+    return proof_.status;
 }
 
 // ============================================================================

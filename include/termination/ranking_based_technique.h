@@ -57,6 +57,7 @@ public:
      * @brief Analyse et retourne un AnalysisResult (interface PortfolioOrchestrator)
      */
     AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override;
     std::string getDescription() const;
@@ -89,6 +90,7 @@ private:
     // Résultat de la dernière synthèse réussie
     GenericTerminationSynthesizer::SynthesisResult last_synthesis_result_;
     std::unique_ptr<GenericTerminationSynthesizer> last_synthesizer_;
+    ProofCertificate proof_;
 
     /**
      * @brief Crée un template de terminaison

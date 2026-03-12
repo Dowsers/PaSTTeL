@@ -48,12 +48,13 @@ AnalysisResult GeometricTechnique::analyze(
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    AnalysisResult result;
-    result.technique_name = getName();
+    ProofCertificate proof;
+    proof.technique_name = getName();
 
     if (!initialized_ || !lasso_) {
-        result.description = "Technique not initialized";
-        return result;
+        proof.description = "Technique not initialized";
+        proof_ = proof;
+        return proof_.status;
     }
 
     if (verbose) {
@@ -87,27 +88,23 @@ AnalysisResult GeometricTechnique::analyze(
 
         if (verbose)
             std::cout << "\n[4/4] Extracting GNTA..." << std::endl;
-        AnalysisResult nt = extractGNTA(solver, settings_.num_gevs);
+        proof = extractGNTA(solver, settings_.num_gevs);
 
         if (verbose) {
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
             std::cout << "║  NON-TERMINATION PROVED (Geometric)                  ║" << std::endl;
             std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
         }
-
-        result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
-        result.description = nt.description;
-        result.proof_details = nt.proof_details;
-        result.nt_witness_state = nt.nt_witness_state;
     } else {
         if (verbose)
             std::cout << "    UNSAT - No geometric nontermination argument found" << std::endl;
-        result.description = "No geometric nontermination argument found";
+        proof.description = "No geometric nontermination argument found";
     }
 
     solver->pop();
 
-    return result;
+    proof_ = proof;
+    return proof_.status;
 }
 
 // ============================================================================
@@ -819,11 +816,12 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
 // EXTRACTION DU GNTA
 // ============================================================================
 
-AnalysisResult GeometricTechnique::extractGNTA(
+ProofCertificate GeometricTechnique::extractGNTA(
     std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
 {
-    AnalysisResult result;
-    result.status = AnalysisResult::TerminationStatus::NON_TERMINATING;
+    ProofCertificate result;
+    result.status = AnalysisResult::NON_TERMINATING;
+    result.technique_name = getName();
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // Nettoyer les résultats précédents

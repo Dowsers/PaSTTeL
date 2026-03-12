@@ -75,7 +75,7 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << std::string(80, '-') << "\n";
 
         for (const auto& result : report.termination_results) {
-            bool is_terminating = (result.status == AnalysisResult::TerminationStatus::TERMINATING);
+            bool is_terminating = (result.status == AnalysisResult::TERMINATING);
             std::cout << std::left
                       << std::setw(30) << result.technique_name
                       << std::setw(15) << (is_terminating ? "TERMINATING" : "UNKNOWN")
@@ -116,7 +116,7 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << std::string(80, '-') << "\n";
 
         for (const auto& result : report.nontermination_results) {
-            bool is_nonterminating = (result.status == AnalysisResult::TerminationStatus::NON_TERMINATING);
+            bool is_nonterminating = (result.status == AnalysisResult::NON_TERMINATING);
             std::cout << std::left
                     << std::setw(30) << result.technique_name
                     << std::setw(15) << (is_nonterminating ? "NON-TERM" : "UNKNOWN")
@@ -255,7 +255,7 @@ std::shared_ptr<SMTSolver> createSMTSolver(bool verbose) {
     throw std::runtime_error("Unknown solver type");
 }
 
-AnalysisResult runAnalysis(const LassoProgram& lasso) {
+ProofCertificate runAnalysis(const LassoProgram& lasso) {
     PortfolioOrchestrator orchestrator(CPUS);
 
     // Techniques de terminaison
@@ -278,20 +278,20 @@ AnalysisResult runAnalysis(const LassoProgram& lasso) {
     }
 
     auto solver = createSMTSolver(VERBOSITY == VerbosityLevel::VERBOSE);
-    AnalysisResult winner = orchestrator.run(lasso, solver);
+    ProofCertificate winner = orchestrator.solve(lasso, solver);
 
     // Répartir les résultats conclusifs par catégorie
     for (const auto& r : orchestrator.getAllResults()) {
-        if (r.status == AnalysisResult::TerminationStatus::TERMINATING)
+        if (r.status == AnalysisResult::TERMINATING)
             report.termination_results.push_back(r);
-        else if (r.status == AnalysisResult::TerminationStatus::NON_TERMINATING)
+        else if (r.status == AnalysisResult::NON_TERMINATING)
             report.nontermination_results.push_back(r);
     }
 
-    if (winner.status == AnalysisResult::TerminationStatus::TERMINATING) {
+    if (winner.status == AnalysisResult::TERMINATING) {
         report.overall_result = "TERMINATING";
         report.terminating_time_ms = winner.execution_time_ms;
-    } else if (winner.status == AnalysisResult::TerminationStatus::NON_TERMINATING) {
+    } else if (winner.status == AnalysisResult::NON_TERMINATING) {
         report.overall_result = "NON-TERMINATING";
         report.nonterminating_time_ms = winner.execution_time_ms;
     } else {

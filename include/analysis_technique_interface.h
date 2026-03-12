@@ -9,21 +9,21 @@
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
- * @brief Résultat unifié pour toutes les techniques d'analyse
- *
- * Discriminé par TerminationStatus : UNKNOWN, TERMINATING, ou NON_TERMINATING.
- * Remplace TerminationResult et NonTerminationResult dans l'orchestrateur.
- * Les résultats originaux sont conservés dans les techniques internes
- * pour rétrocompatibilité.
+ * @brief Verdict d'analyse retourné par analyze()
  */
-struct AnalysisResult {
-    enum class TerminationStatus {
-        UNKNOWN,
-        TERMINATING,
-        NON_TERMINATING
-    };
+enum class AnalysisResult {
+    UNKNOWN,
+    TERMINATING,
+    NON_TERMINATING
+};
 
-    TerminationStatus status = TerminationStatus::UNKNOWN;
+/**
+ * @brief Certificat de preuve retourné par getProof()
+ *
+ * Contient tous les détails de la dernière analyse effectuée.
+ */
+struct ProofCertificate {
+    AnalysisResult status = AnalysisResult::UNKNOWN;
     std::string technique_name;
     std::string description;
     std::string proof_details;
@@ -32,22 +32,15 @@ struct AnalysisResult {
     std::map<std::string, int64_t> rf_witness;        // terminaison : coefficients RF
     std::map<std::string, double>  nt_witness_state;  // non-terminaison : état témoin
 
-    AnalysisResult() = default;
+    ProofCertificate() = default;
 
     bool isConclusive() const {
-        return status != TerminationStatus::UNKNOWN;
+        return status != AnalysisResult::UNKNOWN;
     }
 };
 
 /**
  * @brief Interface unifiée pour toutes les techniques d'analyse
- *
- * Remplace TerminationTechniqueInterface et NonTerminationTechniqueInterface
- * dans l'orchestrateur PortfolioOrchestrator.
- *
- * Les techniques existantes ne sont pas modifiées : elles sont wrappées
- * via des adaptateurs (RankingBasedTechniqueAdapter, FixpointTechniqueAdapter,
- * GeometricTechniqueAdapter) qui convertissent leurs résultats en AnalysisResult.
  */
 class AnalysisTechniqueInterface {
 public:
@@ -60,11 +53,16 @@ public:
     virtual void init(const LassoProgram& lasso) = 0;
 
     /**
-     * @brief Analyse le programme et retourne un résultat unifié
+     * @brief Analyse le programme et retourne le verdict
      * @param solver Le solveur SMT à utiliser
-     * @return AnalysisResult avec kind != UNKNOWN si une preuve est trouvée
+     * @return AnalysisResult::TERMINATING, NON_TERMINATING, ou UNKNOWN
      */
     virtual AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) = 0;
+
+    /**
+     * @brief Retourne le certificat de preuve du dernier appel à analyze()
+     */
+    virtual ProofCertificate getProof() const = 0;
 
     /**
      * @brief Retourne le nom de la technique (pour logging)

@@ -81,12 +81,13 @@ RankingTemplate* RankingBasedTechnique::createTemplate(
 // ============================================================================
 
 AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver) {
-    AnalysisResult result;
-    result.technique_name = getName();
+    ProofCertificate proof;
+    proof.technique_name = getName();
 
     if (!validateConfiguration()) {
-        result.description = "Invalid configuration";
-        return result;
+        proof.description = "Invalid configuration";
+        proof_ = proof;
+        return proof_.status;
     }
 
     solver_ = solver;
@@ -104,27 +105,29 @@ AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver)
         bool found = tryTemplateConfiguration(template_name_, config, solver, verbosity);
 
         if (found) {
-            result.status = AnalysisResult::TerminationStatus::TERMINATING;
-            result.description = "Termination proof found with " + template_name_ + config.description;
+            proof.status = AnalysisResult::TERMINATING;
+            proof.description = "Termination proof found with " + template_name_ + config.description;
 
             assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
             const auto& rf = last_synthesizer_->getTerminationArgument().ranking_function;
-            result.rf_witness = rf.coefficients;
-            if (!result.rf_witness.empty()) {
-                std::ostringstream proof;
+            proof.rf_witness = rf.coefficients;
+            if (!proof.rf_witness.empty()) {
+                std::ostringstream proof_str;
                 size_t count = 0;
-                for (const auto& [var, coef] : result.rf_witness) {
+                for (const auto& [var, coef] : proof.rf_witness) {
                     if (coef == 0) continue;
-                    proof << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
+                    proof_str << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
                     count++;
                 }
-                result.proof_details = proof.str();
+                proof.proof_details = proof_str.str();
             }
-            return result;
+            proof_ = proof;
+            return proof_.status;
         }
     }
-    result.description = "No termination proof found";
-    return result;
+    proof.description = "No termination proof found";
+    proof_ = proof;
+    return proof_.status;
 }
 
 // ============================================================================

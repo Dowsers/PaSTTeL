@@ -41,8 +41,8 @@ extern std::vector<TemplateConfig> configs;
 // ============================================================================
 
 struct AnalysisReport {
-    std::vector<AnalysisResult> termination_results;     // résultats TERMINATING/UNKNOWN des techniques de terminaison
-    std::vector<AnalysisResult> nontermination_results;  // résultats NON_TERMINATING/UNKNOWN des techniques de non-terminaison
+    std::vector<ProofCertificate> termination_results;
+    std::vector<ProofCertificate> nontermination_results;
     std::string overall_result; // "TERMINATING", "NON-TERMINATING", "UNKNOWN"
     double total_time_ms = 0.0;
     double terminating_time_ms = 0.0;
@@ -55,7 +55,7 @@ struct AnalysisReport {
 // FONCTIONS
 // ============================================================================
 
-AnalysisResult runAnalysis(const LassoProgram& lasso);
+ProofCertificate runAnalysis(const LassoProgram& lasso);
 
 void printAnalysisReport(const AnalysisReport& report);
 

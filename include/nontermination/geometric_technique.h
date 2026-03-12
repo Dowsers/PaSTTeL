@@ -65,6 +65,7 @@ public:
      * @return GNTA trouvé, ou UNKNOWN si aucun
      */
     AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override {
         std::string mode = (settings_.analysis_type == GeometricNonTerminationSettings::AnalysisType::LINEAR)
@@ -90,6 +91,7 @@ private:
     GeometricNonTerminationSettings settings_;
     const LassoProgram* lasso_;
     bool initialized_;
+    ProofCertificate proof_;
 
     // Résultats extraits
     std::map<std::string, double> state_init;                // État initial x₀
@@ -170,7 +172,7 @@ private:
     /**
      * @brief Extrait le GNTA depuis le modèle SAT
      */
-    AnalysisResult extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    ProofCertificate extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
 
     /**
      * @brief Vérifie si c'est un fixpoint (tous les GEVs=0 ou tous les λ=0)

@@ -40,6 +40,7 @@ public:
      * @return Résultat contenant le point fixe si trouvé
      */
     AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override {
         return "Fixpoint";
@@ -51,6 +52,7 @@ private:
 
     const LassoProgram* lasso_;
     bool initialized_;
+    ProofCertificate proof_;
 
     /**
      * @brief Ajoute les contraintes du stem au solveur
