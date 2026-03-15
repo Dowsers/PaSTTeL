@@ -256,6 +256,10 @@ AffineTerm SMTParser::parseArithExpr(const std::string& expr) {
                 throw NlaTermException(
                     "SMTParser::parseArithExpr: non-linear multiplication: " + cleaned);
             }
+        } else {
+            // (* a b c ...) with >2 operands — always non-linear
+            throw NlaTermException(
+                "SMTParser::parseArithExpr: non-linear multiplication: " + cleaned);
         }
     }
     
