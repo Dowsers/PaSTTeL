@@ -193,7 +193,11 @@ std::string LinearInequality::toString() const {
 // Conversion en format SMT-LIB2
 std::string LinearInequality::toSMTLib2() const {
     // Helper: convertir v_arr[v_idx] → (select v_arr v_idx)
+    // Les identifiants SMT-LIB2 quotés |...| sont des scalaires même s'ils contiennent '[' :
+    // c'est le cas des variables pré-linéarisées d'Ultimate (ex: |v_arrayCell_v_a_1[idx]_1|).
     auto convertArrayNotation = [](const std::string& var) -> std::string {
+        if (var.size() >= 2 && var.front() == '|' && var.back() == '|')
+            return var;
         size_t bracket_pos = var.find('[');
         if (bracket_pos != std::string::npos) {
             size_t close_bracket = var.find(']', bracket_pos);

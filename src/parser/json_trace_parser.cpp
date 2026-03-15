@@ -370,66 +370,65 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 
         // Apply substitution to LOOP constraints
         if (!substitution.empty()) {
+            // Substitue un nom de variable SSA selon la table.
+            // Pour les identifiants quotés SMT-LIB2 |...[idx]...|, seul l'index
+            // interne peut être substitué ; le nom complet reste entre pipes.
+            auto substituteVar = [&](const std::string& var_ssa) -> std::string {
+                // Identifiant quoté |...| : substituer l'index interne si besoin
+                if (var_ssa.size() >= 2 && var_ssa.front() == '|' && var_ssa.back() == '|') {
+                    // Cherche [idx] à l'intérieur des pipes
+                    size_t bracket = var_ssa.find('[');
+                    if (bracket != std::string::npos) {
+                        size_t close = var_ssa.find(']', bracket);
+                        std::string idx = var_ssa.substr(bracket + 1, close - bracket - 1);
+                        auto it_idx = substitution.find(idx);
+                        if (it_idx != substitution.end()) {
+                            return var_ssa.substr(0, bracket + 1)
+                                 + it_idx->second
+                                 + var_ssa.substr(close);
+                        }
+                    }
+                    return var_ssa;
+                }
+                // Variable scalaire ou notation arr[idx] sans pipes
+                size_t bracket = var_ssa.find('[');
+                if (bracket != std::string::npos) {
+                    std::string arr = var_ssa.substr(0, bracket);
+                    std::string idx = var_ssa.substr(bracket + 1, var_ssa.find(']') - bracket - 1);
+                    auto it_arr = substitution.find(arr);
+                    auto it_idx = substitution.find(idx);
+                    if (it_arr != substitution.end()) arr = it_arr->second;
+                    if (it_idx != substitution.end()) idx = it_idx->second;
+                    return arr + "[" + idx + "]";
+                }
+                auto it = substitution.find(var_ssa);
+                return (it != substitution.end()) ? it->second : var_ssa;
+            };
+
             for (auto& poly : lasso.loop.polyhedra) {
                 for (auto& ineq : poly) {
                     // Substitute in coefficients
                     std::map<std::string, AffineTerm> new_coeffs;
-                    for (const auto& [var_ssa, coef] : ineq.coefficients) {
-                        std::string new_var = var_ssa;
-                        size_t bracket = var_ssa.find('[');
-                        if (bracket != std::string::npos) {
-                            std::string arr = var_ssa.substr(0, bracket);
-                            std::string idx = var_ssa.substr(bracket + 1, var_ssa.find(']') - bracket - 1);
-                            auto it_arr = substitution.find(arr);
-                            auto it_idx = substitution.find(idx);
-                            if (it_arr != substitution.end()) arr = it_arr->second;
-                            if (it_idx != substitution.end()) idx = it_idx->second;
-                            new_var = arr + "[" + idx + "]";
-                        } else {
-                            auto it = substitution.find(var_ssa);
-                            if (it != substitution.end()) new_var = it->second;
-                        }
-                        new_coeffs[new_var] = coef;
-                    }
+                    for (const auto& [var_ssa, coef] : ineq.coefficients)
+                        new_coeffs[substituteVar(var_ssa)] = coef;
                     ineq.coefficients = new_coeffs;
 
                     // Substitute in constant.coefficients
                     std::map<std::string, double> new_const_coeffs;
-                    for (const auto& [var_ssa, val] : ineq.constant.coefficients) {
-                        std::string new_var = var_ssa;
-                        size_t bracket = var_ssa.find('[');
-                        if (bracket != std::string::npos) {
-                            std::string arr = var_ssa.substr(0, bracket);
-                            std::string idx = var_ssa.substr(bracket + 1, var_ssa.find(']') - bracket - 1);
-                            auto it_arr = substitution.find(arr);
-                            auto it_idx = substitution.find(idx);
-                            if (it_arr != substitution.end()) arr = it_arr->second;
-                            if (it_idx != substitution.end()) idx = it_idx->second;
-                            new_var = arr + "[" + idx + "]";
-                        } else {
-                            auto it = substitution.find(var_ssa);
-                            if (it != substitution.end()) new_var = it->second;
-                        }
-                        new_const_coeffs[new_var] = val;
-                    }
+                    for (const auto& [var_ssa, val] : ineq.constant.coefficients)
+                        new_const_coeffs[substituteVar(var_ssa)] = val;
                     ineq.constant.coefficients = new_const_coeffs;
                 }
             }
 
-            // Update var_to_ssa_in of loop
+            // Update var_to_ssa_in of loop (uses substituteVar to handle quoted identifiers)
             for (auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-                auto it = substitution.find(ssa_in);
-                if (it != substitution.end()) {
-                    ssa_in = it->second;
-                }
+                ssa_in = substituteVar(ssa_in);
             }
 
-            // Update var_to_ssa_out of loop (for identity variables where in_ssa == out_ssa)
+            // Update var_to_ssa_out of loop (uses substituteVar to handle quoted identifiers)
             for (auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-                auto it = substitution.find(ssa_out);
-                if (it != substitution.end()) {
-                    ssa_out = it->second;
-                }
+                ssa_out = substituteVar(ssa_out);
             }
         }
     }
