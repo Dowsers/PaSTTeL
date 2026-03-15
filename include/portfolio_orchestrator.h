@@ -7,6 +7,7 @@
 #include <string>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 
 #include "analysis_technique_interface.h"
 #include "lasso_program.h"
@@ -64,6 +65,11 @@ private:
     std::atomic<bool> conclusive_found_{false};
     std::mutex result_mutex_;
     ProofCertificate final_result_;
+
+    // Semaphore to limit concurrent threads to max_threads_
+    int sem_count_;
+    std::mutex sem_mutex_;
+    std::condition_variable sem_cv_;
 
     std::vector<std::shared_ptr<SMTSolver>> prepareSolvers(
         std::shared_ptr<SMTSolver> solver, size_t count) const;

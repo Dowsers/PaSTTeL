@@ -10,7 +10,7 @@
 extern VerbosityLevel VERBOSITY;
 
 PortfolioOrchestrator::PortfolioOrchestrator(int max_threads)
-    : max_threads_(max_threads) {}
+    : max_threads_(max_threads), sem_count_(max_threads) {}
 
 void PortfolioOrchestrator::addTechnique(
     std::unique_ptr<AnalysisTechniqueInterface> technique) {
@@ -57,12 +57,31 @@ void PortfolioOrchestrator::solve(
     thread_solvers_ = prepareSolvers(solver, n);
     futures_.reserve(n);
 
+    sem_count_ = max_threads_;
+
     for (size_t i = 0; i < n; ++i) {
         futures_.push_back(std::async(std::launch::async,
             [this, &lasso, i, verbose]() -> ProofCertificate {
 
                 auto& technique = techniques_[i];
                 std::string name = technique->getName();
+
+                // Acquire a slot (semaphore): blocks until a thread slot is available
+                {
+                    std::unique_lock<std::mutex> lock(sem_mutex_);
+                    sem_cv_.wait(lock, [this] { return sem_count_ > 0; });
+                    --sem_count_;
+                }
+
+                // RAII release of semaphore slot on exit
+                struct SemRelease {
+                    PortfolioOrchestrator* self;
+                    ~SemRelease() {
+                        std::lock_guard<std::mutex> lock(self->sem_mutex_);
+                        ++self->sem_count_;
+                        self->sem_cv_.notify_one();
+                    }
+                } sem_release{this};
 
                 if (conclusive_found_.load()) {
                     if (verbose) {
@@ -96,7 +115,14 @@ void PortfolioOrchestrator::solve(
                 }
 
                 auto start = std::chrono::high_resolution_clock::now();
-                auto verdict = technique->analyze(thread_solver);
+                AnalysisResult verdict;
+                try {
+                    verdict = technique->analyze(thread_solver);
+                } catch (const std::exception& e) {
+                    ProofCertificate r;
+                    r.technique_name = name;
+                    return r;
+                }
                 auto end = std::chrono::high_resolution_clock::now();
 
                 auto proof = technique->getProof();
