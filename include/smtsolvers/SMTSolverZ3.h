@@ -43,6 +43,9 @@ private:
     
     // Options
     bool m_verbose;
+
+    // Set to true by interrupt() to silently ignore subsequent Z3 operations
+    bool m_interrupted;
     
 public:
     /**

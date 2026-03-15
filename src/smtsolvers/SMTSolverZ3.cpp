@@ -23,6 +23,7 @@ SMTSolverZ3::SMTSolverZ3(bool verbose)
     , m_solver(m_context)
     , m_assertion_count(0)
     , m_verbose(verbose)
+    , m_interrupted(false)
 {
     if (m_verbose) {
         std::cout << "[Z3] Initialisation du solveur Z3" << std::endl;
@@ -42,20 +43,32 @@ SMTSolverZ3::SMTSolverZ3(bool verbose)
 // ============================================================================
 
 void SMTSolverZ3::push() {
-    m_solver.push();
+    if (m_interrupted) return;
+    try {
+        m_solver.push();
+    } catch (const z3::exception&) {
+        m_interrupted = true;
+        return;
+    }
     m_assertion_stack.push(m_assertion_count);
-    
+
     if (m_verbose) {
         std::cout << "[Z3] Push (niveau " << m_assertion_stack.size() << ")" << std::endl;
     }
 }
 
 void SMTSolverZ3::pop() {
+    if (m_interrupted) return;
     if (m_assertion_stack.empty()) {
         throw std::runtime_error("SMTSolverZ3::pop() appelé sans push() correspondant");
     }
     
-    m_solver.pop();
+    try {
+        m_solver.pop();
+    } catch (const z3::exception&) {
+        m_interrupted = true;
+        return;
+    }
     m_assertion_count = m_assertion_stack.top();
     m_assertion_stack.pop();
     
@@ -69,6 +82,7 @@ void SMTSolverZ3::pop() {
 // ============================================================================
 
 void SMTSolverZ3::declareVariable(const std::string& name, const std::string& type) {
+    if (m_interrupted) return;
     // Vérifier si la variable existe déjà
     if (variableExists(name)) {
         if (m_verbose) {
@@ -202,6 +216,7 @@ void SMTSolverZ3::addAxiom(const std::string& axiom) {
 // ============================================================================
 
 void SMTSolverZ3::addAssertion(const std::string& assertion) {
+    if (m_interrupted) return;
     try {
         // Parser l'assertion SMT-LIB2 et la convertir en expr Z3
         z3::expr constraint = parseSmtLib2(assertion);
@@ -216,9 +231,9 @@ void SMTSolverZ3::addAssertion(const std::string& assertion) {
         }
         
     } catch (const z3::exception& e) {
-        std::cerr << "[Z3 ERROR] Erreur lors de l'ajout de l'assertion: " << assertion << std::endl;
-        std::cerr << "[Z3 ERROR] " << e.msg() << std::endl;
-        throw;
+        m_interrupted = true;
+        if (m_verbose)
+            std::cerr << "[Z3 ERROR] Erreur lors de l'ajout de l'assertion (interrupted): " << e.msg() << std::endl;
     }
 }
 
@@ -231,10 +246,17 @@ bool SMTSolverZ3::checkSat() {
         std::cout << "[Z3] Vérification de la satisfiabilité..." << std::endl;
     }
     
-    z3::check_result result = m_solver.check();
-    
+    z3::check_result result;
+    try {
+        result = m_solver.check();
+    } catch (const z3::exception& e) {
+        if (m_verbose)
+            std::cout << "[Z3] CheckSat interrompu" << std::endl;
+        return false;
+    }
+
     bool is_sat = (result == z3::sat);
-    
+
     if (m_verbose) {
         std::cout << "[Z3] Résultat: ";
         switch (result) {
@@ -250,7 +272,7 @@ bool SMTSolverZ3::checkSat() {
                 break;
         }
     }
-    
+
     return is_sat;
 }
 
@@ -481,6 +503,7 @@ z3::expr SMTSolverZ3::getVariable(const std::string& name) {
 }
 
 void SMTSolverZ3::interrupt() {
+    m_interrupted = true;
     m_context.interrupt();
     if (m_verbose) {
         std::cout << "[Z3] CheckSat interrompu" << std::endl;

@@ -221,8 +221,8 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
 
 void RankingBasedTechnique::cancel() {
     cancelled_.store(true);
-    solver_->interrupt();  // Interrompre le solveur SMT en cours
-    std::cout<<"interruption ranking templates !!"<<std::endl;
+    if (solver_)
+        solver_->interrupt();
 }
 
 // ============================================================================
