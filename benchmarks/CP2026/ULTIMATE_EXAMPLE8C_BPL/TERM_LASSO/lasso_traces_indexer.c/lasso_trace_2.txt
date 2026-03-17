@@ -1,0 +1,203 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  thread_n_#in~arg.offset                            : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  thread_n_#in~arg.base                              : Int
+  thread_n_~#zero~0.offset                           : Int
+  thread_n_~tid~0                                    : Int
+  thread_n_#t~mem0                                   : Int
+  thread_n_~#zero~0.base                             : Int
+  thread_n_~arg.offset                               : Int
+  thread_n_~w~0                                      : Int
+  thread_n_~h~0                                      : Int
+  thread_n_~arg.base                                 : Int
+  thread_n_~i~0                                      : Int
+  thread_n_#t~ret1                                   : Int
+  thread_n_#t~post2                                  : Int
+  v_#StackHeapBarrier_7                              : Int
+  v_thread_n_#in~arg.offset_5                        : Int
+  v_thread_n_#in~arg.base_5                          : Int
+  v_thread_n_~#zero~0.offset_16                      : Int
+  v_thread_n_~tid~0_14                               : Int
+  v_thread_n_#t~mem0_13                              : Int
+  v_thread_n_~#zero~0.base_19                        : Int
+  v_thread_n_~arg.offset_17                          : Int
+  v_thread_n_~w~0_14                                 : Int
+  v_thread_n_~h~0_24                                 : Int
+  v_thread_n_~arg.base_18                            : Int
+  v_thread_n_~i~0_25                                 : Int
+  v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1 : Int
+  v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_19]_1 : Int
+  v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1 : Int
+  v_arrayCell_v_#length_18[v_thread_n_~#zero~0.base_19]_1 : Int
+  v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1 : Int
+  v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_19, 0]_1 : Int
+  v_thread_n_~#zero~0.offset_15                      : Int
+  v_thread_n_~tid~0_12                               : Int
+  v_thread_n_#t~mem0_12                              : Int
+  v_thread_n_~#zero~0.base_18                        : Int
+  v_thread_n_~arg.offset_15                          : Int
+  v_thread_n_~w~0_13                                 : Int
+  v_thread_n_~h~0_22                                 : Int
+  v_thread_n_~arg.base_16                            : Int
+  v_thread_n_~i~0_22                                 : Int
+  v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1 : Int
+  v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1 : Int
+  v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1 : Int
+  v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1 : Int
+  v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1 : Int
+  v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_19]_1 : Int
+  v_arrayCell_v_#length_18[v_thread_n_~#zero~0.base_18]_1 : Int
+  v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1 : Int
+  v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_19]_1 : Int
+  v_thread_n_~tid~0_13                               : Int
+  v_thread_n_~i~0_24                                 : Int
+  v_thread_n_~h~0_25                                 : Int
+  v_thread_n_#t~ret1_12                              : Int
+  v_thread_n_#t~post2_6                              : Int
+  v_thread_n_~h~0_23                                 : Int
+  v_thread_n_#t~ret1_10                              : Int
+  v_thread_n_~i~0_23                                 : Int
+  v_thread_n_#t~post2_5                              : Int
+  v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1 : Int
+  v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= (store |v_#length_24| |v_thread_n_~#zero~0.base_23| 4) |v_#length_23|) (= |v_#valid_29| (store |v_#valid_30| |v_thread_n_~#zero~0.base_23| 1)) (= v_thread_n_~tid~0_20 (select (select |v_#memory_int_13| |v_thread_n_#in~arg.base_8|) |v_thread_n_#in~arg.offset_8|)) (= 1 (select |v_#valid_30| |v_thread_n_#in~arg.base_8|)) (= (select (select |v_#memory_int_13| |v_thread_n_~#zero~0.base_23|) 0) 0) (<= (+ |v_thread_n_#in~arg.offset_8| 4) (select |v_#length_24| |v_thread_n_#in~arg.base_8|)) (= 0 |v_thread_n_~#zero~0.offset_20|) (<= 0 |v_thread_n_#in~arg.offset_8|) (= v_thread_n_~i~0_33 0) (= (select |v_#valid_30| |v_thread_n_~#zero~0.base_23|) 0) (<= (+ |v_#StackHeapBarrier_10| 1) |v_thread_n_~#zero~0.base_23|) (not (= |v_thread_n_~#zero~0.base_23| 0)))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_10|, thread_n_#in~arg.offset=|v_thread_n_#in~arg.offset_8|, #valid=|v_#valid_30|, #memory_int=|v_#memory_int_13|, #length=|v_#length_24|, thread_n_#in~arg.base=|v_thread_n_#in~arg.base_8|}  OutVars{thread_n_~#zero~0.offset=|v_thread_n_~#zero~0.offset_20|, thread_n_~tid~0=v_thread_n_~tid~0_20, thread_n_#in~arg.offset=|v_thread_n_#in~arg.offset_8|, thread_n_#t~mem0=|v_thread_n_#t~mem0_17|, thread_n_~#zero~0.base=|v_thread_n_~#zero~0.base_23|, thread_n_~arg.offset=v_thread_n_~arg.offset_23, thread_n_~w~0=v_thread_n_~w~0_18, #StackHeapBarrier=|v_#StackHeapBarrier_10|, thread_n_~h~0=v_thread_n_~h~0_32, #valid=|v_#valid_29|, #memory_int=|v_#memory_int_13|, thread_n_~arg.base=v_thread_n_~arg.base_24, #length=|v_#length_23|, thread_n_#in~arg.base=|v_thread_n_#in~arg.base_8|, thread_n_~i~0=v_thread_n_~i~0_33}  AuxVars[]  AssignedVars[thread_n_~#zero~0.offset, thread_n_~tid~0, thread_n_~h~0, thread_n_#t~mem0, #valid, thread_n_~#zero~0.base, thread_n_~arg.offset, thread_n_~arg.base, #length, thread_n_~i~0, thread_n_~w~0]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (mod (+ (* v_thread_n_~tid~0_21 7) (* 77 v_thread_n_~i~0_35)) 128))) (and (= v_thread_n_~i~0_34 (+ v_thread_n_~i~0_35 1)) (= v_thread_n_~h~0_33 .cse0) (<= v_thread_n_~i~0_35 3) (or (< 0 (+ v_thread_n_~tid~0_21 (* v_thread_n_~i~0_35 11) 1)) (= 0 .cse0))))  InVars {thread_n_~tid~0=v_thread_n_~tid~0_21, thread_n_~i~0=v_thread_n_~i~0_35}  OutVars{thread_n_~h~0=v_thread_n_~h~0_33, thread_n_~tid~0=v_thread_n_~tid~0_21, thread_n_#t~ret1=|v_thread_n_#t~ret1_18|, thread_n_~i~0=v_thread_n_~i~0_34, thread_n_#t~post2=|v_thread_n_#t~post2_10|}  AuxVars[]  AssignedVars[thread_n_~h~0, thread_n_#t~ret1, thread_n_~i~0, thread_n_#t~post2]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 102
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8627
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,3977
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6992
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9330
+    Simplify formula using some simplification technique -> relative DAG size: 0,7487
+    Transform into disjunctive normal form -> relative DAG size: 1,8562
+    Simplify formula using some simplification technique -> relative DAG size: 0,9889
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0224
+
+Stem (linearized):
+  Formula:  (or (and (<= 0 |v_thread_n_#in~arg.offset_5|) (<= |v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1| 1) (>= v_thread_n_~i~0_22 0) (>= |v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1| 0) (<= (+ 0 1) |v_thread_n_~#zero~0.base_18|) (<= 4 |v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1|) (<= (+ |v_#StackHeapBarrier_7| 1) |v_thread_n_~#zero~0.base_18|) (>= 0 |v_thread_n_~#zero~0.offset_15|) (>= |v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1| 0) (>= v_thread_n_~tid~0_12 |v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|) (<= |v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1| 0) (<= v_thread_n_~tid~0_12 |v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|) (<= v_thread_n_~i~0_22 0) (>= |v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1| 1) (<= (+ |v_thread_n_#in~arg.offset_5| 4) |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (>= |v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1| 0) (>= 4 |v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1|) (>= |v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1| |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (>= |v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1| |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (<= 0 |v_thread_n_~#zero~0.offset_15|)) (and (<= 0 |v_thread_n_#in~arg.offset_5|) (<= |v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1| 1) (>= v_thread_n_~i~0_22 0) (>= |v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1| 0) (<= 4 |v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1|) (<= (+ |v_#StackHeapBarrier_7| 1) |v_thread_n_~#zero~0.base_18|) (>= 0 |v_thread_n_~#zero~0.offset_15|) (>= |v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1| 0) (<= (+ |v_thread_n_~#zero~0.base_18| 1) 0) (>= v_thread_n_~tid~0_12 |v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|) (<= |v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1| 0) (<= v_thread_n_~tid~0_12 |v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|) (<= v_thread_n_~i~0_22 0) (>= |v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1| 1) (<= (+ |v_thread_n_#in~arg.offset_5| 4) |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (>= |v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1| 0) (>= 4 |v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1|) (>= |v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1| 1) (<= |v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1| |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (>= |v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1| |v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|) (<= 0 |v_thread_n_~#zero~0.offset_15|)))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_7|, thread_n_#in~arg.offset=|v_thread_n_#in~arg.offset_5|, thread_n_#in~arg.base=|v_thread_n_#in~arg.base_5|, thread_n_~#zero~0.offset=|v_thread_n_~#zero~0.offset_16|, thread_n_~tid~0=v_thread_n_~tid~0_14, thread_n_#t~mem0=|v_thread_n_#t~mem0_13|, thread_n_~#zero~0.base=|v_thread_n_~#zero~0.base_19|, thread_n_~arg.offset=v_thread_n_~arg.offset_17, thread_n_~w~0=v_thread_n_~w~0_14, thread_n_~h~0=v_thread_n_~h~0_24, thread_n_~arg.base=v_thread_n_~arg.base_18, thread_n_~i~0=v_thread_n_~i~0_25, v_rep(select #valid thread_n_#in~arg.base)_2=|v_arrayCell_v_#valid_24[v_thread_n_#in~arg.base_5]_1|, v_rep(select #valid thread_n_~#zero~0.base)_2=|v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_19]_1|, v_rep(select #length thread_n_#in~arg.base)_2=|v_arrayCell_v_#length_18[v_thread_n_#in~arg.base_5]_1|, v_rep(select #length thread_n_~#zero~0.base)_2=|v_arrayCell_v_#length_18[v_thread_n_~#zero~0.base_19]_1|, v_rep(select (select #memory_int thread_n_#in~arg.base) thread_n_#in~arg.offset)_2=|v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|, v_rep(select (select #memory_int thread_n_~#zero~0.base) 0)_2=|v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_19, 0]_1|}
+  OutVars:  {thread_n_~#zero~0.offset=|v_thread_n_~#zero~0.offset_15|, thread_n_~tid~0=v_thread_n_~tid~0_12, thread_n_#in~arg.offset=|v_thread_n_#in~arg.offset_5|, thread_n_#t~mem0=|v_thread_n_#t~mem0_12|, thread_n_~#zero~0.base=|v_thread_n_~#zero~0.base_18|, thread_n_~arg.offset=v_thread_n_~arg.offset_15, thread_n_~w~0=v_thread_n_~w~0_13, #StackHeapBarrier=|v_#StackHeapBarrier_7|, thread_n_~h~0=v_thread_n_~h~0_22, thread_n_~arg.base=v_thread_n_~arg.base_16, thread_n_#in~arg.base=|v_thread_n_#in~arg.base_5|, thread_n_~i~0=v_thread_n_~i~0_22, v_rep(select #valid thread_n_#in~arg.base)_2=|v_arrayCell_v_#valid_23[v_thread_n_#in~arg.base_5]_1|, v_rep(select #valid thread_n_~#zero~0.base)_2=|v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_18]_1|, v_rep(select #length thread_n_#in~arg.base)_2=|v_arrayCell_v_#length_17[v_thread_n_#in~arg.base_5]_1|, v_rep(select #length thread_n_~#zero~0.base)_2=|v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_18]_1|, v_rep(select (select #memory_int thread_n_#in~arg.base) thread_n_#in~arg.offset)_2=|v_arrayCell_v_#memory_int_10[v_thread_n_#in~arg.base_5, v_thread_n_#in~arg.offset_5]_1|, v_rep(select (select #memory_int thread_n_~#zero~0.base) 0)_2=|v_arrayCell_v_#memory_int_10[v_thread_n_~#zero~0.base_18, 0]_1|}
+  AuxVars:  [|v_arrayCell_v_#length_17[v_thread_n_~#zero~0.base_19]_1|, |v_arrayCell_v_#length_18[v_thread_n_~#zero~0.base_18]_1|, |v_arrayCell_v_#valid_24[v_thread_n_~#zero~0.base_18]_1|, |v_arrayCell_v_#valid_23[v_thread_n_~#zero~0.base_19]_1|]
+
+Loop (linearized):
+  Formula:  (or (and (<= v_thread_n_~i~0_23 (+ v_thread_n_~i~0_24 1)) (<= 0 |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|) (<= |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 127) (<= v_thread_n_~h~0_23 |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|) (<= (+ v_thread_n_~i~0_24 1) v_thread_n_~i~0_23) (<= (+ 0 1) (+ v_thread_n_~tid~0_13 (* v_thread_n_~i~0_24 11) 1)) (<= (+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24)) (+ |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| (* |v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 128))) (<= |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| v_thread_n_~h~0_23) (<= v_thread_n_~i~0_24 3) (<= (+ |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| (* |v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 128)) (+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24)))) (and (<= v_thread_n_~i~0_23 (+ v_thread_n_~i~0_24 1)) (<= 0 |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|) (<= |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 0) (<= v_thread_n_~h~0_23 |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|) (<= (+ v_thread_n_~i~0_24 1) v_thread_n_~i~0_23) (<= (+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24)) (+ |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| (* |v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 128))) (<= |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| v_thread_n_~h~0_23) (<= v_thread_n_~i~0_24 3) (<= (+ |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| (* |v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1| 128)) (+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24)))))
+  InVars:   {thread_n_~tid~0=v_thread_n_~tid~0_13, thread_n_~i~0=v_thread_n_~i~0_24, thread_n_~h~0=v_thread_n_~h~0_25, thread_n_#t~ret1=|v_thread_n_#t~ret1_12|, thread_n_#t~post2=|v_thread_n_#t~post2_6|}
+  OutVars:  {thread_n_~h~0=v_thread_n_~h~0_23, thread_n_~tid~0=v_thread_n_~tid~0_13, thread_n_#t~ret1=|v_thread_n_#t~ret1_10|, thread_n_~i~0=v_thread_n_~i~0_23, thread_n_#t~post2=|v_thread_n_#t~post2_5|}
+  AuxVars:  [|v_div_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|, |v_mod_aux(+ (* v_thread_n_~tid~0_13 7) (* 77 v_thread_n_~i~0_24))128_1|]
+
+--- RAW TRACE ---
+Stem (length=2):
+  [0] ~arg.base, ~arg.offset := #in~arg.base, #in~arg.offset;
+  [1] call #t~mem0 := read~int(~arg.base, ~arg.offset, 4);~tid~0 := #t~mem0;havoc #t~mem0;call ~#zero~0.base, ~#zero~0.offset := #Ultimate.allocOnStack(4);call write~init~int(0, ~#zero~0.base, ~#zero~0.offset, 4);havoc ~w~0;havoc ~h~0;~i~0 := 0;
+Loop (length=4):
+  [0] assume ~i~0 < 4;~w~0 := 11 * ~i~0 + ~tid~0;~h~0 := (if 7 * ~w~0 < 0 && 0 != 7 * ~w~0 % 128 then 7 * ~w~0 % 128 - 128 else 7 * ~w~0 % 128);BeginParallelComposition{ParallelCodeBlock0: assume ~h~0 < 0;assume false;ParallelCodeBlock1: assume !(~h~0 < 0);}EndParallelComposition
+  [1] call #t~ret1 := atomic_compare_exchange_strong_explicit(~#table~0.base, ~#table~0.offset + 4 * ~h~0, ~#zero~0.base, ~#zero~0.offset, ~w~0, 0, 0);assume -2147483648 <= #t~ret1 && #t~ret1 <= 2147483647;
+  [2] assume !(0 == #t~ret1);havoc #t~ret1;
+  [3] #t~post2 := ~i~0;~i~0 := 1 + #t~post2;havoc #t~post2;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2213510 ns (2,21 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 153844467 ns (153,84 ms)
+       Variables (stem/loop): 15/6  Disjuncts (stem/loop): 2/2
+       Supporting invariants: 4  Motzkin applications: 20
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 153,84 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(v_rep(select #valid thread_n_#in~arg.base)_3, thread_n_~i~0) = 7*v_rep(select #valid thread_n_#in~arg.base)_3 - 2*thread_n_~i~0
+  Variables:
+    v_rep(select #valid thread_n_#in~arg.base)_3
+    thread_n_~i~0
+  Supporting invariants:
+    [0] 1*v_rep(select #valid thread_n_#in~arg.base)_3 - 1 >= 0
+  Array index supporting invariants:
+    [0] (not (= |thread_n_~#zero~0.base| |thread_n_#in~arg.base|))
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 102
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8627
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,3977
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6992
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9330
+    Simplify formula using some simplification technique -> relative DAG size: 0,7487
+    Transform into disjunctive normal form -> relative DAG size: 1,8562
+    Simplify formula using some simplification technique -> relative DAG size: 0,9889
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0224
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,21 ms
+Total LassoRanker time: 153,84 ms
+  Termination analysis:     153,84 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,108 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  a1                                                 : Bool
+  v_v_rep(ite a1 1 0)_1_inout_bool_1                 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: v_a1_11  InVars {a1=v_a1_11}  OutVars{a1=v_a1_11}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 2
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 2,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,5000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (>= |v_v_rep(ite a1 1 0)_1_inout_bool_1| 1)
+  InVars:   {v_rep(ite a1 1 0)_1=|v_v_rep(ite a1 1 0)_1_inout_bool_1|}
+  OutVars:  {v_rep(ite a1 1 0)_1=|v_v_rep(ite a1 1 0)_1_inout_bool_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] BeginParallelComposition{ParallelCodeBlock0: goto;ParallelCodeBlock1: goto;}EndParallelCompositionassume (a1 && a2 && a3) || (a1 && a2 && b3) || a1 || (a1 && a2 && c3);
+Loop (length=1):
+  [0] assume true;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2642981 ns (2,64 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@2944a002
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,64 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,56 @@
+{
+  "program_vars": [
+    "main_i",
+    "main_j",
+    "main_n",
+    "|v_rep(select main_a main_i)_1|",
+    "|v_rep(select main_a main_j)_1|"
+  ],
+  "var_types": {
+    "main_i": "Int",
+    "main_j": "Int",
+    "main_n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 v_main_n_12) (>= v_main_i_7 0) (<= v_main_i_7 0))",
+      "in_vars": {
+        "main_n": "v_main_n_12",
+        "main_i": "v_main_i_10"
+      },
+      "out_vars": {
+        "main_n": "v_main_n_12",
+        "main_i": "v_main_i_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ v_main_i_9 1) v_main_i_8) (<= v_main_i_8 (+ v_main_i_9 1)) (<= (+ v_main_j_9 1) 0) (<= |v_arrayCell_v_main_a_11[v_main_i_9]_1| 23) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| |v_arrayCell_v_main_a_12[v_main_j_9]_1|) (<= 23 |v_arrayCell_v_main_a_11[v_main_i_9]_1|) (<= 0 v_main_i_9) (<= |v_arrayCell_v_main_a_12[v_main_j_9]_1| |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= v_main_i_9 v_main_n_13)) (and (<= (+ v_main_i_9 1) v_main_i_8) (<= v_main_i_8 (+ v_main_i_9 1)) (<= |v_arrayCell_v_main_a_11[v_main_i_9]_1| 23) (<= 23 |v_arrayCell_v_main_a_12[v_main_j_9]_1|) (<= 23 |v_arrayCell_v_main_a_11[v_main_i_9]_1|) (<= 0 v_main_i_9) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| 23) (<= (+ v_main_j_9 1) v_main_i_9) (<= 23 |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= |v_arrayCell_v_main_a_12[v_main_j_9]_1| 23) (<= v_main_i_9 v_main_n_13)) (and (<= (+ v_main_i_9 1) v_main_i_8) (<= v_main_i_8 (+ v_main_i_9 1)) (<= |v_arrayCell_v_main_a_11[v_main_i_9]_1| 23) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| |v_arrayCell_v_main_a_12[v_main_j_9]_1|) (<= 23 |v_arrayCell_v_main_a_11[v_main_i_9]_1|) (<= 0 v_main_i_9) (<= |v_arrayCell_v_main_a_12[v_main_j_9]_1| |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= v_main_i_9 v_main_n_13) (<= (+ v_main_i_8 1) v_main_j_9)) (and (<= |v_arrayCell_v_main_a_12[v_main_j_9]_1| |v_arrayCell_v_main_a_12[v_main_i_9]_1|) (<= v_main_i_8 (+ v_main_i_9 1)) (<= |v_arrayCell_v_main_a_11[v_main_i_9]_1| 23) (<= 23 |v_arrayCell_v_main_a_11[v_main_i_9]_1|) (<= 0 v_main_i_9) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| 23) (<= |v_arrayCell_v_main_a_12[v_main_i_9]_1| |v_arrayCell_v_main_a_12[v_main_j_9]_1|) (<= 23 |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= (+ v_main_j_9 1) v_main_i_8) (<= v_main_i_9 v_main_n_13) (<= v_main_i_9 v_main_j_9)) (and (<= (+ v_main_i_9 1) v_main_i_8) (<= v_main_i_8 (+ v_main_i_9 1)) (<= |v_arrayCell_v_main_a_11[v_main_i_9]_1| 23) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| |v_arrayCell_v_main_a_12[v_main_j_9]_1|) (<= 23 |v_arrayCell_v_main_a_11[v_main_i_9]_1|) (<= (+ v_main_i_9 1) v_main_j_9) (<= 0 v_main_i_9) (<= |v_arrayCell_v_main_a_11[v_main_i_8]_1| |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= |v_arrayCell_v_main_a_11[v_main_j_9]_1| |v_arrayCell_v_main_a_11[v_main_i_8]_1|) (<= |v_arrayCell_v_main_a_12[v_main_j_9]_1| |v_arrayCell_v_main_a_11[v_main_j_9]_1|) (<= v_main_i_9 v_main_n_13)))",
+      "in_vars": {
+        "main_n": "v_main_n_13",
+        "main_j": "v_main_j_9",
+        "main_i": "v_main_i_9",
+        "|v_rep(select main_a main_j)_1|": "|v_arrayCell_v_main_a_12[v_main_j_9]_1|",
+        "|v_rep(select main_a main_i)_1|": "|v_arrayCell_v_main_a_12[v_main_i_9]_1|"
+      },
+      "out_vars": {
+        "main_n": "v_main_n_13",
+        "main_j": "v_main_j_9",
+        "main_i": "v_main_i_8",
+        "|v_rep(select main_a main_j)_1|": "|v_arrayCell_v_main_a_11[v_main_j_9]_1|",
+        "|v_rep(select main_a main_i)_1|": "|v_arrayCell_v_main_a_11[v_main_i_8]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_main_a_11[v_main_i_9]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

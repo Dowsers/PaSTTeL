@@ -1,0 +1,155 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_mem                                           : (Array Int Int)
+  main_max_head                                      : Int
+  main_head                                          : Int
+  v_main_max_head_24                                 : Int
+  v_main_head_49                                     : Int
+  v_arrayCell_v_main_mem_53[0]_1                     : Int
+  v_main_max_head_21                                 : Int
+  v_main_head_46                                     : Int
+  v_arrayCell_v_main_mem_52[0]_1                     : Int
+  v_main_max_head_23                                 : Int
+  v_main_head_48                                     : Int
+  v_arrayCell_v_main_mem_56[v_main_head_48]_1        : Int
+  v_arrayCell_v_main_mem_56[0]_1                     : Int
+  v_main_max_head_22                                 : Int
+  v_main_head_47                                     : Int
+  v_arrayCell_v_main_mem_55[v_main_head_47]_1        : Int
+  v_arrayCell_v_main_mem_55[0]_1                     : Int
+  v_arrayCell_v_main_mem_55[v_main_head_48]_1        : Int
+  v_arrayCell_v_main_mem_56[v_main_head_47]_1        : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= (store v_main_mem_70 0 1) v_main_mem_69) (= v_main_max_head_32 0) (= v_main_head_57 0))  InVars {main_mem=v_main_mem_70}  OutVars{main_max_head=v_main_max_head_32, main_mem=v_main_mem_69, main_head=v_main_head_57}  AuxVars[]  AssignedVars[main_max_head, main_mem, main_head]
+
+Loop TransFormula:
+Formula: (and (= (select v_main_mem_72 v_main_head_58) 0) (not (= (select v_main_mem_73 v_main_head_59) 0)) (or (let ((.cse0 (+ v_main_max_head_34 1))) (and (= v_main_mem_72 (store v_main_mem_73 v_main_head_58 0)) (<= .cse0 v_main_head_58) (= v_main_max_head_33 .cse0))) (and (= v_main_mem_72 v_main_mem_73) (= v_main_max_head_34 v_main_max_head_33) (<= v_main_head_58 v_main_max_head_34))) (or (and (<= 1 v_main_head_59) (= v_main_head_59 v_main_head_58)) (and (<= v_main_head_59 0) (= v_main_head_58 1))))  InVars {main_max_head=v_main_max_head_34, main_mem=v_main_mem_73, main_head=v_main_head_59}  OutVars{main_max_head=v_main_max_head_33, main_mem=v_main_mem_72, main_head=v_main_head_58}  AuxVars[]  AssignedVars[main_max_head, main_mem, main_head]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 68
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,6324
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9369
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9163
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 3,2487
+    Simplify formula using some simplification technique -> relative DAG size: 0,7188
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0609
+
+Stem (linearized):
+  Formula:  (and (>= |v_arrayCell_v_main_mem_52[0]_1| 1) (<= v_main_max_head_21 0) (<= v_main_head_46 0) (>= v_main_head_46 0) (<= |v_arrayCell_v_main_mem_52[0]_1| 1) (>= v_main_max_head_21 0))
+  InVars:   {main_max_head=v_main_max_head_24, main_head=v_main_head_49, v_rep(select main_mem 0)_2=|v_arrayCell_v_main_mem_53[0]_1|}
+  OutVars:  {main_max_head=v_main_max_head_21, main_head=v_main_head_46, v_rep(select main_mem 0)_2=|v_arrayCell_v_main_mem_52[0]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_main_head_48 1) 0) (<= v_main_head_47 1) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= (+ |v_arrayCell_v_main_mem_56[v_main_head_48]_1| 1) 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= 1 v_main_head_47) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_23 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= v_main_head_48 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= v_main_head_47 1) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= (+ |v_arrayCell_v_main_mem_56[v_main_head_48]_1| 1) 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= 1 v_main_head_47) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_23 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= 1 v_main_max_head_23) (<= (+ v_main_head_48 1) 0) (<= v_main_head_47 1) (<= v_main_max_head_23 v_main_max_head_22) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= (+ |v_arrayCell_v_main_mem_56[v_main_head_48]_1| 1) 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= v_main_max_head_22 v_main_max_head_23) (<= 1 v_main_head_47) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|)) (and (<= v_main_head_48 0) (<= 1 v_main_max_head_23) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= v_main_head_47 1) (<= v_main_max_head_23 v_main_max_head_22) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= (+ |v_arrayCell_v_main_mem_56[v_main_head_48]_1| 1) 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_22 v_main_max_head_23) (<= 1 v_main_head_47) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|)) (and (<= (+ v_main_max_head_23 1) v_main_head_47) (<= 1 v_main_head_48) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= v_main_head_48 v_main_head_47) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_47]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= (+ 0 1) |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= v_main_head_47 v_main_head_48) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| 0) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_47]_1|) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= v_main_head_48 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= v_main_head_47 1) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= 1 v_main_head_47) (<= (+ 0 1) |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_23 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= (+ v_main_head_48 1) 0) (<= v_main_head_47 1) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= 1 v_main_head_47) (<= (+ 0 1) |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_23 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= (+ v_main_max_head_23 1) v_main_head_47) (<= 1 v_main_head_48) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= v_main_head_48 v_main_head_47) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_56[v_main_head_47]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= (+ |v_arrayCell_v_main_mem_56[v_main_head_48]_1| 1) 0) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_48]_1|) (<= v_main_head_47 v_main_head_48) (<= |v_arrayCell_v_main_mem_55[v_main_head_48]_1| 0) (<= (+ v_main_max_head_23 1) v_main_max_head_22) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[v_main_head_47]_1|) (<= v_main_max_head_22 (+ v_main_max_head_23 1))) (and (<= 1 v_main_max_head_23) (<= (+ v_main_head_48 1) 0) (<= v_main_head_47 1) (<= v_main_max_head_23 v_main_max_head_22) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= v_main_max_head_22 v_main_max_head_23) (<= 1 v_main_head_47) (<= (+ 0 1) |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|)) (and (<= v_main_head_48 0) (<= 1 v_main_max_head_23) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= v_main_head_47 1) (<= v_main_max_head_23 v_main_max_head_22) (<= 0 |v_arrayCell_v_main_mem_55[v_main_head_47]_1|) (<= |v_arrayCell_v_main_mem_56[0]_1| |v_arrayCell_v_main_mem_55[0]_1|) (<= |v_arrayCell_v_main_mem_55[v_main_head_47]_1| 0) (<= |v_arrayCell_v_main_mem_56[v_main_head_48]_1| |v_arrayCell_v_main_mem_56[0]_1|) (<= v_main_max_head_22 v_main_max_head_23) (<= 1 v_main_head_47) (<= (+ 0 1) |v_arrayCell_v_main_mem_56[v_main_head_48]_1|) (<= |v_arrayCell_v_main_mem_55[0]_1| |v_arrayCell_v_main_mem_56[0]_1|)))
+  InVars:   {main_max_head=v_main_max_head_23, main_head=v_main_head_48, v_rep(select main_mem main_head)_1=|v_arrayCell_v_main_mem_56[v_main_head_48]_1|, v_rep(select main_mem 0)_2=|v_arrayCell_v_main_mem_56[0]_1|}
+  OutVars:  {main_max_head=v_main_max_head_22, main_head=v_main_head_47, v_rep(select main_mem main_head)_1=|v_arrayCell_v_main_mem_55[v_main_head_47]_1|, v_rep(select main_mem 0)_2=|v_arrayCell_v_main_mem_55[0]_1|}
+  AuxVars:  [|v_arrayCell_v_main_mem_55[v_main_head_48]_1|, |v_arrayCell_v_main_mem_56[v_main_head_47]_1|]
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] head := 0;max_head := 0;mem := mem[0 := 0];mem := mem[head := mem[head] - 1];BeginParallelComposition{ParallelCodeBlock0: assume mem[head] < 0;mem := mem[head := 0];ParallelCodeBlock1: assume !(mem[head] < 0);}EndParallelCompositionmem := mem[head := mem[head] + 1];
+Loop (length=3):
+  [0] assume mem[head] != 0;
+  [1] assume mem[head] != 0;head := head - 1;BeginParallelComposition{ParallelCodeBlock0: assume head < 0;head := 0;ParallelCodeBlock1: assume !(head < 0);}EndParallelCompositionhead := head + 1;BeginParallelComposition{ParallelCodeBlock0: assume head > max_head;mem := mem[head := 0];max_head := max_head + 1;ParallelCodeBlock1: assume !(head > max_head);}EndParallelComposition
+  [2] assume !(mem[head] != 0);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1860804 ns (1,86 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 3458930311 ns (3458,93 ms)
+       Variables (stem/loop): 3/10  Disjuncts (stem/loop): 1/10
+       Supporting invariants: 20  Motzkin applications: 240
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 3458,93 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(main_max_head, main_head) = -2*main_max_head - 2*main_head + 3
+  Variables:
+    main_max_head
+    main_head
+  Supporting invariants:
+    [0] -1*main_head + 1 >= 0
+    [1] 3*main_head - 2*main_max_head >= 0
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 68
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,6324
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9369
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9163
+    Simplify formula using some simplification technique -> relative DAG size: 0,9492
+    Transform into disjunctive normal form -> relative DAG size: 2,5241
+    Simplify formula using some simplification technique -> relative DAG size: 0,9746
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0609
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,86 ms
+Total LassoRanker time: 3458,93 ms
+  Termination analysis:     3458,93 ms
+  Nontermination analysis:   0,00 ms

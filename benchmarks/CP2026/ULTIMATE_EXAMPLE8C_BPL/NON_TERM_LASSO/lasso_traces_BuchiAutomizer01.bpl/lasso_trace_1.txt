@@ -1,0 +1,115 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_ret0                                          : Bool
+  main_resb                                          : Bool
+  main_resi                                          : Int
+  v_main_resi_3                                      : Int
+  v_v_rep(ite main_ret0 1 0)_1_in_bool_1             : Int
+  v_v_rep(ite main_resb 1 0)_1_in_bool_1             : Int
+  v_main_resi_2                                      : Int
+  v_v_rep(ite main_ret0 1 0)_1_out_bool_1            : Int
+  v_v_rep(ite main_resb 1 0)_1_out_bool_1            : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{main_ret0=v_main_ret0_6, main_resb=v_main_resb_11, main_resi=v_main_resi_6}  AuxVars[]  AssignedVars[main_ret0, main_resb, main_resi]
+
+Loop TransFormula:
+Formula: true  InVars {}  OutVars{main_resb=v_main_resb_12}  AuxVars[]  AssignedVars[main_resb]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 2
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 3,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {main_resi=v_main_resi_3, v_rep(ite main_ret0 1 0)_1=|v_v_rep(ite main_ret0 1 0)_1_in_bool_1|, v_rep(ite main_resb 1 0)_1=|v_v_rep(ite main_resb 1 0)_1_in_bool_1|}
+  OutVars:  {main_resi=v_main_resi_2, v_rep(ite main_ret0 1 0)_1=|v_v_rep(ite main_ret0 1 0)_1_out_bool_1|, v_rep(ite main_resb 1 0)_1=|v_v_rep(ite main_resb 1 0)_1_out_bool_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {v_rep(ite main_resb 1 0)_1=|v_v_rep(ite main_resb 1 0)_1_in_bool_1|}
+  OutVars:  {v_rep(ite main_resb 1 0)_1=|v_v_rep(ite main_resb 1 0)_1_out_bool_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] ret2 := ret2;ret4 := ret4;ret1 := ret1;v := 2;ret2 := true;ret4 := true;ret1 := true;havoc ret0;havoc resi;havoc resb;
+Loop (length=1):
+  [0] ret2 := ret2;ret3 := ret3;v := 2;ret2 := true;ret3 := true;havoc resb;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2512660 ns (2,51 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@121acd3b
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,51 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

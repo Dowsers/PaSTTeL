@@ -1,0 +1,226 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  bubblesort_~a.base                                 : Int
+  main_#res                                          : Int
+  main_#t~nondet6                                    : Int
+  main_#t~malloc7.offset                             : Int
+  ULTIMATE.start_#t~ret8                             : Int
+  bubblesort_~j~0                                    : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  bubblesort_~i                                      : Int
+  bubblesort_~a.offset                               : Int
+  old(#length)                                       : (Array Int Int)
+  bubblesort_#in~a.offset                            : Int
+  main_#t~malloc7.base                               : Int
+  bubblesort_#in~i                                   : Int
+  bubblesort_#in~a.base                              : Int
+  bubblesort_#t~post4                                : Int
+  bubblesort_#t~mem0                                 : Int
+  bubblesort_#t~mem1                                 : Int
+  v_#StackHeapBarrier_41                             : Int
+  v_bubblesort_~a.base_54                            : Int
+  v_main_#res_23                                     : Int
+  v_main_#t~nondet6_39                               : Int
+  v_main_#t~malloc7.offset_37                        : Int
+  v_ULTIMATE.start_#t~ret8_16                        : Int
+  v_bubblesort_~j~0_32                               : Int
+  v_bubblesort_~i_57                                 : Int
+  v_bubblesort_~a.offset_48                          : Int
+  v_bubblesort_#in~a.offset_34                       : Int
+  v_main_#t~malloc7.base_37                          : Int
+  v_bubblesort_#in~i_34                              : Int
+  v_bubblesort_#in~a.base_34                         : Int
+  v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_34]_1 : Int
+  v_arrayCell_v_#valid_84[0]_1                       : Int
+  v_arrayCell_v_#length_71[v_bubblesort_#in~a.base_34]_1 : Int
+  v_bubblesort_~a.base_52                            : Int
+  v_main_#res_22                                     : Int
+  v_main_#t~nondet6_38                               : Int
+  v_main_#t~malloc7.offset_36                        : Int
+  v_ULTIMATE.start_#t~ret8_15                        : Int
+  v_bubblesort_~j~0_29                               : Int
+  v_bubblesort_~i_55                                 : Int
+  v_bubblesort_~a.offset_46                          : Int
+  v_bubblesort_#in~a.offset_33                       : Int
+  v_main_#t~malloc7.base_36                          : Int
+  v_bubblesort_#in~i_33                              : Int
+  v_bubblesort_#in~a.base_33                         : Int
+  v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1 : Int
+  v_arrayCell_v_#valid_83[0]_1                       : Int
+  v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1 : Int
+  v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1 : Int
+  v_arrayCell_v_#length_71[v_bubblesort_#in~a.base_33]_1 : Int
+  v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_34]_1 : Int
+  v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_34]_1 : Int
+  v_bubblesort_~a.base_53                            : Int
+  v_bubblesort_~a.offset_47                          : Int
+  v_bubblesort_~i_56                                 : Int
+  v_bubblesort_~j~0_31                               : Int
+  v_bubblesort_#t~post4_4                            : Int
+  v_bubblesort_#t~mem0_8                             : Int
+  v_bubblesort_#t~mem1_8                             : Int
+  v_bubblesort_#in~a.base_ForeignInOutVar_1          : Int
+  v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1 : Int
+  v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#valid_85[0]_1                       : Int
+  v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))]_1 : Int
+  v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1 : Int
+  v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1 : Int
+  v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1 : Int
+  v_bubblesort_#t~post4_3                            : Int
+  v_bubblesort_#t~mem0_6                             : Int
+  v_bubblesort_~j~0_30                               : Int
+  v_bubblesort_#t~mem1_6                             : Int
+  v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_30 4))]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_#valid_119| (store |v_#valid_120| |v_bubblesort_#in~a.base_53| 1)) (= (select |v_#valid_120| 0) 0) (= (store |v_#length_101| |v_bubblesort_#in~a.base_53| (+ 4 (* |v_bubblesort_#in~i_53| 4))) |v_#length_100|) (= v_bubblesort_~a.base_72 |v_bubblesort_#in~a.base_53|) (= |v_bubblesort_#in~a.offset_53| 0) (not (= 0 |v_bubblesort_#in~a.base_53|)) (<= 0 |v_bubblesort_#in~i_53|) (= v_bubblesort_~j~0_52 0) (<= |v_bubblesort_#in~i_53| 2147483646) (<= (+ 1 |v_bubblesort_#in~a.base_53|) |v_#StackHeapBarrier_62|) (= |v_old(#memory_int)_67| |v_#memory_int_96|) (= (select |v_#valid_120| |v_bubblesort_#in~a.base_53|) 0) (<= 1 |v_#StackHeapBarrier_62|) (= |v_old(#memory_int)_67| |v_#memory_int_97|) (= v_bubblesort_~i_75 |v_bubblesort_#in~i_53|) (= v_bubblesort_~a.offset_66 0))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_62|, #valid=|v_#valid_120|, #memory_int=|v_#memory_int_97|, #length=|v_#length_101|}  OutVars{bubblesort_~a.base=v_bubblesort_~a.base_72, main_#res=|v_main_#res_36|, main_#t~nondet6=|v_main_#t~nondet6_58|, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_56|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_23|, bubblesort_~j~0=v_bubblesort_~j~0_52, #StackHeapBarrier=|v_#StackHeapBarrier_62|, #valid=|v_#valid_119|, old(#valid)=|v_old(#valid)_59|, old(#memory_int)=|v_old(#memory_int)_67|, #memory_int=|v_#memory_int_96|, bubblesort_~i=v_bubblesort_~i_75, bubblesort_~a.offset=v_bubblesort_~a.offset_66, #length=|v_#length_100|, old(#length)=|v_old(#length)_59|, bubblesort_#in~a.offset=|v_bubblesort_#in~a.offset_53|, main_#t~malloc7.base=|v_main_#t~malloc7.base_56|, bubblesort_#in~i=|v_bubblesort_#in~i_53|, bubblesort_#in~a.base=|v_bubblesort_#in~a.base_53|}  AuxVars[]  AssignedVars[bubblesort_~a.base, main_#res, main_#t~nondet6, main_#t~malloc7.offset, ULTIMATE.start_#t~ret8, bubblesort_~j~0, #valid, old(#valid), old(#memory_int), #memory_int, bubblesort_~i, bubblesort_~a.offset, #length, old(#length), bubblesort_#in~a.offset, main_#t~malloc7.base, bubblesort_#in~i, bubblesort_#in~a.base]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (* v_bubblesort_~i_76 4)) (.cse1 (+ v_bubblesort_~j~0_54 1)) (.cse3 (+ v_bubblesort_~a.offset_67 (* v_bubblesort_~j~0_54 4)))) (and (<= (+ v_bubblesort_~a.offset_67 .cse0 4) (select |v_#length_102| v_bubblesort_~a.base_73)) (= v_bubblesort_~j~0_53 .cse1) (let ((.cse2 (select |v_#memory_int_98| v_bubblesort_~a.base_73))) (<= (select .cse2 .cse3) (select .cse2 (+ v_bubblesort_~a.offset_67 .cse0)))) (<= .cse1 v_bubblesort_~i_76) (<= 0 .cse3) (= (select |v_#valid_121| v_bubblesort_~a.base_73) 1)))  InVars {bubblesort_~a.base=v_bubblesort_~a.base_73, #valid=|v_#valid_121|, #memory_int=|v_#memory_int_98|, bubblesort_~a.offset=v_bubblesort_~a.offset_67, bubblesort_~i=v_bubblesort_~i_76, #length=|v_#length_102|, bubblesort_~j~0=v_bubblesort_~j~0_54}  OutVars{bubblesort_#t~post4=|v_bubblesort_#t~post4_8|, bubblesort_~a.base=v_bubblesort_~a.base_73, #valid=|v_#valid_121|, #memory_int=|v_#memory_int_98|, bubblesort_~a.offset=v_bubblesort_~a.offset_67, bubblesort_~i=v_bubblesort_~i_76, #length=|v_#length_102|, bubblesort_#t~mem0=|v_bubblesort_#t~mem0_14|, bubblesort_~j~0=v_bubblesort_~j~0_53, bubblesort_#t~mem1=|v_bubblesort_#t~mem1_14|}  AuxVars[]  AssignedVars[bubblesort_#t~post4, bubblesort_#t~mem0, bubblesort_~j~0, bubblesort_#t~mem1]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 118
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8644
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,7647
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9167
+    Simplify formula using some simplification technique -> relative DAG size: 0,9697
+    Transform into disjunctive normal form -> relative DAG size: 1,8687
+    Simplify formula using some simplification technique -> relative DAG size: 0,9565
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0210
+
+Stem (linearized):
+  Formula:  (or (and (<= 0 v_bubblesort_~j~0_29) (<= v_bubblesort_~i_55 |v_bubblesort_#in~i_33|) (<= (+ |v_bubblesort_#in~a.base_33| 1) 0) (<= |v_bubblesort_#in~a.base_33| v_bubblesort_~a.base_52) (<= |v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1| (+ (* |v_bubblesort_#in~i_33| 4) 4)) (<= 0 |v_arrayCell_v_#valid_84[0]_1|) (<= |v_bubblesort_#in~i_33| 2147483646) (<= 0 |v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1|) (<= 1 |v_#StackHeapBarrier_41|) (<= v_bubblesort_~a.offset_46 0) (<= |v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1| 1) (<= |v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1| 0) (<= v_bubblesort_~j~0_29 0) (<= 0 |v_bubblesort_#in~a.offset_33|) (<= 0 |v_arrayCell_v_#valid_83[0]_1|) (<= |v_bubblesort_#in~a.offset_33| 0) (<= 0 v_bubblesort_~a.offset_46) (<= (+ (* |v_bubblesort_#in~i_33| 4) 4) |v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1|) (<= |v_bubblesort_#in~i_33| v_bubblesort_~i_55) (<= |v_arrayCell_v_#valid_83[0]_1| 0) (<= 1 |v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1|) (<= 0 |v_bubblesort_#in~i_33|) (<= v_bubblesort_~a.base_52 |v_bubblesort_#in~a.base_33|) (<= |v_arrayCell_v_#valid_84[0]_1| 0)) (and (<= 0 v_bubblesort_~j~0_29) (<= v_bubblesort_~i_55 |v_bubblesort_#in~i_33|) (<= (+ 0 1) |v_bubblesort_#in~a.base_33|) (<= |v_bubblesort_#in~a.base_33| v_bubblesort_~a.base_52) (<= |v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1| (+ (* |v_bubblesort_#in~i_33| 4) 4)) (<= 0 |v_arrayCell_v_#valid_84[0]_1|) (<= |v_bubblesort_#in~i_33| 2147483646) (<= 0 |v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1|) (<= v_bubblesort_~a.offset_46 0) (<= |v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1| 1) (<= |v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1| 0) (<= v_bubblesort_~j~0_29 0) (<= 0 |v_bubblesort_#in~a.offset_33|) (<= (+ 1 |v_bubblesort_#in~a.base_33|) |v_#StackHeapBarrier_41|) (<= 0 |v_arrayCell_v_#valid_83[0]_1|) (<= |v_bubblesort_#in~a.offset_33| 0) (<= 0 v_bubblesort_~a.offset_46) (<= (+ (* |v_bubblesort_#in~i_33| 4) 4) |v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1|) (<= |v_bubblesort_#in~i_33| v_bubblesort_~i_55) (<= |v_arrayCell_v_#valid_83[0]_1| 0) (<= 1 |v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1|) (<= 0 |v_bubblesort_#in~i_33|) (<= v_bubblesort_~a.base_52 |v_bubblesort_#in~a.base_33|) (<= |v_arrayCell_v_#valid_84[0]_1| 0)))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_41|, bubblesort_~a.base=v_bubblesort_~a.base_54, main_#res=|v_main_#res_23|, main_#t~nondet6=|v_main_#t~nondet6_39|, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_37|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_16|, bubblesort_~j~0=v_bubblesort_~j~0_32, bubblesort_~i=v_bubblesort_~i_57, bubblesort_~a.offset=v_bubblesort_~a.offset_48, bubblesort_#in~a.offset=|v_bubblesort_#in~a.offset_34|, main_#t~malloc7.base=|v_main_#t~malloc7.base_37|, bubblesort_#in~i=|v_bubblesort_#in~i_34|, bubblesort_#in~a.base=|v_bubblesort_#in~a.base_34|, v_rep(select #valid bubblesort_#in~a.base)_3=|v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_34]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_84[0]_1|, v_rep(select #length bubblesort_#in~a.base)_3=|v_arrayCell_v_#length_71[v_bubblesort_#in~a.base_34]_1|}
+  OutVars:  {bubblesort_~a.base=v_bubblesort_~a.base_52, main_#res=|v_main_#res_22|, main_#t~nondet6=|v_main_#t~nondet6_38|, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_36|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_15|, bubblesort_~j~0=v_bubblesort_~j~0_29, #StackHeapBarrier=|v_#StackHeapBarrier_41|, bubblesort_~i=v_bubblesort_~i_55, bubblesort_~a.offset=v_bubblesort_~a.offset_46, bubblesort_#in~a.offset=|v_bubblesort_#in~a.offset_33|, main_#t~malloc7.base=|v_main_#t~malloc7.base_36|, bubblesort_#in~i=|v_bubblesort_#in~i_33|, bubblesort_#in~a.base=|v_bubblesort_#in~a.base_33|, v_rep(select #valid bubblesort_#in~a.base)_3=|v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_33]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_83[0]_1|, v_rep(select #length bubblesort_#in~a.base)_3=|v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_33]_1|}
+  AuxVars:  [|v_arrayCell_v_#valid_84[v_bubblesort_#in~a.base_33]_1|, |v_arrayCell_v_#length_71[v_bubblesort_#in~a.base_33]_1|, |v_arrayCell_v_#valid_83[v_bubblesort_#in~a.base_34]_1|, |v_arrayCell_v_#length_70[v_bubblesort_#in~a.base_34]_1|]
+
+Loop (linearized):
+  Formula:  (or (and (<= 1 |v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= |v_bubblesort_#in~a.base_ForeignInOutVar_1| v_bubblesort_~a.base_53) (<= |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))]_1| |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1|) (<= v_bubblesort_~a.base_53 |v_bubblesort_#in~a.base_ForeignInOutVar_1|) (<= v_bubblesort_~j~0_30 (+ v_bubblesort_~j~0_31 1)) (<= |v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1| 1) (<= 1 |v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1|) (<= 0 (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))) (<= (+ v_bubblesort_~j~0_31 1) v_bubblesort_~j~0_30) (<= |v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1| 1) (<= |v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1| |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4) 4) |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= (+ v_bubblesort_~j~0_30 1) v_bubblesort_~i_56) (<= |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1| |v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1|)) (and (<= 1 |v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= |v_bubblesort_#in~a.base_ForeignInOutVar_1| v_bubblesort_~a.base_53) (<= |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))]_1| |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1|) (<= v_bubblesort_~a.base_53 |v_bubblesort_#in~a.base_ForeignInOutVar_1|) (<= v_bubblesort_~j~0_30 (+ v_bubblesort_~j~0_31 1)) (<= |v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1| 1) (<= 1 |v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1|) (<= 0 (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))) (<= |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_30 4))]_1| |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1|) (<= (+ v_bubblesort_~j~0_31 1) v_bubblesort_~i_56) (<= (+ v_bubblesort_~j~0_31 1) v_bubblesort_~j~0_30) (<= |v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1| 1) (<= |v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1| |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4) 4) |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|) (<= |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1| |v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_30 4))]_1|) (<= |v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1| |v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1|)))
+  InVars:   {bubblesort_~a.base=v_bubblesort_~a.base_53, bubblesort_~a.offset=v_bubblesort_~a.offset_47, bubblesort_~i=v_bubblesort_~i_56, bubblesort_~j~0=v_bubblesort_~j~0_31, bubblesort_#t~post4=|v_bubblesort_#t~post4_4|, bubblesort_#t~mem0=|v_bubblesort_#t~mem0_8|, bubblesort_#t~mem1=|v_bubblesort_#t~mem1_8|, bubblesort_#in~a.base=|v_bubblesort_#in~a.base_ForeignInOutVar_1|, v_rep(select #valid bubblesort_~a.base)_1=|v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1|, v_rep(select #valid bubblesort_#in~a.base)_3=|v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_85[0]_1|, v_rep(select (select #memory_int bubblesort_~a.base) (+ (* bubblesort_~j~0 4) bubblesort_~a.offset))_1=|v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_31 4))]_1|, v_rep(select (select #memory_int bubblesort_~a.base) (+ (* 4 bubblesort_~i) bubblesort_~a.offset))_1=|v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1|, v_rep(select #length bubblesort_~a.base)_1=|v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1|, v_rep(select #length bubblesort_#in~a.base)_3=|v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|}
+  OutVars:  {bubblesort_#t~post4=|v_bubblesort_#t~post4_3|, bubblesort_~a.base=v_bubblesort_~a.base_53, bubblesort_~a.offset=v_bubblesort_~a.offset_47, bubblesort_~i=v_bubblesort_~i_56, bubblesort_#t~mem0=|v_bubblesort_#t~mem0_6|, bubblesort_~j~0=v_bubblesort_~j~0_30, bubblesort_#t~mem1=|v_bubblesort_#t~mem1_6|, bubblesort_#in~a.base=|v_bubblesort_#in~a.base_ForeignInOutVar_1|, v_rep(select #valid bubblesort_~a.base)_1=|v_arrayCell_v_#valid_85[v_bubblesort_~a.base_53]_1|, v_rep(select #valid bubblesort_#in~a.base)_3=|v_arrayCell_v_#valid_85[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_85[0]_1|, v_rep(select (select #memory_int bubblesort_~a.base) (+ (* bubblesort_~j~0 4) bubblesort_~a.offset))_1=|v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~j~0_30 4))]_1|, v_rep(select (select #memory_int bubblesort_~a.base) (+ (* 4 bubblesort_~i) bubblesort_~a.offset))_1=|v_arrayCell_v_#memory_int_68[v_bubblesort_~a.base_53, (+ v_bubblesort_~a.offset_47 (* v_bubblesort_~i_56 4))]_1|, v_rep(select #length bubblesort_~a.base)_1=|v_arrayCell_v_#length_72[v_bubblesort_~a.base_53]_1|, v_rep(select #length bubblesort_#in~a.base)_3=|v_arrayCell_v_#length_72[v_bubblesort_#in~a.base_ForeignInOutVar_1]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=8):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #58#return;
+  [3] call #t~ret8 := main();
+  [4] havoc #t~nondet6;assume -2147483648 <= #t~nondet6 && #t~nondet6 <= 2147483647;~n~0 := #t~nondet6;havoc #t~nondet6;BeginParallelComposition{ParallelCodeBlock0: assume ~n~0 < 1;~n~0 := 1;ParallelCodeBlock1: assume !(~n~0 < 1);}EndParallelCompositioncall #t~malloc7.base, #t~malloc7.offset := #Ultimate.allocOnHeap(4 * ~n~0 % 18446744073709551616);~a~0.base, ~a~0.offset := #t~malloc7.base, #t~malloc7.offset;havoc #t~malloc7.base, #t~malloc7.offset;
+  [5] call bubblesort(~a~0.base, ~a~0.offset, ~n~0 - 1);
+  [6] ~a.base, ~a.offset := #in~a.base, #in~a.offset;~i := #in~i;
+  [7] assume ~i >= 0;~j~0 := 0;
+Loop (length=5):
+  [0] assume ~j~0 < ~i;
+  [1] SUMMARY for call #t~mem0 := read~int(~a.base, ~a.offset + 4 * ~j~0, 4); srcloc: L14
+  [2] SUMMARY for call #t~mem1 := read~int(~a.base, ~a.offset + 4 * ~i, 4); srcloc: L14-1
+  [3] assume !(#t~mem0 > #t~mem1);havoc #t~mem0;havoc #t~mem1;
+  [4] #t~post4 := ~j~0;~j~0 := 1 + #t~post4;havoc #t~post4;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   898626 ns (0,90 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 136605992 ns (136,61 ms)
+       Variables (stem/loop): 15/13  Disjuncts (stem/loop): 2/2
+       Supporting invariants: 4  Motzkin applications: 20
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 136,61 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(bubblesort_~j~0, bubblesort_~i) = -1*bubblesort_~j~0 + 1*bubblesort_~i
+  Variables:
+    bubblesort_~j~0
+    bubblesort_~i
+  Supporting invariants:
+    (none)
+  Array index supporting invariants:
+    [0] (not (= 0 |bubblesort_#in~a.base|))
+    [1] (not (= 0 bubblesort_~a.base))
+    [2] (= bubblesort_~a.base |bubblesort_#in~a.base|)
+    [3] true
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 120
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8667
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,3750
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6713
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9289
+    Simplify formula using some simplification technique -> relative DAG size: 0,8108
+    Transform into disjunctive normal form -> relative DAG size: 1,8833
+    Simplify formula using some simplification technique -> relative DAG size: 0,9617
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0184
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,90 ms
+Total LassoRanker time: 136,61 ms
+  Termination analysis:     136,61 ms
+  Nontermination analysis:   0,00 ms

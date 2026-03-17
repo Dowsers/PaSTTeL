@@ -1,0 +1,60 @@
+{
+  "program_vars": [
+    "Main_a",
+    "Main_b",
+    "Main_c",
+    "addition_res",
+    "addition_x",
+    "addition_y"
+  ],
+  "var_types": {
+    "Main_a": "Int",
+    "Main_b": "Int",
+    "Main_c": "Int",
+    "addition_res": "Int",
+    "addition_x": "Int",
+    "addition_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_Main_a_12 v_addition_x_23) (>= v_Main_b_12 v_addition_y_24) (<= 0 v_Main_b_12) (<= v_Main_b_12 v_addition_y_24) (<= v_Main_a_12 v_addition_x_23) (<= 0 v_Main_a_12))",
+      "in_vars": {
+        "Main_a": "v_Main_a_12",
+        "Main_b": "v_Main_b_12",
+        "Main_c": "v_Main_c_9",
+        "addition_x": "v_addition_x_28",
+        "addition_y": "v_addition_y_29"
+      },
+      "out_vars": {
+        "Main_c": "v_Main_c_8",
+        "addition_x": "v_addition_x_23",
+        "addition_y": "v_addition_y_24",
+        "Main_a": "v_Main_a_13",
+        "Main_b": "v_Main_b_13"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_addition_y_28 (+ v_addition_y_27 1)) (<= (+ v_addition_x_27 1) v_addition_x_26) (<= (+ v_addition_y_27 1) v_addition_y_28) (<= v_addition_x_26 (+ v_addition_x_27 1)) (<= 0 v_addition_x_27) (<= (+ 0 1) v_addition_y_28))",
+      "in_vars": {
+        "addition_x": "v_addition_x_27",
+        "addition_y": "v_addition_y_28",
+        "addition_res": "v_addition_res_18"
+      },
+      "out_vars": {
+        "addition_x": "v_addition_x_26",
+        "addition_y": "v_addition_y_27",
+        "addition_res": "v_addition_res_17"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

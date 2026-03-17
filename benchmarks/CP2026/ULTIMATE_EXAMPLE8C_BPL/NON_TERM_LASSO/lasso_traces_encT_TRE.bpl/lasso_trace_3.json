@@ -1,0 +1,58 @@
+{
+  "program_vars": [
+    "encT_n",
+    "encT_n_local",
+    "encT_x",
+    "encT_x_local",
+    "|v_rep(ite encT_blockCall 1 0)_3|",
+    "|v_rep(ite encT_star 1 0)_3|"
+  ],
+  "var_types": {
+    "encT_n": "Int",
+    "encT_n_local": "Int",
+    "encT_x": "Int",
+    "encT_x_local": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_encT_x_8 v_encT_x_local_44) (<= v_encT_n_local_45 v_encT_n_8) (>= v_encT_x_8 v_encT_x_local_44) (>= v_encT_n_local_45 v_encT_n_8))",
+      "in_vars": {
+        "encT_n": "v_encT_n_8",
+        "encT_x": "v_encT_x_8",
+        "encT_x_local": "v_encT_x_local_48",
+        "encT_n_local": "v_encT_n_local_49",
+        "|v_rep(ite encT_star 1 0)_3|": "|v_v_rep(ite encT_star 1 0)_3_in_bool_1|"
+      },
+      "out_vars": {
+        "encT_n": "v_encT_n_8",
+        "encT_x_local": "v_encT_x_local_44",
+        "encT_n_local": "v_encT_n_local_45",
+        "encT_x": "v_encT_x_8",
+        "|v_rep(ite encT_star 1 0)_3|": "|v_v_rep(ite encT_star 1 0)_3_out_bool_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (<= (+ 0 1) v_encT_x_local_47) (<= (+ v_encT_x_local_47 1) 0))",
+      "in_vars": {
+        "encT_x_local": "v_encT_x_local_47",
+        "|v_rep(ite encT_star 1 0)_3|": "|v_v_rep(ite encT_star 1 0)_3_in_bool_1|",
+        "|v_rep(ite encT_blockCall 1 0)_3|": "|v_v_rep(ite encT_blockCall 1 0)_3_in_bool_1|"
+      },
+      "out_vars": {
+        "encT_x_local": "v_encT_x_local_47",
+        "|v_rep(ite encT_star 1 0)_3|": "|v_v_rep(ite encT_star 1 0)_3_out_bool_1|",
+        "|v_rep(ite encT_blockCall 1 0)_3|": "|v_v_rep(ite encT_blockCall 1 0)_3_out_bool_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "program_vars": [
+    "add_a",
+    "add_b",
+    "add_res",
+    "main_z"
+  ],
+  "var_types": {
+    "add_a": "Int",
+    "add_b": "Int",
+    "add_res": "Int",
+    "main_z": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= 4 v_add_a_39) (>= 3 v_add_b_54) (<= 3 v_add_b_54) (<= 4 v_add_a_39))",
+      "in_vars": {
+        "main_z": "v_main_z_14",
+        "add_b": "v_add_b_59",
+        "add_a": "v_add_a_44"
+      },
+      "out_vars": {
+        "main_z": "v_main_z_13",
+        "add_b": "v_add_b_54",
+        "add_a": "v_add_a_39"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= (+ v_add_a_43 1) v_add_a_42) (<= (+ v_add_a_43 1) v_add_a_42) (>= (+ v_add_b_57 1) v_add_b_58) (<= (+ v_add_b_57 1) v_add_b_58) (<= 1 v_add_b_58))",
+      "in_vars": {
+        "add_b": "v_add_b_58",
+        "add_a": "v_add_a_43",
+        "add_res": "v_add_res_30"
+      },
+      "out_vars": {
+        "add_res": "v_add_res_29",
+        "add_b": "v_add_b_57",
+        "add_a": "v_add_a_42"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

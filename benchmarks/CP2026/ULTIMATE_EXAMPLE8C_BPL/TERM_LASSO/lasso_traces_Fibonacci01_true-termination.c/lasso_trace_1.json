@@ -1,0 +1,74 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret4",
+    "fibonacci_#in~n",
+    "fibonacci_#res",
+    "fibonacci_#t~ret0",
+    "fibonacci_#t~ret1",
+    "fibonacci_~n",
+    "main_#res",
+    "main_#t~nondet2",
+    "main_#t~ret3",
+    "main_~result~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret4": "Int",
+    "fibonacci_#in~n": "Int",
+    "fibonacci_#res": "Int",
+    "fibonacci_#t~ret0": "Int",
+    "fibonacci_#t~ret1": "Int",
+    "fibonacci_~n": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet2": "Int",
+    "main_#t~ret3": "Int",
+    "main_~result~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_fibonacci_#in~n_5| 2147483647) (<= 1 |v_fibonacci_#in~n_5|))",
+      "in_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_10|",
+        "main_~result~0": "v_main_~result~0_8",
+        "ULTIMATE.start_#t~ret4": "|v_ULTIMATE.start_#t~ret4_6|",
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_9|",
+        "main_#t~ret3": "|v_main_#t~ret3_9|"
+      },
+      "out_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_5|",
+        "main_~result~0": "v_main_~result~0_7",
+        "ULTIMATE.start_#t~ret4": "|v_ULTIMATE.start_#t~ret4_5|",
+        "main_#res": "|v_main_#res_6|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_8|",
+        "main_#t~ret3": "|v_main_#t~ret3_8|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ 0 1) |v_fibonacci_#in~n_8|) (<= |v_fibonacci_#in~n_9| (+ |v_fibonacci_#in~n_8| 1)) (<= (+ |v_fibonacci_#in~n_8| 1) |v_fibonacci_#in~n_9|))",
+      "in_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_9|",
+        "fibonacci_~n": "v_fibonacci_~n_13",
+        "fibonacci_#res": "|v_fibonacci_#res_6|",
+        "fibonacci_#t~ret0": "|v_fibonacci_#t~ret0_8|",
+        "fibonacci_#t~ret1": "|v_fibonacci_#t~ret1_7|"
+      },
+      "out_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_8|",
+        "fibonacci_~n": "v_fibonacci_~n_12",
+        "fibonacci_#res": "|v_fibonacci_#res_5|",
+        "fibonacci_#t~ret0": "|v_fibonacci_#t~ret0_7|",
+        "fibonacci_#t~ret1": "|v_fibonacci_#t~ret1_6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "program_vars": [
+    "mlog_#in~x",
+    "mlog_#t~post0",
+    "mlog_~res~0",
+    "mlog_~x"
+  ],
+  "var_types": {
+    "mlog_#in~x": "Int",
+    "mlog_#t~post0": "Int",
+    "mlog_~res~0": "Int",
+    "mlog_~x": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_mlog_~res~0_9 0) (<= v_mlog_~res~0_9 0) (<= |v_mlog_#in~x_2| v_mlog_~x_9) (>= |v_mlog_#in~x_2| v_mlog_~x_9) (<= |v_mlog_#in~x_2| 2147483647) (<= 0 (+ |v_mlog_#in~x_2| 2147483648)))",
+      "in_vars": {
+        "mlog_#in~x": "|v_mlog_#in~x_2|",
+        "mlog_~res~0": "v_mlog_~res~0_12",
+        "mlog_~x": "v_mlog_~x_12"
+      },
+      "out_vars": {
+        "mlog_~res~0": "v_mlog_~res~0_9",
+        "mlog_~x": "v_mlog_~x_9",
+        "mlog_#in~x": "|v_mlog_#in~x_2|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_mlog_~res~0_10 (+ v_mlog_~res~0_11 1)) (<= v_div_auxv_mlog_~x_112_1 v_mlog_~x_10) (<= v_mlog_~x_10 v_div_auxv_mlog_~x_112_1) (<= (+ v_mlog_~res~0_11 1) v_mlog_~res~0_10) (<= (* 2 v_div_auxv_mlog_~x_112_1) v_mlog_~x_11) (<= 2 v_mlog_~x_11) (<= v_mlog_~x_11 (+ (* 2 v_div_auxv_mlog_~x_112_1) 1)))",
+      "in_vars": {
+        "mlog_~res~0": "v_mlog_~res~0_11",
+        "mlog_~x": "v_mlog_~x_11",
+        "mlog_#t~post0": "|v_mlog_#t~post0_4|"
+      },
+      "out_vars": {
+        "mlog_~res~0": "v_mlog_~res~0_10",
+        "mlog_~x": "v_mlog_~x_10",
+        "mlog_#t~post0": "|v_mlog_#t~post0_3|"
+      },
+      "aux_vars": [
+        "v_div_auxv_mlog_~x_112_1"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

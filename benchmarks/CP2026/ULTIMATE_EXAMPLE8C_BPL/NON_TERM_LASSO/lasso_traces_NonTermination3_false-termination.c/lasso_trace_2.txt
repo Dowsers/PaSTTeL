@@ -1,0 +1,175 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  ULTIMATE.start_#t~ret4                             : Int
+  main_#t~nondet0                                    : Int
+  old(#valid)                                        : (Array Int Int)
+  main_~i~0                                          : Int
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  old(#length)                                       : (Array Int Int)
+  main_~#a~0.base                                    : Int
+  main_~#a~0.offset                                  : Int
+  main_#t~short2                                     : Bool
+  main_#t~nondet3                                    : Int
+  main_#t~mem1                                       : Int
+  v_#StackHeapBarrier_28                             : Int
+  v_ULTIMATE.start_#t~ret4_13                        : Int
+  v_main_#t~nondet0_16                               : Int
+  v_main_~i~0_32                                     : Int
+  v_main_~#a~0.base_31                               : Int
+  v_main_~#a~0.offset_27                             : Int
+  v_arrayCell_v_#length_39[v_main_~#a~0.base_31]_1   : Int
+  v_arrayCell_v_#valid_56[0]_1                       : Int
+  v_arrayCell_v_#valid_56[v_main_~#a~0.base_31]_1    : Int
+  v_v_rep(select old(#length) main_~#a~0.base)_2_1   : Int
+  v_v_rep(select old(#valid) main_~#a~0.base)_2_1    : Int
+  v_v_rep(select old(#valid) 0)_2_1                  : Int
+  v_ULTIMATE.start_#t~ret4_12                        : Int
+  v_main_#t~nondet0_15                               : Int
+  v_main_~i~0_29                                     : Int
+  v_main_~#a~0.base_29                               : Int
+  v_main_~#a~0.offset_25                             : Int
+  v_arrayCell_v_#length_38[v_main_~#a~0.base_29]_1   : Int
+  v_arrayCell_v_old(#length)_13[v_main_~#a~0.base_29]_1 : Int
+  v_arrayCell_v_#valid_55[v_main_~#a~0.base_29]_1    : Int
+  v_arrayCell_v_#valid_55[0]_1                       : Int
+  v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_29]_1 : Int
+  v_arrayCell_v_old(#valid)_13[0]_1                  : Int
+  v_arrayCell_v_#length_39[v_main_~#a~0.base_29]_1   : Int
+  v_arrayCell_v_#length_38[v_main_~#a~0.base_31]_1   : Int
+  v_arrayCell_v_#valid_56[v_main_~#a~0.base_29]_1    : Int
+  v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_31]_1 : Int
+  v_arrayCell_v_old(#length)_13[v_main_~#a~0.base_31]_1 : Int
+  v_arrayCell_v_#valid_55[v_main_~#a~0.base_31]_1    : Int
+  v_main_~i~0_31                                     : Int
+  v_main_~#a~0.base_30                               : Int
+  v_main_~#a~0.offset_26                             : Int
+  v_main_#t~nondet3_8                                : Int
+  v_main_#t~mem1_15                                  : Int
+  v_arrayCell_v_#valid_57[0]_1                       : Int
+  v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1    : Int
+  v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1 : Int
+  v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1   : Int
+  v_v_rep(ite main_#t~short2 1 0)_2_in_bool_1        : Int
+  v_main_#t~nondet3_7                                : Int
+  v_main_#t~mem1_13                                  : Int
+  v_main_~i~0_30                                     : Int
+  v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1 : Int
+  v_v_rep(ite main_#t~short2 1 0)_2_out_bool_1       : Int
+  v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1 : Int
+  v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_old(#memory_int)_23| |v_#memory_int_44|) (= (select |v_#valid_86| 0) 0) (= |v_old(#memory_int)_23| |v_#memory_int_43|) (= (select |v_old(#valid)_23| |v_main_~#a~0.base_42|) 0) (= |v_old(#length)_23| |v_#length_63|) (= |v_#valid_85| (store |v_old(#valid)_23| |v_main_~#a~0.base_42| 1)) (<= v_main_~i~0_45 2147483647) (= |v_main_~#a~0.offset_38| 0) (<= 1 |v_#StackHeapBarrier_46|) (= (store |v_old(#length)_23| |v_main_~#a~0.base_42| 40) |v_#length_62|) (= |v_#valid_86| |v_old(#valid)_23|) (<= 0 (+ v_main_~i~0_45 2147483648)) (<= (+ |v_#StackHeapBarrier_46| 1) |v_main_~#a~0.base_42|))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_46|, #valid=|v_#valid_86|, #memory_int=|v_#memory_int_44|, #length=|v_#length_63|}  OutVars{ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_19|, #StackHeapBarrier=|v_#StackHeapBarrier_46|, main_#t~nondet0=|v_main_#t~nondet0_25|, #valid=|v_#valid_85|, old(#valid)=|v_old(#valid)_23|, main_~i~0=v_main_~i~0_45, old(#memory_int)=|v_old(#memory_int)_23|, #memory_int=|v_#memory_int_43|, #length=|v_#length_62|, old(#length)=|v_old(#length)_23|, main_~#a~0.base=|v_main_~#a~0.base_42|, main_~#a~0.offset=|v_main_~#a~0.offset_38|}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret4, main_#t~nondet0, #valid, old(#valid), main_~i~0, old(#memory_int), #memory_int, #length, old(#length), main_~#a~0.base, main_~#a~0.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse5 (* v_main_~i~0_46 4)) (.cse3 (* v_main_~i~0_47 4))) (let ((.cse2 (+ .cse3 |v_main_~#a~0.offset_39|)) (.cse1 (select |v_#memory_int_46| |v_main_~#a~0.base_43|)) (.cse0 (+ |v_main_~#a~0.offset_39| .cse5)) (.cse4 (select |v_#length_64| |v_main_~#a~0.base_43|))) (and (<= v_main_~i~0_47 9) (<= v_main_~i~0_46 2147483647) (<= 0 (+ v_main_~i~0_46 2147483648)) (<= 0 .cse0) (<= 0 v_main_~i~0_47) (<= 0 (select .cse1 .cse2)) (<= 0 .cse2) (= |v_#memory_int_45| (store |v_#memory_int_46| |v_main_~#a~0.base_43| (store .cse1 .cse0 0))) (= (select |v_#valid_87| |v_main_~#a~0.base_43|) 1) (<= (+ .cse3 |v_main_~#a~0.offset_39| 4) .cse4) (<= (+ |v_main_~#a~0.offset_39| .cse5 4) .cse4))))  InVars {#valid=|v_#valid_87|, #memory_int=|v_#memory_int_46|, main_~i~0=v_main_~i~0_47, #length=|v_#length_64|, main_~#a~0.base=|v_main_~#a~0.base_43|, main_~#a~0.offset=|v_main_~#a~0.offset_39|}  OutVars{main_#t~short2=|v_main_#t~short2_29|, main_#t~nondet3=|v_main_#t~nondet3_11|, main_#t~mem1=|v_main_#t~mem1_20|, #valid=|v_#valid_87|, #memory_int=|v_#memory_int_45|, main_~i~0=v_main_~i~0_46, #length=|v_#length_64|, main_~#a~0.base=|v_main_~#a~0.base_43|, main_~#a~0.offset=|v_main_~#a~0.offset_39|}  AuxVars[]  AssignedVars[main_#t~short2, main_#t~nondet3, main_#t~mem1, #memory_int, main_~i~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 134
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8582
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,5217
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9486
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,9639
+    Simplify formula using some simplification technique -> relative DAG size: 0,4370
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0186
+
+Stem (linearized):
+  Formula:  (and (>= 40 |v_arrayCell_v_#length_38[v_main_~#a~0.base_29]_1|) (<= (+ |v_#StackHeapBarrier_28| 1) |v_main_~#a~0.base_29|) (>= |v_main_~#a~0.offset_25| 0) (<= 40 |v_arrayCell_v_#length_38[v_main_~#a~0.base_29]_1|) (<= |v_arrayCell_v_old(#valid)_13[0]_1| 0) (>= |v_arrayCell_v_old(#valid)_13[0]_1| 0) (<= |v_main_~#a~0.offset_25| 0) (<= 0 (+ v_main_~i~0_29 2147483648)) (<= |v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_29]_1| 0) (>= |v_arrayCell_v_#valid_56[0]_1| 0) (>= |v_arrayCell_v_#valid_55[v_main_~#a~0.base_29]_1| 1) (<= |v_arrayCell_v_#valid_55[v_main_~#a~0.base_29]_1| 1) (<= |v_arrayCell_v_#valid_55[0]_1| 0) (<= |v_arrayCell_v_#valid_56[0]_1| 0) (>= |v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_29]_1| 0) (<= 1 |v_#StackHeapBarrier_28|) (>= |v_arrayCell_v_#valid_55[0]_1| 0) (<= v_main_~i~0_29 2147483647))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_28|, ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_13|, main_#t~nondet0=|v_main_#t~nondet0_16|, main_~i~0=v_main_~i~0_32, main_~#a~0.base=|v_main_~#a~0.base_31|, main_~#a~0.offset=|v_main_~#a~0.offset_27|, v_rep(select #length main_~#a~0.base)_2=|v_arrayCell_v_#length_39[v_main_~#a~0.base_31]_1|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_56[0]_1|, v_rep(select #valid main_~#a~0.base)_2=|v_arrayCell_v_#valid_56[v_main_~#a~0.base_31]_1|, v_rep(select old(#length) main_~#a~0.base)_2=|v_v_rep(select old(#length) main_~#a~0.base)_2_1|, v_rep(select old(#valid) main_~#a~0.base)_2=|v_v_rep(select old(#valid) main_~#a~0.base)_2_1|, v_rep(select old(#valid) 0)_2=|v_v_rep(select old(#valid) 0)_2_1|}
+  OutVars:  {ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_12|, #StackHeapBarrier=|v_#StackHeapBarrier_28|, main_#t~nondet0=|v_main_#t~nondet0_15|, main_~i~0=v_main_~i~0_29, main_~#a~0.base=|v_main_~#a~0.base_29|, main_~#a~0.offset=|v_main_~#a~0.offset_25|, v_rep(select #length main_~#a~0.base)_2=|v_arrayCell_v_#length_38[v_main_~#a~0.base_29]_1|, v_rep(select old(#length) main_~#a~0.base)_2=|v_arrayCell_v_old(#length)_13[v_main_~#a~0.base_29]_1|, v_rep(select #valid main_~#a~0.base)_2=|v_arrayCell_v_#valid_55[v_main_~#a~0.base_29]_1|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_55[0]_1|, v_rep(select old(#valid) main_~#a~0.base)_2=|v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_29]_1|, v_rep(select old(#valid) 0)_2=|v_arrayCell_v_old(#valid)_13[0]_1|}
+  AuxVars:  [|v_arrayCell_v_#length_39[v_main_~#a~0.base_29]_1|, |v_arrayCell_v_#length_38[v_main_~#a~0.base_31]_1|, |v_arrayCell_v_#valid_56[v_main_~#a~0.base_29]_1|, |v_arrayCell_v_old(#valid)_13[v_main_~#a~0.base_31]_1|, |v_arrayCell_v_old(#length)_13[v_main_~#a~0.base_31]_1|, |v_arrayCell_v_#valid_55[v_main_~#a~0.base_31]_1|]
+
+Loop (linearized):
+  Formula:  (or (and (<= 0 |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= (+ v_main_~i~0_31 1) v_main_~i~0_30) (<= (+ |v_main_~#a~0.offset_26| (* v_main_~i~0_30 4) 4) |v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1|) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= 0 v_main_~i~0_31) (<= v_main_~i~0_31 9) (<= v_main_~i~0_30 2147483647) (<= |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1| 1) (<= 1 |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1|) (<= 0 |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1| 0) (<= 0 (+ (* v_main_~i~0_31 4) |v_main_~#a~0.offset_26|))) (and (<= 0 |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= 0 |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= v_main_~i~0_31 v_main_~i~0_30) (<= |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1| |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|) (<= 0 v_main_~i~0_31) (<= v_main_~i~0_30 v_main_~i~0_31) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| 0) (<= v_main_~i~0_31 9) (<= (+ (* v_main_~i~0_31 4) |v_main_~#a~0.offset_26| 4) |v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1|) (<= |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1| 1) (<= 1 |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1|) (<= 0 |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1| 0) (<= 0 (+ (* v_main_~i~0_31 4) |v_main_~#a~0.offset_26|))) (and (<= (+ v_main_~i~0_30 1) v_main_~i~0_31) (<= 0 |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= 0 (+ v_main_~i~0_30 2147483648)) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1| |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|) (<= 0 v_main_~i~0_31) (<= v_main_~i~0_31 9) (<= (+ (* v_main_~i~0_31 4) |v_main_~#a~0.offset_26| 4) |v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1|) (<= |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1| 1) (<= 1 |v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1|) (<= 0 (+ |v_main_~#a~0.offset_26| (* v_main_~i~0_30 4))) (<= 0 |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|) (<= |v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1| 0)))
+  InVars:   {main_~i~0=v_main_~i~0_31, main_~#a~0.base=|v_main_~#a~0.base_30|, main_~#a~0.offset=|v_main_~#a~0.offset_26|, main_#t~nondet3=|v_main_#t~nondet3_8|, main_#t~mem1=|v_main_#t~mem1_15|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_57[0]_1|, v_rep(select #valid main_~#a~0.base)_2=|v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1|, v_rep(select (select #memory_int main_~#a~0.base) (+ main_~#a~0.offset (* main_~i~0 4)))_1=|v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|, v_rep(select #length main_~#a~0.base)_2=|v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1|, v_rep(ite main_#t~short2 1 0)_2=|v_v_rep(ite main_#t~short2 1 0)_2_in_bool_1|}
+  OutVars:  {main_#t~nondet3=|v_main_#t~nondet3_7|, main_#t~mem1=|v_main_#t~mem1_13|, main_~i~0=v_main_~i~0_30, main_~#a~0.base=|v_main_~#a~0.base_30|, main_~#a~0.offset=|v_main_~#a~0.offset_26|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_57[0]_1|, v_rep(select #valid main_~#a~0.base)_2=|v_arrayCell_v_#valid_57[v_main_~#a~0.base_30]_1|, v_rep(select (select #memory_int main_~#a~0.base) (+ main_~#a~0.offset (* main_~i~0 4)))_1=|v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|, v_rep(select #length main_~#a~0.base)_2=|v_arrayCell_v_#length_40[v_main_~#a~0.base_30]_1|, v_rep(ite main_#t~short2 1 0)_2=|v_v_rep(ite main_#t~short2 1 0)_2_out_bool_1|}
+  AuxVars:  [|v_arrayCell_v_#memory_int_27[v_main_~#a~0.base_30, (+ (* v_main_~i~0_31 4) v_main_~#a~0.offset_26)]_1|, |v_arrayCell_v_#memory_int_28[v_main_~#a~0.base_30, (+ v_main_~#a~0.offset_26 (* v_main_~i~0_30 4))]_1|]
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #36#return;
+  [3] call #t~ret4 := main();
+  [4] havoc #t~nondet0;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;~i~0 := #t~nondet0;havoc #t~nondet0;call ~#a~0.base, ~#a~0.offset := #Ultimate.allocOnStack(40);
+Loop (length=5):
+  [0] #t~short2 := 0 <= ~i~0 && ~i~0 < 10;
+  [1] assume #t~short2;
+  [2] call #t~mem1 := read~int(~#a~0.base, ~#a~0.offset + 4 * ~i~0, 4);#t~short2 := #t~mem1 >= 0;
+  [3] assume #t~short2;havoc #t~mem1;havoc #t~short2;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;~i~0 := #t~nondet3;havoc #t~nondet3;
+  [4] SUMMARY for call write~int(0, ~#a~0.base, ~#a~0.offset + 4 * ~i~0, 4); srcloc: L14
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3445936 ns (3,45 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@378808ba
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,45 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

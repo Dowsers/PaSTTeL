@@ -1,0 +1,66 @@
+{
+  "program_vars": [
+    "i",
+    "k",
+    "some",
+    "tmp",
+    "tmp2",
+    "|v_rep(select a i)_1|",
+    "|v_rep(select a k)_1|",
+    "x"
+  ],
+  "var_types": {
+    "i": "Int",
+    "k": "Int",
+    "some": "Int",
+    "tmp": "Int",
+    "tmp2": "Int",
+    "x": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_arrayCell_v_a_4[v_i_2]_1| v_tmp_2) (>= |v_arrayCell_v_a_4[v_i_2]_1| v_tmp_2) (<= v_tmp_2 v_tmp2_2) (>= v_tmp_2 v_tmp2_2))",
+      "in_vars": {
+        "i": "v_i_2",
+        "tmp2": "v_tmp2_3",
+        "tmp": "v_tmp_3",
+        "|v_rep(select a i)_1|": "|v_arrayCell_v_a_4[v_i_2]_1|"
+      },
+      "out_vars": {
+        "tmp2": "v_tmp2_2",
+        "i": "v_i_2",
+        "tmp": "v_tmp_2",
+        "|v_rep(select a i)_1|": "|v_arrayCell_v_a_4[v_i_2]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_arrayCell_v_a_5[v_k_2]_1| v_some_2) (>= |v_arrayCell_v_a_5[v_k_2]_1| v_some_2) (>= (+ v_x_6 1) v_x_7) (<= (+ v_x_6 1) v_x_7) (<= 1 v_x_7))",
+      "in_vars": {
+        "some": "v_some_2",
+        "k": "v_k_2",
+        "x": "v_x_7",
+        "i": "v_i_ForeignInOutVar_1",
+        "|v_rep(select a k)_1|": "|v_arrayCell_v_a_6[v_k_2]_1|",
+        "|v_rep(select a i)_1|": "|v_arrayCell_v_a_6[v_i_ForeignInOutVar_1]_1|"
+      },
+      "out_vars": {
+        "some": "v_some_2",
+        "k": "v_k_2",
+        "x": "v_x_6",
+        "i": "v_i_ForeignInOutVar_1",
+        "|v_rep(select a k)_1|": "|v_arrayCell_v_a_5[v_k_2]_1|",
+        "|v_rep(select a i)_1|": "|v_arrayCell_v_a_5[v_i_ForeignInOutVar_1]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

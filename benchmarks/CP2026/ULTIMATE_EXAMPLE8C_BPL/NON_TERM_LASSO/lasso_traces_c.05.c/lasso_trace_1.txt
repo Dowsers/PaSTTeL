@@ -1,0 +1,120 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  test_fun_#in~y                                     : Int
+  test_fun_#in~x                                     : Int
+  test_fun_~x                                        : Int
+  test_fun_~y                                        : Int
+  v_test_fun_#in~y_2                                 : Int
+  v_test_fun_#in~x_2                                 : Int
+  v_test_fun_~x_18                                   : Int
+  v_test_fun_~y_18                                   : Int
+  v_test_fun_~x_15                                   : Int
+  v_test_fun_~y_15                                   : Int
+  v_test_fun_~x_17                                   : Int
+  v_test_fun_~y_17                                   : Int
+  v_test_fun_~x_16                                   : Int
+  v_test_fun_~y_16                                   : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_test_fun_#in~x_5| v_test_fun_~x_25) (= |v_test_fun_#in~y_5| v_test_fun_~y_25) (<= |v_test_fun_#in~y_5| 2147483647) (<= 0 (+ |v_test_fun_#in~y_5| 2147483648)) (<= |v_test_fun_#in~x_5| 2147483647) (<= 0 (+ |v_test_fun_#in~x_5| 2147483648)))  InVars {test_fun_#in~y=|v_test_fun_#in~y_5|, test_fun_#in~x=|v_test_fun_#in~x_5|}  OutVars{test_fun_~x=v_test_fun_~x_25, test_fun_~y=v_test_fun_~y_25, test_fun_#in~y=|v_test_fun_#in~y_5|, test_fun_#in~x=|v_test_fun_#in~x_5|}  AuxVars[]  AssignedVars[test_fun_~x, test_fun_~y]
+
+Loop TransFormula:
+Formula: (and (not (= v_test_fun_~x_27 v_test_fun_~y_27)) (or (and (= (+ v_test_fun_~x_27 v_test_fun_~y_26) v_test_fun_~y_27) (= v_test_fun_~x_27 v_test_fun_~x_26) (<= v_test_fun_~x_27 v_test_fun_~y_27)) (and (= v_test_fun_~y_27 v_test_fun_~y_26) (<= (+ v_test_fun_~y_27 1) v_test_fun_~x_27) (= (+ v_test_fun_~x_26 v_test_fun_~y_27) v_test_fun_~x_27))))  InVars {test_fun_~x=v_test_fun_~x_27, test_fun_~y=v_test_fun_~y_27}  OutVars{test_fun_~x=v_test_fun_~x_26, test_fun_~y=v_test_fun_~y_26}  AuxVars[]  AssignedVars[test_fun_~x, test_fun_~y]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 55
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,5818
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9310
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,5556
+    Simplify formula using some simplification technique -> relative DAG size: 0,5556
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0571
+
+Stem (linearized):
+  Formula:  (and (<= 0 (+ |v_test_fun_#in~y_2| 2147483648)) (>= |v_test_fun_#in~x_2| v_test_fun_~x_15) (<= |v_test_fun_#in~y_2| v_test_fun_~y_15) (<= |v_test_fun_#in~x_2| 2147483647) (>= |v_test_fun_#in~y_2| v_test_fun_~y_15) (<= |v_test_fun_#in~x_2| v_test_fun_~x_15) (<= 0 (+ |v_test_fun_#in~x_2| 2147483648)) (<= |v_test_fun_#in~y_2| 2147483647))
+  InVars:   {test_fun_#in~y=|v_test_fun_#in~y_2|, test_fun_#in~x=|v_test_fun_#in~x_2|, test_fun_~x=v_test_fun_~x_18, test_fun_~y=v_test_fun_~y_18}
+  OutVars:  {test_fun_~x=v_test_fun_~x_15, test_fun_~y=v_test_fun_~y_15, test_fun_#in~y=|v_test_fun_#in~y_2|, test_fun_#in~x=|v_test_fun_#in~x_2|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_test_fun_~x_17 v_test_fun_~x_16) (<= v_test_fun_~x_16 v_test_fun_~x_17) (<= v_test_fun_~y_17 (+ v_test_fun_~x_17 v_test_fun_~y_16)) (<= (+ v_test_fun_~x_17 1) v_test_fun_~y_17) (<= (+ v_test_fun_~x_17 v_test_fun_~y_16) v_test_fun_~y_17)) (and (<= (+ v_test_fun_~x_16 v_test_fun_~y_17) v_test_fun_~x_17) (<= v_test_fun_~y_16 v_test_fun_~y_17) (<= (+ v_test_fun_~y_17 1) v_test_fun_~x_17) (<= v_test_fun_~y_17 v_test_fun_~y_16) (<= v_test_fun_~x_17 (+ v_test_fun_~x_16 v_test_fun_~y_17))))
+  InVars:   {test_fun_~x=v_test_fun_~x_17, test_fun_~y=v_test_fun_~y_17}
+  OutVars:  {test_fun_~x=v_test_fun_~x_16, test_fun_~y=v_test_fun_~y_16}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume -2147483648 <= #in~x && #in~x <= 2147483647;~x := #in~x;assume -2147483648 <= #in~y && #in~y <= 2147483647;~y := #in~y;call assume((if ~x > 0 then 1 else 0));call assume((if ~y > 0 then 1 else 0));
+Loop (length=1):
+  [0] assume !(~x == ~y);BeginParallelComposition{ParallelCodeBlock0: assume ~x > ~y;call assume((if ~x > 0 then 1 else 0));call assume((if ~y > 0 then 1 else 0));~x := ~x - ~y;ParallelCodeBlock1: assume !(~x > ~y);call assume((if ~x > 0 then 1 else 0));call assume((if ~y > 0 then 1 else 0));~y := ~y - ~x;}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3031178 ns (3,03 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7ebfad71
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,03 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,96 @@
+{
+  "program_vars": [
+    "bubble_#in~N",
+    "bubble_#in~a.base",
+    "bubble_#in~a.offset",
+    "bubble_#t~mem0",
+    "bubble_#t~mem1",
+    "bubble_#t~post4",
+    "bubble_~a.base",
+    "bubble_~a.offset",
+    "bubble_~i~0",
+    "bubble_~j~0",
+    "bubble_~t~0",
+    "|v_rep(select #length bubble_~a.base)_1|",
+    "|v_rep(select #valid bubble_~a.base)_1|",
+    "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) (- 4) bubble_~a.offset))_1|",
+    "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) bubble_~a.offset))_1|"
+  ],
+  "var_types": {
+    "bubble_#in~N": "Int",
+    "bubble_#in~a.base": "Int",
+    "bubble_#in~a.offset": "Int",
+    "bubble_#t~mem0": "Int",
+    "bubble_#t~mem1": "Int",
+    "bubble_#t~post4": "Int",
+    "bubble_~a.base": "Int",
+    "bubble_~a.offset": "Int",
+    "bubble_~i~0": "Int",
+    "bubble_~j~0": "Int",
+    "bubble_~t~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_bubble_~a.offset_25 |v_bubble_#in~a.offset_6|) (<= |v_bubble_#in~a.base_6| v_bubble_~a.base_31) (>= v_bubble_~i~0_27 |v_bubble_#in~N_6|) (<= 1 v_bubble_~i~0_27) (>= v_bubble_~j~0_41 2) (>= |v_bubble_#in~a.base_6| v_bubble_~a.base_31) (<= v_bubble_~a.offset_25 |v_bubble_#in~a.offset_6|) (<= v_bubble_~j~0_41 2) (<= |v_bubble_#in~N_6| 2147483647) (<= v_bubble_~i~0_27 |v_bubble_#in~N_6|))",
+      "in_vars": {
+        "bubble_#in~N": "|v_bubble_#in~N_6|",
+        "bubble_#in~a.offset": "|v_bubble_#in~a.offset_6|",
+        "bubble_#in~a.base": "|v_bubble_#in~a.base_6|",
+        "bubble_~a.base": "v_bubble_~a.base_33",
+        "bubble_~t~0": "v_bubble_~t~0_14",
+        "bubble_~j~0": "v_bubble_~j~0_45",
+        "bubble_~i~0": "v_bubble_~i~0_29",
+        "bubble_~a.offset": "v_bubble_~a.offset_27"
+      },
+      "out_vars": {
+        "bubble_~a.base": "v_bubble_~a.base_31",
+        "bubble_#in~N": "|v_bubble_#in~N_6|",
+        "bubble_~t~0": "v_bubble_~t~0_13",
+        "bubble_~j~0": "v_bubble_~j~0_41",
+        "bubble_#in~a.offset": "|v_bubble_#in~a.offset_6|",
+        "bubble_~i~0": "v_bubble_~i~0_27",
+        "bubble_#in~a.base": "|v_bubble_#in~a.base_6|",
+        "bubble_~a.offset": "v_bubble_~a.offset_25"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 4 (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)) (<= v_bubble_~j~0_44 v_bubble_~i~0_28) (<= (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 4) |v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|) (<= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|) (>= v_bubble_~j~0_43 (+ v_bubble_~j~0_44 1)) (<= |v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1| 1) (>= |v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1| 1) (<= v_bubble_~j~0_43 (+ v_bubble_~j~0_44 1)) (<= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 (- 4))]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1|) (>= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|))",
+      "in_vars": {
+        "bubble_~a.base": "v_bubble_~a.base_32",
+        "bubble_~j~0": "v_bubble_~j~0_44",
+        "bubble_~i~0": "v_bubble_~i~0_28",
+        "bubble_~a.offset": "v_bubble_~a.offset_26",
+        "bubble_#t~post4": "|v_bubble_#t~post4_4|",
+        "bubble_#t~mem1": "|v_bubble_#t~mem1_8|",
+        "bubble_#t~mem0": "|v_bubble_#t~mem0_8|",
+        "|v_rep(select #length bubble_~a.base)_1|": "|v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|",
+        "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) (- 4) bubble_~a.offset))_1|": "|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 (- 4))]_1|",
+        "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) bubble_~a.offset))_1|": "|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1|",
+        "|v_rep(select #valid bubble_~a.base)_1|": "|v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1|"
+      },
+      "out_vars": {
+        "bubble_~a.base": "v_bubble_~a.base_32",
+        "bubble_#t~post4": "|v_bubble_#t~post4_3|",
+        "bubble_~j~0": "v_bubble_~j~0_43",
+        "bubble_~i~0": "v_bubble_~i~0_28",
+        "bubble_#t~mem1": "|v_bubble_#t~mem1_6|",
+        "bubble_#t~mem0": "|v_bubble_#t~mem0_6|",
+        "bubble_~a.offset": "v_bubble_~a.offset_26",
+        "|v_rep(select #length bubble_~a.base)_1|": "|v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|",
+        "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) (- 4) bubble_~a.offset))_1|": "|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|",
+        "|v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) bubble_~a.offset))_1|": "|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4))]_1|",
+        "|v_rep(select #valid bubble_~a.base)_1|": "|v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

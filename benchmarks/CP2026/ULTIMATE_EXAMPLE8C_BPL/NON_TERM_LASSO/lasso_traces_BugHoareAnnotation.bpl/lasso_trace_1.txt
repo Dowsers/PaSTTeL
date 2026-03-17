@@ -1,0 +1,122 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  nT_x                                               : Int
+  nT_y                                               : Int
+  nT_verum                                           : Bool
+  v_nT_x_4                                           : Int
+  v_nT_y_13                                          : Int
+  v_nT_y_9                                           : Int
+  v_nT_y_12                                          : Int
+  v_v_rep(ite nT_verum 1 0)_1_in_bool_1              : Int
+  v_v_rep(ite nT_verum 1 0)_1_out_bool_1             : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (or (= v_nT_y_22 0) (= v_nT_y_22 v_nT_x_7))  InVars {nT_x=v_nT_x_7}  OutVars{nT_x=v_nT_x_7, nT_y=v_nT_y_22}  AuxVars[]  AssignedVars[nT_y]
+
+Loop TransFormula:
+Formula: (= v_nT_y_25 0)  InVars {nT_y=v_nT_y_25}  OutVars{nT_y=v_nT_y_25, nT_verum=v_nT_verum_16}  AuxVars[]  AssignedVars[nT_verum]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 10
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (or (and (<= v_nT_y_9 0) (>= v_nT_y_9 0)) (and (>= v_nT_y_9 v_nT_x_4) (<= v_nT_y_9 v_nT_x_4)))
+  InVars:   {nT_x=v_nT_x_4, nT_y=v_nT_y_13}
+  OutVars:  {nT_x=v_nT_x_4, nT_y=v_nT_y_9}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (>= v_nT_y_12 0) (<= v_nT_y_12 0))
+  InVars:   {nT_y=v_nT_y_12, v_rep(ite nT_verum 1 0)_1=|v_v_rep(ite nT_verum 1 0)_1_in_bool_1|}
+  OutVars:  {nT_y=v_nT_y_12, v_rep(ite nT_verum 1 0)_1=|v_v_rep(ite nT_verum 1 0)_1_out_bool_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] y := x;BeginParallelComposition{ParallelCodeBlock0: goto;ParallelCodeBlock1: y := 0;}EndParallelComposition
+Loop (length=8):
+  [0] call verum := alwaysTrue(y);
+  [1] call CallRet := isZero(x);
+  [2] BeginParallelComposition{ParallelCodeBlock0: assume x == 0;ret := true;ParallelCodeBlock1: assume !(x == 0);ret := false;}EndParallelCompositionassume true;
+  [3] #46#return;
+  [4] assume CallRet;ret := true;
+  [5] assume true;
+  [6] #44#return;
+  [7] assume !!verum;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2717174 ns (2,72 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@188d2815
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,72 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

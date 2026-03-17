@@ -1,0 +1,46 @@
+{
+  "program_vars": [
+    "main_head",
+    "|v_rep(select main_mem 0)_3|",
+    "|v_rep(select main_mem main_head)_2|"
+  ],
+  "var_types": {
+    "main_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 1 |v_arrayCell_v_main_mem_45[0]_1|) (<= v_main_head_51 0) (>= 1 |v_arrayCell_v_main_mem_45[0]_1|) (>= v_main_head_51 0))",
+      "in_vars": {
+        "main_head": "v_main_head_54",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_46[0]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_51",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_45[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ 0 1) |v_arrayCell_v_main_mem_47[v_main_head_53]_1|) (<= v_main_head_52 0) (>= |v_arrayCell_v_main_mem_47[v_main_head_53]_1| |v_arrayCell_v_main_mem_47[v_main_head_52]_1|) (<= |v_arrayCell_v_main_mem_47[v_main_head_53]_1| |v_arrayCell_v_main_mem_47[v_main_head_52]_1|) (<= v_main_head_53 0) (>= |v_arrayCell_v_main_mem_47[v_main_head_52]_1| |v_arrayCell_v_main_mem_47[0]_1|) (<= |v_arrayCell_v_main_mem_47[v_main_head_52]_1| |v_arrayCell_v_main_mem_47[0]_1|) (>= v_main_head_52 0) (>= v_main_head_53 0)) (and (<= v_main_head_52 0) (>= |v_arrayCell_v_main_mem_47[v_main_head_53]_1| |v_arrayCell_v_main_mem_47[v_main_head_52]_1|) (<= |v_arrayCell_v_main_mem_47[v_main_head_53]_1| |v_arrayCell_v_main_mem_47[v_main_head_52]_1|) (<= (+ |v_arrayCell_v_main_mem_47[v_main_head_53]_1| 1) 0) (<= v_main_head_53 0) (>= |v_arrayCell_v_main_mem_47[v_main_head_52]_1| |v_arrayCell_v_main_mem_47[0]_1|) (<= |v_arrayCell_v_main_mem_47[v_main_head_52]_1| |v_arrayCell_v_main_mem_47[0]_1|) (>= v_main_head_52 0) (>= v_main_head_53 0)))",
+      "in_vars": {
+        "main_head": "v_main_head_53",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_47[0]_1|",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_47[v_main_head_53]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_52",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_47[0]_1|",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_47[v_main_head_52]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

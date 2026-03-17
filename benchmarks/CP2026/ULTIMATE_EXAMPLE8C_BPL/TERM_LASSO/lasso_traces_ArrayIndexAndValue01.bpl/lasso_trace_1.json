@@ -1,0 +1,67 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_i",
+    "old_upper_",
+    "proc_i",
+    "proc_iin",
+    "upper",
+    "|v_rep(select a proc_i)_1|",
+    "|v_rep(select a upper)_1|",
+    "|v_rep(select old_a_ upper)_1|"
+  ],
+  "var_types": {
+    "ULTIMATE.start_i": "Int",
+    "old_upper_": "Int",
+    "proc_i": "Int",
+    "proc_iin": "Int",
+    "upper": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 23 |v_arrayCell_v_old_a__3[v_upper_5]_1|) (>= 23 |v_arrayCell_v_old_a__3[v_upper_5]_1|) (<= v_ULTIMATE.start_i_7 v_upper_5) (<= v_proc_iin_5 v_ULTIMATE.start_i_7) (>= v_proc_iin_5 v_proc_i_13) (<= v_proc_iin_5 v_proc_i_13) (<= 0 v_upper_5) (>= v_proc_iin_5 v_ULTIMATE.start_i_7) (<= 23 |v_arrayCell_v_a_13[v_upper_5]_1|) (>= 23 |v_arrayCell_v_a_13[v_upper_5]_1|))",
+      "in_vars": {
+        "ULTIMATE.start_i": "v_ULTIMATE.start_i_7",
+        "upper": "v_upper_5",
+        "proc_iin": "v_proc_iin_6",
+        "old_upper_": "|v_old_upper__3|",
+        "proc_i": "v_proc_i_16",
+        "|v_rep(select a upper)_1|": "|v_arrayCell_v_a_15[v_upper_5]_1|",
+        "|v_rep(select old_a_ upper)_1|": "|v_v_rep(select old_a_ upper)_1_1|"
+      },
+      "out_vars": {
+        "proc_iin": "v_proc_iin_5",
+        "upper": "v_upper_5",
+        "old_upper_": "|v_old_upper__2|",
+        "proc_i": "v_proc_i_13",
+        "ULTIMATE.start_i": "v_ULTIMATE.start_i_8",
+        "|v_rep(select old_a_ upper)_1|": "|v_arrayCell_v_old_a__3[v_upper_5]_1|",
+        "|v_rep(select a upper)_1|": "|v_arrayCell_v_a_13[v_upper_5]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_proc_i_14 (+ v_proc_i_15 1)) (<= (+ |v_arrayCell_v_a_16[v_proc_i_15]_1| 1) 23) (<= (+ v_proc_i_14 1) v_upper_6) (<= (+ v_proc_i_15 1) v_proc_i_14)) (and (<= v_proc_i_14 (+ v_proc_i_15 1)) (<= |v_arrayCell_v_a_16[v_proc_i_14]_1| |v_arrayCell_v_a_16[v_upper_6]_1|) (<= (+ |v_arrayCell_v_a_16[v_proc_i_15]_1| 1) 23) (<= (+ v_proc_i_15 1) v_upper_6) (<= (+ v_proc_i_15 1) v_proc_i_14) (<= |v_arrayCell_v_a_16[v_upper_6]_1| |v_arrayCell_v_a_16[v_proc_i_14]_1|)) (and (<= v_proc_i_14 (+ v_proc_i_15 1)) (<= (+ 23 1) |v_arrayCell_v_a_16[v_proc_i_15]_1|) (<= (+ v_proc_i_14 1) v_upper_6) (<= (+ v_proc_i_15 1) v_proc_i_14)) (and (<= v_proc_i_14 (+ v_proc_i_15 1)) (<= |v_arrayCell_v_a_16[v_proc_i_14]_1| |v_arrayCell_v_a_16[v_upper_6]_1|) (<= (+ v_proc_i_15 1) v_upper_6) (<= (+ 23 1) |v_arrayCell_v_a_16[v_proc_i_15]_1|) (<= (+ v_proc_i_15 1) v_proc_i_14) (<= |v_arrayCell_v_a_16[v_upper_6]_1| |v_arrayCell_v_a_16[v_proc_i_14]_1|)))",
+      "in_vars": {
+        "upper": "v_upper_6",
+        "proc_i": "v_proc_i_15",
+        "|v_rep(select a upper)_1|": "|v_arrayCell_v_a_16[v_upper_6]_1|",
+        "|v_rep(select a proc_i)_1|": "|v_arrayCell_v_a_16[v_proc_i_15]_1|"
+      },
+      "out_vars": {
+        "upper": "v_upper_6",
+        "proc_i": "v_proc_i_14",
+        "|v_rep(select a upper)_1|": "|v_arrayCell_v_a_16[v_upper_6]_1|",
+        "|v_rep(select a proc_i)_1|": "|v_arrayCell_v_a_16[v_proc_i_14]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

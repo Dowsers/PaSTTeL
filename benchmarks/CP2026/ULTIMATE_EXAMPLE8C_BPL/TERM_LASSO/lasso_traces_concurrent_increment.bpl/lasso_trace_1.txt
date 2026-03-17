@@ -1,0 +1,172 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  incThread1of1ForFork0_i                            : Int
+  incThread1of1ForFork0_thidvar0                     : Int
+  x                                                  : Int
+  n                                                  : Int
+  v_incThread1of1ForFork0_i_17                       : Int
+  v_incThread1of1ForFork0_thidvar0_6                 : Int
+  v_x_11                                             : Int
+  v_incThread1of1ForFork0_i_13                       : Int
+  v_incThread1of1ForFork0_thidvar0_5                 : Int
+  v_x_8                                              : Int
+  v_n_5                                              : Int
+  v_incThread1of1ForFork0_i_16                       : Int
+  v_x_10                                             : Int
+  v_incThread1of1ForFork0_i_15                       : Int
+  v_x_9                                              : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_incThread1of1ForFork0_thidvar0_11 1) (= v_x_20 0) (= v_incThread1of1ForFork0_i_28 0))  InVars {}  OutVars{incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_28, incThread1of1ForFork0_thidvar0=v_incThread1of1ForFork0_thidvar0_11, x=v_x_20}  AuxVars[]  AssignedVars[incThread1of1ForFork0_i, incThread1of1ForFork0_thidvar0, x]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (+ v_incThread1of1ForFork0_i_31 1))) (and (= v_x_21 (+ v_x_22 1)) (= .cse0 v_incThread1of1ForFork0_i_30) (<= .cse0 v_n_8)))  InVars {n=v_n_8, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_31, x=v_x_22}  OutVars{n=v_n_8, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_30, x=v_x_21}  AuxVars[]  AssignedVars[incThread1of1ForFork0_i, x]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9231
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_incThread1of1ForFork0_i_13 0) (<= v_x_8 0) (>= v_incThread1of1ForFork0_thidvar0_5 1) (>= v_incThread1of1ForFork0_i_13 0) (>= v_x_8 0) (<= v_incThread1of1ForFork0_thidvar0_5 1))
+  InVars:   {incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_17, incThread1of1ForFork0_thidvar0=v_incThread1of1ForFork0_thidvar0_6, x=v_x_11}
+  OutVars:  {incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_13, incThread1of1ForFork0_thidvar0=v_incThread1of1ForFork0_thidvar0_5, x=v_x_8}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_incThread1of1ForFork0_i_15 (+ v_incThread1of1ForFork0_i_16 1)) (>= (+ v_x_10 1) v_x_9) (<= (+ v_incThread1of1ForFork0_i_16 1) v_n_5) (>= v_incThread1of1ForFork0_i_15 (+ v_incThread1of1ForFork0_i_16 1)) (<= (+ v_x_10 1) v_x_9))
+  InVars:   {n=v_n_5, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_16, x=v_x_10}
+  OutVars:  {n=v_n_5, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_15, x=v_x_9}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=3):
+  [0] [37] $Ultimate##0-->L20: Formula: (= v_x_4 0)  InVars {}  OutVars{x=v_x_4}  AuxVars[]  AssignedVars[x]
+  [1] [62] L20-->$Ultimate##0: Formula: (= v_incThread1of1ForFork0_thidvar0_2 1)  InVars {}  OutVars{incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_12, incThread1of1ForFork0_thidvar0=v_incThread1of1ForFork0_thidvar0_2}  AuxVars[]  AssignedVars[incThread1of1ForFork0_i, incThread1of1ForFork0_thidvar0]
+  [2] [54] $Ultimate##0-->L33-1: Formula: (= v_incThread1of1ForFork0_i_1 0)  InVars {}  OutVars{incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_1}  AuxVars[]  AssignedVars[incThread1of1ForFork0_i]
+Loop (length=3):
+  [0] [56] L33-1-->L34: Formula: (< v_incThread1of1ForFork0_i_5 v_n_3)  InVars {n=v_n_3, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_5}  OutVars{n=v_n_3, incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_5}  AuxVars[]  AssignedVars[]
+  [1] [58] L34-->L35: Formula: (= (+ v_x_7 1) v_x_6)  InVars {x=v_x_7}  OutVars{x=v_x_6}  AuxVars[]  AssignedVars[x]
+  [2] [59] L35-->L33-1: Formula: (= v_incThread1of1ForFork0_i_8 (+ v_incThread1of1ForFork0_i_7 1))  InVars {incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_7}  OutVars{incThread1of1ForFork0_i=v_incThread1of1ForFork0_i_8}  AuxVars[]  AssignedVars[incThread1of1ForFork0_i]
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2206385 ns (2,21 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 48181213 ns (48,18 ms)
+       Variables (stem/loop): 3/5  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 48,18 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(n, incThread1of1ForFork0_i) = 1*n - 1*incThread1of1ForFork0_i
+  Variables:
+    n
+    incThread1of1ForFork0_i
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 37272867 ns (37,27 ms)
+       Variables (stem/loop): 3/5  Disjuncts (stem/loop): 1/1
+  Total nontermination analysis time: 37,27 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9231
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+  [Lasso 2] Initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9231
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,21 ms
+Total LassoRanker time: 85,45 ms
+  Termination analysis:     48,18 ms
+  Nontermination analysis:   37,27 ms

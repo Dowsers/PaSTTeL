@@ -1,0 +1,104 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  old(~outputOld_f32~0)                              : Real
+  ~outputOld_f32~0                                   : Real
+  old(~internal_f32~0)                               : Real
+  ~internal_f32~0                                    : Real
+  main_~output_f32~1                                 : Real
+  main_#t~ret2                                       : Real
+  main_#t~ret1                                       : Real
+  main_~input_f32~0                                  : Real
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse0 (to_real 0))) (and (= |v_old(~internal_f32~0)_34| .cse0) (= v_~internal_f32~0_81 |v_old(~internal_f32~0)_34|) (= v_~outputOld_f32~0_80 |v_old(~outputOld_f32~0)_34|) (= .cse0 |v_old(~outputOld_f32~0)_34|)))  InVars {}  OutVars{old(~outputOld_f32~0)=|v_old(~outputOld_f32~0)_34|, ~outputOld_f32~0=v_~outputOld_f32~0_80, old(~internal_f32~0)=|v_old(~internal_f32~0)_34|, ~internal_f32~0=v_~internal_f32~0_81}  AuxVars[]  AssignedVars[old(~outputOld_f32~0), ~outputOld_f32~0, old(~internal_f32~0), ~internal_f32~0]
+
+Loop TransFormula:
+Formula: (or (let ((.cse1 (+ v_~outputOld_f32~0_88 (* (/ 50000000000.0 1234567901.0) v_~internal_f32~0_88))) (.cse0 (* (/ 47777777780.0 1234567901.0) v_~internal_f32~0_89))) (and (<= .cse0 .cse1) (= v_~outputOld_f32~0_87 (+ (* (/ 1.0 50.0) v_~internal_f32~0_89) v_~outputOld_f32~0_88)) (<= .cse1 (+ .cse0 100.0)))) (and (= v_~internal_f32~0_88 0.0) (<= 0.0 v_~outputOld_f32~0_87) (<= v_~outputOld_f32~0_87 100.0)))  InVars {~outputOld_f32~0=v_~outputOld_f32~0_88, ~internal_f32~0=v_~internal_f32~0_89}  OutVars{main_~output_f32~1=v_main_~output_f32~1_11, main_#t~ret2=|v_main_#t~ret2_10|, main_#t~ret1=|v_main_#t~ret1_16|, ~outputOld_f32~0=v_~outputOld_f32~0_87, main_~input_f32~0=v_main_~input_f32~0_24, ~internal_f32~0=v_~internal_f32~0_88}  AuxVars[]  AssignedVars[main_~output_f32~1, main_#t~ret2, main_#t~ret1, ~outputOld_f32~0, main_~input_f32~0, ~internal_f32~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  (not available)
+
+--- RAW TRACE ---
+Stem (length=4):
+  [0] call ULTIMATE.init();
+  [1] ~outputOld_f32~0 := ~convertINTToFLOAT(0);~internal_f32~0 := ~convertINTToFLOAT(0);assume true;
+  [2] #57#return;
+  [3] call main();
+Loop (length=17):
+  [0] havoc ~input_f32~0;havoc ~output_f32~1;
+  [1] call #t~ret1 := tclRange_f32(0.0, 100.0);
+  [2] ~min := #in~min;~max := #in~max;havoc ~result~1;
+  [3] assume ~result~1 >= ~min && ~result~1 <= ~max;#res := ~result~1;
+  [4] assume true;
+  [5] #51#return;
+  [6] ~input_f32~0 := #t~ret1;havoc #t~ret1;
+  [7] call #t~ret2 := NStablePDT1Float(~input_f32~0);
+  [8] ~input_f32 := #in~input_f32;havoc ~output_f32~0;havoc ~reset_b~0;
+  [9] call #t~ret0 := tclRange_b(0, 1);
+  [10] ~min := #in~min;~max := #in~max;havoc ~result~0;
+  [11] assume (if ~result~0 % 256 % 4294967296 <= 2147483647 then ~result~0 % 256 % 4294967296 else ~result~0 % 256 % 4294967296 - 4294967296) >= (if ~min % 256 % 4294967296 <= 2147483647 then ~min % 256 % 4294967296 else ~min % 256 % 4294967296 - 4294967296) && (if ~result~0 % 256 % 4294967296 <= 2147483647 then ~result~0 % 256 % 4294967296 else ~result~0 % 256 % 4294967296 - 4294967296) <= (if ~max % 256 % 4294967296 <= 2147483647 then ~max % 256 % 4294967296 else ~max % 256 % 4294967296 - 4294967296);#res := ~result~0;
+  [12] assume true;
+  [13] #55#return;
+  [14] ~reset_b~0 := #t~ret0;havoc #t~ret0;BeginParallelComposition{ParallelCodeBlock0: assume 0 != ~reset_b~0 % 256;~output_f32~0 := ~input_f32;~internal_f32~0 := 0.0;ParallelCodeBlock1: assume !(0 != ~reset_b~0 % 256);~output_f32~0 := ~outputOld_f32~0 + 0.02 * ~internal_f32~0;~internal_f32~0 := 0.02469135802 * ~input_f32 + (-1234567901/50000000000 * ~outputOld_f32~0 + 0.9555555556 * ~internal_f32~0);}EndParallelComposition~outputOld_f32~0 := ~output_f32~0;#res := ~output_f32~0;assume true;
+  [15] #53#return;
+  [16] ~output_f32~1 := #t~ret2;havoc ~input_f32~0, ~output_f32~1;havoc #t~ret2;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3380176 ns (3,38 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@63e48b50
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,38 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

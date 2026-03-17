@@ -1,0 +1,209 @@
+========================================
+LASSO TRACE REPORT - Iteration #5
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  recursion_~j                                       : Int
+  recursion_#in~i                                    : Int
+  main_#res                                          : Int
+  recursion_~n                                       : Int
+  ULTIMATE.start_#t~ret0                             : Int
+  recursion_#in~n                                    : Int
+  recursion_#in~j                                    : Int
+  recursion_~i                                       : Int
+  v_recursion_~j_256                                 : Int
+  v_recursion_#in~i_266                              : Int
+  v_main_#res_75                                     : Int
+  v_recursion_~n_229                                 : Int
+  v_ULTIMATE.start_#t~ret0_46                        : Int
+  v_recursion_#in~n_266                              : Int
+  v_recursion_#in~j_266                              : Int
+  v_recursion_~i_227                                 : Int
+  v_recursion_~j_245                                 : Int
+  v_recursion_#in~i_254                              : Int
+  v_main_#res_74                                     : Int
+  v_recursion_~n_220                                 : Int
+  v_ULTIMATE.start_#t~ret0_45                        : Int
+  v_recursion_#in~n_254                              : Int
+  v_recursion_#in~j_254                              : Int
+  v_recursion_~i_218                                 : Int
+  v_recursion_#in~i_265                              : Int
+  v_recursion_#in~n_265                              : Int
+  v_recursion_#in~j_265                              : Int
+  v_recursion_~j_257                                 : Int
+  v_recursion_~n_230                                 : Int
+  v_recursion_~i_228                                 : Int
+  v_recursion_~j_254                                 : Int
+  v_recursion_#in~i_263                              : Int
+  v_recursion_~n_227                                 : Int
+  v_recursion_#in~n_263                              : Int
+  v_recursion_#in~j_263                              : Int
+  v_recursion_~i_225                                 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_recursion_#in~j_344| 0) (<= |v_recursion_#in~i_344| |v_recursion_#in~n_344|))  InVars {}  OutVars{recursion_~j=v_recursion_~j_323, recursion_#in~i=|v_recursion_#in~i_344|, main_#res=|v_main_#res_89|, recursion_~n=v_recursion_~n_286, ULTIMATE.start_#t~ret0=|v_ULTIMATE.start_#t~ret0_54|, recursion_#in~n=|v_recursion_#in~n_344|, recursion_#in~j=|v_recursion_#in~j_344|, recursion_~i=v_recursion_~i_284}  AuxVars[]  AssignedVars[recursion_~j, recursion_#in~i, main_#res, recursion_~n, ULTIMATE.start_#t~ret0, recursion_#in~n, recursion_#in~j, recursion_~i]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (+ |v_recursion_#in~j_355| 1))) (and (= (+ |v_recursion_#in~i_355| 1) |v_recursion_#in~i_353|) (= |v_recursion_#in~n_355| |v_recursion_#in~n_353|) (<= |v_recursion_#in~i_353| |v_recursion_#in~n_353|) (<= |v_recursion_#in~n_353| .cse0) (= |v_recursion_#in~j_353| 0) (<= .cse0 |v_recursion_#in~n_355|)))  InVars {recursion_#in~i=|v_recursion_#in~i_355|, recursion_#in~n=|v_recursion_#in~n_355|, recursion_#in~j=|v_recursion_#in~j_355|}  OutVars{recursion_~j=v_recursion_~j_332, recursion_#in~i=|v_recursion_#in~i_353|, recursion_~n=v_recursion_~n_293, recursion_#in~n=|v_recursion_#in~n_353|, recursion_#in~j=|v_recursion_#in~j_353|, recursion_~i=v_recursion_~i_291}  AuxVars[]  AssignedVars[recursion_~j, recursion_#in~i, recursion_~n, recursion_#in~n, recursion_#in~j, recursion_~i]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 29
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8276
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9057
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= |v_recursion_#in~j_254| 0) (>= |v_recursion_#in~j_254| 0) (<= |v_recursion_#in~i_254| |v_recursion_#in~n_254|))
+  InVars:   {recursion_~j=v_recursion_~j_256, recursion_#in~i=|v_recursion_#in~i_266|, main_#res=|v_main_#res_75|, recursion_~n=v_recursion_~n_229, ULTIMATE.start_#t~ret0=|v_ULTIMATE.start_#t~ret0_46|, recursion_#in~n=|v_recursion_#in~n_266|, recursion_#in~j=|v_recursion_#in~j_266|, recursion_~i=v_recursion_~i_227}
+  OutVars:  {recursion_~j=v_recursion_~j_245, recursion_#in~i=|v_recursion_#in~i_254|, main_#res=|v_main_#res_74|, recursion_~n=v_recursion_~n_220, ULTIMATE.start_#t~ret0=|v_ULTIMATE.start_#t~ret0_45|, recursion_#in~n=|v_recursion_#in~n_254|, recursion_#in~j=|v_recursion_#in~j_254|, recursion_~i=v_recursion_~i_218}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (>= |v_recursion_#in~i_263| (+ |v_recursion_#in~i_265| 1)) (>= |v_recursion_#in~n_265| |v_recursion_#in~n_263|) (>= |v_recursion_#in~j_263| 0) (<= (+ |v_recursion_#in~j_265| 1) |v_recursion_#in~n_265|) (<= (+ |v_recursion_#in~i_265| 1) |v_recursion_#in~n_265|) (<= |v_recursion_#in~j_263| 0) (<= |v_recursion_#in~i_263| (+ |v_recursion_#in~i_265| 1)) (>= (+ |v_recursion_#in~j_265| 1) |v_recursion_#in~n_265|) (<= |v_recursion_#in~n_265| |v_recursion_#in~n_263|))
+  InVars:   {recursion_#in~i=|v_recursion_#in~i_265|, recursion_#in~n=|v_recursion_#in~n_265|, recursion_#in~j=|v_recursion_#in~j_265|, recursion_~j=v_recursion_~j_257, recursion_~n=v_recursion_~n_230, recursion_~i=v_recursion_~i_228}
+  OutVars:  {recursion_~j=v_recursion_~j_254, recursion_#in~i=|v_recursion_#in~i_263|, recursion_~n=v_recursion_~n_227, recursion_#in~n=|v_recursion_#in~n_263|, recursion_#in~j=|v_recursion_#in~j_263|, recursion_~i=v_recursion_~i_225}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=14):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #24#return;
+  [3] call #t~ret0 := main();
+  [4] havoc ~n~0;havoc ~i~0;havoc ~j~0;
+  [5] call recursion(~n~0, ~i~0, ~j~0);
+  [6] ~n := #in~n;~i := #in~i;~j := #in~j;
+  [7] assume ~i < ~n;
+  [8] assume ~j < ~n;
+  [9] call recursion(~n, ~i, 1 + ~j);
+  [10] ~n := #in~n;~i := #in~i;~j := #in~j;
+  [11] assume ~i < ~n;
+  [12] assume !(~j < ~n);
+  [13] call recursion(~n, 1 + ~i, 0);
+Loop (length=8):
+  [0] ~n := #in~n;~i := #in~i;~j := #in~j;
+  [1] assume ~i < ~n;
+  [2] assume ~j < ~n;
+  [3] call recursion(~n, ~i, 1 + ~j);
+  [4] ~n := #in~n;~i := #in~i;~j := #in~j;
+  [5] assume ~i < ~n;
+  [6] assume !(~j < ~n);
+  [7] call recursion(~n, 1 + ~i, 0);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   344091 ns (0,34 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 35386315 ns (35,39 ms)
+       Variables (stem/loop): 3/6  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 35,39 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(recursion_#in~i, recursion_#in~n) = -1*recursion_#in~i + 1*recursion_#in~n
+  Variables:
+    recursion_#in~i
+    recursion_#in~n
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 29364578 ns (29,36 ms)
+       Variables (stem/loop): 3/6  Disjuncts (stem/loop): 1/1
+  Total nontermination analysis time: 29,36 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 27
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8889
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9020
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+  [Lasso 2] Initial max DAG size: 27
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8889
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9020
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,34 ms
+Total LassoRanker time: 64,75 ms
+  Termination analysis:     35,39 ms
+  Nontermination analysis:   29,36 ms

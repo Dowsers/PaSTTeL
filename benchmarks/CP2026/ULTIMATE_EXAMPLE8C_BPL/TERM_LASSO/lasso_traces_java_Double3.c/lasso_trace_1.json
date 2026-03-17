@@ -1,0 +1,54 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret1",
+    "main_#res",
+    "test_#in~n",
+    "test_#t~pre0",
+    "test_~n"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret1": "Int",
+    "main_#res": "Int",
+    "test_#in~n": "Int",
+    "test_#t~pre0": "Int",
+    "test_~n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_test_#in~n_5| 10) (>= |v_test_#in~n_5| 10))",
+      "in_vars": {
+        "test_#in~n": "|v_test_#in~n_10|",
+        "main_#res": "|v_main_#res_8|",
+        "ULTIMATE.start_#t~ret1": "|v_ULTIMATE.start_#t~ret1_6|"
+      },
+      "out_vars": {
+        "test_#in~n": "|v_test_#in~n_5|",
+        "main_#res": "|v_main_#res_7|",
+        "ULTIMATE.start_#t~ret1": "|v_ULTIMATE.start_#t~ret1_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ |v_test_#in~n_8| 1) |v_test_#in~n_9|) (<= 2 |v_test_#in~n_9|) (>= (+ |v_test_#in~n_8| 1) |v_test_#in~n_9|))",
+      "in_vars": {
+        "test_#in~n": "|v_test_#in~n_9|",
+        "test_#t~pre0": "|v_test_#t~pre0_11|",
+        "test_~n": "v_test_~n_10"
+      },
+      "out_vars": {
+        "test_#in~n": "|v_test_#in~n_8|",
+        "test_#t~pre0": "|v_test_#t~pre0_10|",
+        "test_~n": "v_test_~n_9"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

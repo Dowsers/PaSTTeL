@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "DecreasingInvariant_x",
+    "DecreasingInvariant_y"
+  ],
+  "var_types": {
+    "DecreasingInvariant_x": "Int",
+    "DecreasingInvariant_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(<= 1 v_DecreasingInvariant_y_4)",
+      "in_vars": {
+        "DecreasingInvariant_y": "v_DecreasingInvariant_y_4"
+      },
+      "out_vars": {
+        "DecreasingInvariant_y": "v_DecreasingInvariant_y_4"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_DecreasingInvariant_y_6 1) (* 2 v_DecreasingInvariant_y_5)) (<= 0 v_DecreasingInvariant_x_9) (>= v_DecreasingInvariant_x_9 (+ v_DecreasingInvariant_y_6 v_DecreasingInvariant_x_8)) (>= (+ v_DecreasingInvariant_y_6 1) (* 2 v_DecreasingInvariant_y_5)) (<= v_DecreasingInvariant_x_9 (+ v_DecreasingInvariant_y_6 v_DecreasingInvariant_x_8)))",
+      "in_vars": {
+        "DecreasingInvariant_y": "v_DecreasingInvariant_y_6",
+        "DecreasingInvariant_x": "v_DecreasingInvariant_x_9"
+      },
+      "out_vars": {
+        "DecreasingInvariant_y": "v_DecreasingInvariant_y_5",
+        "DecreasingInvariant_x": "v_DecreasingInvariant_x_8"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

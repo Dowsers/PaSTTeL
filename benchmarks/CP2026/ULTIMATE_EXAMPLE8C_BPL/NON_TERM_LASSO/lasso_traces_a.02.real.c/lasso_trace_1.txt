@@ -1,0 +1,125 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  test_fun_#in~u                                     : Int
+  test_fun_#in~l                                     : Int
+  test_fun_~u                                        : Int
+  test_fun_~l                                        : Int
+  test_fun_#t~ret0                                   : Int
+  v_test_fun_#in~u_2                                 : Int
+  v_test_fun_#in~l_2                                 : Int
+  v_test_fun_~u_18                                   : Int
+  v_test_fun_~l_18                                   : Int
+  v_test_fun_~u_15                                   : Int
+  v_test_fun_~l_15                                   : Int
+  v_test_fun_~u_17                                   : Int
+  v_test_fun_~l_17                                   : Int
+  v_test_fun_#t~ret0_12                              : Int
+  v_test_fun_~u_16                                   : Int
+  v_test_fun_#t~ret0_10                              : Int
+  v_test_fun_~l_16                                   : Int
+  v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1  : Int
+  v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1  : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_test_fun_#in~u_5| v_test_fun_~u_25) (= |v_test_fun_#in~l_5| v_test_fun_~l_25) (<= |v_test_fun_#in~l_5| 2147483647) (<= 0 (+ |v_test_fun_#in~l_5| 2147483648)) (<= 0 (+ |v_test_fun_#in~u_5| 2147483648)) (<= |v_test_fun_#in~u_5| 2147483647))  InVars {test_fun_#in~u=|v_test_fun_#in~u_5|, test_fun_#in~l=|v_test_fun_#in~l_5|}  OutVars{test_fun_#in~u=|v_test_fun_#in~u_5|, test_fun_~u=v_test_fun_~u_25, test_fun_#in~l=|v_test_fun_#in~l_5|, test_fun_~l=v_test_fun_~l_25}  AuxVars[]  AssignedVars[test_fun_~u, test_fun_~l]
+
+Loop TransFormula:
+Formula: (and (let ((.cse6 (+ v_test_fun_~l_27 v_test_fun_~u_27))) (let ((.cse4 (div .cse6 2)) (.cse3 (= (mod .cse6 2) 0))) (let ((.cse0 (not .cse3)) (.cse1 (+ .cse4 1))) (or (and (= v_test_fun_~l_27 v_test_fun_~l_26) (let ((.cse2 (+ v_test_fun_~l_27 v_test_fun_~u_27 1))) (or (and .cse0 (= .cse1 v_test_fun_~u_26) (<= .cse2 0)) (and (or .cse3 (< 0 .cse2)) (= v_test_fun_~u_26 .cse4))))) (and (= v_test_fun_~u_27 v_test_fun_~u_26) (let ((.cse5 (+ 3 v_test_fun_~l_27 v_test_fun_~u_27))) (or (and .cse0 (= (+ 2 .cse4) v_test_fun_~l_26) (<= .cse5 0)) (and (or .cse3 (< 0 .cse5)) (= .cse1 v_test_fun_~l_26))))))))) (<= (+ v_test_fun_~l_27 1) v_test_fun_~u_27))  InVars {test_fun_~u=v_test_fun_~u_27, test_fun_~l=v_test_fun_~l_27}  OutVars{test_fun_~u=v_test_fun_~u_26, test_fun_#t~ret0=|v_test_fun_#t~ret0_19|, test_fun_~l=v_test_fun_~l_26}  AuxVars[]  AssignedVars[test_fun_~u, test_fun_#t~ret0, test_fun_~l]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 134
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,4179
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3895
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9621
+    Simplify formula using some simplification technique -> relative DAG size: 0,7165
+    Transform into disjunctive normal form -> relative DAG size: 2,9121
+    Simplify formula using some simplification technique -> relative DAG size: 0,6340
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0238
+
+Stem (linearized):
+  Formula:  (and (<= |v_test_fun_#in~l_2| 2147483647) (<= |v_test_fun_#in~l_2| v_test_fun_~l_15) (>= |v_test_fun_#in~l_2| v_test_fun_~l_15) (<= |v_test_fun_#in~u_2| v_test_fun_~u_15) (<= 0 (+ |v_test_fun_#in~l_2| 2147483648)) (>= |v_test_fun_#in~u_2| v_test_fun_~u_15) (<= 0 (+ |v_test_fun_#in~u_2| 2147483648)) (<= |v_test_fun_#in~u_2| 2147483647))
+  InVars:   {test_fun_#in~u=|v_test_fun_#in~u_2|, test_fun_#in~l=|v_test_fun_#in~l_2|, test_fun_~u=v_test_fun_~u_18, test_fun_~l=v_test_fun_~l_18}
+  OutVars:  {test_fun_#in~u=|v_test_fun_#in~u_2|, test_fun_~u=v_test_fun_~u_15, test_fun_#in~l=|v_test_fun_#in~l_2|, test_fun_~l=v_test_fun_~l_15}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_test_fun_~l_16 v_test_fun_~l_17) (<= |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| v_test_fun_~u_16) (<= v_test_fun_~l_17 v_test_fun_~l_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= 0 |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (<= |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 0) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|)) (<= v_test_fun_~u_16 |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|)) (and (<= (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ 0 1) (+ 3 v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) 1)) (<= v_test_fun_~u_16 v_test_fun_~u_17) (<= v_test_fun_~u_17 v_test_fun_~u_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1) v_test_fun_~l_16) (<= v_test_fun_~l_16 (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1)) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|))) (and (<= v_test_fun_~u_16 v_test_fun_~u_17) (<= v_test_fun_~u_17 v_test_fun_~u_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= 0 |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (<= (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1) v_test_fun_~l_16) (<= |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 0) (<= v_test_fun_~l_16 (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1)) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|))) (and (<= (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1) v_test_fun_~u_16) (<= v_test_fun_~l_16 v_test_fun_~l_17) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) 1)) (<= v_test_fun_~u_16 (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 1)) (<= v_test_fun_~l_17 v_test_fun_~l_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17 1) 0) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ 0 1) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|)) (and (<= (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= v_test_fun_~l_16 v_test_fun_~l_17) (<= |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| v_test_fun_~u_16) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) 1)) (<= v_test_fun_~l_17 v_test_fun_~l_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|)) (<= v_test_fun_~u_16 |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (<= (+ 0 1) (+ v_test_fun_~l_17 v_test_fun_~u_17 1))) (and (<= (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) v_test_fun_~l_16) (<= (+ 3 v_test_fun_~l_17 v_test_fun_~u_17) 0) (<= (+ v_test_fun_~l_17 v_test_fun_~u_17) (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) 1)) (<= v_test_fun_~u_16 v_test_fun_~u_17) (<= v_test_fun_~u_17 v_test_fun_~u_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= (+ (* |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|) (+ v_test_fun_~l_17 v_test_fun_~u_17)) (<= v_test_fun_~l_16 (+ |v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1| 2)) (<= (+ 0 1) |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|)))
+  InVars:   {test_fun_~u=v_test_fun_~u_17, test_fun_~l=v_test_fun_~l_17, test_fun_#t~ret0=|v_test_fun_#t~ret0_12|}
+  OutVars:  {test_fun_~u=v_test_fun_~u_16, test_fun_#t~ret0=|v_test_fun_#t~ret0_10|, test_fun_~l=v_test_fun_~l_16}
+  AuxVars:  [|v_div_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|, |v_mod_aux(+ v_test_fun_~l_17 v_test_fun_~u_17)2_1|]
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume -2147483648 <= #in~l && #in~l <= 2147483647;~l := #in~l;assume -2147483648 <= #in~u && #in~u <= 2147483647;~u := #in~u;
+Loop (length=1):
+  [0] assume ~l < ~u;call #t~ret0 := nondef();assume -2147483648 <= #t~ret0 && #t~ret0 <= 2147483647;BeginParallelComposition{ParallelCodeBlock0: assume 0 != #t~ret0;havoc #t~ret0;~l := (if 2 + (~l + ~u) < 0 && 0 != (2 + (~l + ~u)) % 2 then 1 + (2 + (~l + ~u)) / 2 else (2 + (~l + ~u)) / 2);ParallelCodeBlock1: assume !(0 != #t~ret0);havoc #t~ret0;~u := (if ~l + ~u < 0 && 0 != (~l + ~u) % 2 then 1 + (~l + ~u) / 2 else (~l + ~u) / 2);}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3926931 ns (3,93 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@1ff7bbef
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,93 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

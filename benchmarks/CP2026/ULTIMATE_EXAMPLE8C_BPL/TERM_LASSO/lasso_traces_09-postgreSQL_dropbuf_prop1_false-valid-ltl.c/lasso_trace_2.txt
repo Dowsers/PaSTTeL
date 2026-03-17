@@ -1,0 +1,452 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  old(~bufHdr~0.offset)                              : Int
+  ~bufHdr~0.offset                                   : Int
+  ~unixSocketName~0.offset                           : Int
+  old(~unixSocketName~0.offset)                      : Int
+  old(~bufHdr~0.base)                                : Int
+  ~bufHdr~0.base                                     : Int
+  ~bufHdr_refcount~0                                 : Int
+  old(~bufHdr_refcount~0)                            : Int
+  ~portNumber~0                                      : Int
+  old(~portNumber~0)                                 : Int
+  ~firstDelBlock~0                                   : Int
+  old(~firstDelBlock~0)                              : Int
+  ULTIMATE.start_#t~ret10                            : Int
+  ~ListenSocket_OF_listen_index~0                    : Int
+  old(~ListenSocket_OF_listen_index~0)               : Int
+  ~A~0                                               : Int
+  old(~A~0)                                          : Int
+  ~i~0                                               : Int
+  old(~i~0)                                          : Int
+  ~listen_index~0                                    : Int
+  old(~listen_index~0)                               : Int
+  ~LocalRefCount_i~0                                 : Int
+  old(~LocalRefCount_i~0)                            : Int
+  ~istemp~0                                          : Int
+  old(~istemp~0)                                     : Int
+  ~err~0                                             : Int
+  old(~err~0)                                        : Int
+  ~addrs~0                                           : Int
+  old(~addrs~0)                                      : Int
+  old(~RELEASE~0)                                    : Int
+  ~RELEASE~0                                         : Int
+  ~bufHdr_tag_blockNum~0                             : Int
+  old(~bufHdr_tag_blockNum~0)                        : Int
+  ~hostName~0.offset                                 : Int
+  old(~hostName~0.offset)                            : Int
+  ~sock_path~0.offset                                : Int
+  old(~sock_path~0.offset)                           : Int
+  ~service~0.base                                    : Int
+  ~unixSocketName~0.base                             : Int
+  old(~service~0.base)                               : Int
+  old(~unixSocketName~0.base)                        : Int
+  ~#LocalBufferDescriptors_i~0.base                  : Int
+  old(~#LocalBufferDescriptors_i~0.base)             : Int
+  ~added~0                                           : Int
+  old(~added~0)                                      : Int
+  ~bufHdr_tag_rnode~0                                : Int
+  old(~bufHdr_tag_rnode~0)                           : Int
+  ~hostName~0.base                                   : Int
+  old(~hostName~0.base)                              : Int
+  ~bufHdr_tag_rnode_spcNode~0                        : Int
+  old(~bufHdr_tag_rnode_spcNode~0)                   : Int
+  ~bufHdr_tag_rnode_dbNode~0                         : Int
+  old(~bufHdr_tag_rnode_dbNode~0)                    : Int
+  old(~bufHdr_tag_rnode_relNode~0)                   : Int
+  ~bufHdr_tag_rnode_relNode~0                        : Int
+  ~sock_path~0.base                                  : Int
+  old(~sock_path~0.base)                             : Int
+  ~fd~0                                              : Int
+  old(~fd~0)                                         : Int
+  ~one~0                                             : Int
+  old(~one~0)                                        : Int
+  ~service~0.offset                                  : Int
+  old(~service~0.offset)                             : Int
+  old(~bufHdr_flags~0)                               : Int
+  ~bufHdr_flags~0                                    : Int
+  ~hint~0                                            : Int
+  old(~hint~0)                                       : Int
+  ~addr~0                                            : Int
+  old(~addr~0)                                       : Int
+  ~NBuffers~0                                        : Int
+  old(~NBuffers~0)                                   : Int
+  ~addr_ai_family~0                                  : Int
+  old(~addr_ai_family~0)                             : Int
+  ~#LocalBufferDescriptors_i~0.offset                : Int
+  old(~#LocalBufferDescriptors_i~0.offset)           : Int
+  ~MaxListen~0                                       : Int
+  old(~MaxListen~0)                                  : Int
+  ~ret~0                                             : Int
+  old(~ret~0)                                        : Int
+  old(~bufHdr_cntxDirty~0)                           : Int
+  ~bufHdr_cntxDirty~0                                : Int
+  ~__INITIALIZED~0                                   : Int
+  ~NLocBuffer~0                                      : Int
+  old(~NLocBuffer~0)                                 : Int
+  old(~__INITIALIZED~0)                              : Int
+  ~rnode~0                                           : Int
+  old(~rnode~0)                                      : Int
+  ~MAXADDR~0                                         : Int
+  old(~MAXADDR~0)                                    : Int
+  ~family~0                                          : Int
+  old(~family~0)                                     : Int
+  ~maxconn~0                                         : Int
+  old(~maxconn~0)                                    : Int
+  main_#t~ret8                                       : Int
+  main_#t~nondet7                                    : Int
+  main_#t~post9                                      : Int
+  v_#StackHeapBarrier_23                             : Int
+  v_old(~bufHdr~0.offset)_33                         : Int
+  v_~bufHdr~0.offset_73                              : Int
+  v_~unixSocketName~0.offset_43                      : Int
+  v_old(~unixSocketName~0.offset)_28                 : Int
+  v_old(~bufHdr~0.base)_33                           : Int
+  v_~bufHdr~0.base_73                                : Int
+  v_~bufHdr_refcount~0_47                            : Int
+  v_old(~bufHdr_refcount~0)_28                       : Int
+  v_~portNumber~0_43                                 : Int
+  v_old(~portNumber~0)_28                            : Int
+  v_~firstDelBlock~0_60                              : Int
+  v_old(~firstDelBlock~0)_28                         : Int
+  v_ULTIMATE.start_#t~ret10_16                       : Int
+  v_~ListenSocket_OF_listen_index~0_43               : Int
+  v_old(~ListenSocket_OF_listen_index~0)_28          : Int
+  v_~A~0_64                                          : Int
+  v_old(~A~0)_33                                     : Int
+  v_~i~0_94                                          : Int
+  v_old(~i~0)_33                                     : Int
+  v_~listen_index~0_43                               : Int
+  v_old(~listen_index~0)_28                          : Int
+  v_~LocalRefCount_i~0_49                            : Int
+  v_old(~LocalRefCount_i~0)_28                       : Int
+  v_~istemp~0_102                                    : Int
+  v_old(~istemp~0)_48                                : Int
+  v_~err~0_43                                        : Int
+  v_old(~err~0)_28                                   : Int
+  v_~addrs~0_43                                      : Int
+  v_old(~addrs~0)_28                                 : Int
+  v_old(~RELEASE~0)_33                               : Int
+  v_~RELEASE~0_62                                    : Int
+  v_~bufHdr_tag_blockNum~0_60                        : Int
+  v_old(~bufHdr_tag_blockNum~0)_28                   : Int
+  v_~hostName~0.offset_43                            : Int
+  v_old(~hostName~0.offset)_28                       : Int
+  v_~sock_path~0.offset_43                           : Int
+  v_old(~sock_path~0.offset)_28                      : Int
+  v_~service~0.base_43                               : Int
+  v_~unixSocketName~0.base_43                        : Int
+  v_old(~service~0.base)_28                          : Int
+  v_old(~unixSocketName~0.base)_28                   : Int
+  v_~#LocalBufferDescriptors_i~0.base_48             : Int
+  v_old(~#LocalBufferDescriptors_i~0.base)_28        : Int
+  v_~added~0_43                                      : Int
+  v_old(~added~0)_28                                 : Int
+  v_~bufHdr_tag_rnode~0_57                           : Int
+  v_old(~bufHdr_tag_rnode~0)_28                      : Int
+  v_~hostName~0.base_43                              : Int
+  v_old(~hostName~0.base)_28                         : Int
+  v_~bufHdr_tag_rnode_spcNode~0_43                   : Int
+  v_old(~bufHdr_tag_rnode_spcNode~0)_28              : Int
+  v_~bufHdr_tag_rnode_dbNode~0_43                    : Int
+  v_old(~bufHdr_tag_rnode_dbNode~0)_28               : Int
+  v_old(~bufHdr_tag_rnode_relNode~0)_33              : Int
+  v_~bufHdr_tag_rnode_relNode~0_79                   : Int
+  v_~sock_path~0.base_43                             : Int
+  v_old(~sock_path~0.base)_28                        : Int
+  v_~fd~0_43                                         : Int
+  v_old(~fd~0)_28                                    : Int
+  v_~one~0_43                                        : Int
+  v_old(~one~0)_28                                   : Int
+  v_~service~0.offset_43                             : Int
+  v_old(~service~0.offset)_28                        : Int
+  v_old(~bufHdr_flags~0)_33                          : Int
+  v_~bufHdr_flags~0_88                               : Int
+  v_~hint~0_43                                       : Int
+  v_old(~hint~0)_28                                  : Int
+  v_~addr~0_43                                       : Int
+  v_old(~addr~0)_28                                  : Int
+  v_~NBuffers~0_103                                  : Int
+  v_old(~NBuffers~0)_48                              : Int
+  v_~addr_ai_family~0_43                             : Int
+  v_old(~addr_ai_family~0)_28                        : Int
+  v_~#LocalBufferDescriptors_i~0.offset_48           : Int
+  v_old(~#LocalBufferDescriptors_i~0.offset)_28      : Int
+  v_~MaxListen~0_43                                  : Int
+  v_old(~MaxListen~0)_28                             : Int
+  v_~ret~0_43                                        : Int
+  v_old(~ret~0)_28                                   : Int
+  v_old(~bufHdr_cntxDirty~0)_33                      : Int
+  v_~bufHdr_cntxDirty~0_82                           : Int
+  v_~__INITIALIZED~0_100                             : Int
+  v_~NLocBuffer~0_106                                : Int
+  v_old(~NLocBuffer~0)_48                            : Int
+  v_old(~__INITIALIZED~0)_48                         : Int
+  v_~rnode~0_57                                      : Int
+  v_old(~rnode~0)_28                                 : Int
+  v_~MAXADDR~0_43                                    : Int
+  v_old(~MAXADDR~0)_28                               : Int
+  v_~family~0_43                                     : Int
+  v_old(~family~0)_28                                : Int
+  v_~maxconn~0_43                                    : Int
+  v_old(~maxconn~0)_28                               : Int
+  v_arrayCell_v_#valid_23[0]_1                       : Int
+  v_arrayCell_v_#valid_23[1]_1                       : Int
+  v_arrayCell_v_#length_23[1]_1                      : Int
+  v_arrayCell_v_#memory_int_23[1, 0]_1               : Int
+  v_old(~bufHdr~0.offset)_32                         : Int
+  v_~bufHdr~0.offset_70                              : Int
+  v_~unixSocketName~0.offset_42                      : Int
+  v_old(~unixSocketName~0.offset)_27                 : Int
+  v_old(~bufHdr~0.base)_32                           : Int
+  v_~bufHdr~0.base_70                                : Int
+  v_~bufHdr_refcount~0_46                            : Int
+  v_old(~bufHdr_refcount~0)_27                       : Int
+  v_~portNumber~0_42                                 : Int
+  v_old(~portNumber~0)_27                            : Int
+  v_~firstDelBlock~0_58                              : Int
+  v_old(~firstDelBlock~0)_27                         : Int
+  v_ULTIMATE.start_#t~ret10_15                       : Int
+  v_~ListenSocket_OF_listen_index~0_42               : Int
+  v_old(~ListenSocket_OF_listen_index~0)_27          : Int
+  v_~A~0_62                                          : Int
+  v_old(~A~0)_32                                     : Int
+  v_~i~0_90                                          : Int
+  v_old(~i~0)_32                                     : Int
+  v_~listen_index~0_42                               : Int
+  v_old(~listen_index~0)_27                          : Int
+  v_~LocalRefCount_i~0_48                            : Int
+  v_old(~LocalRefCount_i~0)_27                       : Int
+  v_~istemp~0_100                                    : Int
+  v_old(~istemp~0)_47                                : Int
+  v_~err~0_42                                        : Int
+  v_old(~err~0)_27                                   : Int
+  v_~addrs~0_42                                      : Int
+  v_old(~addrs~0)_27                                 : Int
+  v_old(~RELEASE~0)_32                               : Int
+  v_~RELEASE~0_60                                    : Int
+  v_~bufHdr_tag_blockNum~0_58                        : Int
+  v_old(~bufHdr_tag_blockNum~0)_27                   : Int
+  v_~hostName~0.offset_42                            : Int
+  v_old(~hostName~0.offset)_27                       : Int
+  v_~sock_path~0.offset_42                           : Int
+  v_old(~sock_path~0.offset)_27                      : Int
+  v_~service~0.base_42                               : Int
+  v_~unixSocketName~0.base_42                        : Int
+  v_old(~service~0.base)_27                          : Int
+  v_old(~unixSocketName~0.base)_27                   : Int
+  v_~#LocalBufferDescriptors_i~0.base_47             : Int
+  v_old(~#LocalBufferDescriptors_i~0.base)_27        : Int
+  v_~added~0_42                                      : Int
+  v_old(~added~0)_27                                 : Int
+  v_~bufHdr_tag_rnode~0_54                           : Int
+  v_old(~bufHdr_tag_rnode~0)_27                      : Int
+  v_~hostName~0.base_42                              : Int
+  v_old(~hostName~0.base)_27                         : Int
+  v_~bufHdr_tag_rnode_spcNode~0_42                   : Int
+  v_old(~bufHdr_tag_rnode_spcNode~0)_27              : Int
+  v_~bufHdr_tag_rnode_dbNode~0_42                    : Int
+  v_old(~bufHdr_tag_rnode_dbNode~0)_27               : Int
+  v_old(~bufHdr_tag_rnode_relNode~0)_32              : Int
+  v_~bufHdr_tag_rnode_relNode~0_77                   : Int
+  v_~sock_path~0.base_42                             : Int
+  v_old(~sock_path~0.base)_27                        : Int
+  v_~fd~0_42                                         : Int
+  v_old(~fd~0)_27                                    : Int
+  v_~one~0_42                                        : Int
+  v_old(~one~0)_27                                   : Int
+  v_~service~0.offset_42                             : Int
+  v_old(~service~0.offset)_27                        : Int
+  v_old(~bufHdr_flags~0)_32                          : Int
+  v_~bufHdr_flags~0_86                               : Int
+  v_~hint~0_42                                       : Int
+  v_old(~hint~0)_27                                  : Int
+  v_~addr~0_42                                       : Int
+  v_old(~addr~0)_27                                  : Int
+  v_~NBuffers~0_100                                  : Int
+  v_old(~NBuffers~0)_47                              : Int
+  v_~addr_ai_family~0_42                             : Int
+  v_old(~addr_ai_family~0)_27                        : Int
+  v_~#LocalBufferDescriptors_i~0.offset_47           : Int
+  v_old(~#LocalBufferDescriptors_i~0.offset)_27      : Int
+  v_~MaxListen~0_42                                  : Int
+  v_old(~MaxListen~0)_27                             : Int
+  v_~ret~0_42                                        : Int
+  v_old(~ret~0)_27                                   : Int
+  v_old(~bufHdr_cntxDirty~0)_32                      : Int
+  v_~bufHdr_cntxDirty~0_80                           : Int
+  v_~__INITIALIZED~0_98                              : Int
+  v_~NLocBuffer~0_104                                : Int
+  v_old(~NLocBuffer~0)_47                            : Int
+  v_old(~__INITIALIZED~0)_47                         : Int
+  v_~rnode~0_54                                      : Int
+  v_old(~rnode~0)_27                                 : Int
+  v_~MAXADDR~0_42                                    : Int
+  v_old(~MAXADDR~0)_27                               : Int
+  v_~family~0_42                                     : Int
+  v_old(~family~0)_27                                : Int
+  v_~maxconn~0_42                                    : Int
+  v_old(~maxconn~0)_27                               : Int
+  v_~NBuffers~0_102                                  : Int
+  v_~i~0_93                                          : Int
+  v_~bufHdr~0.offset_74                              : Int
+  v_main_#t~ret8_11                                  : Int
+  v_main_#t~nondet7_4                                : Int
+  v_~bufHdr~0.base_74                                : Int
+  v_main_#t~post9_4                                  : Int
+  v_~bufHdr~0.offset_72                              : Int
+  v_main_#t~ret8_9                                   : Int
+  v_main_#t~nondet7_3                                : Int
+  v_~i~0_92                                          : Int
+  v_~bufHdr~0.base_72                                : Int
+  v_main_#t~post9_3                                  : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= (select |v_#valid_35| 1) 1) (= v_~bufHdr_refcount~0_69 0) (= v_~bufHdr_tag_rnode_dbNode~0_65 0) (= v_~added~0_65 0) (= v_~bufHdr_tag_rnode~0_83 0) (= v_~RELEASE~0_92 0) (= |v_old(~bufHdr_tag_rnode_relNode~0)_52| 0) (<= v_~NBuffers~0_156 2147483647) (= (select |v_#valid_35| 0) 0) (= v_~firstDelBlock~0_84 0) (= v_~bufHdr~0.base_107 0) (= v_~hostName~0.offset_65 0) (not (= v_~istemp~0_153 1)) (<= 0 (+ v_~NLocBuffer~0_157 2147483648)) (= v_~bufHdr_tag_blockNum~0_84 0) (= |v_old(~__INITIALIZED~0)_76| 0) (= v_~listen_index~0_65 0) (= v_~sock_path~0.offset_65 0) (= v_~portNumber~0_65 0) (= v_~rnode~0_83 0) (= v_~__INITIALIZED~0_151 1) (<= v_~NLocBuffer~0_157 2147483647) (= v_~hint~0_65 0) (= |v_old(~bufHdr~0.base)_52| 0) (= (select (select |v_#memory_int_35| 1) 0) 0) (<= 0 (+ v_~istemp~0_153 2147483648)) (<= v_~istemp~0_153 2147483647) (= v_~maxconn~0_65 0) (= v_~one~0_65 0) (= |v_old(~i~0)_52| 0) (= v_~sock_path~0.base_65 0) (= v_~addr_ai_family~0_65 0) (= |v_~#LocalBufferDescriptors_i~0.base_70| 1) (= v_~unixSocketName~0.base_65 0) (= v_~unixSocketName~0.offset_65 0) (= |v_old(~bufHdr_cntxDirty~0)_52| 0) (= v_~family~0_65 0) (= v_~MaxListen~0_65 0) (= v_~LocalRefCount_i~0_71 0) (= v_~addr~0_65 0) (= |v_~#LocalBufferDescriptors_i~0.offset_70| 0) (= |v_old(~NBuffers~0)_76| 0) (= v_~bufHdr_tag_rnode_relNode~0_109 0) (= v_~MAXADDR~0_65 0) (= v_~bufHdr_flags~0_118 0) (= v_~bufHdr_cntxDirty~0_112 0) (= v_~bufHdr_tag_rnode_spcNode~0_65 0) (= |v_old(~RELEASE~0)_52| 0) (= v_~service~0.offset_65 0) (= v_~A~0_100 0) (<= 1 |v_#StackHeapBarrier_35|) (= 0 v_~addrs~0_65) (= (select |v_#length_35| 1) 4) (= v_~ret~0_65 0) (= |v_old(~bufHdr_flags~0)_52| 0) (= v_~hostName~0.base_65 0) (= v_~service~0.base_65 0) (= 0 |v_old(~NLocBuffer~0)_76|) (= v_~fd~0_65 0) (= v_~bufHdr~0.offset_107 0) (= v_~i~0_134 1) (= v_~ListenSocket_OF_listen_index~0_65 0) (= |v_old(~istemp~0)_76| 0) (= |v_old(~A~0)_52| 0) (= v_~err~0_65 0) (= |v_old(~bufHdr~0.offset)_52| 0) (<= 0 (+ v_~NBuffers~0_156 2147483648)))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_35|, #valid=|v_#valid_35|, #memory_int=|v_#memory_int_35|, #length=|v_#length_35|}  OutVars{old(~bufHdr~0.offset)=|v_old(~bufHdr~0.offset)_52|, ~bufHdr~0.offset=v_~bufHdr~0.offset_107, ~unixSocketName~0.offset=v_~unixSocketName~0.offset_65, old(~unixSocketName~0.offset)=|v_old(~unixSocketName~0.offset)_44|, old(~bufHdr~0.base)=|v_old(~bufHdr~0.base)_52|, ~bufHdr~0.base=v_~bufHdr~0.base_107, ~bufHdr_refcount~0=v_~bufHdr_refcount~0_69, old(~bufHdr_refcount~0)=|v_old(~bufHdr_refcount~0)_44|, ~portNumber~0=v_~portNumber~0_65, old(~portNumber~0)=|v_old(~portNumber~0)_44|, ~firstDelBlock~0=v_~firstDelBlock~0_84, old(~firstDelBlock~0)=|v_old(~firstDelBlock~0)_44|, ULTIMATE.start_#t~ret10=|v_ULTIMATE.start_#t~ret10_23|, ~ListenSocket_OF_listen_index~0=v_~ListenSocket_OF_listen_index~0_65, old(~ListenSocket_OF_listen_index~0)=|v_old(~ListenSocket_OF_listen_index~0)_44|, ~A~0=v_~A~0_100, old(~A~0)=|v_old(~A~0)_52|, ~i~0=v_~i~0_134, old(~i~0)=|v_old(~i~0)_52|, ~listen_index~0=v_~listen_index~0_65, old(~listen_index~0)=|v_old(~listen_index~0)_44|, ~LocalRefCount_i~0=v_~LocalRefCount_i~0_71, old(~LocalRefCount_i~0)=|v_old(~LocalRefCount_i~0)_44|, ~istemp~0=v_~istemp~0_153, old(~istemp~0)=|v_old(~istemp~0)_76|, ~err~0=v_~err~0_65, old(~err~0)=|v_old(~err~0)_44|, ~addrs~0=v_~addrs~0_65, old(~addrs~0)=|v_old(~addrs~0)_44|, old(~RELEASE~0)=|v_old(~RELEASE~0)_52|, ~RELEASE~0=v_~RELEASE~0_92, ~bufHdr_tag_blockNum~0=v_~bufHdr_tag_blockNum~0_84, old(~bufHdr_tag_blockNum~0)=|v_old(~bufHdr_tag_blockNum~0)_44|, ~hostName~0.offset=v_~hostName~0.offset_65, old(~hostName~0.offset)=|v_old(~hostName~0.offset)_44|, ~sock_path~0.offset=v_~sock_path~0.offset_65, old(~sock_path~0.offset)=|v_old(~sock_path~0.offset)_44|, ~service~0.base=v_~service~0.base_65, ~unixSocketName~0.base=v_~unixSocketName~0.base_65, old(~service~0.base)=|v_old(~service~0.base)_44|, old(~unixSocketName~0.base)=|v_old(~unixSocketName~0.base)_44|, ~#LocalBufferDescriptors_i~0.base=|v_~#LocalBufferDescriptors_i~0.base_70|, old(~#LocalBufferDescriptors_i~0.base)=|v_old(~#LocalBufferDescriptors_i~0.base)_44|, ~added~0=v_~added~0_65, old(~added~0)=|v_old(~added~0)_44|, ~bufHdr_tag_rnode~0=v_~bufHdr_tag_rnode~0_83, old(~bufHdr_tag_rnode~0)=|v_old(~bufHdr_tag_rnode~0)_44|, #valid=|v_#valid_35|, ~hostName~0.base=v_~hostName~0.base_65, old(~hostName~0.base)=|v_old(~hostName~0.base)_44|, ~bufHdr_tag_rnode_spcNode~0=v_~bufHdr_tag_rnode_spcNode~0_65, old(~bufHdr_tag_rnode_spcNode~0)=|v_old(~bufHdr_tag_rnode_spcNode~0)_44|, ~bufHdr_tag_rnode_dbNode~0=v_~bufHdr_tag_rnode_dbNode~0_65, old(~bufHdr_tag_rnode_dbNode~0)=|v_old(~bufHdr_tag_rnode_dbNode~0)_44|, #length=|v_#length_35|, old(~bufHdr_tag_rnode_relNode~0)=|v_old(~bufHdr_tag_rnode_relNode~0)_52|, ~bufHdr_tag_rnode_relNode~0=v_~bufHdr_tag_rnode_relNode~0_109, ~sock_path~0.base=v_~sock_path~0.base_65, old(~sock_path~0.base)=|v_old(~sock_path~0.base)_44|, ~fd~0=v_~fd~0_65, old(~fd~0)=|v_old(~fd~0)_44|, ~one~0=v_~one~0_65, old(~one~0)=|v_old(~one~0)_44|, ~service~0.offset=v_~service~0.offset_65, old(~service~0.offset)=|v_old(~service~0.offset)_44|, old(~bufHdr_flags~0)=|v_old(~bufHdr_flags~0)_52|, ~bufHdr_flags~0=v_~bufHdr_flags~0_118, ~hint~0=v_~hint~0_65, old(~hint~0)=|v_old(~hint~0)_44|, ~addr~0=v_~addr~0_65, old(~addr~0)=|v_old(~addr~0)_44|, ~NBuffers~0=v_~NBuffers~0_156, old(~NBuffers~0)=|v_old(~NBuffers~0)_76|, #StackHeapBarrier=|v_#StackHeapBarrier_35|, ~addr_ai_family~0=v_~addr_ai_family~0_65, old(~addr_ai_family~0)=|v_old(~addr_ai_family~0)_44|, ~#LocalBufferDescriptors_i~0.offset=|v_~#LocalBufferDescriptors_i~0.offset_70|, old(~#LocalBufferDescriptors_i~0.offset)=|v_old(~#LocalBufferDescriptors_i~0.offset)_44|, ~MaxListen~0=v_~MaxListen~0_65, old(~MaxListen~0)=|v_old(~MaxListen~0)_44|, ~ret~0=v_~ret~0_65, old(~ret~0)=|v_old(~ret~0)_44|, old(~bufHdr_cntxDirty~0)=|v_old(~bufHdr_cntxDirty~0)_52|, ~bufHdr_cntxDirty~0=v_~bufHdr_cntxDirty~0_112, ~__INITIALIZED~0=v_~__INITIALIZED~0_151, ~NLocBuffer~0=v_~NLocBuffer~0_157, old(~NLocBuffer~0)=|v_old(~NLocBuffer~0)_76|, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_76|, ~rnode~0=v_~rnode~0_83, old(~rnode~0)=|v_old(~rnode~0)_44|, ~MAXADDR~0=v_~MAXADDR~0_65, old(~MAXADDR~0)=|v_old(~MAXADDR~0)_44|, ~family~0=v_~family~0_65, old(~family~0)=|v_old(~family~0)_44|, #memory_int=|v_#memory_int_35|, ~maxconn~0=v_~maxconn~0_65, old(~maxconn~0)=|v_old(~maxconn~0)_44|}  AuxVars[]  AssignedVars[old(~bufHdr~0.offset), ~bufHdr~0.offset, ~unixSocketName~0.offset, old(~unixSocketName~0.offset), old(~bufHdr~0.base), ~bufHdr~0.base, ~bufHdr_refcount~0, old(~bufHdr_refcount~0), ~portNumber~0, old(~portNumber~0), ~firstDelBlock~0, old(~firstDelBlock~0), ULTIMATE.start_#t~ret10, old(~bufHdr_tag_rnode_relNode~0), ~bufHdr_tag_rnode_relNode~0, ~sock_path~0.base, old(~sock_path~0.base), ~fd~0, old(~fd~0), ~one~0, old(~one~0), ~service~0.offset, old(~service~0.offset), ~ListenSocket_OF_listen_index~0, old(~ListenSocket_OF_listen_index~0), ~A~0, old(~A~0), old(~bufHdr_flags~0), ~bufHdr_flags~0, ~i~0, old(~i~0), ~listen_index~0, old(~listen_index~0), ~hint~0, old(~hint~0), ~LocalRefCount_i~0, old(~LocalRefCount_i~0), ~istemp~0, old(~istemp~0), ~addr~0, old(~addr~0), ~err~0, old(~err~0), ~NBuffers~0, old(~NBuffers~0), ~addr_ai_family~0, old(~addr_ai_family~0), ~#LocalBufferDescriptors_i~0.offset, old(~#LocalBufferDescriptors_i~0.offset), ~addrs~0, old(~addrs~0), old(~RELEASE~0), ~RELEASE~0, ~MaxListen~0, old(~MaxListen~0), ~ret~0, old(~ret~0), ~bufHdr_tag_blockNum~0, old(~bufHdr_tag_blockNum~0), ~hostName~0.offset, old(~hostName~0.offset), ~sock_path~0.offset, old(~sock_path~0.offset), ~service~0.base, ~unixSocketName~0.base, old(~service~0.base), old(~unixSocketName~0.base), ~#LocalBufferDescriptors_i~0.base, old(~#LocalBufferDescriptors_i~0.base), old(~bufHdr_cntxDirty~0), ~bufHdr_cntxDirty~0, ~added~0, old(~added~0), ~bufHdr_tag_rnode~0, old(~bufHdr_tag_rnode~0), ~__INITIALIZED~0, ~NLocBuffer~0, old(~NLocBuffer~0), old(~__INITIALIZED~0), ~rnode~0, old(~rnode~0), ~MAXADDR~0, old(~MAXADDR~0), ~family~0, old(~family~0), ~maxconn~0, old(~maxconn~0), ~hostName~0.base, old(~hostName~0.base), ~bufHdr_tag_rnode_spcNode~0, old(~bufHdr_tag_rnode_spcNode~0), ~bufHdr_tag_rnode_dbNode~0, old(~bufHdr_tag_rnode_dbNode~0)]
+
+Loop TransFormula:
+Formula: (and (<= v_~i~0_137 v_~NBuffers~0_158) (= (+ v_~i~0_137 1) v_~i~0_136) (= v_~bufHdr~0.base_109 0) (<= v_~bufHdr~0.offset_109 2147483647) (<= 0 (+ v_~bufHdr~0.offset_109 2147483648)))  InVars {~NBuffers~0=v_~NBuffers~0_158, ~i~0=v_~i~0_137}  OutVars{~bufHdr~0.offset=v_~bufHdr~0.offset_109, main_#t~ret8=|v_main_#t~ret8_20|, ~NBuffers~0=v_~NBuffers~0_158, main_#t~nondet7=|v_main_#t~nondet7_8|, ~i~0=v_~i~0_136, ~bufHdr~0.base=v_~bufHdr~0.base_109, main_#t~post9=|v_main_#t~post9_8|}  AuxVars[]  AssignedVars[~bufHdr~0.offset, main_#t~ret8, main_#t~nondet7, ~i~0, ~bufHdr~0.base, main_#t~post9]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 239
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,9582
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0917
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8727
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,9115
+    Simplify formula using some simplification technique -> relative DAG size: 0,9900
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0051
+
+Stem (linearized):
+  Formula:  (or (and (<= 0 v_~unixSocketName~0.offset_42) (<= 0 |v_old(~bufHdr_cntxDirty~0)_32|) (<= 0 v_~one~0_42) (<= |v_old(~NBuffers~0)_47| 0) (<= |v_~#LocalBufferDescriptors_i~0.offset_47| 0) (<= 0 v_~MaxListen~0_42) (<= v_~bufHdr_tag_rnode_dbNode~0_42 0) (<= v_~__INITIALIZED~0_98 1) (<= |v_old(~bufHdr~0.base)_32| 0) (<= v_~i~0_90 1) (<= 0 |v_old(~A~0)_32|) (<= 0 v_~service~0.offset_42) (<= 0 |v_old(~istemp~0)_47|) (<= v_~bufHdr~0.offset_70 0) (<= 0 |v_arrayCell_v_#memory_int_23[1, 0]_1|) (<= v_~A~0_62 0) (<= v_~addr~0_42 0) (<= |v_old(~RELEASE~0)_32| 0) (<= 0 v_~bufHdr~0.base_70) (<= v_~sock_path~0.base_42 0) (<= 0 v_~family~0_42) (<= |v_arrayCell_v_#length_23[1]_1| 4) (<= |v_old(~A~0)_32| 0) (<= 0 v_~ret~0_42) (<= 0 |v_old(~bufHdr_flags~0)_32|) (<= v_~service~0.offset_42 0) (<= v_~bufHdr~0.base_70 0) (<= 0 v_~bufHdr_cntxDirty~0_80) (<= v_~maxconn~0_42 0) (<= v_~hostName~0.base_42 0) (<= v_~bufHdr_tag_rnode_relNode~0_77 0) (<= 1 v_~__INITIALIZED~0_98) (<= 0 v_~bufHdr_refcount~0_46) (<= |v_old(~bufHdr_cntxDirty~0)_32| 0) (<= 0 |v_old(~bufHdr_tag_rnode_relNode~0)_32|) (<= 0 v_~hostName~0.base_42) (<= 1 |v_#StackHeapBarrier_23|) (<= v_~sock_path~0.offset_42 0) (<= 0 v_~RELEASE~0_60) (<= v_~listen_index~0_42 0) (<= 0 v_~MAXADDR~0_42) (<= 0 v_~service~0.base_42) (<= 0 (+ v_~NLocBuffer~0_104 2147483648)) (<= v_~RELEASE~0_60 0) (<= 0 v_~unixSocketName~0.base_42) (<= v_~portNumber~0_42 0) (<= 1 v_~i~0_90) (<= v_~added~0_42 0) (<= v_~bufHdr_tag_rnode~0_54 0) (<= v_~MAXADDR~0_42 0) (<= |v_old(~NLocBuffer~0)_47| 0) (<= 1 |v_~#LocalBufferDescriptors_i~0.base_47|) (<= 0 v_~maxconn~0_42) (<= v_~ret~0_42 0) (<= 1 |v_arrayCell_v_#valid_23[1]_1|) (<= 0 |v_arrayCell_v_#valid_23[0]_1|) (<= 0 v_~hostName~0.offset_42) (<= 0 v_~addrs~0_42) (<= 0 |v_old(~i~0)_32|) (<= 0 |v_old(~__INITIALIZED~0)_47|) (<= |v_arrayCell_v_#valid_23[0]_1| 0) (<= v_~one~0_42 0) (<= v_~ListenSocket_OF_listen_index~0_42 0) (<= 0 v_~ListenSocket_OF_listen_index~0_42) (<= 0 v_~addr~0_42) (<= v_~err~0_42 0) (<= v_~hostName~0.offset_42 0) (<= |v_old(~i~0)_32| 0) (<= |v_~#LocalBufferDescriptors_i~0.base_47| 1) (<= |v_arrayCell_v_#valid_23[1]_1| 1) (<= 0 |v_old(~NBuffers~0)_47|) (<= |v_old(~bufHdr~0.offset)_32| 0) (<= 0 |v_old(~bufHdr~0.offset)_32|) (<= v_~bufHdr_tag_blockNum~0_58 0) (<= 0 |v_~#LocalBufferDescriptors_i~0.offset_47|) (<= |v_old(~bufHdr_tag_rnode_relNode~0)_32| 0) (<= 4 |v_arrayCell_v_#length_23[1]_1|) (<= 0 v_~hint~0_42) (<= 0 |v_old(~bufHdr~0.base)_32|) (<= v_~bufHdr_flags~0_86 0) (<= v_~bufHdr_tag_rnode_spcNode~0_42 0) (<= v_~unixSocketName~0.offset_42 0) (<= 0 v_~bufHdr_tag_rnode_dbNode~0_42) (<= v_~unixSocketName~0.base_42 0) (<= 0 v_~firstDelBlock~0_58) (<= 0 v_~bufHdr_tag_blockNum~0_58) (<= 0 v_~bufHdr_flags~0_86) (<= 0 |v_old(~NLocBuffer~0)_47|) (<= |v_arrayCell_v_#memory_int_23[1, 0]_1| 0) (<= 0 v_~A~0_62) (<= 0 v_~listen_index~0_42) (<= 0 v_~err~0_42) (<= v_~firstDelBlock~0_58 0) (<= 0 v_~sock_path~0.base_42) (<= 0 v_~rnode~0_54) (<= v_~bufHdr_refcount~0_46 0) (<= 0 |v_old(~RELEASE~0)_32|) (<= 0 v_~bufHdr_tag_rnode_relNode~0_77) (<= 0 (+ v_~NBuffers~0_100 2147483648)) (<= v_~hint~0_42 0) (<= v_~service~0.base_42 0) (<= 0 v_~bufHdr_tag_rnode~0_54) (<= 0 v_~added~0_42) (<= v_~addrs~0_42 0) (<= v_~NBuffers~0_100 2147483647) (<= 0 v_~portNumber~0_42) (<= v_~fd~0_42 0) (<= 0 v_~LocalRefCount_i~0_48) (<= 0 (+ v_~istemp~0_100 2147483648)) (<= |v_old(~istemp~0)_47| 0) (<= |v_old(~__INITIALIZED~0)_47| 0) (<= 0 v_~addr_ai_family~0_42) (<= 0 v_~bufHdr_tag_rnode_spcNode~0_42) (<= 0 v_~bufHdr~0.offset_70) (<= v_~NLocBuffer~0_104 2147483647) (<= v_~rnode~0_54 0) (<= v_~family~0_42 0) (<= v_~LocalRefCount_i~0_48 0) (<= (+ v_~istemp~0_100 1) 1) (<= v_~bufHdr_cntxDirty~0_80 0) (<= |v_old(~bufHdr_flags~0)_32| 0) (<= v_~addr_ai_family~0_42 0) (<= 0 v_~sock_path~0.offset_42) (<= v_~MaxListen~0_42 0) (<= 0 v_~fd~0_42)) (and (<= 0 v_~unixSocketName~0.offset_42) (<= 0 |v_old(~bufHdr_cntxDirty~0)_32|) (<= 0 v_~one~0_42) (<= |v_old(~NBuffers~0)_47| 0) (<= |v_~#LocalBufferDescriptors_i~0.offset_47| 0) (<= 0 v_~MaxListen~0_42) (<= v_~bufHdr_tag_rnode_dbNode~0_42 0) (<= v_~__INITIALIZED~0_98 1) (<= |v_old(~bufHdr~0.base)_32| 0) (<= v_~i~0_90 1) (<= 0 |v_old(~A~0)_32|) (<= 0 v_~service~0.offset_42) (<= 0 |v_old(~istemp~0)_47|) (<= v_~bufHdr~0.offset_70 0) (<= 0 |v_arrayCell_v_#memory_int_23[1, 0]_1|) (<= v_~A~0_62 0) (<= v_~addr~0_42 0) (<= |v_old(~RELEASE~0)_32| 0) (<= 0 v_~bufHdr~0.base_70) (<= v_~sock_path~0.base_42 0) (<= 0 v_~family~0_42) (<= |v_arrayCell_v_#length_23[1]_1| 4) (<= |v_old(~A~0)_32| 0) (<= 0 v_~ret~0_42) (<= 0 |v_old(~bufHdr_flags~0)_32|) (<= v_~service~0.offset_42 0) (<= (+ 1 1) v_~istemp~0_100) (<= v_~bufHdr~0.base_70 0) (<= 0 v_~bufHdr_cntxDirty~0_80) (<= v_~maxconn~0_42 0) (<= v_~hostName~0.base_42 0) (<= v_~bufHdr_tag_rnode_relNode~0_77 0) (<= 1 v_~__INITIALIZED~0_98) (<= 0 v_~bufHdr_refcount~0_46) (<= |v_old(~bufHdr_cntxDirty~0)_32| 0) (<= 0 |v_old(~bufHdr_tag_rnode_relNode~0)_32|) (<= 0 v_~hostName~0.base_42) (<= 1 |v_#StackHeapBarrier_23|) (<= v_~sock_path~0.offset_42 0) (<= 0 v_~RELEASE~0_60) (<= v_~listen_index~0_42 0) (<= 0 v_~MAXADDR~0_42) (<= 0 v_~service~0.base_42) (<= 0 (+ v_~NLocBuffer~0_104 2147483648)) (<= v_~RELEASE~0_60 0) (<= 0 v_~unixSocketName~0.base_42) (<= v_~portNumber~0_42 0) (<= 1 v_~i~0_90) (<= v_~added~0_42 0) (<= v_~bufHdr_tag_rnode~0_54 0) (<= v_~MAXADDR~0_42 0) (<= |v_old(~NLocBuffer~0)_47| 0) (<= 1 |v_~#LocalBufferDescriptors_i~0.base_47|) (<= 0 v_~maxconn~0_42) (<= v_~ret~0_42 0) (<= 1 |v_arrayCell_v_#valid_23[1]_1|) (<= 0 |v_arrayCell_v_#valid_23[0]_1|) (<= 0 v_~hostName~0.offset_42) (<= 0 v_~addrs~0_42) (<= 0 |v_old(~i~0)_32|) (<= 0 |v_old(~__INITIALIZED~0)_47|) (<= |v_arrayCell_v_#valid_23[0]_1| 0) (<= v_~one~0_42 0) (<= v_~ListenSocket_OF_listen_index~0_42 0) (<= 0 v_~ListenSocket_OF_listen_index~0_42) (<= 0 v_~addr~0_42) (<= v_~err~0_42 0) (<= v_~hostName~0.offset_42 0) (<= |v_old(~i~0)_32| 0) (<= |v_~#LocalBufferDescriptors_i~0.base_47| 1) (<= |v_arrayCell_v_#valid_23[1]_1| 1) (<= 0 |v_old(~NBuffers~0)_47|) (<= |v_old(~bufHdr~0.offset)_32| 0) (<= 0 |v_old(~bufHdr~0.offset)_32|) (<= v_~bufHdr_tag_blockNum~0_58 0) (<= 0 |v_~#LocalBufferDescriptors_i~0.offset_47|) (<= |v_old(~bufHdr_tag_rnode_relNode~0)_32| 0) (<= 4 |v_arrayCell_v_#length_23[1]_1|) (<= 0 v_~hint~0_42) (<= 0 |v_old(~bufHdr~0.base)_32|) (<= v_~bufHdr_flags~0_86 0) (<= v_~bufHdr_tag_rnode_spcNode~0_42 0) (<= v_~unixSocketName~0.offset_42 0) (<= 0 v_~bufHdr_tag_rnode_dbNode~0_42) (<= v_~unixSocketName~0.base_42 0) (<= 0 v_~firstDelBlock~0_58) (<= 0 v_~bufHdr_tag_blockNum~0_58) (<= 0 v_~bufHdr_flags~0_86) (<= 0 |v_old(~NLocBuffer~0)_47|) (<= |v_arrayCell_v_#memory_int_23[1, 0]_1| 0) (<= 0 v_~A~0_62) (<= 0 v_~listen_index~0_42) (<= 0 v_~err~0_42) (<= v_~firstDelBlock~0_58 0) (<= 0 v_~sock_path~0.base_42) (<= 0 v_~rnode~0_54) (<= v_~bufHdr_refcount~0_46 0) (<= 0 |v_old(~RELEASE~0)_32|) (<= 0 v_~bufHdr_tag_rnode_relNode~0_77) (<= v_~istemp~0_100 2147483647) (<= 0 (+ v_~NBuffers~0_100 2147483648)) (<= v_~hint~0_42 0) (<= v_~service~0.base_42 0) (<= 0 v_~bufHdr_tag_rnode~0_54) (<= 0 v_~added~0_42) (<= v_~addrs~0_42 0) (<= v_~NBuffers~0_100 2147483647) (<= 0 v_~portNumber~0_42) (<= v_~fd~0_42 0) (<= 0 v_~LocalRefCount_i~0_48) (<= |v_old(~istemp~0)_47| 0) (<= |v_old(~__INITIALIZED~0)_47| 0) (<= 0 v_~addr_ai_family~0_42) (<= 0 v_~bufHdr_tag_rnode_spcNode~0_42) (<= 0 v_~bufHdr~0.offset_70) (<= v_~NLocBuffer~0_104 2147483647) (<= v_~rnode~0_54 0) (<= v_~family~0_42 0) (<= v_~LocalRefCount_i~0_48 0) (<= v_~bufHdr_cntxDirty~0_80 0) (<= |v_old(~bufHdr_flags~0)_32| 0) (<= v_~addr_ai_family~0_42 0) (<= 0 v_~sock_path~0.offset_42) (<= v_~MaxListen~0_42 0) (<= 0 v_~fd~0_42)))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_23|, old(~bufHdr~0.offset)=|v_old(~bufHdr~0.offset)_33|, ~bufHdr~0.offset=v_~bufHdr~0.offset_73, ~unixSocketName~0.offset=v_~unixSocketName~0.offset_43, old(~unixSocketName~0.offset)=|v_old(~unixSocketName~0.offset)_28|, old(~bufHdr~0.base)=|v_old(~bufHdr~0.base)_33|, ~bufHdr~0.base=v_~bufHdr~0.base_73, ~bufHdr_refcount~0=v_~bufHdr_refcount~0_47, old(~bufHdr_refcount~0)=|v_old(~bufHdr_refcount~0)_28|, ~portNumber~0=v_~portNumber~0_43, old(~portNumber~0)=|v_old(~portNumber~0)_28|, ~firstDelBlock~0=v_~firstDelBlock~0_60, old(~firstDelBlock~0)=|v_old(~firstDelBlock~0)_28|, ULTIMATE.start_#t~ret10=|v_ULTIMATE.start_#t~ret10_16|, ~ListenSocket_OF_listen_index~0=v_~ListenSocket_OF_listen_index~0_43, old(~ListenSocket_OF_listen_index~0)=|v_old(~ListenSocket_OF_listen_index~0)_28|, ~A~0=v_~A~0_64, old(~A~0)=|v_old(~A~0)_33|, ~i~0=v_~i~0_94, old(~i~0)=|v_old(~i~0)_33|, ~listen_index~0=v_~listen_index~0_43, old(~listen_index~0)=|v_old(~listen_index~0)_28|, ~LocalRefCount_i~0=v_~LocalRefCount_i~0_49, old(~LocalRefCount_i~0)=|v_old(~LocalRefCount_i~0)_28|, ~istemp~0=v_~istemp~0_102, old(~istemp~0)=|v_old(~istemp~0)_48|, ~err~0=v_~err~0_43, old(~err~0)=|v_old(~err~0)_28|, ~addrs~0=v_~addrs~0_43, old(~addrs~0)=|v_old(~addrs~0)_28|, old(~RELEASE~0)=|v_old(~RELEASE~0)_33|, ~RELEASE~0=v_~RELEASE~0_62, ~bufHdr_tag_blockNum~0=v_~bufHdr_tag_blockNum~0_60, old(~bufHdr_tag_blockNum~0)=|v_old(~bufHdr_tag_blockNum~0)_28|, ~hostName~0.offset=v_~hostName~0.offset_43, old(~hostName~0.offset)=|v_old(~hostName~0.offset)_28|, ~sock_path~0.offset=v_~sock_path~0.offset_43, old(~sock_path~0.offset)=|v_old(~sock_path~0.offset)_28|, ~service~0.base=v_~service~0.base_43, ~unixSocketName~0.base=v_~unixSocketName~0.base_43, old(~service~0.base)=|v_old(~service~0.base)_28|, old(~unixSocketName~0.base)=|v_old(~unixSocketName~0.base)_28|, ~#LocalBufferDescriptors_i~0.base=|v_~#LocalBufferDescriptors_i~0.base_48|, old(~#LocalBufferDescriptors_i~0.base)=|v_old(~#LocalBufferDescriptors_i~0.base)_28|, ~added~0=v_~added~0_43, old(~added~0)=|v_old(~added~0)_28|, ~bufHdr_tag_rnode~0=v_~bufHdr_tag_rnode~0_57, old(~bufHdr_tag_rnode~0)=|v_old(~bufHdr_tag_rnode~0)_28|, ~hostName~0.base=v_~hostName~0.base_43, old(~hostName~0.base)=|v_old(~hostName~0.base)_28|, ~bufHdr_tag_rnode_spcNode~0=v_~bufHdr_tag_rnode_spcNode~0_43, old(~bufHdr_tag_rnode_spcNode~0)=|v_old(~bufHdr_tag_rnode_spcNode~0)_28|, ~bufHdr_tag_rnode_dbNode~0=v_~bufHdr_tag_rnode_dbNode~0_43, old(~bufHdr_tag_rnode_dbNode~0)=|v_old(~bufHdr_tag_rnode_dbNode~0)_28|, old(~bufHdr_tag_rnode_relNode~0)=|v_old(~bufHdr_tag_rnode_relNode~0)_33|, ~bufHdr_tag_rnode_relNode~0=v_~bufHdr_tag_rnode_relNode~0_79, ~sock_path~0.base=v_~sock_path~0.base_43, old(~sock_path~0.base)=|v_old(~sock_path~0.base)_28|, ~fd~0=v_~fd~0_43, old(~fd~0)=|v_old(~fd~0)_28|, ~one~0=v_~one~0_43, old(~one~0)=|v_old(~one~0)_28|, ~service~0.offset=v_~service~0.offset_43, old(~service~0.offset)=|v_old(~service~0.offset)_28|, old(~bufHdr_flags~0)=|v_old(~bufHdr_flags~0)_33|, ~bufHdr_flags~0=v_~bufHdr_flags~0_88, ~hint~0=v_~hint~0_43, old(~hint~0)=|v_old(~hint~0)_28|, ~addr~0=v_~addr~0_43, old(~addr~0)=|v_old(~addr~0)_28|, ~NBuffers~0=v_~NBuffers~0_103, old(~NBuffers~0)=|v_old(~NBuffers~0)_48|, ~addr_ai_family~0=v_~addr_ai_family~0_43, old(~addr_ai_family~0)=|v_old(~addr_ai_family~0)_28|, ~#LocalBufferDescriptors_i~0.offset=|v_~#LocalBufferDescriptors_i~0.offset_48|, old(~#LocalBufferDescriptors_i~0.offset)=|v_old(~#LocalBufferDescriptors_i~0.offset)_28|, ~MaxListen~0=v_~MaxListen~0_43, old(~MaxListen~0)=|v_old(~MaxListen~0)_28|, ~ret~0=v_~ret~0_43, old(~ret~0)=|v_old(~ret~0)_28|, old(~bufHdr_cntxDirty~0)=|v_old(~bufHdr_cntxDirty~0)_33|, ~bufHdr_cntxDirty~0=v_~bufHdr_cntxDirty~0_82, ~__INITIALIZED~0=v_~__INITIALIZED~0_100, ~NLocBuffer~0=v_~NLocBuffer~0_106, old(~NLocBuffer~0)=|v_old(~NLocBuffer~0)_48|, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_48|, ~rnode~0=v_~rnode~0_57, old(~rnode~0)=|v_old(~rnode~0)_28|, ~MAXADDR~0=v_~MAXADDR~0_43, old(~MAXADDR~0)=|v_old(~MAXADDR~0)_28|, ~family~0=v_~family~0_43, old(~family~0)=|v_old(~family~0)_28|, ~maxconn~0=v_~maxconn~0_43, old(~maxconn~0)=|v_old(~maxconn~0)_28|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_23[0]_1|, v_rep(select #valid 1)_3=|v_arrayCell_v_#valid_23[1]_1|, v_rep(select #length 1)_3=|v_arrayCell_v_#length_23[1]_1|, v_rep(select (select #memory_int 1) 0)_3=|v_arrayCell_v_#memory_int_23[1, 0]_1|}
+  OutVars:  {old(~bufHdr~0.offset)=|v_old(~bufHdr~0.offset)_32|, ~bufHdr~0.offset=v_~bufHdr~0.offset_70, ~unixSocketName~0.offset=v_~unixSocketName~0.offset_42, old(~unixSocketName~0.offset)=|v_old(~unixSocketName~0.offset)_27|, old(~bufHdr~0.base)=|v_old(~bufHdr~0.base)_32|, ~bufHdr~0.base=v_~bufHdr~0.base_70, ~bufHdr_refcount~0=v_~bufHdr_refcount~0_46, old(~bufHdr_refcount~0)=|v_old(~bufHdr_refcount~0)_27|, ~portNumber~0=v_~portNumber~0_42, old(~portNumber~0)=|v_old(~portNumber~0)_27|, ~firstDelBlock~0=v_~firstDelBlock~0_58, old(~firstDelBlock~0)=|v_old(~firstDelBlock~0)_27|, ULTIMATE.start_#t~ret10=|v_ULTIMATE.start_#t~ret10_15|, ~ListenSocket_OF_listen_index~0=v_~ListenSocket_OF_listen_index~0_42, old(~ListenSocket_OF_listen_index~0)=|v_old(~ListenSocket_OF_listen_index~0)_27|, ~A~0=v_~A~0_62, old(~A~0)=|v_old(~A~0)_32|, ~i~0=v_~i~0_90, old(~i~0)=|v_old(~i~0)_32|, ~listen_index~0=v_~listen_index~0_42, old(~listen_index~0)=|v_old(~listen_index~0)_27|, ~LocalRefCount_i~0=v_~LocalRefCount_i~0_48, old(~LocalRefCount_i~0)=|v_old(~LocalRefCount_i~0)_27|, ~istemp~0=v_~istemp~0_100, old(~istemp~0)=|v_old(~istemp~0)_47|, ~err~0=v_~err~0_42, old(~err~0)=|v_old(~err~0)_27|, ~addrs~0=v_~addrs~0_42, old(~addrs~0)=|v_old(~addrs~0)_27|, old(~RELEASE~0)=|v_old(~RELEASE~0)_32|, ~RELEASE~0=v_~RELEASE~0_60, ~bufHdr_tag_blockNum~0=v_~bufHdr_tag_blockNum~0_58, old(~bufHdr_tag_blockNum~0)=|v_old(~bufHdr_tag_blockNum~0)_27|, ~hostName~0.offset=v_~hostName~0.offset_42, old(~hostName~0.offset)=|v_old(~hostName~0.offset)_27|, ~sock_path~0.offset=v_~sock_path~0.offset_42, old(~sock_path~0.offset)=|v_old(~sock_path~0.offset)_27|, ~service~0.base=v_~service~0.base_42, ~unixSocketName~0.base=v_~unixSocketName~0.base_42, old(~service~0.base)=|v_old(~service~0.base)_27|, old(~unixSocketName~0.base)=|v_old(~unixSocketName~0.base)_27|, ~#LocalBufferDescriptors_i~0.base=|v_~#LocalBufferDescriptors_i~0.base_47|, old(~#LocalBufferDescriptors_i~0.base)=|v_old(~#LocalBufferDescriptors_i~0.base)_27|, ~added~0=v_~added~0_42, old(~added~0)=|v_old(~added~0)_27|, ~bufHdr_tag_rnode~0=v_~bufHdr_tag_rnode~0_54, old(~bufHdr_tag_rnode~0)=|v_old(~bufHdr_tag_rnode~0)_27|, ~hostName~0.base=v_~hostName~0.base_42, old(~hostName~0.base)=|v_old(~hostName~0.base)_27|, ~bufHdr_tag_rnode_spcNode~0=v_~bufHdr_tag_rnode_spcNode~0_42, old(~bufHdr_tag_rnode_spcNode~0)=|v_old(~bufHdr_tag_rnode_spcNode~0)_27|, ~bufHdr_tag_rnode_dbNode~0=v_~bufHdr_tag_rnode_dbNode~0_42, old(~bufHdr_tag_rnode_dbNode~0)=|v_old(~bufHdr_tag_rnode_dbNode~0)_27|, old(~bufHdr_tag_rnode_relNode~0)=|v_old(~bufHdr_tag_rnode_relNode~0)_32|, ~bufHdr_tag_rnode_relNode~0=v_~bufHdr_tag_rnode_relNode~0_77, ~sock_path~0.base=v_~sock_path~0.base_42, old(~sock_path~0.base)=|v_old(~sock_path~0.base)_27|, ~fd~0=v_~fd~0_42, old(~fd~0)=|v_old(~fd~0)_27|, ~one~0=v_~one~0_42, old(~one~0)=|v_old(~one~0)_27|, ~service~0.offset=v_~service~0.offset_42, old(~service~0.offset)=|v_old(~service~0.offset)_27|, old(~bufHdr_flags~0)=|v_old(~bufHdr_flags~0)_32|, ~bufHdr_flags~0=v_~bufHdr_flags~0_86, ~hint~0=v_~hint~0_42, old(~hint~0)=|v_old(~hint~0)_27|, ~addr~0=v_~addr~0_42, old(~addr~0)=|v_old(~addr~0)_27|, ~NBuffers~0=v_~NBuffers~0_100, old(~NBuffers~0)=|v_old(~NBuffers~0)_47|, #StackHeapBarrier=|v_#StackHeapBarrier_23|, ~addr_ai_family~0=v_~addr_ai_family~0_42, old(~addr_ai_family~0)=|v_old(~addr_ai_family~0)_27|, ~#LocalBufferDescriptors_i~0.offset=|v_~#LocalBufferDescriptors_i~0.offset_47|, old(~#LocalBufferDescriptors_i~0.offset)=|v_old(~#LocalBufferDescriptors_i~0.offset)_27|, ~MaxListen~0=v_~MaxListen~0_42, old(~MaxListen~0)=|v_old(~MaxListen~0)_27|, ~ret~0=v_~ret~0_42, old(~ret~0)=|v_old(~ret~0)_27|, old(~bufHdr_cntxDirty~0)=|v_old(~bufHdr_cntxDirty~0)_32|, ~bufHdr_cntxDirty~0=v_~bufHdr_cntxDirty~0_80, ~__INITIALIZED~0=v_~__INITIALIZED~0_98, ~NLocBuffer~0=v_~NLocBuffer~0_104, old(~NLocBuffer~0)=|v_old(~NLocBuffer~0)_47|, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_47|, ~rnode~0=v_~rnode~0_54, old(~rnode~0)=|v_old(~rnode~0)_27|, ~MAXADDR~0=v_~MAXADDR~0_42, old(~MAXADDR~0)=|v_old(~MAXADDR~0)_27|, ~family~0=v_~family~0_42, old(~family~0)=|v_old(~family~0)_27|, ~maxconn~0=v_~maxconn~0_42, old(~maxconn~0)=|v_old(~maxconn~0)_27|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_23[0]_1|, v_rep(select #valid 1)_3=|v_arrayCell_v_#valid_23[1]_1|, v_rep(select #length 1)_3=|v_arrayCell_v_#length_23[1]_1|, v_rep(select (select #memory_int 1) 0)_3=|v_arrayCell_v_#memory_int_23[1, 0]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_~bufHdr~0.offset_72 2147483647) (<= v_~bufHdr~0.base_72 0) (<= (+ v_~i~0_93 1) v_~i~0_92) (>= (+ v_~i~0_93 1) v_~i~0_92) (<= 0 (+ v_~bufHdr~0.offset_72 2147483648)) (>= v_~bufHdr~0.base_72 0) (<= v_~i~0_93 v_~NBuffers~0_102))
+  InVars:   {~NBuffers~0=v_~NBuffers~0_102, ~i~0=v_~i~0_93, ~bufHdr~0.offset=v_~bufHdr~0.offset_74, main_#t~ret8=|v_main_#t~ret8_11|, main_#t~nondet7=|v_main_#t~nondet7_4|, ~bufHdr~0.base=v_~bufHdr~0.base_74, main_#t~post9=|v_main_#t~post9_4|}
+  OutVars:  {~bufHdr~0.offset=v_~bufHdr~0.offset_72, main_#t~ret8=|v_main_#t~ret8_9|, ~NBuffers~0=v_~NBuffers~0_102, main_#t~nondet7=|v_main_#t~nondet7_3|, ~i~0=v_~i~0_92, ~bufHdr~0.base=v_~bufHdr~0.base_72, main_#t~post9=|v_main_#t~post9_3|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=8):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;~family~0 := 0;~hostName~0.base, ~hostName~0.offset := 0, 0;~portNumber~0 := 0;~unixSocketName~0.base, ~unixSocketName~0.offset := 0, 0;~MaxListen~0 := 0;~fd~0 := 0;~err~0 := 0;~maxconn~0 := 0;~one~0 := 0;~ret~0 := 0;~service~0.base, ~service~0.offset := 0, 0;~hint~0 := 0;~listen_index~0 := 0;~added~0 := 0;~addr_ai_family~0 := 0;~addr~0 := 0;~MAXADDR~0 := 0;~ListenSocket_OF_listen_index~0 := 0;~sock_path~0.base, ~sock_path~0.offset := 0, 0;~addrs~0 := 0;~rnode~0 := 0;~istemp~0 := 0;~firstDelBlock~0 := 0;~A~0 := 0;~RELEASE~0 := 0;~bufHdr~0.base, ~bufHdr~0.offset := 0, 0;~bufHdr_tag_blockNum~0 := 0;~bufHdr_tag_rnode~0 := 0;~bufHdr_tag_rnode_spcNode~0 := 0;~bufHdr_tag_rnode_dbNode~0 := 0;~bufHdr_tag_rnode_relNode~0 := 0;~bufHdr_flags~0 := 0;~bufHdr_cntxDirty~0 := 0;~LocalRefCount_i~0 := 0;call #Ultimate.allocInit(4, 1);~#LocalBufferDescriptors_i~0.base, ~#LocalBufferDescriptors_i~0.offset := 1, 0;call write~init~int(0, ~#LocalBufferDescriptors_i~0.base, ~#LocalBufferDescriptors_i~0.offset, 4);~NLocBuffer~0 := 0;~i~0 := 0;~NBuffers~0 := 0;~bufHdr_refcount~0 := 0;~__INITIALIZED~0 := 0;assume true;
+  [2] #84#return;
+  [3] call #t~ret10 := main();
+  [4] call env_init();
+  [5] havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;~istemp~0 := #t~nondet2;havoc #t~nondet2;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;~NLocBuffer~0 := #t~nondet3;havoc #t~nondet3;havoc #t~nondet4;assume -2147483648 <= #t~nondet4 && #t~nondet4 <= 2147483647;~NBuffers~0 := #t~nondet4;havoc #t~nondet4;~__INITIALIZED~0 := 1;assume true;
+  [6] #74#return;
+  [7] assume !(1 == ~istemp~0);~A~0 := 1;~A~0 := 0;~i~0 := 1;
+Loop (length=7):
+  [0] assume ~i~0 <= ~NBuffers~0;havoc #t~nondet7;assume -2147483648 <= #t~nondet7 && #t~nondet7 <= 2147483647;~bufHdr~0.base, ~bufHdr~0.offset := 0, #t~nondet7;havoc #t~nondet7;
+  [1] call #t~ret8 := RelFileNodeEquals(~bufHdr_tag_rnode~0, ~rnode~0);
+  [2] ~a := #in~a;~b := #in~b;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;#res := #t~nondet1;havoc #t~nondet1;assume true;
+  [3] #78#return;
+  [4] assume -2147483648 <= #t~ret8 && #t~ret8 <= 2147483647;
+  [5] assume !(0 != #t~ret8 && ~bufHdr_tag_blockNum~0 >= ~firstDelBlock~0);havoc #t~ret8;
+  [6] #t~post9 := ~i~0;~i~0 := 1 + #t~post9;havoc #t~post9;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   861067 ns (0,86 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 204682731 ns (204,68 ms)
+       Variables (stem/loop): 63/5  Disjuncts (stem/loop): 2/1
+       Supporting invariants: 2  Motzkin applications: 8
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 204,68 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(~i~0, v_rep(select #valid 1)_4) = -2*~i~0 + 4294967295*v_rep(select #valid 1)_4
+  Variables:
+    ~i~0
+    v_rep(select #valid 1)_4
+  Supporting invariants:
+    [0] -2*~NBuffers~0 + 4294967295*v_rep(select #valid 1)_4 - 1 >= 0
+  Array index supporting invariants:
+    [0] true
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 239
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,9582
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0917
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8727
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,9115
+    Simplify formula using some simplification technique -> relative DAG size: 0,9900
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0051
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,86 ms
+Total LassoRanker time: 204,68 ms
+  Termination analysis:     204,68 ms
+  Nontermination analysis:   0,00 ms

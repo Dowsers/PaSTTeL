@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "main_x",
+    "main_y"
+  ],
+  "var_types": {
+    "main_x": "Real",
+    "main_y": "Real"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(<= 1.0 (* v_main_y_3 2.0))",
+      "in_vars": {
+        "main_y": "v_main_y_3"
+      },
+      "out_vars": {
+        "main_y": "v_main_y_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_main_x_8 (* v_main_y_4 2.0)) (+ v_main_x_9 1.0)) (<= 0.0 v_main_x_9) (>= (+ v_main_x_8 (* v_main_y_4 2.0)) (+ v_main_x_9 1.0)))",
+      "in_vars": {
+        "main_y": "v_main_y_4",
+        "main_x": "v_main_x_9"
+      },
+      "out_vars": {
+        "main_y": "v_main_y_4",
+        "main_x": "v_main_x_8"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

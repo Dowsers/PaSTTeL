@@ -1,0 +1,188 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  sort_#in~x.offset                                  : Int
+  sort_#in~n                                         : Int
+  sort_#in~x.base                                    : Int
+  sort_~x.base                                       : Int
+  sort_~pass~0                                       : Int
+  sort_~n                                            : Int
+  sort_~i~0                                          : Int
+  sort_~x.offset                                     : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  sort_#t~post5                                      : Int
+  sort_#t~post4                                      : Int
+  sort_#t~mem1                                       : Int
+  sort_#t~mem0                                       : Int
+  v_sort_#in~x.offset_5                              : Int
+  v_sort_#in~n_5                                     : Int
+  v_sort_#in~x.base_5                                : Int
+  v_sort_~x.base_32                                  : Int
+  v_sort_~pass~0_22                                  : Int
+  v_sort_~n_17                                       : Int
+  v_sort_~i~0_36                                     : Int
+  v_sort_~x.offset_26                                : Int
+  v_sort_~x.base_30                                  : Int
+  v_sort_~pass~0_19                                  : Int
+  v_sort_~n_15                                       : Int
+  v_sort_~i~0_32                                     : Int
+  v_sort_~x.offset_24                                : Int
+  v_sort_~x.base_31                                  : Int
+  v_sort_~pass~0_21                                  : Int
+  v_sort_~n_16                                       : Int
+  v_sort_~x.offset_25                                : Int
+  v_sort_#t~post5_6                                  : Int
+  v_sort_#t~post4_4                                  : Int
+  v_sort_#t~mem1_8                                   : Int
+  v_sort_#t~mem0_8                                   : Int
+  v_sort_~i~0_37                                     : Int
+  v_arrayCell_v_#length_19[v_sort_~x.base_31]_1      : Int
+  v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1       : Int
+  v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1 : Int
+  v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1 : Int
+  v_sort_#t~post5_5                                  : Int
+  v_sort_~pass~0_20                                  : Int
+  v_sort_#t~post4_3                                  : Int
+  v_sort_#t~mem1_6                                   : Int
+  v_sort_#t~mem0_6                                   : Int
+  v_sort_~i~0_33                                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_sort_#in~x.base_8| v_sort_~x.base_38) (<= 0 (+ |v_sort_#in~n_8| 2147483648)) (= v_sort_~x.offset_32 |v_sort_#in~x.offset_8|) (<= |v_sort_#in~n_8| 2147483647) (= v_sort_~pass~0_30 1) (= v_sort_~n_23 |v_sort_#in~n_8|))  InVars {sort_#in~x.offset=|v_sort_#in~x.offset_8|, sort_#in~n=|v_sort_#in~n_8|, sort_#in~x.base=|v_sort_#in~x.base_8|}  OutVars{sort_#in~x.offset=|v_sort_#in~x.offset_8|, sort_~x.base=v_sort_~x.base_38, sort_#in~n=|v_sort_#in~n_8|, sort_~pass~0=v_sort_~pass~0_30, sort_~n=v_sort_~n_23, sort_#in~x.base=|v_sort_#in~x.base_8|, sort_~i~0=v_sort_~i~0_48, sort_~x.offset=v_sort_~x.offset_32}  AuxVars[]  AssignedVars[sort_~x.base, sort_~pass~0, sort_~n, sort_~i~0, sort_~x.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (+ v_sort_~pass~0_32 1))) (and (<= (+ v_sort_~x.offset_33 8) (select |v_#length_22| v_sort_~x.base_39)) (<= 0 v_sort_~x.offset_33) (= v_sort_~n_24 .cse0) (let ((.cse1 (select |v_#memory_int_22| v_sort_~x.base_39))) (<= (select .cse1 v_sort_~x.offset_33) (select .cse1 (+ v_sort_~x.offset_33 4)))) (= .cse0 v_sort_~pass~0_31) (= (select |v_#valid_22| v_sort_~x.base_39) 1)))  InVars {sort_~x.base=v_sort_~x.base_39, #valid=|v_#valid_22|, sort_~pass~0=v_sort_~pass~0_32, #memory_int=|v_#memory_int_22|, sort_~n=v_sort_~n_24, #length=|v_#length_22|, sort_~x.offset=v_sort_~x.offset_33}  OutVars{sort_#t~post5=|v_sort_#t~post5_10|, sort_~x.base=v_sort_~x.base_39, #valid=|v_#valid_22|, sort_~pass~0=v_sort_~pass~0_31, #memory_int=|v_#memory_int_22|, sort_~n=v_sort_~n_24, sort_#t~post4=|v_sort_#t~post4_8|, #length=|v_#length_22|, sort_#t~mem1=|v_sort_#t~mem1_14|, sort_#t~mem0=|v_sort_#t~mem0_14|, sort_~i~0=v_sort_~i~0_49, sort_~x.offset=v_sort_~x.offset_33}  AuxVars[]  AssignedVars[sort_#t~post5, sort_~pass~0, sort_#t~post4, sort_#t~mem1, sort_#t~mem0, sort_~i~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 60
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7667
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6957
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9103
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= |v_sort_#in~x.base_5| v_sort_~x.base_30) (>= v_sort_~n_15 |v_sort_#in~n_5|) (<= |v_sort_#in~x.base_5| v_sort_~x.base_30) (<= 0 (+ |v_sort_#in~n_5| 2147483648)) (<= v_sort_~n_15 |v_sort_#in~n_5|) (<= v_sort_~pass~0_19 1) (>= v_sort_~pass~0_19 1) (<= |v_sort_#in~n_5| 2147483647) (>= v_sort_~x.offset_24 |v_sort_#in~x.offset_5|) (<= v_sort_~x.offset_24 |v_sort_#in~x.offset_5|))
+  InVars:   {sort_#in~x.offset=|v_sort_#in~x.offset_5|, sort_#in~n=|v_sort_#in~n_5|, sort_#in~x.base=|v_sort_#in~x.base_5|, sort_~x.base=v_sort_~x.base_32, sort_~pass~0=v_sort_~pass~0_22, sort_~n=v_sort_~n_17, sort_~i~0=v_sort_~i~0_36, sort_~x.offset=v_sort_~x.offset_26}
+  OutVars:  {sort_#in~x.offset=|v_sort_#in~x.offset_5|, sort_~x.base=v_sort_~x.base_30, sort_#in~n=|v_sort_#in~n_5|, sort_~pass~0=v_sort_~pass~0_19, sort_~n=v_sort_~n_15, sort_#in~x.base=|v_sort_#in~x.base_5|, sort_~i~0=v_sort_~i~0_32, sort_~x.offset=v_sort_~x.offset_24}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= |v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1| |v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|) (<= v_sort_~n_16 (+ v_sort_~pass~0_21 1)) (<= (+ v_sort_~x.offset_25 8) |v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|) (<= v_sort_~pass~0_20 (+ v_sort_~pass~0_21 1)) (>= v_sort_~pass~0_20 (+ v_sort_~pass~0_21 1)) (>= v_sort_~n_16 (+ v_sort_~pass~0_21 1)) (<= |v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1| 1) (<= 0 v_sort_~x.offset_25) (>= |v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1| 1))
+  InVars:   {sort_~x.base=v_sort_~x.base_31, sort_~pass~0=v_sort_~pass~0_21, sort_~n=v_sort_~n_16, sort_~x.offset=v_sort_~x.offset_25, sort_#t~post5=|v_sort_#t~post5_6|, sort_#t~post4=|v_sort_#t~post4_4|, sort_#t~mem1=|v_sort_#t~mem1_8|, sort_#t~mem0=|v_sort_#t~mem0_8|, sort_~i~0=v_sort_~i~0_37, v_rep(select #length sort_~x.base)_1=|v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|, v_rep(select #valid sort_~x.base)_1=|v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1|, v_rep(select (select #memory_int sort_~x.base) sort_~x.offset)_1=|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1|, v_rep(select (select #memory_int sort_~x.base) (+ 4 sort_~x.offset))_1=|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|}
+  OutVars:  {sort_#t~post5=|v_sort_#t~post5_5|, sort_~x.base=v_sort_~x.base_31, sort_~pass~0=v_sort_~pass~0_20, sort_~n=v_sort_~n_16, sort_#t~post4=|v_sort_#t~post4_3|, sort_#t~mem1=|v_sort_#t~mem1_6|, sort_#t~mem0=|v_sort_#t~mem0_6|, sort_~i~0=v_sort_~i~0_33, sort_~x.offset=v_sort_~x.offset_25, v_rep(select #length sort_~x.base)_1=|v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|, v_rep(select #valid sort_~x.base)_1=|v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1|, v_rep(select (select #memory_int sort_~x.base) sort_~x.offset)_1=|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1|, v_rep(select (select #memory_int sort_~x.base) (+ 4 sort_~x.offset))_1=|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] ~x.base, ~x.offset := #in~x.base, #in~x.offset;assume -2147483648 <= #in~n && #in~n <= 2147483647;~n := #in~n;havoc ~pass~0;havoc ~i~0;~pass~0 := 1;
+Loop (length=7):
+  [0] assume ~pass~0 < ~n;~i~0 := 0;
+  [1] assume ~i~0 < ~n - ~pass~0;
+  [2] SUMMARY for call #t~mem0 := read~int(~x.base, ~x.offset + 4 * ~i~0, 4); srcloc: L7
+  [3] SUMMARY for call #t~mem1 := read~int(~x.base, ~x.offset + 4 * (1 + ~i~0), 4); srcloc: L7-1
+  [4] assume !(#t~mem0 > #t~mem1);havoc #t~mem0;havoc #t~mem1;
+  [5] #t~post4 := ~i~0;~i~0 := 1 + #t~post4;havoc #t~post4;
+  [6] assume !(~i~0 < ~n - ~pass~0);#t~post5 := ~pass~0;~pass~0 := 1 + #t~post5;havoc #t~post5;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1608295 ns (1,61 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 58823600 ns (58,82 ms)
+       Variables (stem/loop): 7/8  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 58,82 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(sort_~n, sort_~pass~0) = 1*sort_~n - 1*sort_~pass~0
+  Variables:
+    sort_~n
+    sort_~pass~0
+  Supporting invariants:
+    (none)
+  Array index supporting invariants:
+    [0] true
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 60
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7667
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6957
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9103
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,61 ms
+Total LassoRanker time: 58,82 ms
+  Termination analysis:     58,82 ms
+  Nontermination analysis:   0,00 ms

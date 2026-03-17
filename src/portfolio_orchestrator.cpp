@@ -73,7 +73,7 @@ void PortfolioOrchestrator::solve(
                     --sem_count_;
                 }
 
-                // RAII release of semaphore slot on exit
+                // Release of semaphore slot on exit
                 struct SemRelease {
                     PortfolioOrchestrator* self;
                     ~SemRelease() {

@@ -1,0 +1,64 @@
+{
+  "program_vars": [
+    "Main_x",
+    "Main_y",
+    "Main_z",
+    "ackermann_m",
+    "ackermann_n",
+    "ackermann_res",
+    "ackermann_tmp"
+  ],
+  "var_types": {
+    "Main_x": "Int",
+    "Main_y": "Int",
+    "Main_z": "Int",
+    "ackermann_m": "Int",
+    "ackermann_n": "Int",
+    "ackermann_res": "Int",
+    "ackermann_tmp": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_Main_x_8 v_ackermann_m_27) (<= v_Main_y_8 v_ackermann_n_24) (>= v_Main_y_8 v_ackermann_n_24) (>= v_Main_x_8 v_ackermann_m_27))",
+      "in_vars": {
+        "Main_y": "v_Main_y_8",
+        "Main_x": "v_Main_x_8",
+        "ackermann_n": "v_ackermann_n_29",
+        "ackermann_m": "v_ackermann_m_32",
+        "Main_z": "v_Main_z_7"
+      },
+      "out_vars": {
+        "ackermann_n": "v_ackermann_n_24",
+        "ackermann_m": "v_ackermann_m_27",
+        "Main_z": "v_Main_z_6",
+        "Main_y": "v_Main_y_9",
+        "Main_x": "v_Main_x_9"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_ackermann_n_28 0) (<= (+ 0 1) v_ackermann_m_31) (<= v_ackermann_m_31 (+ v_ackermann_m_30 1)) (<= (+ v_ackermann_m_30 1) v_ackermann_m_31) (<= 1 v_ackermann_n_27) (<= 0 v_ackermann_n_28) (<= v_ackermann_n_27 1))",
+      "in_vars": {
+        "ackermann_n": "v_ackermann_n_28",
+        "ackermann_m": "v_ackermann_m_31",
+        "ackermann_res": "v_ackermann_res_21",
+        "ackermann_tmp": "v_ackermann_tmp_18"
+      },
+      "out_vars": {
+        "ackermann_n": "v_ackermann_n_27",
+        "ackermann_m": "v_ackermann_m_30",
+        "ackermann_res": "v_ackermann_res_20",
+        "ackermann_tmp": "v_ackermann_tmp_17"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

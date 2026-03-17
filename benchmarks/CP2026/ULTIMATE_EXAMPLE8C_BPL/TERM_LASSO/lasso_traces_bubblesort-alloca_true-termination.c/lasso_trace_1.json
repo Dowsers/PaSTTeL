@@ -1,0 +1,107 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "ULTIMATE.start_#t~ret8",
+    "bubbleSort_#in~array_size",
+    "bubbleSort_#in~numbers.base",
+    "bubbleSort_#in~numbers.offset",
+    "bubbleSort_#t~post5",
+    "bubbleSort_~i~0",
+    "bubbleSort_~j~0",
+    "bubbleSort_~numbers.base",
+    "bubbleSort_~numbers.offset",
+    "bubbleSort_~temp~0",
+    "main_#res",
+    "main_#t~malloc7.base",
+    "main_#t~malloc7.offset",
+    "main_#t~nondet6",
+    "|v_rep(select #length bubbleSort_#in~numbers.base)_1|",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select #valid bubbleSort_#in~numbers.base)_1|"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "ULTIMATE.start_#t~ret8": "Int",
+    "bubbleSort_#in~array_size": "Int",
+    "bubbleSort_#in~numbers.base": "Int",
+    "bubbleSort_#in~numbers.offset": "Int",
+    "bubbleSort_#t~post5": "Int",
+    "bubbleSort_~i~0": "Int",
+    "bubbleSort_~j~0": "Int",
+    "bubbleSort_~numbers.base": "Int",
+    "bubbleSort_~numbers.offset": "Int",
+    "bubbleSort_~temp~0": "Int",
+    "main_#res": "Int",
+    "main_#t~malloc7.base": "Int",
+    "main_#t~malloc7.offset": "Int",
+    "main_#t~nondet6": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= (* |v_bubbleSort_#in~array_size_7| 4) |v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|) (<= |v_bubbleSort_#in~numbers.offset_7| 0) (>= |v_arrayCell_v_#valid_44[0]_1| 0) (>= |v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1| 1) (<= |v_bubbleSort_#in~numbers.base_7| v_bubbleSort_~numbers.base_28) (>= |v_arrayCell_v_#valid_43[0]_1| 0) (<= |v_bubbleSort_#in~array_size_7| (+ v_bubbleSort_~i~0_16 1)) (>= |v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1| 0) (>= |v_bubbleSort_#in~numbers.base_7| v_bubbleSort_~numbers.base_28) (<= (+ |v_#StackHeapBarrier_13| 1) |v_bubbleSort_#in~numbers.base_7|) (<= |v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1| 1) (<= |v_bubbleSort_#in~array_size_7| 2147483647) (<= (* |v_bubbleSort_#in~array_size_7| 4) |v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|) (>= v_bubbleSort_~numbers.offset_22 0) (<= |v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1| 0) (<= |v_arrayCell_v_#valid_44[0]_1| 0) (>= |v_bubbleSort_#in~numbers.offset_7| 0) (<= 1 |v_#StackHeapBarrier_13|) (<= v_bubbleSort_~numbers.offset_22 0) (<= 1 |v_bubbleSort_#in~array_size_7|) (<= |v_arrayCell_v_#valid_43[0]_1| 0) (>= |v_bubbleSort_#in~array_size_7| (+ v_bubbleSort_~i~0_16 1)))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_13|",
+        "main_#res": "|v_main_#res_8|",
+        "main_#t~nondet6": "|v_main_#t~nondet6_13|",
+        "bubbleSort_~numbers.offset": "v_bubbleSort_~numbers.offset_23",
+        "main_#t~malloc7.offset": "|v_main_#t~malloc7.offset_13|",
+        "ULTIMATE.start_#t~ret8": "|v_ULTIMATE.start_#t~ret8_6|",
+        "bubbleSort_#in~array_size": "|v_bubbleSort_#in~array_size_8|",
+        "bubbleSort_~i~0": "v_bubbleSort_~i~0_19",
+        "bubbleSort_~temp~0": "v_bubbleSort_~temp~0_11",
+        "bubbleSort_#in~numbers.base": "|v_bubbleSort_#in~numbers.base_8|",
+        "main_#t~malloc7.base": "|v_main_#t~malloc7.base_17|",
+        "bubbleSort_~j~0": "v_bubbleSort_~j~0_30",
+        "bubbleSort_~numbers.base": "v_bubbleSort_~numbers.base_29",
+        "bubbleSort_#in~numbers.offset": "|v_bubbleSort_#in~numbers.offset_8|",
+        "|v_rep(select #valid bubbleSort_#in~numbers.base)_1|": "|v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_8]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_44[0]_1|",
+        "|v_rep(select #length bubbleSort_#in~numbers.base)_1|": "|v_arrayCell_v_#length_33[v_bubbleSort_#in~numbers.base_8]_1|"
+      },
+      "out_vars": {
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~nondet6": "|v_main_#t~nondet6_12|",
+        "bubbleSort_~numbers.offset": "v_bubbleSort_~numbers.offset_22",
+        "main_#t~malloc7.offset": "|v_main_#t~malloc7.offset_12|",
+        "ULTIMATE.start_#t~ret8": "|v_ULTIMATE.start_#t~ret8_5|",
+        "bubbleSort_#in~array_size": "|v_bubbleSort_#in~array_size_7|",
+        "bubbleSort_~i~0": "v_bubbleSort_~i~0_16",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_13|",
+        "bubbleSort_~temp~0": "v_bubbleSort_~temp~0_10",
+        "bubbleSort_#in~numbers.base": "|v_bubbleSort_#in~numbers.base_7|",
+        "main_#t~malloc7.base": "|v_main_#t~malloc7.base_16|",
+        "bubbleSort_~j~0": "v_bubbleSort_~j~0_27",
+        "bubbleSort_~numbers.base": "v_bubbleSort_~numbers.base_28",
+        "bubbleSort_#in~numbers.offset": "|v_bubbleSort_#in~numbers.offset_7|",
+        "|v_rep(select #valid bubbleSort_#in~numbers.base)_1|": "|v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_43[0]_1|",
+        "|v_rep(select #length bubbleSort_#in~numbers.base)_1|": "|v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_bubbleSort_~i~0_18 0) (>= v_bubbleSort_~i~0_18 0) (>= (+ v_bubbleSort_~i~0_17 1) 0) (<= (+ v_bubbleSort_~i~0_17 1) 0))",
+      "in_vars": {
+        "bubbleSort_~i~0": "v_bubbleSort_~i~0_18",
+        "bubbleSort_#t~post5": "|v_bubbleSort_#t~post5_4|",
+        "bubbleSort_~j~0": "v_bubbleSort_~j~0_31"
+      },
+      "out_vars": {
+        "bubbleSort_~i~0": "v_bubbleSort_~i~0_17",
+        "bubbleSort_#t~post5": "|v_bubbleSort_#t~post5_3|",
+        "bubbleSort_~j~0": "v_bubbleSort_~j~0_28"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

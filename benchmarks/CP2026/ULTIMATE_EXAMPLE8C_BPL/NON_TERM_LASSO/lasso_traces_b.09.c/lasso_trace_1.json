@@ -1,0 +1,52 @@
+{
+  "program_vars": [
+    "test_fun_#in~x",
+    "test_fun_#in~y",
+    "test_fun_~x",
+    "test_fun_~y"
+  ],
+  "var_types": {
+    "test_fun_#in~x": "Int",
+    "test_fun_#in~y": "Int",
+    "test_fun_~x": "Int",
+    "test_fun_~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 (+ |v_test_fun_#in~y_2| 2147483648)) (<= |v_test_fun_#in~y_2| v_test_fun_~y_6) (<= |v_test_fun_#in~x_2| v_test_fun_~x_16) (<= |v_test_fun_#in~x_2| 2147483647) (>= |v_test_fun_#in~x_2| v_test_fun_~x_16) (>= |v_test_fun_#in~y_2| v_test_fun_~y_6) (<= 0 (+ |v_test_fun_#in~x_2| 2147483648)) (<= |v_test_fun_#in~y_2| 2147483647))",
+      "in_vars": {
+        "test_fun_#in~y": "|v_test_fun_#in~y_2|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_2|",
+        "test_fun_~x": "v_test_fun_~x_19",
+        "test_fun_~y": "v_test_fun_~y_8"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_16",
+        "test_fun_~y": "v_test_fun_~y_6",
+        "test_fun_#in~y": "|v_test_fun_#in~y_2|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_2|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= v_test_fun_~x_18 (+ v_test_fun_~x_17 1)) (<= v_test_fun_~x_18 v_test_fun_~y_7) (<= (+ 0 1) v_test_fun_~x_18) (<= v_test_fun_~x_18 (+ v_test_fun_~x_17 1))) (and (>= v_test_fun_~x_18 (+ v_test_fun_~x_17 1)) (<= (+ v_test_fun_~x_18 1) 0) (<= v_test_fun_~x_18 v_test_fun_~y_7) (<= v_test_fun_~x_18 (+ v_test_fun_~x_17 1))) (and (<= v_test_fun_~y_7 v_test_fun_~x_17) (<= (+ v_test_fun_~y_7 1) v_test_fun_~x_18) (<= (+ 0 1) v_test_fun_~x_18) (>= v_test_fun_~y_7 v_test_fun_~x_17)) (and (<= (+ v_test_fun_~x_18 1) 0) (<= v_test_fun_~y_7 v_test_fun_~x_17) (<= (+ v_test_fun_~y_7 1) v_test_fun_~x_18) (>= v_test_fun_~y_7 v_test_fun_~x_17)))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_18",
+        "test_fun_~y": "v_test_fun_~y_7"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_17",
+        "test_fun_~y": "v_test_fun_~y_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

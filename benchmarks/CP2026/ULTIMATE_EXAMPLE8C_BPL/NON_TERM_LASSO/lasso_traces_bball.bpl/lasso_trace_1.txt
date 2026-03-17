@@ -1,0 +1,133 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  BouncingBallExample_x                              : Real
+  BouncingBallExample_v                              : Real
+  BouncingBallExample_v_tmp                          : Real
+  BouncingBallExample_v_new                          : Real
+  BouncingBallExample_x_old                          : Real
+  BouncingBallExample_v_old                          : Real
+  BouncingBallExample_x_tmp                          : Real
+  BouncingBallExample_x_new                          : Real
+  v_BouncingBallExample_x_24                         : Real
+  v_BouncingBallExample_v_27                         : Real
+  v_BouncingBallExample_x_26                         : Real
+  v_BouncingBallExample_v_29                         : Real
+  v_BouncingBallExample_v_tmp_16                     : Real
+  v_BouncingBallExample_v_new_15                     : Real
+  v_BouncingBallExample_x_old_13                     : Real
+  v_BouncingBallExample_v_old_15                     : Real
+  v_BouncingBallExample_x_tmp_22                     : Real
+  v_BouncingBallExample_x_new_13                     : Real
+  v_BouncingBallExample_v_tmp_15                     : Real
+  v_BouncingBallExample_v_new_14                     : Real
+  v_BouncingBallExample_x_old_12                     : Real
+  v_BouncingBallExample_x_25                         : Real
+  v_BouncingBallExample_v_28                         : Real
+  v_BouncingBallExample_v_old_14                     : Real
+  v_BouncingBallExample_x_tmp_21                     : Real
+  v_BouncingBallExample_x_new_12                     : Real
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= v_BouncingBallExample_x_33 (/ 51.0 5.0)) (= v_BouncingBallExample_v_41 0.0) (<= 10.0 v_BouncingBallExample_x_33))  InVars {BouncingBallExample_x=v_BouncingBallExample_x_33, BouncingBallExample_v=v_BouncingBallExample_v_41}  OutVars{BouncingBallExample_x=v_BouncingBallExample_x_33, BouncingBallExample_v=v_BouncingBallExample_v_41}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (and (let ((.cse0 (= v_BouncingBallExample_x_34 0.0))) (or (and (<= v_BouncingBallExample_v_43 v_BouncingBallExample_v_42) (<= v_BouncingBallExample_v_42 (+ v_BouncingBallExample_v_43 1.0)) (not .cse0)) (let ((.cse1 (* v_BouncingBallExample_v_42 (/ 4.0 3.0)))) (and (<= 0.0 (+ v_BouncingBallExample_v_43 .cse1 1.0)) (<= (+ v_BouncingBallExample_v_43 .cse1) 0.0) .cse0)))) (let ((.cse2 (+ v_BouncingBallExample_x_34 v_BouncingBallExample_v_43))) (or (and (<= v_BouncingBallExample_x_35 v_BouncingBallExample_x_34) (<= .cse2 v_BouncingBallExample_x_35)) (and (<= v_BouncingBallExample_x_34 v_BouncingBallExample_x_35) (<= v_BouncingBallExample_x_35 .cse2)))) (<= 1.0 v_BouncingBallExample_x_35) (<= v_BouncingBallExample_v_43 v_BouncingBallExample_x_35))  InVars {BouncingBallExample_x=v_BouncingBallExample_x_35, BouncingBallExample_v=v_BouncingBallExample_v_43}  OutVars{BouncingBallExample_v_tmp=v_BouncingBallExample_v_tmp_19, BouncingBallExample_v_new=v_BouncingBallExample_v_new_18, BouncingBallExample_x_old=v_BouncingBallExample_x_old_16, BouncingBallExample_x=v_BouncingBallExample_x_34, BouncingBallExample_v=v_BouncingBallExample_v_42, BouncingBallExample_v_old=v_BouncingBallExample_v_old_18, BouncingBallExample_x_tmp=v_BouncingBallExample_x_tmp_25, BouncingBallExample_x_new=v_BouncingBallExample_x_new_16}  AuxVars[]  AssignedVars[BouncingBallExample_v_tmp, BouncingBallExample_v_new, BouncingBallExample_x_old, BouncingBallExample_x, BouncingBallExample_v, BouncingBallExample_v_old, BouncingBallExample_x_tmp, BouncingBallExample_x_new]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 69
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,1739
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9753
+    Simplify formula using some simplification technique -> relative DAG size: 0,8987
+    Transform into disjunctive normal form -> relative DAG size: 1,8592
+    Simplify formula using some simplification technique -> relative DAG size: 0,6818
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_BouncingBallExample_x_24 (/ 51.0 5.0)) (<= 10.0 v_BouncingBallExample_x_24) (>= v_BouncingBallExample_v_27 0.0) (<= v_BouncingBallExample_v_27 0.0))
+  InVars:   {BouncingBallExample_x=v_BouncingBallExample_x_24, BouncingBallExample_v=v_BouncingBallExample_v_27}
+  OutVars:  {BouncingBallExample_x=v_BouncingBallExample_x_24, BouncingBallExample_v=v_BouncingBallExample_v_27}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29) v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_26 v_BouncingBallExample_x_25) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_v_28) (<= v_BouncingBallExample_v_28 (+ v_BouncingBallExample_v_29 1.0)) (<= 1.0 v_BouncingBallExample_x_26)) (and (<= v_BouncingBallExample_v_29 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_26 (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29)) (<= v_BouncingBallExample_x_25 0.0) (<= (+ (* v_BouncingBallExample_v_28 (/ 4.0 3.0)) v_BouncingBallExample_v_29) 0.0) (<= 1.0 v_BouncingBallExample_x_26) (<= 0.0 (+ (* v_BouncingBallExample_v_28 (/ 4.0 3.0)) v_BouncingBallExample_v_29 1.0))) (and (< 0.0 v_BouncingBallExample_x_25) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_v_28) (<= v_BouncingBallExample_v_28 (+ v_BouncingBallExample_v_29 1.0)) (<= v_BouncingBallExample_x_26 (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29)) (<= 1.0 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_25 v_BouncingBallExample_x_26)))
+  InVars:   {BouncingBallExample_x=v_BouncingBallExample_x_26, BouncingBallExample_v=v_BouncingBallExample_v_29, BouncingBallExample_v_tmp=v_BouncingBallExample_v_tmp_16, BouncingBallExample_v_new=v_BouncingBallExample_v_new_15, BouncingBallExample_x_old=v_BouncingBallExample_x_old_13, BouncingBallExample_v_old=v_BouncingBallExample_v_old_15, BouncingBallExample_x_tmp=v_BouncingBallExample_x_tmp_22, BouncingBallExample_x_new=v_BouncingBallExample_x_new_13}
+  OutVars:  {BouncingBallExample_v_tmp=v_BouncingBallExample_v_tmp_15, BouncingBallExample_v_new=v_BouncingBallExample_v_new_14, BouncingBallExample_x_old=v_BouncingBallExample_x_old_12, BouncingBallExample_x=v_BouncingBallExample_x_25, BouncingBallExample_v=v_BouncingBallExample_v_28, BouncingBallExample_v_old=v_BouncingBallExample_v_old_14, BouncingBallExample_x_tmp=v_BouncingBallExample_x_tmp_21, BouncingBallExample_x_new=v_BouncingBallExample_x_new_12}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume x >= 10.0 && x <= 10.2 && v == 0.0;
+Loop (length=2):
+  [0] assume x >= 1.0;
+  [1] x_old := x;x_new := x - v;assume x_new >= 0.0;havoc x_tmp;BeginParallelComposition{ParallelCodeBlock0: assume x_new > x_old;assume x_tmp >= x_old && x_tmp <= x_new;ParallelCodeBlock1: assume !(x_new > x_old);assume x_tmp <= x_old && x_tmp >= x_new;}EndParallelCompositionx := x_tmp;v_old := v;v_new := v + 1.0;havoc v_tmp;BeginParallelComposition{ParallelCodeBlock0: assume v_new > v_old;assume v_tmp >= v_old && v_tmp <= v_new;ParallelCodeBlock1: assume !(v_new > v_old);assume v_tmp <= v_old && v_tmp >= v_new;}EndParallelCompositionv := v_tmp;BeginParallelComposition{ParallelCodeBlock0: assume x == 0.0;v := (0.0 - 0.75) * v;ParallelCodeBlock1: assume !(x == 0.0);}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3163815 ns (3,16 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@67e15da5
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,16 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

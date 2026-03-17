@@ -1,0 +1,160 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  tempIn                                             : Int
+  old(tempIn)                                        : Int
+  init                                               : Int
+  old(init)                                          : Int
+  error                                              : Int
+  old(error)                                         : Int
+  warnLight                                          : Int
+  old(warnLight)                                     : Int
+  chainBroken                                        : Int
+  temp                                               : Int
+  old(temp)                                          : Int
+  old(chainBroken)                                   : Int
+  v_tempIn_45                                        : Int
+  v_old(tempIn)_13                                   : Int
+  v_init_12                                          : Int
+  v_old(init)_10                                     : Int
+  v_error_56                                         : Int
+  v_old(error)_25                                    : Int
+  v_warnLight_11                                     : Int
+  v_old(warnLight)_10                                : Int
+  v_chainBroken_32                                   : Int
+  v_temp_38                                          : Int
+  v_old(temp)_13                                     : Int
+  v_old(chainBroken)_13                              : Int
+  v_tempIn_40                                        : Int
+  v_old(tempIn)_12                                   : Int
+  v_init_11                                          : Int
+  v_old(init)_9                                      : Int
+  v_error_48                                         : Int
+  v_old(error)_21                                    : Int
+  v_warnLight_10                                     : Int
+  v_old(warnLight)_9                                 : Int
+  v_chainBroken_29                                   : Int
+  v_temp_34                                          : Int
+  v_old(temp)_12                                     : Int
+  v_old(chainBroken)_12                              : Int
+  v_tempIn_46                                        : Int
+  v_error_57                                         : Int
+  v_chainBroken_33                                   : Int
+  v_temp_39                                          : Int
+  v_tempIn_44                                        : Int
+  v_error_54                                         : Int
+  v_chainBroken_31                                   : Int
+  v_temp_37                                          : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_init_18 1) (= v_tempIn_78 (+ v_temp_66 273)) (= |v_old(tempIn)_22| 0) (= |v_old(error)_49| 0) (= 0 |v_old(chainBroken)_22|) (= v_warnLight_17 0) (= |v_old(temp)_22| 0) (or (and (<= (+ v_tempIn_78 1) 0) (= v_error_104 1)) (and (= v_error_104 0) (<= 0 v_tempIn_78))) (or (and (= v_chainBroken_55 1) (<= 9 v_temp_66)) (and (= v_chainBroken_55 0) (<= v_temp_66 8))))  InVars {}  OutVars{tempIn=v_tempIn_78, old(tempIn)=|v_old(tempIn)_22|, init=v_init_18, old(init)=|v_old(init)_16|, error=v_error_104, old(error)=|v_old(error)_49|, warnLight=v_warnLight_17, old(warnLight)=|v_old(warnLight)_16|, chainBroken=v_chainBroken_55, temp=v_temp_66, old(temp)=|v_old(temp)_22|, old(chainBroken)=|v_old(chainBroken)_22|}  AuxVars[]  AssignedVars[tempIn, old(tempIn), init, old(init), error, old(error), warnLight, old(warnLight), chainBroken, temp, old(temp), old(chainBroken)]
+
+Loop TransFormula:
+Formula: (and (or (and (= v_chainBroken_57 0) (<= v_temp_69 8)) (and (<= 9 v_temp_69) (= v_chainBroken_57 1))) (= v_tempIn_82 (+ v_temp_69 273)) (or (and (= v_error_110 0) (<= 0 v_tempIn_82)) (and (<= (+ v_tempIn_82 1) 0) (= v_error_110 1))))  InVars {}  OutVars{tempIn=v_tempIn_82, error=v_error_110, chainBroken=v_chainBroken_57, temp=v_temp_69}  AuxVars[]  AssignedVars[tempIn, error, chainBroken, temp]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 94
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,7234
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9012
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,6438
+    Simplify formula using some simplification technique -> relative DAG size: 0,7150
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (or (and (<= v_chainBroken_29 0) (<= v_tempIn_40 (+ v_temp_34 273)) (<= v_temp_34 8) (<= 0 |v_old(error)_21|) (<= 0 v_warnLight_10) (<= 0 |v_old(chainBroken)_12|) (<= 0 v_chainBroken_29) (<= 0 v_tempIn_40) (<= v_error_48 0) (<= |v_old(chainBroken)_12| 0) (<= |v_old(tempIn)_12| 0) (<= v_init_11 1) (<= 0 |v_old(temp)_12|) (<= v_warnLight_10 0) (<= 0 v_error_48) (<= 0 |v_old(tempIn)_12|) (<= |v_old(temp)_12| 0) (<= (+ v_temp_34 273) v_tempIn_40) (<= 1 v_init_11) (<= |v_old(error)_21| 0)) (and (<= v_chainBroken_29 0) (<= v_error_48 1) (<= v_tempIn_40 (+ v_temp_34 273)) (<= 0 |v_old(error)_21|) (<= 0 v_warnLight_10) (<= 1 v_error_48) (<= 0 |v_old(chainBroken)_12|) (<= 0 v_chainBroken_29) (<= |v_old(chainBroken)_12| 0) (<= |v_old(tempIn)_12| 0) (<= v_init_11 1) (<= 0 |v_old(temp)_12|) (<= v_warnLight_10 0) (<= (+ v_tempIn_40 1) 0) (<= 0 |v_old(tempIn)_12|) (<= |v_old(temp)_12| 0) (<= (+ v_temp_34 273) v_tempIn_40) (<= 1 v_init_11) (<= |v_old(error)_21| 0)) (and (<= 1 v_chainBroken_29) (<= v_tempIn_40 (+ v_temp_34 273)) (<= 0 |v_old(error)_21|) (<= 0 v_warnLight_10) (<= 0 |v_old(chainBroken)_12|) (<= v_error_48 0) (<= |v_old(chainBroken)_12| 0) (<= |v_old(tempIn)_12| 0) (<= v_init_11 1) (<= 0 |v_old(temp)_12|) (<= v_warnLight_10 0) (<= 0 v_error_48) (<= 9 v_temp_34) (<= 0 |v_old(tempIn)_12|) (<= |v_old(temp)_12| 0) (<= (+ v_temp_34 273) v_tempIn_40) (<= 1 v_init_11) (<= |v_old(error)_21| 0) (<= v_chainBroken_29 1)))
+  InVars:   {tempIn=v_tempIn_45, old(tempIn)=|v_old(tempIn)_13|, init=v_init_12, old(init)=|v_old(init)_10|, error=v_error_56, old(error)=|v_old(error)_25|, warnLight=v_warnLight_11, old(warnLight)=|v_old(warnLight)_10|, chainBroken=v_chainBroken_32, temp=v_temp_38, old(temp)=|v_old(temp)_13|, old(chainBroken)=|v_old(chainBroken)_13|}
+  OutVars:  {tempIn=v_tempIn_40, old(tempIn)=|v_old(tempIn)_12|, init=v_init_11, old(init)=|v_old(init)_9|, error=v_error_48, old(error)=|v_old(error)_21|, warnLight=v_warnLight_10, old(warnLight)=|v_old(warnLight)_9|, chainBroken=v_chainBroken_29, temp=v_temp_34, old(temp)=|v_old(temp)_12|, old(chainBroken)=|v_old(chainBroken)_12|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_chainBroken_31 0) (<= v_tempIn_44 (+ v_temp_37 273)) (<= 1 v_error_54) (<= 0 v_chainBroken_31) (<= v_error_54 1) (<= (+ v_temp_37 273) v_tempIn_44) (<= (+ v_tempIn_44 1) 0)) (and (<= v_chainBroken_31 0) (<= v_tempIn_44 (+ v_temp_37 273)) (<= v_temp_37 8) (<= 0 v_error_54) (<= 0 v_chainBroken_31) (<= 0 v_tempIn_44) (<= (+ v_temp_37 273) v_tempIn_44) (<= v_error_54 0)) (and (<= 9 v_temp_37) (<= v_tempIn_44 (+ v_temp_37 273)) (<= 0 v_error_54) (<= 1 v_chainBroken_31) (<= v_chainBroken_31 1) (<= (+ v_temp_37 273) v_tempIn_44) (<= v_error_54 0)))
+  InVars:   {tempIn=v_tempIn_46, error=v_error_57, chainBroken=v_chainBroken_33, temp=v_temp_39}
+  OutVars:  {tempIn=v_tempIn_44, error=v_error_54, chainBroken=v_chainBroken_31, temp=v_temp_37}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=7):
+  [0] init := 0;tempIn := 0;error := 0;chainBroken := 0;warnLight := 0;temp := 0;init := 1;
+  [1] call coolantControl();
+  [2] havoc tempIn;
+  [3] call temp := vinToCels(tempIn);
+  [4] BeginParallelComposition{ParallelCodeBlock0: assume tempIn < 0;error := 1;ParallelCodeBlock1: assume !(tempIn < 0);error := 0;}EndParallelCompositioncelsius := kelvin - 273;assume true;
+  [5] #25#return;
+  [6] BeginParallelComposition{ParallelCodeBlock0: assume temp > 8;chainBroken := 1;ParallelCodeBlock1: assume !(temp > 8);chainBroken := 0;}EndParallelComposition
+Loop (length=5):
+  [0] havoc tempIn;
+  [1] call temp := vinToCels(tempIn);
+  [2] BeginParallelComposition{ParallelCodeBlock0: assume tempIn < 0;error := 1;ParallelCodeBlock1: assume !(tempIn < 0);error := 0;}EndParallelCompositioncelsius := kelvin - 273;assume true;
+  [3] #25#return;
+  [4] BeginParallelComposition{ParallelCodeBlock0: assume temp > 8;chainBroken := 1;ParallelCodeBlock1: assume !(temp > 8);chainBroken := 0;}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   1821857 ns (1,82 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7e58bec5
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,82 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,72 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret6",
+    "main_#t~nondet0",
+    "main_#t~nondet4",
+    "main_#t~post5",
+    "main_~got_lock~0",
+    "main_~new~0",
+    "main_~old~0",
+    "old_~LOCK~0_",
+    "~LOCK~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret6": "Int",
+    "main_#t~nondet0": "Int",
+    "main_#t~nondet4": "Int",
+    "main_#t~post5": "Int",
+    "main_~got_lock~0": "Int",
+    "main_~new~0": "Int",
+    "main_~old~0": "Int",
+    "old_~LOCK~0_": "Int",
+    "~LOCK~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= 0 v_~LOCK~0_79) (>= v_main_~new~0_20 0) (<= |v_old_~LOCK~0__28| 0) (<= 0 v_~LOCK~0_79) (>= |v_old_~LOCK~0__28| 0) (<= v_main_~new~0_20 0))",
+      "in_vars": {
+        "main_~got_lock~0": "v_main_~got_lock~0_20",
+        "main_~new~0": "v_main_~new~0_23",
+        "main_#t~nondet0": "|v_main_#t~nondet0_23|",
+        "old_~LOCK~0_": "|v_old_~LOCK~0__35|",
+        "~LOCK~0": "v_~LOCK~0_94",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_13|"
+      },
+      "out_vars": {
+        "main_~got_lock~0": "v_main_~got_lock~0_19",
+        "main_~new~0": "v_main_~new~0_20",
+        "main_#t~nondet0": "|v_main_#t~nondet0_22|",
+        "old_~LOCK~0_": "|v_old_~LOCK~0__28|",
+        "~LOCK~0": "v_~LOCK~0_79",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_12|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (>= v_~LOCK~0_93 v_~LOCK~0_91) (>= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (<= v_~LOCK~0_93 v_~LOCK~0_91) (<= (+ 1 1) v_~LOCK~0_93)) (and (<= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (>= v_~LOCK~0_93 v_~LOCK~0_91) (>= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (<= v_~LOCK~0_93 v_~LOCK~0_91) (<= (+ v_~LOCK~0_93 1) 1)) (and (<= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (>= v_main_~new~0_21 (+ v_main_~new~0_22 1)) (>= 1 v_~LOCK~0_93) (<= 0 v_~LOCK~0_91) (<= 1 v_~LOCK~0_93) (>= 0 v_~LOCK~0_91)))",
+      "in_vars": {
+        "main_~new~0": "v_main_~new~0_22",
+        "~LOCK~0": "v_~LOCK~0_93",
+        "main_#t~nondet4": "|v_main_#t~nondet4_11|",
+        "main_#t~post5": "|v_main_#t~post5_4|",
+        "main_~old~0": "v_main_~old~0_16"
+      },
+      "out_vars": {
+        "main_#t~nondet4": "|v_main_#t~nondet4_9|",
+        "main_~new~0": "v_main_~new~0_21",
+        "~LOCK~0": "v_~LOCK~0_91",
+        "main_#t~post5": "|v_main_#t~post5_3|",
+        "main_~old~0": "v_main_~old~0_14"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

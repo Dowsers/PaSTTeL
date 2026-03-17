@@ -1,0 +1,161 @@
+========================================
+LASSO TRACE REPORT - Iteration #13
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  I_m                                                : Int
+  I_loc2                                             : Int
+  I_old_value                                        : Int
+  I_old_m                                            : Int
+  I_v2                                               : Int
+  I_v1                                               : Int
+  I_value                                            : Int
+  I_old_v                                            : Int
+  I_loc1                                             : Int
+  v_I_old_m_451                                      : Int
+  v_I_old_m_462                                      : Int
+  v_I_m_374                                          : Int
+  v_I_loc2_371                                       : Int
+  v_I_old_value_248                                  : Int
+  v_I_old_m_404                                      : Int
+  v_I_v2_378                                         : Int
+  v_I_v1_373                                         : Int
+  v_I_value_386                                      : Int
+  v_I_old_v_273                                      : Int
+  v_I_loc1_355                                       : Int
+  v_I_m_372                                          : Int
+  v_I_loc1_344                                       : Int
+  v_I_loc2_369                                       : Int
+  v_I_v2_376                                         : Int
+  v_I_v1_371                                         : Int
+  v_I_value_384                                      : Int
+  v_I_old_value_256                                  : Int
+  v_I_old_m_418                                      : Int
+  v_I_old_v_281                                      : Int
+  v_I_old_m_416                                      : Int
+  v_I_m_385                                          : Int
+  v_I_loc2_382                                       : Int
+  v_I_old_value_255                                  : Int
+  v_I_old_m_415                                      : Int
+  v_I_v2_389                                         : Int
+  v_I_v1_384                                         : Int
+  v_I_value_397                                      : Int
+  v_I_old_v_280                                      : Int
+  v_I_loc1_356                                       : Int
+  v_I_m_383                                          : Int
+  v_I_loc1_352                                       : Int
+  v_I_loc2_380                                       : Int
+  v_I_v2_387                                         : Int
+  v_I_v1_382                                         : Int
+  v_I_value_395                                      : Int
+  v_I_old_value_257                                  : Int
+  v_I_old_m_419                                      : Int
+  v_I_old_v_282                                      : Int
+  v_I_old_m_417                                      : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_I_loc1_394 0) (= v_I_m_440 0) (= v_I_old_m_473 0) (= v_I_loc2_437 v_I_loc2_435) (= v_I_v1_439 v_I_v1_437) (= v_I_m_438 0) (= v_I_old_m_474 1) (= v_I_old_value_292 v_I_value_450) (= v_I_value_452 (+ v_I_old_v_317 1)) (= v_I_v2_442 v_I_v2_444))  InVars {I_m=v_I_m_440, I_loc2=v_I_loc2_437, I_old_value=v_I_old_value_292, I_old_m=v_I_old_m_474, I_v2=v_I_v2_444, I_v1=v_I_v1_439, I_value=v_I_value_452, I_old_v=v_I_old_v_317}  OutVars{I_m=v_I_m_438, I_loc1=v_I_loc1_394, I_loc2=v_I_loc2_435, I_v2=v_I_v2_442, I_v1=v_I_v1_437, I_value=v_I_value_450}  AuxVars[v_I_old_m_473]  AssignedVars[I_m, I_loc1, I_loc2, I_old_value, I_old_m, I_v2, I_v1, I_value, I_old_v]
+
+Loop TransFormula:
+Formula: (and (= v_I_loc2_448 v_I_loc2_446) (= v_I_v1_448 v_I_v1_450) (= v_I_old_value_299 v_I_value_461) (= v_I_v2_453 v_I_v2_455) (= v_I_m_449 0) (= v_I_m_451 0) (= v_I_loc1_402 0) (= v_I_value_463 (+ v_I_old_v_324 1)) (= v_I_old_m_485 1) (= v_I_old_m_484 0))  InVars {I_m=v_I_m_451, I_loc2=v_I_loc2_448, I_old_value=v_I_old_value_299, I_old_m=v_I_old_m_485, I_v2=v_I_v2_455, I_v1=v_I_v1_450, I_value=v_I_value_463, I_old_v=v_I_old_v_324}  OutVars{I_m=v_I_m_449, I_loc1=v_I_loc1_402, I_loc2=v_I_loc2_446, I_v2=v_I_v2_453, I_v1=v_I_v1_448, I_value=v_I_value_461}  AuxVars[v_I_old_m_484]  AssignedVars[I_m, I_loc1, I_loc2, I_old_value, I_old_m, I_v2, I_v1, I_value, I_old_v]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 66
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2727
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8667
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_I_value_386 (+ v_I_old_v_273 1)) (<= v_I_loc1_344 0) (>= v_I_loc1_344 0) (>= v_I_v1_373 v_I_v1_371) (<= v_I_loc2_369 v_I_loc2_371) (>= v_I_old_m_404 1) (>= v_I_m_374 0) (<= v_I_m_372 0) (<= v_I_v1_373 v_I_v1_371) (<= v_I_old_m_416 0) (>= v_I_value_386 (+ v_I_old_v_273 1)) (<= v_I_v2_376 v_I_v2_378) (<= v_I_m_374 0) (>= v_I_loc2_369 v_I_loc2_371) (>= v_I_old_value_248 v_I_value_384) (<= v_I_old_m_404 1) (>= v_I_m_372 0) (>= v_I_old_m_416 0) (>= v_I_v2_376 v_I_v2_378) (<= v_I_old_value_248 v_I_value_384))
+  InVars:   {I_m=v_I_m_374, I_loc2=v_I_loc2_371, I_old_value=v_I_old_value_248, I_old_m=v_I_old_m_404, I_v2=v_I_v2_378, I_v1=v_I_v1_373, I_value=v_I_value_386, I_old_v=v_I_old_v_273, I_loc1=v_I_loc1_355}
+  OutVars:  {I_m=v_I_m_372, I_loc1=v_I_loc1_344, I_loc2=v_I_loc2_369, I_v2=v_I_v2_376, I_v1=v_I_v1_371, I_value=v_I_value_384, I_old_value=v_I_old_value_256, I_old_m=v_I_old_m_418, I_old_v=v_I_old_v_281}
+  AuxVars:  [v_I_old_m_416]
+
+Loop (linearized):
+  Formula:  (and (>= v_I_v1_384 v_I_v1_382) (<= v_I_m_383 0) (>= v_I_loc1_352 0) (>= v_I_loc2_382 v_I_loc2_380) (<= v_I_value_397 (+ v_I_old_v_280 1)) (<= v_I_v2_387 v_I_v2_389) (>= v_I_old_m_417 0) (>= v_I_old_m_415 1) (<= v_I_old_m_417 0) (>= v_I_m_385 0) (<= v_I_old_m_415 1) (<= v_I_loc2_382 v_I_loc2_380) (>= v_I_v2_387 v_I_v2_389) (>= v_I_old_value_255 v_I_value_395) (>= v_I_m_383 0) (>= v_I_value_397 (+ v_I_old_v_280 1)) (<= v_I_old_value_255 v_I_value_395) (<= v_I_m_385 0) (<= v_I_loc1_352 0) (<= v_I_v1_384 v_I_v1_382))
+  InVars:   {I_m=v_I_m_385, I_loc2=v_I_loc2_382, I_old_value=v_I_old_value_255, I_old_m=v_I_old_m_415, I_v2=v_I_v2_389, I_v1=v_I_v1_384, I_value=v_I_value_397, I_old_v=v_I_old_v_280, I_loc1=v_I_loc1_356}
+  OutVars:  {I_m=v_I_m_383, I_loc1=v_I_loc1_352, I_loc2=v_I_loc2_380, I_v2=v_I_v2_387, I_v1=v_I_v1_382, I_value=v_I_value_395, I_old_value=v_I_old_value_257, I_old_m=v_I_old_m_419, I_old_v=v_I_old_v_282}
+  AuxVars:  [v_I_old_m_417]
+
+--- RAW TRACE ---
+Stem (length=4):
+  [0] assume m == 0 && old_m == 1 && value == old_v + 1;
+  [1] call I(old_value, old_m, loc1, v1, loc2, v2);
+  [2] assume m == 1 && old_m == 0;
+  [3] call I(value, old_m, 0, v1, loc2, v2);
+Loop (length=4):
+  [0] assume m == 0 && old_m == 1 && value == old_v + 1;
+  [1] call I(old_value, old_m, loc1, v1, loc2, v2);
+  [2] assume m == 1 && old_m == 0;
+  [3] call I(value, old_m, 0, v1, loc2, v2);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   1357823 ns (1,36 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@3d11a15b
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,36 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

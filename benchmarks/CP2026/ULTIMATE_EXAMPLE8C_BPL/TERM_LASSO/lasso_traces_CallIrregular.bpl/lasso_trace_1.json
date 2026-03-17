@@ -1,0 +1,62 @@
+{
+  "program_vars": [
+    "A_a",
+    "A_b",
+    "A_goal",
+    "A_res",
+    "B_a",
+    "B_b",
+    "B_goal",
+    "B_res"
+  ],
+  "var_types": {
+    "A_a": "Int",
+    "A_b": "Int",
+    "A_goal": "Int",
+    "A_res": "Int",
+    "B_a": "Int",
+    "B_b": "Int",
+    "B_goal": "Int",
+    "B_res": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= v_A_goal_11 v_A_goal_10) (>= v_A_a_10 (+ v_A_a_11 1)) (<= (+ v_A_a_11 1) v_A_goal_11) (>= v_A_b_6 1) (<= v_A_goal_11 v_A_goal_10) (<= v_A_a_10 (+ v_A_a_11 1)) (<= v_A_a_11 1) (<= v_A_b_6 1))",
+      "in_vars": {
+        "A_goal": "v_A_goal_11",
+        "A_a": "v_A_a_11",
+        "B_goal": "v_B_goal_14",
+        "B_res": "v_B_res_9",
+        "B_b": "v_B_b_16",
+        "A_res": "v_A_res_6",
+        "A_b": "v_A_b_8",
+        "B_a": "v_B_a_16"
+      },
+      "out_vars": {
+        "A_goal": "v_A_goal_10",
+        "B_goal": "v_B_goal_12",
+        "B_res": "v_B_res_8",
+        "B_b": "v_B_b_14",
+        "A_res": "v_A_res_5",
+        "A_a": "v_A_a_10",
+        "A_b": "v_A_b_6",
+        "B_a": "v_B_a_14"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

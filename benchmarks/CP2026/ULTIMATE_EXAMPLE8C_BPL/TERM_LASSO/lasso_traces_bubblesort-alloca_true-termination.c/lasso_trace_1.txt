@@ -1,0 +1,205 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  main_#res                                          : Int
+  main_#t~nondet6                                    : Int
+  bubbleSort_~numbers.offset                         : Int
+  main_#t~malloc7.offset                             : Int
+  ULTIMATE.start_#t~ret8                             : Int
+  bubbleSort_#in~array_size                          : Int
+  bubbleSort_~i~0                                    : Int
+  bubbleSort_~temp~0                                 : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  bubbleSort_#in~numbers.base                        : Int
+  old(#length)                                       : (Array Int Int)
+  main_#t~malloc7.base                               : Int
+  bubbleSort_~j~0                                    : Int
+  bubbleSort_~numbers.base                           : Int
+  bubbleSort_#in~numbers.offset                      : Int
+  bubbleSort_#t~post5                                : Int
+  v_#StackHeapBarrier_13                             : Int
+  v_main_#res_8                                      : Int
+  v_main_#t~nondet6_13                               : Int
+  v_bubbleSort_~numbers.offset_23                    : Int
+  v_main_#t~malloc7.offset_13                        : Int
+  v_ULTIMATE.start_#t~ret8_6                         : Int
+  v_bubbleSort_#in~array_size_8                      : Int
+  v_bubbleSort_~i~0_19                               : Int
+  v_bubbleSort_~temp~0_11                            : Int
+  v_bubbleSort_#in~numbers.base_8                    : Int
+  v_main_#t~malloc7.base_17                          : Int
+  v_bubbleSort_~j~0_30                               : Int
+  v_bubbleSort_~numbers.base_29                      : Int
+  v_bubbleSort_#in~numbers.offset_8                  : Int
+  v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_8]_1 : Int
+  v_arrayCell_v_#valid_44[0]_1                       : Int
+  v_arrayCell_v_#length_33[v_bubbleSort_#in~numbers.base_8]_1 : Int
+  v_main_#res_7                                      : Int
+  v_main_#t~nondet6_12                               : Int
+  v_bubbleSort_~numbers.offset_22                    : Int
+  v_main_#t~malloc7.offset_12                        : Int
+  v_ULTIMATE.start_#t~ret8_5                         : Int
+  v_bubbleSort_#in~array_size_7                      : Int
+  v_bubbleSort_~i~0_16                               : Int
+  v_bubbleSort_~temp~0_10                            : Int
+  v_bubbleSort_#in~numbers.base_7                    : Int
+  v_main_#t~malloc7.base_16                          : Int
+  v_bubbleSort_~j~0_27                               : Int
+  v_bubbleSort_~numbers.base_28                      : Int
+  v_bubbleSort_#in~numbers.offset_7                  : Int
+  v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1 : Int
+  v_arrayCell_v_#valid_43[0]_1                       : Int
+  v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1 : Int
+  v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_8]_1 : Int
+  v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1 : Int
+  v_arrayCell_v_#length_33[v_bubbleSort_#in~numbers.base_7]_1 : Int
+  v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_8]_1 : Int
+  v_bubbleSort_~i~0_18                               : Int
+  v_bubbleSort_#t~post5_4                            : Int
+  v_bubbleSort_~j~0_31                               : Int
+  v_bubbleSort_~i~0_17                               : Int
+  v_bubbleSort_#t~post5_3                            : Int
+  v_bubbleSort_~j~0_28                               : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_#valid_76| (store |v_#valid_77| |v_bubbleSort_#in~numbers.base_27| 1)) (<= 1 |v_bubbleSort_#in~array_size_27|) (= (store |v_#length_60| |v_bubbleSort_#in~numbers.base_27| (* 4 |v_bubbleSort_#in~array_size_27|)) |v_#length_59|) (= |v_old(#memory_int)_33| |v_#memory_int_53|) (= (select |v_#valid_77| |v_bubbleSort_#in~numbers.base_27|) 0) (<= |v_bubbleSort_#in~array_size_27| 2147483647) (= |v_old(#memory_int)_33| |v_#memory_int_54|) (= v_bubbleSort_~numbers.offset_39 0) (= (+ v_bubbleSort_~i~0_39 1) |v_bubbleSort_#in~array_size_27|) (<= 1 |v_#StackHeapBarrier_34|) (= (select |v_#valid_77| 0) 0) (<= (+ |v_#StackHeapBarrier_34| 1) |v_bubbleSort_#in~numbers.base_27|) (= |v_bubbleSort_#in~numbers.base_27| v_bubbleSort_~numbers.base_45) (= |v_bubbleSort_#in~numbers.offset_27| 0))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_34|, #valid=|v_#valid_77|, #memory_int=|v_#memory_int_54|, #length=|v_#length_60|}  OutVars{main_#res=|v_main_#res_21|, main_#t~nondet6=|v_main_#t~nondet6_32|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_39, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_26|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_13|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_27|, bubbleSort_~i~0=v_bubbleSort_~i~0_39, #StackHeapBarrier=|v_#StackHeapBarrier_34|, bubbleSort_~temp~0=v_bubbleSort_~temp~0_27, #valid=|v_#valid_76|, old(#valid)=|v_old(#valid)_29|, old(#memory_int)=|v_old(#memory_int)_33|, #memory_int=|v_#memory_int_53|, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_27|, #length=|v_#length_59|, old(#length)=|v_old(#length)_29|, main_#t~malloc7.base=|v_main_#t~malloc7.base_39|, bubbleSort_~j~0=v_bubbleSort_~j~0_52, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_45, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_27|}  AuxVars[]  AssignedVars[main_#res, main_#t~nondet6, bubbleSort_~numbers.offset, main_#t~malloc7.offset, ULTIMATE.start_#t~ret8, bubbleSort_#in~array_size, bubbleSort_~i~0, bubbleSort_~temp~0, #valid, old(#valid), old(#memory_int), #memory_int, bubbleSort_#in~numbers.base, #length, old(#length), main_#t~malloc7.base, bubbleSort_~j~0, bubbleSort_~numbers.base, bubbleSort_#in~numbers.offset]
+
+Loop TransFormula:
+Formula: (and (= (+ v_bubbleSort_~i~0_40 1) 0) (= v_bubbleSort_~i~0_41 0))  InVars {bubbleSort_~i~0=v_bubbleSort_~i~0_41}  OutVars{bubbleSort_~i~0=v_bubbleSort_~i~0_40, bubbleSort_#t~post5=|v_bubbleSort_#t~post5_8|, bubbleSort_~j~0=v_bubbleSort_~j~0_53}  AuxVars[]  AssignedVars[bubbleSort_~i~0, bubbleSort_#t~post5, bubbleSort_~j~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 68
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8088
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9091
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8952
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= (* |v_bubbleSort_#in~array_size_7| 4) |v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|) (<= |v_bubbleSort_#in~numbers.offset_7| 0) (>= |v_arrayCell_v_#valid_44[0]_1| 0) (>= |v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1| 1) (<= |v_bubbleSort_#in~numbers.base_7| v_bubbleSort_~numbers.base_28) (>= |v_arrayCell_v_#valid_43[0]_1| 0) (<= |v_bubbleSort_#in~array_size_7| (+ v_bubbleSort_~i~0_16 1)) (>= |v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1| 0) (>= |v_bubbleSort_#in~numbers.base_7| v_bubbleSort_~numbers.base_28) (<= (+ |v_#StackHeapBarrier_13| 1) |v_bubbleSort_#in~numbers.base_7|) (<= |v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1| 1) (<= |v_bubbleSort_#in~array_size_7| 2147483647) (<= (* |v_bubbleSort_#in~array_size_7| 4) |v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|) (>= v_bubbleSort_~numbers.offset_22 0) (<= |v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1| 0) (<= |v_arrayCell_v_#valid_44[0]_1| 0) (>= |v_bubbleSort_#in~numbers.offset_7| 0) (<= 1 |v_#StackHeapBarrier_13|) (<= v_bubbleSort_~numbers.offset_22 0) (<= 1 |v_bubbleSort_#in~array_size_7|) (<= |v_arrayCell_v_#valid_43[0]_1| 0) (>= |v_bubbleSort_#in~array_size_7| (+ v_bubbleSort_~i~0_16 1)))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_13|, main_#res=|v_main_#res_8|, main_#t~nondet6=|v_main_#t~nondet6_13|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_23, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_13|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_6|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_8|, bubbleSort_~i~0=v_bubbleSort_~i~0_19, bubbleSort_~temp~0=v_bubbleSort_~temp~0_11, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_8|, main_#t~malloc7.base=|v_main_#t~malloc7.base_17|, bubbleSort_~j~0=v_bubbleSort_~j~0_30, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_29, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_8|, v_rep(select #valid bubbleSort_#in~numbers.base)_1=|v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_8]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_44[0]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_1=|v_arrayCell_v_#length_33[v_bubbleSort_#in~numbers.base_8]_1|}
+  OutVars:  {main_#res=|v_main_#res_7|, main_#t~nondet6=|v_main_#t~nondet6_12|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_22, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_12|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_5|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_7|, bubbleSort_~i~0=v_bubbleSort_~i~0_16, #StackHeapBarrier=|v_#StackHeapBarrier_13|, bubbleSort_~temp~0=v_bubbleSort_~temp~0_10, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_7|, main_#t~malloc7.base=|v_main_#t~malloc7.base_16|, bubbleSort_~j~0=v_bubbleSort_~j~0_27, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_28, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_7|, v_rep(select #valid bubbleSort_#in~numbers.base)_1=|v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_7]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_43[0]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_1=|v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_7]_1|}
+  AuxVars:  [|v_arrayCell_v_#valid_43[v_bubbleSort_#in~numbers.base_8]_1|, |v_arrayCell_v_#valid_44[v_bubbleSort_#in~numbers.base_7]_1|, |v_arrayCell_v_#length_33[v_bubbleSort_#in~numbers.base_7]_1|, |v_arrayCell_v_#length_32[v_bubbleSort_#in~numbers.base_8]_1|]
+
+Loop (linearized):
+  Formula:  (and (<= v_bubbleSort_~i~0_18 0) (>= v_bubbleSort_~i~0_18 0) (>= (+ v_bubbleSort_~i~0_17 1) 0) (<= (+ v_bubbleSort_~i~0_17 1) 0))
+  InVars:   {bubbleSort_~i~0=v_bubbleSort_~i~0_18, bubbleSort_#t~post5=|v_bubbleSort_#t~post5_4|, bubbleSort_~j~0=v_bubbleSort_~j~0_31}
+  OutVars:  {bubbleSort_~i~0=v_bubbleSort_~i~0_17, bubbleSort_#t~post5=|v_bubbleSort_#t~post5_3|, bubbleSort_~j~0=v_bubbleSort_~j~0_28}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=7):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #58#return;
+  [3] call #t~ret8 := main();
+  [4] havoc #t~nondet6;assume -2147483648 <= #t~nondet6 && #t~nondet6 <= 2147483647;~array_size~0 := #t~nondet6;havoc #t~nondet6;BeginParallelComposition{ParallelCodeBlock0: assume ~array_size~0 < 1;~array_size~0 := 1;ParallelCodeBlock1: assume !(~array_size~0 < 1);}EndParallelCompositioncall #t~malloc7.base, #t~malloc7.offset := #Ultimate.allocOnStack(4 * ~array_size~0 % 18446744073709551616);~numbers~0.base, ~numbers~0.offset := #t~malloc7.base, #t~malloc7.offset;
+  [5] call bubbleSort(~numbers~0.base, ~numbers~0.offset, ~array_size~0);
+  [6] ~numbers.base, ~numbers.offset := #in~numbers.base, #in~numbers.offset;~array_size := #in~array_size;havoc ~i~0;havoc ~j~0;havoc ~temp~0;~i~0 := ~array_size - 1;
+Loop (length=2):
+  [0] assume ~i~0 >= 0;~j~0 := 1;
+  [1] assume !(~j~0 <= ~i~0);#t~post5 := ~i~0;~i~0 := #t~post5 - 1;havoc #t~post5;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1732663 ns (1,73 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 68447644 ns (68,45 ms)
+       Variables (stem/loop): 12/2  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 68,45 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(bubbleSort_~i~0) = 2*bubbleSort_~i~0 + 1
+  Variables:
+    bubbleSort_~i~0
+  Supporting invariants:
+    (none)
+  Array index supporting invariants:
+    [0] (not (= |bubbleSort_#in~numbers.base| 0))
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 68
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8088
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9091
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8952
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,73 ms
+Total LassoRanker time: 68,45 ms
+  Termination analysis:     68,45 ms
+  Nontermination analysis:   0,00 ms

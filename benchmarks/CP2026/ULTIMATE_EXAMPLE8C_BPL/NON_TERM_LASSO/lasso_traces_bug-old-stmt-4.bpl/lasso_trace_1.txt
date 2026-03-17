@@ -1,0 +1,167 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  A                                                  : Int
+  old(A)                                             : Int
+  ULTIMATE.start_#t~ret2                             : Int
+  main_i                                             : Int
+  D                                                  : Int
+  old(D)                                             : Int
+  C                                                  : Int
+  old(C)                                             : Int
+  B                                                  : Int
+  old(B)                                             : Int
+  main_#t~nondet0                                    : Int
+  v_A_69                                             : Int
+  v_old(A)_34                                        : Int
+  v_ULTIMATE.start_#t~ret2_13                        : Int
+  v_main_i_24                                        : Int
+  v_D_65                                             : Int
+  v_old(D)_34                                        : Int
+  v_C_67                                             : Int
+  v_old(C)_34                                        : Int
+  v_B_74                                             : Int
+  v_old(B)_34                                        : Int
+  v_A_63                                             : Int
+  v_old(A)_30                                        : Int
+  v_ULTIMATE.start_#t~ret2_12                        : Int
+  v_main_i_20                                        : Int
+  v_D_59                                             : Int
+  v_old(D)_30                                        : Int
+  v_C_61                                             : Int
+  v_old(C)_30                                        : Int
+  v_B_66                                             : Int
+  v_old(B)_30                                        : Int
+  v_A_68                                             : Int
+  v_main_#t~nondet0_17                               : Int
+  v_D_64                                             : Int
+  v_C_66                                             : Int
+  v_main_i_25                                        : Int
+  v_B_75                                             : Int
+  v_A_67                                             : Int
+  v_main_i_23                                        : Int
+  v_D_63                                             : Int
+  v_C_65                                             : Int
+  v_B_72                                             : Int
+  v_main_#t~nondet0_18                               : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_D_117 0) (= 7 v_C_119) (= v_main_i_46 1) (= |v_old(A)_67| 0) (= 7 |v_old(C)_67|) (= |v_old(D)_67| 0) (= v_A_121 0) (= |v_old(B)_67| 0) (= v_B_137 1))  InVars {}  OutVars{A=v_A_121, old(A)=|v_old(A)_67|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_19|, main_i=v_main_i_46, D=v_D_117, old(D)=|v_old(D)_67|, C=v_C_119, old(C)=|v_old(C)_67|, B=v_B_137, old(B)=|v_old(B)_67|}  AuxVars[]  AssignedVars[A, old(A), ULTIMATE.start_#t~ret2, main_i, D, old(D), C, old(C), B, old(B)]
+
+Loop TransFormula:
+Formula: (and (= v_C_124 v_C_123) (= v_B_143 1) (= |v_main_#t~nondet0_42| 1) (= v_D_122 v_D_121) (= v_main_i_49 1) (= v_A_126 v_A_125))  InVars {A=v_A_126, main_#t~nondet0=|v_main_#t~nondet0_42|, D=v_D_122, C=v_C_124}  OutVars{A=v_A_125, main_i=v_main_i_49, D=v_D_121, C=v_C_123, B=v_B_143}  AuxVars[]  AssignedVars[A, main_#t~nondet0, main_i, D, C, B]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 47
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2766
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8598
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= 7 |v_old(C)_30|) (<= |v_old(D)_30| 0) (>= |v_old(A)_30| 0) (>= |v_old(B)_30| 0) (<= 7 v_C_61) (<= v_main_i_20 1) (<= v_B_66 1) (>= |v_old(D)_30| 0) (<= v_D_59 0) (<= 7 |v_old(C)_30|) (<= v_A_63 0) (<= |v_old(A)_30| 0) (>= v_D_59 0) (>= v_main_i_20 1) (>= 7 v_C_61) (>= v_B_66 1) (>= v_A_63 0) (<= |v_old(B)_30| 0))
+  InVars:   {A=v_A_69, old(A)=|v_old(A)_34|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_13|, main_i=v_main_i_24, D=v_D_65, old(D)=|v_old(D)_34|, C=v_C_67, old(C)=|v_old(C)_34|, B=v_B_74, old(B)=|v_old(B)_34|}
+  OutVars:  {A=v_A_63, old(A)=|v_old(A)_30|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_12|, main_i=v_main_i_20, D=v_D_59, old(D)=|v_old(D)_30|, C=v_C_61, old(C)=|v_old(C)_30|, B=v_B_66, old(B)=|v_old(B)_30|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_B_72 1) (<= v_main_i_23 1) (>= v_B_72 1) (>= v_main_i_23 1) (<= |v_main_#t~nondet0_17| 1) (>= |v_main_#t~nondet0_17| 1) (>= v_A_68 v_A_67) (>= v_D_64 v_D_63) (>= v_C_66 v_C_65) (<= v_D_64 v_D_63) (<= v_C_66 v_C_65) (<= v_A_68 v_A_67))
+  InVars:   {A=v_A_68, main_#t~nondet0=|v_main_#t~nondet0_17|, D=v_D_64, C=v_C_66, main_i=v_main_i_25, B=v_B_75}
+  OutVars:  {A=v_A_67, main_i=v_main_i_23, D=v_D_63, C=v_C_65, B=v_B_72, main_#t~nondet0=|v_main_#t~nondet0_18|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=12):
+  [0] call ULTIMATE.init();
+  [1] A := 0;B := 0;C := 7;D := 0;assume true;
+  [2] #54#return;
+  [3] call #t~ret2 := main();
+  [4] assume !false;havoc i;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;i := #t~nondet0;havoc #t~nondet0;
+  [5] assume !(i != 0 && i != 1);
+  [6] call #t~ret1 := foo(i);
+  [7] i := in1;
+  [8] assume !false;
+  [9] assume i != 0;B := 1;#res := 0;
+  [10] assume true;
+  [11] #58#return;
+Loop (length=8):
+  [0] assume !false;havoc i;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;i := #t~nondet0;havoc #t~nondet0;
+  [1] assume !(i != 0 && i != 1);
+  [2] call #t~ret1 := foo(i);
+  [3] i := in1;
+  [4] assume !false;
+  [5] assume i != 0;B := 1;#res := 0;
+  [6] assume true;
+  [7] #58#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2206884 ns (2,21 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@594c7520
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,21 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

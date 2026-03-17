@@ -1,0 +1,41 @@
+{
+  "program_vars": [
+    "Collatz_res",
+    "Collatz_x"
+  ],
+  "var_types": {
+    "Collatz_res": "Int",
+    "Collatz_x": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_div_auxv_Collatz_x_482_1 v_Collatz_x_47) (<= v_Collatz_x_47 v_div_auxv_Collatz_x_482_1) (<= (+ (* 2 v_div_auxv_Collatz_x_482_1) v_mod_auxv_Collatz_x_482_1) v_Collatz_x_48) (<= 0 v_mod_auxv_Collatz_x_482_1) (<= v_Collatz_x_48 (+ (* 2 v_div_auxv_Collatz_x_482_1) v_mod_auxv_Collatz_x_482_1)) (<= v_mod_auxv_Collatz_x_482_1 0))",
+      "in_vars": {
+        "Collatz_x": "v_Collatz_x_48",
+        "Collatz_res": "v_Collatz_res_33"
+      },
+      "out_vars": {
+        "Collatz_res": "v_Collatz_res_32",
+        "Collatz_x": "v_Collatz_x_47"
+      },
+      "aux_vars": [
+        "v_div_auxv_Collatz_x_482_1",
+        "v_mod_auxv_Collatz_x_482_1"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

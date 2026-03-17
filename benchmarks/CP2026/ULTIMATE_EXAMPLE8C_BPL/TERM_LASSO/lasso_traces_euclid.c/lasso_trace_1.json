@@ -1,0 +1,80 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret5",
+    "gcd_#in~u",
+    "gcd_#in~v",
+    "gcd_~t~0",
+    "gcd_~u",
+    "gcd_~v",
+    "main_#res",
+    "main_#t~ret1",
+    "main_#t~ret2",
+    "main_#t~ret3",
+    "main_#t~ret4"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret5": "Int",
+    "gcd_#in~u": "Int",
+    "gcd_#in~v": "Int",
+    "gcd_~t~0": "Int",
+    "gcd_~u": "Int",
+    "gcd_~v": "Int",
+    "main_#res": "Int",
+    "main_#t~ret1": "Int",
+    "main_#t~ret2": "Int",
+    "main_#t~ret3": "Int",
+    "main_#t~ret4": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 1 |v_gcd_#in~v_7|) (>= |v_gcd_#in~u_7| v_gcd_~u_27) (<= |v_gcd_#in~u_7| 2147483647) (>= |v_gcd_#in~v_7| v_gcd_~v_24) (<= |v_gcd_#in~v_7| 2147483647) (<= 1 |v_gcd_#in~u_7|) (<= |v_gcd_#in~v_7| v_gcd_~v_24) (<= |v_gcd_#in~u_7| v_gcd_~u_27))",
+      "in_vars": {
+        "gcd_#in~v": "|v_gcd_#in~v_8|",
+        "gcd_#in~u": "|v_gcd_#in~u_8|",
+        "main_#res": "|v_main_#res_8|",
+        "gcd_~u": "v_gcd_~u_30",
+        "main_#t~ret2": "|v_main_#t~ret2_9|",
+        "main_#t~ret1": "|v_main_#t~ret1_9|",
+        "main_#t~ret4": "|v_main_#t~ret4_9|",
+        "gcd_~v": "v_gcd_~v_27",
+        "main_#t~ret3": "|v_main_#t~ret3_9|",
+        "gcd_~t~0": "v_gcd_~t~0_16",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_6|"
+      },
+      "out_vars": {
+        "gcd_#in~v": "|v_gcd_#in~v_7|",
+        "gcd_#in~u": "|v_gcd_#in~u_7|",
+        "main_#res": "|v_main_#res_7|",
+        "gcd_~u": "v_gcd_~u_27",
+        "main_#t~ret2": "|v_main_#t~ret2_8|",
+        "main_#t~ret1": "|v_main_#t~ret1_8|",
+        "main_#t~ret4": "|v_main_#t~ret4_8|",
+        "gcd_~v": "v_gcd_~v_24",
+        "main_#t~ret3": "|v_main_#t~ret3_8|",
+        "gcd_~t~0": "v_gcd_~t~0_14",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_gcd_~v_26 (+ v_gcd_~u_28 v_gcd_~v_25)) (>= v_gcd_~u_29 v_gcd_~v_25) (<= (+ v_gcd_~u_29 1) v_gcd_~v_26) (<= 1 v_gcd_~u_29) (<= v_gcd_~u_29 v_gcd_~v_25) (>= v_gcd_~v_26 (+ v_gcd_~u_28 v_gcd_~v_25))) (and (<= v_gcd_~v_26 v_gcd_~v_25) (>= v_gcd_~v_26 v_gcd_~v_25) (>= v_gcd_~u_29 (+ v_gcd_~u_28 v_gcd_~v_25)) (<= v_gcd_~v_26 v_gcd_~u_29) (<= 1 v_gcd_~u_29) (<= v_gcd_~u_29 (+ v_gcd_~u_28 v_gcd_~v_25))))",
+      "in_vars": {
+        "gcd_~u": "v_gcd_~u_29",
+        "gcd_~v": "v_gcd_~v_26"
+      },
+      "out_vars": {
+        "gcd_~u": "v_gcd_~u_28",
+        "gcd_~v": "v_gcd_~v_25"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

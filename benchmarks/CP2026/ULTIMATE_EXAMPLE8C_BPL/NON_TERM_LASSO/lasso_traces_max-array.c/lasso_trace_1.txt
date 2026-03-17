@@ -1,0 +1,170 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  max_#in~low                                        : Int
+  max_#in~high                                       : Int
+  max_#in~a.offset                                   : Int
+  max_#in~a.base                                     : Int
+  max_#t~ret2                                        : Int
+  max_~#a.base                                       : Int
+  max_~leftmax~0                                     : Int
+  max_~rightmax~0                                    : Int
+  max_~mid~0                                         : Int
+  max_~high                                          : Int
+  max_~low                                           : Int
+  max_#t~mem0                                        : Int
+  max_#t~ret1                                        : Int
+  max_~#a.offset                                     : Int
+  max_#res                                           : Int
+  v_max_#in~low_5                                    : Int
+  v_max_#in~high_5                                   : Int
+  v_max_#in~a.offset_5                               : Int
+  v_max_#in~a.base_5                                 : Int
+  v_max_#t~ret2_11                                   : Int
+  v_max_~#a.base_16                                  : Int
+  v_max_~leftmax~0_10                                : Int
+  v_max_~rightmax~0_10                               : Int
+  v_max_~mid~0_9                                     : Int
+  v_max_~high_11                                     : Int
+  v_max_~low_15                                      : Int
+  v_max_#t~mem0_10                                   : Int
+  v_max_#t~ret1_7                                    : Int
+  v_max_~#a.offset_15                                : Int
+  v_max_#res_10                                      : Int
+  v_max_#in~low_4                                    : Int
+  v_max_#in~high_4                                   : Int
+  v_max_#t~ret2_10                                   : Int
+  v_max_~#a.base_15                                  : Int
+  v_max_~leftmax~0_9                                 : Int
+  v_max_~rightmax~0_9                                : Int
+  v_max_#in~a.offset_4                               : Int
+  v_max_~mid~0_8                                     : Int
+  v_max_#in~a.base_4                                 : Int
+  v_max_~high_9                                      : Int
+  v_max_~low_14                                      : Int
+  v_max_#t~mem0_9                                    : Int
+  v_max_#t~ret1_6                                    : Int
+  v_max_~#a.offset_14                                : Int
+  v_max_#res_9                                       : Int
+  v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1   : Int
+  v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1   : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (and (= |v_max_#in~a.offset_17| |v_max_#in~a.offset_16|) (let ((.cse3 (+ |v_max_#in~high_17| |v_max_#in~low_17|))) (let ((.cse2 (+ |v_max_#in~high_17| |v_max_#in~low_17| 1)) (.cse0 (= (mod .cse3 2) 0)) (.cse1 (div .cse3 2))) (or (and (not .cse0) (= (+ 1 .cse1) |v_max_#in~high_16|) (<= .cse2 0)) (and (or (< 0 .cse2) .cse0) (= |v_max_#in~high_16| .cse1))))) (<= |v_max_#in~high_17| 2147483647) (<= (+ |v_max_#in~low_17| 1) |v_max_#in~high_17|) (<= 0 (+ |v_max_#in~low_17| 2147483648)) (= |v_max_#in~low_17| |v_max_#in~low_16|) (= |v_max_#in~a.base_17| |v_max_#in~a.base_16|))  InVars {max_#in~low=|v_max_#in~low_17|, max_#in~high=|v_max_#in~high_17|, max_#in~a.offset=|v_max_#in~a.offset_17|, max_#in~a.base=|v_max_#in~a.base_17|}  OutVars{max_#in~low=|v_max_#in~low_16|, max_#in~high=|v_max_#in~high_16|, max_#t~ret2=|v_max_#t~ret2_17|, max_~#a.base=|v_max_~#a.base_25|, max_~leftmax~0=v_max_~leftmax~0_16, max_~rightmax~0=v_max_~rightmax~0_16, max_#in~a.offset=|v_max_#in~a.offset_16|, max_~mid~0=v_max_~mid~0_18, max_#in~a.base=|v_max_#in~a.base_16|, max_~high=v_max_~high_25, max_~low=v_max_~low_24, max_#t~mem0=|v_max_#t~mem0_16|, max_#t~ret1=|v_max_#t~ret1_13|, max_~#a.offset=|v_max_~#a.offset_24|, max_#res=|v_max_#res_16|}  AuxVars[]  AssignedVars[max_#in~low, max_#in~high, max_#t~ret2, max_~#a.base, max_~leftmax~0, max_~rightmax~0, max_#in~a.offset, max_~mid~0, max_#in~a.base, max_~high, max_~low, max_#t~mem0, max_#t~ret1, max_~#a.offset, max_#res]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 71
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 2,0141
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3497
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9637
+    Simplify formula using some simplification technique -> relative DAG size: 0,5108
+    Transform into disjunctive normal form -> relative DAG size: 2,2105
+    Simplify formula using some simplification technique -> relative DAG size: 0,9333
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0102
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0202
+
+Stem (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= |v_max_#in~high_4| |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= (+ 0 1) (+ |v_max_#in~low_4| |v_max_#in~high_5| 1)) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) (<= |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| |v_max_#in~high_4|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= |v_max_#in~high_5| 2147483647)) (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= |v_max_#in~high_4| |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| |v_max_#in~high_4|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 0) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= |v_max_#in~high_5| 2147483647) (<= 0 (+ |v_max_#in~low_5| 2147483648))) (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= (+ |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) |v_max_#in~high_4|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) (<= (+ 0 1) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= |v_max_#in~high_4| (+ |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1)) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5| 1) 0) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 (+ |v_max_#in~low_5| 2147483648))))
+  InVars:   {max_#in~low=|v_max_#in~low_5|, max_#in~high=|v_max_#in~high_5|, max_#in~a.offset=|v_max_#in~a.offset_5|, max_#in~a.base=|v_max_#in~a.base_5|, max_#t~ret2=|v_max_#t~ret2_11|, max_~#a.base=|v_max_~#a.base_16|, max_~leftmax~0=v_max_~leftmax~0_10, max_~rightmax~0=v_max_~rightmax~0_10, max_~mid~0=v_max_~mid~0_9, max_~high=v_max_~high_11, max_~low=v_max_~low_15, max_#t~mem0=|v_max_#t~mem0_10|, max_#t~ret1=|v_max_#t~ret1_7|, max_~#a.offset=|v_max_~#a.offset_15|, max_#res=|v_max_#res_10|}
+  OutVars:  {max_#in~low=|v_max_#in~low_4|, max_#in~high=|v_max_#in~high_4|, max_#t~ret2=|v_max_#t~ret2_10|, max_~#a.base=|v_max_~#a.base_15|, max_~leftmax~0=v_max_~leftmax~0_9, max_~rightmax~0=v_max_~rightmax~0_9, max_#in~a.offset=|v_max_#in~a.offset_4|, max_~mid~0=v_max_~mid~0_8, max_#in~a.base=|v_max_#in~a.base_4|, max_~high=v_max_~high_9, max_~low=v_max_~low_14, max_#t~mem0=|v_max_#t~mem0_9|, max_#t~ret1=|v_max_#t~ret1_6|, max_~#a.offset=|v_max_~#a.offset_14|, max_#res=|v_max_#res_9|}
+  AuxVars:  [|v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|, |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|]
+
+--- RAW TRACE ---
+Stem (length=0):
+Loop (length=3):
+  [0] ~#a.base, ~#a.offset := #in~a.base, #in~a.offset;assume -2147483648 <= #in~low && #in~low <= 2147483647;~low := #in~low;assume -2147483648 <= #in~high && #in~high <= 2147483647;~high := #in~high;
+  [1] assume !(~low >= ~high);~mid~0 := (if ~low + ~high < 0 && 0 != (~low + ~high) % 2 then 1 + (~low + ~high) / 2 else (~low + ~high) / 2);
+  [2] call #t~ret1 := max(~#a.base, ~#a.offset, ~low, ~mid~0);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3497755 ns (3,50 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetition (detected via FixpointCheck)
+  Values at init:
+  Values at honda:
+    |max_#in~a.base|                         = 0
+    |max_#t~ret1|                            = 0
+    |max_#t~ret2|                            = 0
+    |max_#t~mem0|                            = 0
+    max_~low                                 = 0
+    |max_#in~low|                            = (- 1)
+    max_~leftmax~0                           = 0
+    |max_#in~a.offset|                       = 0
+    |max_~#a.offset|                         = 0
+    max_~high                                = 0
+    |max_#in~high|                           = 0
+    |max_~#a.base|                           = 0
+    max_~rightmax~0                          = 0
+    |max_#res|                               = 0
+    max_~mid~0                               = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,50 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

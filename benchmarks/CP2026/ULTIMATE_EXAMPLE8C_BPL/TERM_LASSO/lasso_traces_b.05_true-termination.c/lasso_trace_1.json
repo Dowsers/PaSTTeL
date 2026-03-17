@@ -1,0 +1,68 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret5",
+    "main_#res",
+    "main_#t~ret4",
+    "test_fun_#in~x",
+    "test_fun_#t~nondet0",
+    "test_fun_#t~nondet1",
+    "test_fun_~tmp",
+    "test_fun_~x"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret5": "Int",
+    "main_#res": "Int",
+    "main_#t~ret4": "Int",
+    "test_fun_#in~x": "Int",
+    "test_fun_#t~nondet0": "Int",
+    "test_fun_#t~nondet1": "Int",
+    "test_fun_~tmp": "Int",
+    "test_fun_~x": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= |v_test_fun_#in~x_7| v_test_fun_~x_13) (<= |v_test_fun_#in~x_7| 2147483647) (<= |v_test_fun_#in~x_7| v_test_fun_~x_13) (<= v_test_fun_~tmp_14 2147483647) (<= 0 (+ v_test_fun_~tmp_14 2147483648)) (<= 0 (+ |v_test_fun_#in~x_7| 2147483648)))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_16",
+        "main_#res": "|v_main_#res_8|",
+        "test_fun_#t~nondet0": "|v_test_fun_#t~nondet0_8|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_8|",
+        "test_fun_~tmp": "v_test_fun_~tmp_17",
+        "main_#t~ret4": "|v_main_#t~ret4_13|",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_6|"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_13",
+        "main_#res": "|v_main_#res_7|",
+        "test_fun_#t~nondet0": "|v_test_fun_#t~nondet0_7|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_7|",
+        "test_fun_~tmp": "v_test_fun_~tmp_14",
+        "main_#t~ret4": "|v_main_#t~ret4_12|",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= (+ v_test_fun_~x_14 1) v_test_fun_~x_15) (>= v_test_fun_~x_15 (* v_test_fun_~tmp_16 2)) (<= v_test_fun_~x_15 (* v_test_fun_~tmp_16 2)) (<= 0 (+ v_test_fun_~tmp_15 2147483648)) (<= 1 v_test_fun_~x_15) (<= v_test_fun_~tmp_15 2147483647) (<= (+ v_test_fun_~x_14 1) v_test_fun_~x_15))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_15",
+        "test_fun_~tmp": "v_test_fun_~tmp_16",
+        "test_fun_#t~nondet1": "|v_test_fun_#t~nondet1_4|"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_14",
+        "test_fun_#t~nondet1": "|v_test_fun_#t~nondet1_3|",
+        "test_fun_~tmp": "v_test_fun_~tmp_15"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,543 @@
+========================================
+LASSO TRACE REPORT - Iteration #5
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  test_fun_#t~mem5                                   : Int
+  test_fun_#t~mem4                                   : Int
+  test_fun_#t~malloc0.base                           : Int
+  test_fun_~x                                        : Int
+  test_fun_~y                                        : Int
+  test_fun_~z_ref~0.base                             : Int
+  test_fun_~y_ref~0.base                             : Int
+  old(#length)                                       : (Array Int Int)
+  test_fun_#in~z                                     : Int
+  main_#t~ret20                                      : Int
+  test_fun_~x_ref~0.base                             : Int
+  test_fun_~z                                        : Int
+  test_fun_#t~short8                                 : Bool
+  test_fun_~x_ref~0.offset                           : Int
+  main_#res                                          : Int
+  test_fun_#in~y                                     : Int
+  test_fun_#in~x                                     : Int
+  test_fun_~c~0.base                                 : Int
+  test_fun_~c~0.offset                               : Int
+  test_fun_~y_ref~0.offset                           : Int
+  test_fun_#t~malloc3.base                           : Int
+  test_fun_#t~malloc2.base                           : Int
+  test_fun_#t~malloc1.base                           : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  ULTIMATE.start_#t~ret21                            : Int
+  test_fun_~z_ref~0.offset                           : Int
+  test_fun_#t~mem10                                  : Int
+  test_fun_#t~mem12                                  : Int
+  test_fun_#t~mem13                                  : Int
+  test_fun_#t~mem14                                  : Int
+  test_fun_#t~mem7                                   : Int
+  test_fun_#t~mem6                                   : Int
+  test_fun_#t~mem15                                  : Int
+  test_fun_#t~mem9                                   : Int
+  v_#StackHeapBarrier_116                            : Int
+  v_test_fun_#t~mem5_95                              : Int
+  v_test_fun_#t~mem4_119                             : Int
+  v_test_fun_#t~malloc0.base_87                      : Int
+  v_test_fun_~x_92                                   : Int
+  v_test_fun_~y_92                                   : Int
+  v_test_fun_~z_ref~0.base_110                       : Int
+  v_test_fun_~y_ref~0.base_104                       : Int
+  v_test_fun_#in~z_91                                : Int
+  v_main_#t~ret20_70                                 : Int
+  v_test_fun_~x_ref~0.base_108                       : Int
+  v_test_fun_~z_92                                   : Int
+  v_test_fun_~x_ref~0.offset_103                     : Int
+  v_main_#res_65                                     : Int
+  v_test_fun_#in~y_91                                : Int
+  v_test_fun_#in~x_91                                : Int
+  v_test_fun_~c~0.base_113                           : Int
+  v_test_fun_~c~0.offset_109                         : Int
+  v_test_fun_~y_ref~0.offset_99                      : Int
+  v_test_fun_#t~malloc3.base_87                      : Int
+  v_test_fun_#t~malloc2.base_87                      : Int
+  v_test_fun_#t~malloc1.base_87                      : Int
+  v_ULTIMATE.start_#t~ret21_37                       : Int
+  v_test_fun_~z_ref~0.offset_105                     : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_#valid_284[0]_1                      : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_v_rep(select old(#valid) test_fun_#t~malloc3.base)_6_1 : Int
+  v_v_rep(select old(#valid) test_fun_#t~malloc2.base)_6_1 : Int
+  v_v_rep(select old(#valid) 0)_6_1                  : Int
+  v_v_rep(select old(#valid) test_fun_#t~malloc1.base)_6_1 : Int
+  v_v_rep(select old(#valid) test_fun_#t~malloc0.base)_6_1 : Int
+  v_v_rep(select (select old(#memory_int) test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_2_1 : Int
+  v_v_rep(select (select old(#memory_int) test_fun_~z_ref~0.base) 0)_2_1 : Int
+  v_v_rep(select (select old(#memory_int) test_fun_~y_ref~0.base) 0)_5_1 : Int
+  v_v_rep(select (select old(#memory_int) test_fun_~c~0.base) 0)_5_1 : Int
+  v_v_rep(select old(#length) test_fun_#t~malloc3.base)_6_1 : Int
+  v_v_rep(select old(#length) test_fun_#t~malloc2.base)_6_1 : Int
+  v_v_rep(select old(#length) test_fun_~x_ref~0.base)_2_1 : Int
+  v_v_rep(select old(#length) test_fun_#t~malloc1.base)_6_1 : Int
+  v_v_rep(select old(#length) test_fun_#t~malloc0.base)_6_1 : Int
+  v_v_rep(ite test_fun_#t~short8 1 0)_6_in_bool_1    : Int
+  v_test_fun_#t~mem5_92                              : Int
+  v_test_fun_#t~mem4_115                             : Int
+  v_test_fun_#t~malloc0.base_86                      : Int
+  v_test_fun_~x_91                                   : Int
+  v_test_fun_~y_91                                   : Int
+  v_test_fun_~z_ref~0.base_108                       : Int
+  v_test_fun_~y_ref~0.base_102                       : Int
+  v_test_fun_#in~z_90                                : Int
+  v_main_#t~ret20_69                                 : Int
+  v_test_fun_~x_ref~0.base_106                       : Int
+  v_test_fun_~z_91                                   : Int
+  v_test_fun_~x_ref~0.offset_101                     : Int
+  v_main_#res_64                                     : Int
+  v_test_fun_#in~y_90                                : Int
+  v_test_fun_#in~x_90                                : Int
+  v_test_fun_~c~0.base_111                           : Int
+  v_test_fun_~c~0.offset_107                         : Int
+  v_test_fun_~y_ref~0.offset_97                      : Int
+  v_test_fun_#t~malloc3.base_86                      : Int
+  v_test_fun_#t~malloc2.base_86                      : Int
+  v_test_fun_#t~malloc1.base_86                      : Int
+  v_ULTIMATE.start_#t~ret21_36                       : Int
+  v_test_fun_~z_ref~0.offset_103                     : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#valid_283[0]_1                      : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[0]_1                 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_v_rep(ite test_fun_#t~short8 1 0)_6_out_bool_1   : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[0]_1    : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_arrayCell_v_#length_242[v_test_fun_#t~malloc3.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~y_ref~0.base_104, 0]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~c~0.base_111, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~y_ref~0.base_102, 0]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~c~0.base_113, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_~x_ref~0.base_106]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_old(#memory_int)_116[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[0]_1    : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[0]_1    : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#memory_int_297[v_test_fun_~z_ref~0.base_108, 0]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc0.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_~x_ref~0.base_108]_1 : Int
+  v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~z_ref~0.base_110, 0]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc0.base_86]_1 : Int
+  v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc2.base_86]_1 : Int
+  v_arrayCell_v_#valid_284[v_test_fun_#t~malloc1.base_86]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc3.base_87]_1 : Int
+  v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc1.base_87]_1 : Int
+  v_test_fun_~c~0.base_112                           : Int
+  v_test_fun_~c~0.offset_108                         : Int
+  v_test_fun_~y_ref~0.offset_98                      : Int
+  v_test_fun_~z_ref~0.base_109                       : Int
+  v_test_fun_~y_ref~0.base_103                       : Int
+  v_test_fun_~x_ref~0.base_107                       : Int
+  v_test_fun_~z_ref~0.offset_104                     : Int
+  v_test_fun_~x_ref~0.offset_102                     : Int
+  v_test_fun_#t~mem10_41                             : Int
+  v_test_fun_#t~mem12_21                             : Int
+  v_test_fun_#t~mem13_21                             : Int
+  v_test_fun_#t~mem14_10                             : Int
+  v_test_fun_#t~mem5_96                              : Int
+  v_test_fun_#t~mem4_120                             : Int
+  v_test_fun_#t~mem7_38                              : Int
+  v_test_fun_#t~mem6_43                              : Int
+  v_test_fun_#t~mem15_41                             : Int
+  v_test_fun_#t~mem9_41                              : Int
+  v_test_fun_#t~malloc2.base_ForeignInOutVar_5       : Int
+  v_test_fun_#t~malloc1.base_ForeignInOutVar_5       : Int
+  v_test_fun_#t~malloc0.base_ForeignInOutVar_5       : Int
+  v_test_fun_#t~malloc3.base_ForeignInOutVar_5       : Int
+  v_arrayCell_v_#valid_285[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_~c~0.base_112]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_~y_ref~0.base_103]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_~x_ref~0.base_107]_1 : Int
+  v_arrayCell_v_#valid_285[0]_1                      : Int
+  v_arrayCell_v_#valid_285[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#valid_285[v_test_fun_~z_ref~0.base_109]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, 0]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1 : Int
+  v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_~c~0.base_112]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_~y_ref~0.base_103]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_~x_ref~0.base_107]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1 : Int
+  v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1 : Int
+  v_test_fun_#t~mem10_39                             : Int
+  v_test_fun_#t~mem12_19                             : Int
+  v_test_fun_#t~mem13_19                             : Int
+  v_test_fun_#t~mem14_8                              : Int
+  v_test_fun_#t~mem5_93                              : Int
+  v_test_fun_#t~mem4_116                             : Int
+  v_test_fun_#t~mem7_36                              : Int
+  v_test_fun_#t~mem6_41                              : Int
+  v_test_fun_#t~mem15_39                             : Int
+  v_test_fun_#t~mem9_39                              : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, 0]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, 0]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, 0]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1 : Int
+  v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~z_ref~0.base_109, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~c~0.base_112, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~y_ref~0.base_103, 0]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse6 (store |v_old(#valid)_142| |v_test_fun_#t~malloc0.base_103| 1))) (let ((.cse1 (store .cse6 |v_test_fun_#t~malloc1.base_103| 1))) (let ((.cse0 (+ |v_#StackHeapBarrier_140| 1)) (.cse2 (store .cse1 |v_test_fun_#t~malloc2.base_103| 1))) (and (= (select |v_#valid_329| 0) 0) (<= .cse0 |v_test_fun_#t~malloc1.base_103|) (<= (select (select |v_#memory_int_350| v_test_fun_~x_ref~0.base_126) 0) (select (select |v_#memory_int_350| v_test_fun_~z_ref~0.base_128) v_test_fun_~z_ref~0.offset_123)) (= |v_old(#valid)_142| |v_#valid_329|) (= (select .cse1 |v_test_fun_#t~malloc2.base_103|) 0) (= (select .cse2 |v_test_fun_#t~malloc3.base_103|) 0) (<= (+ v_test_fun_~c~0.offset_127 4) (select |v_#length_280| v_test_fun_~c~0.base_131)) (<= .cse0 |v_test_fun_#t~malloc2.base_103|) (<= 0 (+ |v_test_fun_#in~y_110| 2147483648)) (<= |v_test_fun_#in~z_110| 2147483647) (= |v_test_fun_#t~malloc3.base_103| v_test_fun_~c~0.base_131) (<= (+ v_test_fun_~z_ref~0.offset_123 4) (select |v_#length_280| v_test_fun_~z_ref~0.base_128)) (<= 0 v_test_fun_~z_ref~0.offset_123) (= |v_#memory_int_350| (let ((.cse3 (let ((.cse4 (let ((.cse5 (store |v_old(#memory_int)_142| v_test_fun_~x_ref~0.base_126 (store (select |v_old(#memory_int)_142| v_test_fun_~x_ref~0.base_126) 0 |v_test_fun_#in~x_110|)))) (store .cse5 v_test_fun_~y_ref~0.base_122 (store (select .cse5 v_test_fun_~y_ref~0.base_122) v_test_fun_~y_ref~0.offset_117 |v_test_fun_#in~y_110|))))) (store .cse4 v_test_fun_~z_ref~0.base_128 (store (select .cse4 v_test_fun_~z_ref~0.base_128) v_test_fun_~z_ref~0.offset_123 |v_test_fun_#in~z_110|))))) (store .cse3 v_test_fun_~c~0.base_131 (store (select .cse3 v_test_fun_~c~0.base_131) v_test_fun_~c~0.offset_127 0)))) (<= 1 |v_#StackHeapBarrier_140|) (<= 0 (+ |v_test_fun_#in~x_110| 2147483648)) (<= .cse0 |v_test_fun_#t~malloc0.base_103|) (<= (+ 4 v_test_fun_~y_ref~0.offset_117) (select |v_#length_280| v_test_fun_~y_ref~0.base_122)) (= |v_test_fun_#t~malloc1.base_103| v_test_fun_~y_ref~0.base_122) (<= .cse0 |v_test_fun_#t~malloc3.base_103|) (= (select .cse6 |v_test_fun_#t~malloc1.base_103|) 0) (= |v_test_fun_#t~malloc2.base_103| v_test_fun_~z_ref~0.base_128) (<= 0 v_test_fun_~c~0.offset_127) (= (select |v_old(#valid)_142| |v_test_fun_#t~malloc0.base_103|) 0) (= (store (store (store (store |v_old(#length)_142| |v_test_fun_#t~malloc0.base_103| 4) |v_test_fun_#t~malloc1.base_103| 4) |v_test_fun_#t~malloc2.base_103| 4) |v_test_fun_#t~malloc3.base_103| 4) |v_#length_280|) (<= 0 v_test_fun_~y_ref~0.offset_117) (= v_test_fun_~x_ref~0.offset_121 0) (= |v_old(#memory_int)_142| |v_#memory_int_351|) (= |v_test_fun_#t~malloc0.base_103| v_test_fun_~x_ref~0.base_126) (= |v_old(#length)_142| |v_#length_281|) (<= |v_test_fun_#in~y_110| 2147483647) (= |v_#valid_328| (store .cse2 |v_test_fun_#t~malloc3.base_103| 1))))))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_140|, #valid=|v_#valid_329|, #memory_int=|v_#memory_int_351|, #length=|v_#length_281|}  OutVars{test_fun_#t~mem5=|v_test_fun_#t~mem5_117|, test_fun_#t~mem4=|v_test_fun_#t~mem4_146|, test_fun_#t~malloc0.base=|v_test_fun_#t~malloc0.base_103|, test_fun_~x=v_test_fun_~x_111, test_fun_~y=v_test_fun_~y_111, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_128, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_122, #length=|v_#length_280|, old(#length)=|v_old(#length)_142|, test_fun_#in~z=|v_test_fun_#in~z_110|, main_#t~ret20=|v_main_#t~ret20_83|, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_126, test_fun_~z=v_test_fun_~z_111, test_fun_#t~short8=|v_test_fun_#t~short8_144|, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_121, main_#res=|v_main_#res_78|, test_fun_#in~y=|v_test_fun_#in~y_110|, test_fun_#in~x=|v_test_fun_#in~x_110|, test_fun_~c~0.base=v_test_fun_~c~0.base_131, test_fun_~c~0.offset=v_test_fun_~c~0.offset_127, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_117, #StackHeapBarrier=|v_#StackHeapBarrier_140|, test_fun_#t~malloc3.base=|v_test_fun_#t~malloc3.base_103|, test_fun_#t~malloc2.base=|v_test_fun_#t~malloc2.base_103|, test_fun_#t~malloc1.base=|v_test_fun_#t~malloc1.base_103|, #valid=|v_#valid_328|, old(#valid)=|v_old(#valid)_142|, #memory_int=|v_#memory_int_350|, old(#memory_int)=|v_old(#memory_int)_142|, ULTIMATE.start_#t~ret21=|v_ULTIMATE.start_#t~ret21_44|, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_123}  AuxVars[]  AssignedVars[test_fun_#t~mem5, test_fun_#t~mem4, test_fun_#t~malloc0.base, test_fun_~x, test_fun_~y, test_fun_~z_ref~0.base, test_fun_~y_ref~0.base, #length, old(#length), test_fun_#in~z, main_#t~ret20, test_fun_~x_ref~0.base, test_fun_~z, test_fun_#t~short8, test_fun_~x_ref~0.offset, main_#res, test_fun_#in~y, test_fun_#in~x, test_fun_~c~0.base, test_fun_~c~0.offset, test_fun_~y_ref~0.offset, test_fun_#t~malloc3.base, test_fun_#t~malloc2.base, test_fun_#t~malloc1.base, #valid, old(#valid), #memory_int, old(#memory_int), ULTIMATE.start_#t~ret21, test_fun_~z_ref~0.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse2 (select |v_#memory_int_354| v_test_fun_~y_ref~0.base_123))) (let ((.cse3 (select .cse2 v_test_fun_~y_ref~0.offset_118)) (.cse4 (select (select |v_#memory_int_354| v_test_fun_~z_ref~0.base_129) v_test_fun_~z_ref~0.offset_124))) (and (<= 0 v_test_fun_~z_ref~0.offset_124) (<= 0 v_test_fun_~c~0.offset_128) (= (select |v_#valid_330| v_test_fun_~z_ref~0.base_129) 1) (<= (+ v_test_fun_~c~0.offset_128 4) (select |v_#length_282| v_test_fun_~c~0.base_132)) (= |v_#memory_int_352| (let ((.cse0 (store |v_#memory_int_354| v_test_fun_~y_ref~0.base_123 (store .cse2 v_test_fun_~y_ref~0.offset_118 (+ (- 1) .cse3))))) (store .cse0 v_test_fun_~c~0.base_132 (let ((.cse1 (select .cse0 v_test_fun_~c~0.base_132))) (store .cse1 v_test_fun_~c~0.offset_128 (+ (select .cse1 v_test_fun_~c~0.offset_128) 1)))))) (<= (+ .cse4 1) .cse3) (= (select |v_#valid_330| v_test_fun_~c~0.base_132) 1) (= (select |v_#valid_330| v_test_fun_~y_ref~0.base_123) 1) (<= (select (select |v_#memory_int_352| v_test_fun_~x_ref~0.base_127) v_test_fun_~x_ref~0.offset_122) (select (select |v_#memory_int_352| v_test_fun_~z_ref~0.base_129) v_test_fun_~z_ref~0.offset_124)) (= (select |v_#valid_330| v_test_fun_~x_ref~0.base_127) 1) (<= 0 v_test_fun_~x_ref~0.offset_122) (<= (select (select |v_#memory_int_354| v_test_fun_~x_ref~0.base_127) v_test_fun_~x_ref~0.offset_122) .cse4) (<= (+ v_test_fun_~z_ref~0.offset_124 4) (select |v_#length_282| v_test_fun_~z_ref~0.base_129)) (<= (+ 4 v_test_fun_~y_ref~0.offset_118) (select |v_#length_282| v_test_fun_~y_ref~0.base_123)) (<= (+ v_test_fun_~x_ref~0.offset_122 4) (select |v_#length_282| v_test_fun_~x_ref~0.base_127)) (<= 0 v_test_fun_~y_ref~0.offset_118))))  InVars {test_fun_~c~0.base=v_test_fun_~c~0.base_132, test_fun_~c~0.offset=v_test_fun_~c~0.offset_128, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_118, #valid=|v_#valid_330|, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_129, #memory_int=|v_#memory_int_354|, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_123, #length=|v_#length_282|, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_127, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_124, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_122}  OutVars{test_fun_#t~mem10=|v_test_fun_#t~mem10_47|, test_fun_#t~mem12=|v_test_fun_#t~mem12_27|, test_fun_#t~mem13=|v_test_fun_#t~mem13_27|, test_fun_#t~mem14=|v_test_fun_#t~mem14_16|, test_fun_#t~mem5=|v_test_fun_#t~mem5_118|, test_fun_#t~mem4=|v_test_fun_#t~mem4_147|, test_fun_#t~mem7=|v_test_fun_#t~mem7_44|, test_fun_~c~0.base=v_test_fun_~c~0.base_132, test_fun_~c~0.offset=v_test_fun_~c~0.offset_128, test_fun_#t~mem6=|v_test_fun_#t~mem6_49|, test_fun_#t~mem15=|v_test_fun_#t~mem15_47|, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_118, test_fun_#t~mem9=|v_test_fun_#t~mem9_47|, #valid=|v_#valid_330|, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_129, #memory_int=|v_#memory_int_352|, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_123, #length=|v_#length_282|, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_127, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_124, test_fun_#t~short8=|v_test_fun_#t~short8_145|, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_122}  AuxVars[]  AssignedVars[test_fun_#t~mem10, test_fun_#t~mem12, test_fun_#t~mem13, test_fun_#t~mem14, test_fun_#t~mem5, #memory_int, test_fun_#t~mem4, test_fun_#t~mem7, test_fun_#t~mem6, test_fun_#t~mem15, test_fun_#t~mem9, test_fun_#t~short8]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 442
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,5543
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9796
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8784
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= |v_arrayCell_v_#valid_283[0]_1| 0) (>= 1 |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_86]_1|) (<= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_86]_1| 4) (>= |v_arrayCell_v_#valid_284[0]_1| 0) (<= 0 |v_arrayCell_v_old(#valid)_116[0]_1|) (<= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_86]_1| 1) (<= |v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1| |v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_108, 0]_1|) (>= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_86]_1| 4) (>= |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_86]_1| |v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_106]_1|) (>= |v_test_fun_#t~malloc1.base_86| v_test_fun_~y_ref~0.base_102) (>= |v_test_fun_#in~x_90| |v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|) (>= |v_test_fun_#t~malloc0.base_86| v_test_fun_~x_ref~0.base_106) (<= |v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_106]_1| 4) (<= v_test_fun_~x_ref~0.offset_101 0) (<= (+ |v_#StackHeapBarrier_116| 1) |v_test_fun_#t~malloc3.base_86|) (>= 0 |v_arrayCell_v_old(#valid)_116[0]_1|) (<= 0 (+ |v_test_fun_#in~x_90| 2147483648)) (>= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_86]_1| 4) (<= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_86]_1| 0) (>= v_test_fun_~c~0.offset_107 0) (<= v_test_fun_~y_ref~0.offset_97 0) (>= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_86]_1| 0) (<= |v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_108, 0]_1| |v_test_fun_#in~z_90|) (<= |v_test_fun_#t~malloc3.base_86| v_test_fun_~c~0.base_111) (>= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_86]_1| 0) (<= (+ |v_#StackHeapBarrier_116| 1) |v_test_fun_#t~malloc2.base_86|) (<= (+ |v_#StackHeapBarrier_116| 1) |v_test_fun_#t~malloc1.base_86|) (<= (+ |v_#StackHeapBarrier_116| 1) |v_test_fun_#t~malloc0.base_86|) (>= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_86]_1| 0) (<= |v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_102, 0]_1| |v_test_fun_#in~y_90|) (<= 0 (+ |v_test_fun_#in~y_90| 2147483648)) (<= v_test_fun_~z_ref~0.base_108 |v_test_fun_#t~malloc2.base_86|) (>= |v_arrayCell_v_#valid_283[0]_1| 0) (>= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_86]_1| 1) (<= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_86]_1| 1) (<= |v_test_fun_#in~y_90| 2147483647) (<= |v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_111, 0]_1| 0) (>= |v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_102, 0]_1| |v_test_fun_#in~y_90|) (>= v_test_fun_~x_ref~0.offset_101 0) (<= 1 |v_#StackHeapBarrier_116|) (>= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_86]_1| 1) (<= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_86]_1| 4) (>= v_test_fun_~z_ref~0.base_108 |v_test_fun_#t~malloc2.base_86|) (<= 1 |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_86]_1|) (>= |v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_108, 0]_1| |v_test_fun_#in~z_90|) (>= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_86]_1| 4) (<= |v_test_fun_#t~malloc0.base_86| v_test_fun_~x_ref~0.base_106) (<= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_86]_1| 0) (<= |v_test_fun_#t~malloc1.base_86| v_test_fun_~y_ref~0.base_102) (<= v_test_fun_~z_ref~0.offset_103 0) (<= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_86]_1| 4) (>= |v_test_fun_#t~malloc3.base_86| v_test_fun_~c~0.base_111) (<= |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_86]_1| |v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_106]_1|) (>= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_86]_1| 1) (<= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_86]_1| 0) (<= |v_test_fun_#in~z_90| 2147483647) (>= |v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_111, 0]_1| 0) (<= |v_test_fun_#in~x_90| |v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|) (<= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_86]_1| 4) (>= |v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_86]_1| 4) (>= v_test_fun_~z_ref~0.offset_103 0) (<= |v_arrayCell_v_#valid_284[0]_1| 0) (<= |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_86]_1| 1) (>= |v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_106]_1| 4) (<= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_86]_1| 0) (>= |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_86]_1| 0) (<= v_test_fun_~c~0.offset_107 0) (>= v_test_fun_~y_ref~0.offset_97 0))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_116|, test_fun_#t~mem5=|v_test_fun_#t~mem5_95|, test_fun_#t~mem4=|v_test_fun_#t~mem4_119|, test_fun_#t~malloc0.base=|v_test_fun_#t~malloc0.base_87|, test_fun_~x=v_test_fun_~x_92, test_fun_~y=v_test_fun_~y_92, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_110, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_104, test_fun_#in~z=|v_test_fun_#in~z_91|, main_#t~ret20=|v_main_#t~ret20_70|, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_108, test_fun_~z=v_test_fun_~z_92, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_103, main_#res=|v_main_#res_65|, test_fun_#in~y=|v_test_fun_#in~y_91|, test_fun_#in~x=|v_test_fun_#in~x_91|, test_fun_~c~0.base=v_test_fun_~c~0.base_113, test_fun_~c~0.offset=v_test_fun_~c~0.offset_109, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_99, test_fun_#t~malloc3.base=|v_test_fun_#t~malloc3.base_87|, test_fun_#t~malloc2.base=|v_test_fun_#t~malloc2.base_87|, test_fun_#t~malloc1.base=|v_test_fun_#t~malloc1.base_87|, ULTIMATE.start_#t~ret21=|v_ULTIMATE.start_#t~ret21_37|, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_105, v_rep(select #valid test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#valid_284[v_test_fun_#t~malloc0.base_87]_1|, v_rep(select #valid test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#valid_284[v_test_fun_#t~malloc3.base_87]_1|, v_rep(select #valid test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#valid_284[v_test_fun_#t~malloc2.base_87]_1|, v_rep(select #valid 0)_6=|v_arrayCell_v_#valid_284[0]_1|, v_rep(select #valid test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#valid_284[v_test_fun_#t~malloc1.base_87]_1|, v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_6=|v_arrayCell_v_#memory_int_297[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) 0)_2=|v_arrayCell_v_#memory_int_297[v_test_fun_~z_ref~0.base_110, 0]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) 0)_5=|v_arrayCell_v_#memory_int_297[v_test_fun_~c~0.base_113, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) 0)_5=|v_arrayCell_v_#memory_int_297[v_test_fun_~y_ref~0.base_104, 0]_1|, v_rep(select #length test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#length_242[v_test_fun_#t~malloc0.base_87]_1|, v_rep(select #length test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#length_242[v_test_fun_#t~malloc3.base_87]_1|, v_rep(select #length test_fun_~x_ref~0.base)_6=|v_arrayCell_v_#length_242[v_test_fun_~x_ref~0.base_108]_1|, v_rep(select #length test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#length_242[v_test_fun_#t~malloc2.base_87]_1|, v_rep(select #length test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#length_242[v_test_fun_#t~malloc1.base_87]_1|, v_rep(select old(#valid) test_fun_#t~malloc3.base)_6=|v_v_rep(select old(#valid) test_fun_#t~malloc3.base)_6_1|, v_rep(select old(#valid) test_fun_#t~malloc2.base)_6=|v_v_rep(select old(#valid) test_fun_#t~malloc2.base)_6_1|, v_rep(select old(#valid) 0)_6=|v_v_rep(select old(#valid) 0)_6_1|, v_rep(select old(#valid) test_fun_#t~malloc1.base)_6=|v_v_rep(select old(#valid) test_fun_#t~malloc1.base)_6_1|, v_rep(select old(#valid) test_fun_#t~malloc0.base)_6=|v_v_rep(select old(#valid) test_fun_#t~malloc0.base)_6_1|, v_rep(select (select old(#memory_int) test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_2=|v_v_rep(select (select old(#memory_int) test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_2_1|, v_rep(select (select old(#memory_int) test_fun_~z_ref~0.base) 0)_2=|v_v_rep(select (select old(#memory_int) test_fun_~z_ref~0.base) 0)_2_1|, v_rep(select (select old(#memory_int) test_fun_~y_ref~0.base) 0)_5=|v_v_rep(select (select old(#memory_int) test_fun_~y_ref~0.base) 0)_5_1|, v_rep(select (select old(#memory_int) test_fun_~c~0.base) 0)_5=|v_v_rep(select (select old(#memory_int) test_fun_~c~0.base) 0)_5_1|, v_rep(select old(#length) test_fun_#t~malloc3.base)_6=|v_v_rep(select old(#length) test_fun_#t~malloc3.base)_6_1|, v_rep(select old(#length) test_fun_#t~malloc2.base)_6=|v_v_rep(select old(#length) test_fun_#t~malloc2.base)_6_1|, v_rep(select old(#length) test_fun_~x_ref~0.base)_2=|v_v_rep(select old(#length) test_fun_~x_ref~0.base)_2_1|, v_rep(select old(#length) test_fun_#t~malloc1.base)_6=|v_v_rep(select old(#length) test_fun_#t~malloc1.base)_6_1|, v_rep(select old(#length) test_fun_#t~malloc0.base)_6=|v_v_rep(select old(#length) test_fun_#t~malloc0.base)_6_1|, v_rep(ite test_fun_#t~short8 1 0)_6=|v_v_rep(ite test_fun_#t~short8 1 0)_6_in_bool_1|}
+  OutVars:  {test_fun_#t~mem5=|v_test_fun_#t~mem5_92|, test_fun_#t~mem4=|v_test_fun_#t~mem4_115|, test_fun_#t~malloc0.base=|v_test_fun_#t~malloc0.base_86|, test_fun_~x=v_test_fun_~x_91, test_fun_~y=v_test_fun_~y_91, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_108, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_102, test_fun_#in~z=|v_test_fun_#in~z_90|, main_#t~ret20=|v_main_#t~ret20_69|, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_106, test_fun_~z=v_test_fun_~z_91, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_101, main_#res=|v_main_#res_64|, test_fun_#in~y=|v_test_fun_#in~y_90|, test_fun_#in~x=|v_test_fun_#in~x_90|, test_fun_~c~0.base=v_test_fun_~c~0.base_111, test_fun_~c~0.offset=v_test_fun_~c~0.offset_107, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_97, #StackHeapBarrier=|v_#StackHeapBarrier_116|, test_fun_#t~malloc3.base=|v_test_fun_#t~malloc3.base_86|, test_fun_#t~malloc2.base=|v_test_fun_#t~malloc2.base_86|, test_fun_#t~malloc1.base=|v_test_fun_#t~malloc1.base_86|, ULTIMATE.start_#t~ret21=|v_ULTIMATE.start_#t~ret21_36|, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_103, v_rep(select #valid test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_86]_1|, v_rep(select #valid test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_86]_1|, v_rep(select #valid 0)_6=|v_arrayCell_v_#valid_283[0]_1|, v_rep(select #valid test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_86]_1|, v_rep(select #valid test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_86]_1|, v_rep(select old(#valid) test_fun_#t~malloc3.base)_6=|v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_86]_1|, v_rep(select old(#valid) test_fun_#t~malloc2.base)_6=|v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_86]_1|, v_rep(select old(#valid) 0)_6=|v_arrayCell_v_old(#valid)_116[0]_1|, v_rep(select old(#valid) test_fun_#t~malloc1.base)_6=|v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_86]_1|, v_rep(select old(#valid) test_fun_#t~malloc0.base)_6=|v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_86]_1|, v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_6=|v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) 0)_2=|v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_108, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) 0)_5=|v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_102, 0]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) 0)_5=|v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_111, 0]_1|, v_rep(select (select old(#memory_int) test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_2=|v_arrayCell_v_old(#memory_int)_116[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, v_rep(select (select old(#memory_int) test_fun_~z_ref~0.base) 0)_2=|v_arrayCell_v_old(#memory_int)_116[v_test_fun_~z_ref~0.base_108, 0]_1|, v_rep(select (select old(#memory_int) test_fun_~y_ref~0.base) 0)_5=|v_arrayCell_v_old(#memory_int)_116[v_test_fun_~y_ref~0.base_102, 0]_1|, v_rep(select (select old(#memory_int) test_fun_~c~0.base) 0)_5=|v_arrayCell_v_old(#memory_int)_116[v_test_fun_~c~0.base_111, 0]_1|, v_rep(select old(#length) test_fun_#t~malloc3.base)_6=|v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc3.base_86]_1|, v_rep(select old(#length) test_fun_#t~malloc2.base)_6=|v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc2.base_86]_1|, v_rep(select old(#length) test_fun_~x_ref~0.base)_2=|v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_106]_1|, v_rep(select old(#length) test_fun_#t~malloc1.base)_6=|v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc1.base_86]_1|, v_rep(select old(#length) test_fun_#t~malloc0.base)_6=|v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_86]_1|, v_rep(select #length test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_86]_1|, v_rep(select #length test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_86]_1|, v_rep(select #length test_fun_~x_ref~0.base)_6=|v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_106]_1|, v_rep(select #length test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_86]_1|, v_rep(select #length test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_86]_1|, v_rep(ite test_fun_#t~short8 1 0)_6=|v_v_rep(ite test_fun_#t~short8 1 0)_6_out_bool_1|}
+  AuxVars:  [|v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~z_ref~0.base_108, 0]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~y_ref~0.base_102, 0]_1|, |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_old(#length)_116[v_test_fun_~x_ref~0.base_108]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_#memory_int_296[v_test_fun_~y_ref~0.base_104, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~c~0.base_113, 0]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~c~0.base_113, 0]_1|, |v_arrayCell_v_#memory_int_297[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, |v_arrayCell_v_#memory_int_296[v_test_fun_~c~0.base_113, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_~x_ref~0.base_108]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, |v_arrayCell_v_old(#memory_int)_116[v_test_fun_~y_ref~0.base_104, 0]_1|, |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_#length_241[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_#valid_284[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_#length_242[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_#memory_int_296[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_old(#valid)_116[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_#memory_int_297[v_test_fun_~y_ref~0.base_102, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~y_ref~0.base_102, 0]_1|, |v_arrayCell_v_#length_242[v_test_fun_~x_ref~0.base_106]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~z_ref~0.base_110, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~z_ref~0.base_108, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_#length_242[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~y_ref~0.base_104, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_~x_ref~0.base_108]_1|, |v_arrayCell_v_#memory_int_297[v_test_fun_~c~0.base_111, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~c~0.base_113, 0]_1|, |v_arrayCell_v_#length_241[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_#valid_284[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~x_ref~0.base_106, v_test_fun_~x_ref~0.offset_101]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_#length_241[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc2.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[0]_1|, |v_arrayCell_v_#length_242[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_#length_241[v_test_fun_#t~malloc1.base_87]_1|, |v_arrayCell_v_#length_242[v_test_fun_#t~malloc3.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~y_ref~0.base_104, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_~x_ref~0.base_106]_1|, |v_arrayCell_v_#valid_283[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~y_ref~0.base_104, 0]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~c~0.base_111, 0]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~c~0.base_111, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~c~0.base_111, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_old(#memory_int)_116[v_test_fun_~x_ref~0.base_108, v_test_fun_~x_ref~0.offset_103]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~z_ref~0.base_108, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_~x_ref~0.base_106]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray3_1[v_test_fun_~y_ref~0.base_102, 0]_1|, |v_arrayCell_v_old(#memory_int)_116[v_test_fun_~c~0.base_113, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_~x_ref~0.base_106]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray2_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_#memory_int_296[v_test_fun_~z_ref~0.base_110, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_old(#length)_116[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray1_1[v_test_fun_~z_ref~0.base_110, 0]_1|, |v_arrayCell_v_old(#memory_int)_116[v_test_fun_~z_ref~0.base_110, 0]_1|, |v_arrayCell_v_#valid_284[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_#length_241[v_test_fun_~x_ref~0.base_108]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_#memory_int_297[v_test_fun_~z_ref~0.base_108, 0]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray1_1[v_test_fun_#t~malloc0.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray1_1[v_test_fun_~x_ref~0.base_108]_1|, |v_arrayCell_v_v_old(#memory_int)_116auxArray2_1[v_test_fun_~z_ref~0.base_110, 0]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc0.base_86]_1|, |v_arrayCell_v_v_old(#valid)_116auxArray3_1[v_test_fun_#t~malloc2.base_86]_1|, |v_arrayCell_v_#valid_284[v_test_fun_#t~malloc1.base_86]_1|, |v_arrayCell_v_v_old(#length)_116auxArray2_1[v_test_fun_#t~malloc3.base_87]_1|, |v_arrayCell_v_v_old(#length)_116auxArray3_1[v_test_fun_#t~malloc1.base_87]_1|]
+
+Loop (linearized):
+  Formula:  (and (>= |v_arrayCell_v_#length_243[v_test_fun_~x_ref~0.base_107]_1| |v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|) (<= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1| 1) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1|) (<= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1| 1) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1|) (>= v_test_fun_~z_ref~0.base_109 |v_test_fun_#t~malloc2.base_ForeignInOutVar_5|) (>= v_test_fun_~z_ref~0.offset_104 0) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1|) (<= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1| 1) (>= |v_test_fun_#t~malloc0.base_ForeignInOutVar_5| v_test_fun_~x_ref~0.base_107) (>= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1|) (>= v_test_fun_~x_ref~0.offset_102 0) (<= v_test_fun_~y_ref~0.base_103 |v_test_fun_#t~malloc1.base_ForeignInOutVar_5|) (<= |v_arrayCell_v_#valid_285[v_test_fun_~z_ref~0.base_109]_1| 1) (<= 4 |v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1|) (<= |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| (+ |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| 1)) (>= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1| 1) (>= |v_arrayCell_v_#valid_285[v_test_fun_~c~0.base_112]_1| 1) (<= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~y_ref~0.base_103]_1|) (>= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~c~0.base_112]_1|) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1|) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, 0]_1|) (<= |v_test_fun_#t~malloc0.base_ForeignInOutVar_5| v_test_fun_~x_ref~0.base_107) (>= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1| 1) (<= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~c~0.base_112]_1|) (>= |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, 0]_1|) (>= |v_test_fun_#t~malloc3.base_ForeignInOutVar_5| v_test_fun_~c~0.base_112) (>= v_test_fun_~c~0.offset_108 0) (<= |v_test_fun_#t~malloc3.base_ForeignInOutVar_5| v_test_fun_~c~0.base_112) (<= |v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, 0]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1|) (<= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1| 1) (<= |v_arrayCell_v_#memory_int_298[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|) (<= 4 |v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1|) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1| (+ |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1| 1)) (>= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~y_ref~0.base_103]_1|) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1| (+ |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1| 1)) (<= 4 |v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|) (<= (+ |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1| 1) |v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1|) (<= |v_arrayCell_v_#valid_285[v_test_fun_~y_ref~0.base_103]_1| 1) (>= v_test_fun_~y_ref~0.base_103 |v_test_fun_#t~malloc1.base_ForeignInOutVar_5|) (>= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1| 1) (<= v_test_fun_~z_ref~0.offset_104 0) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, 0]_1|) (<= |v_arrayCell_v_#length_243[v_test_fun_~x_ref~0.base_107]_1| |v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|) (<= v_test_fun_~y_ref~0.offset_98 0) (<= |v_arrayCell_v_#valid_285[v_test_fun_~x_ref~0.base_107]_1| 1) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1|) (>= |v_arrayCell_v_#valid_285[v_test_fun_~x_ref~0.base_107]_1| 1) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|) (>= |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, 0]_1|) (<= v_test_fun_~c~0.offset_108 0) (>= |v_arrayCell_v_#valid_285[v_test_fun_~z_ref~0.base_109]_1| 1) (<= v_test_fun_~z_ref~0.base_109 |v_test_fun_#t~malloc2.base_ForeignInOutVar_5|) (>= |v_arrayCell_v_#valid_285[v_test_fun_~y_ref~0.base_103]_1| 1) (<= v_test_fun_~x_ref~0.offset_102 0) (<= |v_arrayCell_v_#valid_285[v_test_fun_~c~0.base_112]_1| 1) (<= |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, 0]_1|) (<= |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, 0]_1|) (<= |v_arrayCell_v_#length_243[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1| |v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1|) (>= |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1| |v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|) (>= |v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| (+ |v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1| 1)) (<= 4 |v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1|) (>= |v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, 0]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1|) (<= |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1| |v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1|) (>= v_test_fun_~y_ref~0.offset_98 0) (>= |v_arrayCell_v_#valid_285[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1| 1))
+  InVars:   {test_fun_~c~0.base=v_test_fun_~c~0.base_112, test_fun_~c~0.offset=v_test_fun_~c~0.offset_108, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_98, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_109, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_103, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_107, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_104, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_102, test_fun_#t~mem10=|v_test_fun_#t~mem10_41|, test_fun_#t~mem12=|v_test_fun_#t~mem12_21|, test_fun_#t~mem13=|v_test_fun_#t~mem13_21|, test_fun_#t~mem14=|v_test_fun_#t~mem14_10|, test_fun_#t~mem5=|v_test_fun_#t~mem5_96|, test_fun_#t~mem4=|v_test_fun_#t~mem4_120|, test_fun_#t~mem7=|v_test_fun_#t~mem7_38|, test_fun_#t~mem6=|v_test_fun_#t~mem6_43|, test_fun_#t~mem15=|v_test_fun_#t~mem15_41|, test_fun_#t~mem9=|v_test_fun_#t~mem9_41|, test_fun_#t~malloc2.base=|v_test_fun_#t~malloc2.base_ForeignInOutVar_5|, test_fun_#t~malloc1.base=|v_test_fun_#t~malloc1.base_ForeignInOutVar_5|, test_fun_#t~malloc0.base=|v_test_fun_#t~malloc0.base_ForeignInOutVar_5|, test_fun_#t~malloc3.base=|v_test_fun_#t~malloc3.base_ForeignInOutVar_5|, v_rep(select #valid test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_~c~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~c~0.base_112]_1|, v_rep(select #valid test_fun_~y_ref~0.base)_3=|v_arrayCell_v_#valid_285[v_test_fun_~y_ref~0.base_103]_1|, v_rep(select #valid test_fun_~x_ref~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~x_ref~0.base_107]_1|, v_rep(select #valid 0)_6=|v_arrayCell_v_#valid_285[0]_1|, v_rep(select #valid test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_~z_ref~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~z_ref~0.base_109]_1|, v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_6=|v_arrayCell_v_#memory_int_300[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) 0)_2=|v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) test_fun_~y_ref~0.offset)_3=|v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) 0)_5=|v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) 0)_5=|v_arrayCell_v_#memory_int_300[v_test_fun_~y_ref~0.base_103, 0]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) test_fun_~c~0.offset)_5=|v_arrayCell_v_#memory_int_300[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) test_fun_~z_ref~0.offset)_6=|v_arrayCell_v_#memory_int_300[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|, v_rep(select #length test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_~c~0.base)_5=|v_arrayCell_v_#length_243[v_test_fun_~c~0.base_112]_1|, v_rep(select #length test_fun_~y_ref~0.base)_3=|v_arrayCell_v_#length_243[v_test_fun_~y_ref~0.base_103]_1|, v_rep(select #length test_fun_~x_ref~0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_~x_ref~0.base_107]_1|, v_rep(select #length test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_~z_ref~0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1|, v_rep(ite test_fun_#t~short8 1 0)_6=|v_v_rep(ite test_fun_#t~short8 1 0)_6_in_bool_1|}
+  OutVars:  {test_fun_#t~mem10=|v_test_fun_#t~mem10_39|, test_fun_#t~mem12=|v_test_fun_#t~mem12_19|, test_fun_#t~mem13=|v_test_fun_#t~mem13_19|, test_fun_#t~mem14=|v_test_fun_#t~mem14_8|, test_fun_#t~mem5=|v_test_fun_#t~mem5_93|, test_fun_#t~mem4=|v_test_fun_#t~mem4_116|, test_fun_#t~mem7=|v_test_fun_#t~mem7_36|, test_fun_~c~0.base=v_test_fun_~c~0.base_112, test_fun_~c~0.offset=v_test_fun_~c~0.offset_108, test_fun_#t~mem6=|v_test_fun_#t~mem6_41|, test_fun_#t~mem15=|v_test_fun_#t~mem15_39|, test_fun_~y_ref~0.offset=v_test_fun_~y_ref~0.offset_98, test_fun_#t~mem9=|v_test_fun_#t~mem9_39|, test_fun_~z_ref~0.base=v_test_fun_~z_ref~0.base_109, test_fun_~y_ref~0.base=v_test_fun_~y_ref~0.base_103, test_fun_~x_ref~0.base=v_test_fun_~x_ref~0.base_107, test_fun_~z_ref~0.offset=v_test_fun_~z_ref~0.offset_104, test_fun_~x_ref~0.offset=v_test_fun_~x_ref~0.offset_102, test_fun_#t~malloc2.base=|v_test_fun_#t~malloc2.base_ForeignInOutVar_5|, test_fun_#t~malloc1.base=|v_test_fun_#t~malloc1.base_ForeignInOutVar_5|, test_fun_#t~malloc0.base=|v_test_fun_#t~malloc0.base_ForeignInOutVar_5|, test_fun_#t~malloc3.base=|v_test_fun_#t~malloc3.base_ForeignInOutVar_5|, v_rep(select #valid test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_~c~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~c~0.base_112]_1|, v_rep(select #valid test_fun_~y_ref~0.base)_3=|v_arrayCell_v_#valid_285[v_test_fun_~y_ref~0.base_103]_1|, v_rep(select #valid test_fun_~x_ref~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~x_ref~0.base_107]_1|, v_rep(select #valid 0)_6=|v_arrayCell_v_#valid_285[0]_1|, v_rep(select #valid test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#valid_285[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1|, v_rep(select #valid test_fun_~z_ref~0.base)_5=|v_arrayCell_v_#valid_285[v_test_fun_~z_ref~0.base_109]_1|, v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_6=|v_arrayCell_v_#memory_int_298[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) 0)_2=|v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) test_fun_~y_ref~0.offset)_3=|v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) 0)_5=|v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, 0]_1|, v_rep(select (select #memory_int test_fun_~y_ref~0.base) 0)_5=|v_arrayCell_v_#memory_int_298[v_test_fun_~y_ref~0.base_103, 0]_1|, v_rep(select (select #memory_int test_fun_~c~0.base) test_fun_~c~0.offset)_5=|v_arrayCell_v_#memory_int_298[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1|, v_rep(select (select #memory_int test_fun_~z_ref~0.base) test_fun_~z_ref~0.offset)_6=|v_arrayCell_v_#memory_int_298[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|, v_rep(select #length test_fun_#t~malloc2.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc2.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_#t~malloc1.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc1.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_#t~malloc0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc0.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_~c~0.base)_5=|v_arrayCell_v_#length_243[v_test_fun_~c~0.base_112]_1|, v_rep(select #length test_fun_~y_ref~0.base)_3=|v_arrayCell_v_#length_243[v_test_fun_~y_ref~0.base_103]_1|, v_rep(select #length test_fun_~x_ref~0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_~x_ref~0.base_107]_1|, v_rep(select #length test_fun_#t~malloc3.base)_6=|v_arrayCell_v_#length_243[v_test_fun_#t~malloc3.base_ForeignInOutVar_5]_1|, v_rep(select #length test_fun_~z_ref~0.base)_6=|v_arrayCell_v_#length_243[v_test_fun_~z_ref~0.base_109]_1|, v_rep(ite test_fun_#t~short8 1 0)_6=|v_v_rep(ite test_fun_#t~short8 1 0)_6_out_bool_1|}
+  AuxVars:  [|v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~z_ref~0.base_109, 0]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~x_ref~0.base_107, v_test_fun_~x_ref~0.offset_102]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~y_ref~0.base_103, v_test_fun_~y_ref~0.offset_98]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~z_ref~0.base_109, v_test_fun_~z_ref~0.offset_104]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~c~0.base_112, v_test_fun_~c~0.offset_108]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~c~0.base_112, 0]_1|, |v_arrayCell_v_v_#memory_int_300auxArray1_1[v_test_fun_~y_ref~0.base_103, 0]_1|]
+
+--- RAW TRACE ---
+Stem (length=14):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #104#return;
+  [3] call #t~ret21 := main();
+  [4] havoc #t~nondet17;assume -2147483648 <= #t~nondet17 && #t~nondet17 <= 2147483647;havoc #t~nondet18;assume -2147483648 <= #t~nondet18 && #t~nondet18 <= 2147483647;havoc #t~nondet19;assume -2147483648 <= #t~nondet19 && #t~nondet19 <= 2147483647;
+  [5] call #t~ret20 := test_fun(#t~nondet17, #t~nondet18, #t~nondet19);
+  [6] ~x := #in~x;~y := #in~y;~z := #in~z;call #t~malloc0.base, #t~malloc0.offset := #Ultimate.allocOnStack(4);~x_ref~0.base, ~x_ref~0.offset := #t~malloc0.base, #t~malloc0.offset;call #t~malloc1.base, #t~malloc1.offset := #Ultimate.allocOnStack(4);~y_ref~0.base, ~y_ref~0.offset := #t~malloc1.base, #t~malloc1.offset;call #t~malloc2.base, #t~malloc2.offset := #Ultimate.allocOnStack(4);~z_ref~0.base, ~z_ref~0.offset := #t~malloc2.base, #t~malloc2.offset;call #t~malloc3.base, #t~malloc3.offset := #Ultimate.allocOnStack(4);~c~0.base, ~c~0.offset := #t~malloc3.base, #t~malloc3.offset;
+  [7] SUMMARY for call write~int(~x, ~x_ref~0.base, ~x_ref~0.offset, 4); srcloc: L11
+  [8] SUMMARY for call write~int(~y, ~y_ref~0.base, ~y_ref~0.offset, 4); srcloc: L11-1
+  [9] SUMMARY for call write~int(~z, ~z_ref~0.base, ~z_ref~0.offset, 4); srcloc: L12
+  [10] SUMMARY for call write~int(0, ~c~0.base, ~c~0.offset, 4); srcloc: L13
+  [11] SUMMARY for call #t~mem4 := read~int(~x_ref~0.base, ~x_ref~0.offset, 4); srcloc: L15-10
+  [12] call #t~mem5 := read~int(~z_ref~0.base, ~z_ref~0.offset, 4);#t~short8 := #t~mem4 > #t~mem5;
+  [13] assume !#t~short8;
+Loop (length=16):
+  [0] SUMMARY for call #t~mem6 := read~int(~y_ref~0.base, ~y_ref~0.offset, 4); srcloc: L15-4
+  [1] call #t~mem7 := read~int(~z_ref~0.base, ~z_ref~0.offset, 4);#t~short8 := #t~mem6 > #t~mem7;
+  [2] assume #t~short8;havoc #t~mem4;havoc #t~mem5;havoc #t~mem6;havoc #t~mem7;havoc #t~short8;
+  [3] SUMMARY for call #t~mem9 := read~int(~x_ref~0.base, ~x_ref~0.offset, 4); srcloc: L15-8
+  [4] SUMMARY for call #t~mem10 := read~int(~z_ref~0.base, ~z_ref~0.offset, 4); srcloc: L16
+  [5] assume !(#t~mem9 > #t~mem10);havoc #t~mem9;havoc #t~mem10;
+  [6] SUMMARY for call #t~mem12 := read~int(~y_ref~0.base, ~y_ref~0.offset, 4); srcloc: L19
+  [7] SUMMARY for call #t~mem13 := read~int(~z_ref~0.base, ~z_ref~0.offset, 4); srcloc: L19-1
+  [8] assume #t~mem12 > #t~mem13;havoc #t~mem12;havoc #t~mem13;
+  [9] SUMMARY for call #t~mem14 := read~int(~y_ref~0.base, ~y_ref~0.offset, 4); srcloc: L20
+  [10] call write~int(#t~mem14 - 1, ~y_ref~0.base, ~y_ref~0.offset, 4);havoc #t~mem14;
+  [11] SUMMARY for call #t~mem15 := read~int(~c~0.base, ~c~0.offset, 4); srcloc: L19-4
+  [12] call write~int(1 + #t~mem15, ~c~0.base, ~c~0.offset, 4);havoc #t~mem15;
+  [13] SUMMARY for call #t~mem4 := read~int(~x_ref~0.base, ~x_ref~0.offset, 4); srcloc: L15-10
+  [14] call #t~mem5 := read~int(~z_ref~0.base, ~z_ref~0.offset, 4);#t~short8 := #t~mem4 > #t~mem5;
+  [15] assume !#t~short8;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1725438 ns (1,73 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 118259755 ns (118,26 ms)
+       Variables (stem/loop): 44/38  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 118,26 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(v_rep(select (select #memory_int test_fun_~y_ref~0.base) test_fun_~y_ref~0.offset)_4, v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_7) = 1*v_rep(select (select #memory_int test_fun_~y_ref~0.base) test_fun_~y_ref~0.offset)_4 - 1*v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_7
+  Variables:
+    v_rep(select (select #memory_int test_fun_~y_ref~0.base) test_fun_~y_ref~0.offset)_4
+    v_rep(select (select #memory_int test_fun_~x_ref~0.base) test_fun_~x_ref~0.offset)_7
+  Supporting invariants:
+    (none)
+  Array index supporting invariants:
+    [0] (not (= |test_fun_#t~malloc0.base| test_fun_~z_ref~0.base))
+    [1] (not (= |test_fun_#t~malloc0.base| test_fun_~y_ref~0.base))
+    [2] (= test_fun_~x_ref~0.offset test_fun_~z_ref~0.offset)
+    [3] (not (= |test_fun_#t~malloc1.base| |test_fun_#t~malloc3.base|))
+    [4] (not (= test_fun_~y_ref~0.base 0))
+    [5] (not (= |test_fun_#t~malloc2.base| test_fun_~x_ref~0.base))
+    [6] (not (= 0 test_fun_~c~0.base))
+    [7] (not (= |test_fun_#t~malloc2.base| |test_fun_#t~malloc3.base|))
+    [8] (not (= test_fun_~x_ref~0.base test_fun_~c~0.base))
+    [9] (not (= |test_fun_#t~malloc1.base| test_fun_~c~0.base))
+    [10] (= |test_fun_#t~malloc3.base| test_fun_~c~0.base)
+    [11] (= test_fun_~c~0.offset test_fun_~y_ref~0.offset)
+    [12] (= |test_fun_#t~malloc1.base| test_fun_~y_ref~0.base)
+    [13] (not (= |test_fun_#t~malloc2.base| test_fun_~c~0.base))
+    [14] (= test_fun_~c~0.offset test_fun_~z_ref~0.offset)
+    [15] (not (= test_fun_~x_ref~0.base test_fun_~z_ref~0.base))
+    [16] (not (= |test_fun_#t~malloc2.base| 0))
+    [17] (= |test_fun_#t~malloc2.base| test_fun_~z_ref~0.base)
+    [18] (not (= test_fun_~x_ref~0.base 0))
+    [19] (not (= |test_fun_#t~malloc3.base| test_fun_~y_ref~0.base))
+    [20] (not (= test_fun_~x_ref~0.base test_fun_~y_ref~0.base))
+    [21] true
+    [22] (not (= test_fun_~y_ref~0.base test_fun_~c~0.base))
+    [23] (not (= |test_fun_#t~malloc2.base| test_fun_~y_ref~0.base))
+    [24] (not (= test_fun_~z_ref~0.base 0))
+    [25] (= test_fun_~y_ref~0.offset 0)
+    [26] (not (= |test_fun_#t~malloc3.base| test_fun_~z_ref~0.base))
+    [27] (not (= |test_fun_#t~malloc0.base| |test_fun_#t~malloc3.base|))
+    [28] (= test_fun_~x_ref~0.offset test_fun_~y_ref~0.offset)
+    [29] (not (= |test_fun_#t~malloc3.base| test_fun_~x_ref~0.base))
+    [30] (not (= |test_fun_#t~malloc1.base| 0))
+    [31] (not (= |test_fun_#t~malloc0.base| |test_fun_#t~malloc1.base|))
+    [32] (not (= |test_fun_#t~malloc0.base| test_fun_~c~0.base))
+    [33] (not (= test_fun_~z_ref~0.base test_fun_~c~0.base))
+    [34] (= test_fun_~z_ref~0.offset test_fun_~y_ref~0.offset)
+    [35] (not (= |test_fun_#t~malloc1.base| test_fun_~z_ref~0.base))
+    [36] (not (= |test_fun_#t~malloc0.base| |test_fun_#t~malloc2.base|))
+    [37] (= |test_fun_#t~malloc0.base| test_fun_~x_ref~0.base)
+    [38] (not (= |test_fun_#t~malloc0.base| 0))
+    [39] (= test_fun_~z_ref~0.offset 0)
+    [40] (not (= |test_fun_#t~malloc1.base| test_fun_~x_ref~0.base))
+    [41] (= test_fun_~c~0.offset 0)
+    [42] (not (= |test_fun_#t~malloc1.base| |test_fun_#t~malloc2.base|))
+    [43] (= test_fun_~c~0.offset test_fun_~x_ref~0.offset)
+    [44] (not (= test_fun_~y_ref~0.base test_fun_~z_ref~0.base))
+    [45] (= test_fun_~x_ref~0.offset 0)
+    [46] (not (= |test_fun_#t~malloc3.base| 0))
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 456
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,5373
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9796
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8784
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,73 ms
+Total LassoRanker time: 118,26 ms
+  Termination analysis:     118,26 ms
+  Nontermination analysis:   0,00 ms

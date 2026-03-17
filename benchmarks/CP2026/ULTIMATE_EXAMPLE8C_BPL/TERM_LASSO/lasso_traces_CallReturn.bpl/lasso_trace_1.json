@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "inc_res",
+    "inc_x",
+    "inc_y"
+  ],
+  "var_types": {
+    "inc_res": "Int",
+    "inc_x": "Int",
+    "inc_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ 5 v_inc_x_6) v_inc_x_5) (>= (+ 5 v_inc_x_6) v_inc_x_5) (<= v_inc_x_6 10))",
+      "in_vars": {
+        "inc_x": "v_inc_x_6",
+        "inc_res": "v_inc_res_6",
+        "inc_y": "v_inc_y_7"
+      },
+      "out_vars": {
+        "inc_res": "v_inc_res_5",
+        "inc_x": "v_inc_x_5",
+        "inc_y": "v_inc_y_6"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

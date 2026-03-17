@@ -1,0 +1,131 @@
+{
+  "program_vars": [
+    "binary_search_#in~element",
+    "binary_search_#in~high",
+    "binary_search_#in~low",
+    "binary_search_#in~sorted_list.base",
+    "binary_search_#in~sorted_list.offset",
+    "binary_search_#t~mem0",
+    "binary_search_#t~mem1",
+    "binary_search_~element",
+    "binary_search_~high",
+    "binary_search_~low",
+    "binary_search_~middle~0",
+    "binary_search_~sorted_list.base",
+    "binary_search_~sorted_list.offset",
+    "|v_rep(select #length binary_search_~sorted_list.base)_7|",
+    "|v_rep(select #valid binary_search_~sorted_list.base)_7|",
+    "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 (div (+ binary_search_~high (* binary_search_#in~low (- 1))) 2)) (* binary_search_~high 4) (- 4) (* binary_search_#in~low 4) (* (div (+ (- 1) binary_search_~high) 2) (- 8)) binary_search_~sorted_list.offset (* (- 4) (mod (+ binary_search_~high 1) 2))))_1|",
+    "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) (- 4) binary_search_~sorted_list.offset))_3|",
+    "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) binary_search_~sorted_list.offset (* (div (+ binary_search_~high (* (- 1) binary_search_~low)) 2) 4)))_4|"
+  ],
+  "var_types": {
+    "binary_search_#in~element": "Int",
+    "binary_search_#in~high": "Int",
+    "binary_search_#in~low": "Int",
+    "binary_search_#in~sorted_list.base": "Int",
+    "binary_search_#in~sorted_list.offset": "Int",
+    "binary_search_#t~mem0": "Int",
+    "binary_search_#t~mem1": "Int",
+    "binary_search_~element": "Int",
+    "binary_search_~high": "Int",
+    "binary_search_~low": "Int",
+    "binary_search_~middle~0": "Int",
+    "binary_search_~sorted_list.base": "Int",
+    "binary_search_~sorted_list.offset": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(or (and (<= v_binary_search_~high_41 (+ 2 (* 2 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|))) (<= v_binary_search_~sorted_list.offset_36 |v_binary_search_#in~sorted_list.offset_14|) (<= 1 |v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_38]_1|) (<= |v_mod_aux(+ v_binary_search_~high_41 1)2_1| 1) (<= (+ |v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* 4 (div (+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14)) 2)) (* v_binary_search_#in~low_14 4) (- 4) (* v_binary_search_~high_41 4) (* (mod (+ v_binary_search_~high_41 1) 2) (- 4)) (* (div (+ (- 1) v_binary_search_~high_41) 2) (- 8)) v_binary_search_~sorted_list.offset_36)]_1| 1) v_binary_search_~element_36) (<= (+ (* |v_mod_aux(+ v_binary_search_~high_41 1)2_1| 4) 4 (* 8 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|)) (+ (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 4) (* |v_binary_search_#in~low_14| 4) (* v_binary_search_~high_41 4) v_binary_search_~sorted_list.offset_36)) (<= v_binary_search_~high_41 (+ |v_binary_search_#in~low_14| (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 2) 1)) (<= 0 (+ |v_binary_search_#in~element_14| 2147483648)) (<= (+ (* v_binary_search_~low_43 4) v_binary_search_~sorted_list.offset_36) |v_arrayCell_v_#length_21[v_binary_search_~sorted_list.base_38]_1|) (<= (+ |v_binary_search_#in~low_14| (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 2)) v_binary_search_~high_41) (<= v_binary_search_~high_41 |v_binary_search_#in~high_14|) (<= 0 (+ |v_binary_search_#in~low_14| 2147483648)) (<= (+ |v_mod_aux(+ v_binary_search_~high_41 1)2_1| (* 2 |v_div_aux(+ v_binary_search_~high_41 1)2_1|)) (+ v_binary_search_~high_41 1)) (<= (+ v_binary_search_~high_41 |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 4) (+ (* v_binary_search_~low_43 2) |v_mod_aux(+ v_binary_search_~high_41 1)2_1|)) (<= |v_binary_search_#in~sorted_list.offset_14| v_binary_search_~sorted_list.offset_36) (<= (* v_binary_search_~low_43 2) (+ v_binary_search_~high_41 |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 3)) (<= v_binary_search_~sorted_list.base_38 |v_binary_search_#in~sorted_list.base_14|) (<= (+ |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 1) v_binary_search_~high_41) (<= |v_binary_search_#in~high_14| 2147483647) (<= |v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_38]_1| 1) (<= |v_binary_search_#in~element_14| v_binary_search_~element_36) (<= (+ v_binary_search_~high_41 1) (+ |v_mod_aux(+ v_binary_search_~high_41 1)2_1| (* 2 |v_div_aux(+ v_binary_search_~high_41 1)2_1|))) (<= |v_binary_search_#in~element_14| 2147483647) (<= |v_binary_search_#in~sorted_list.base_14| v_binary_search_~sorted_list.base_38) (<= |v_binary_search_#in~high_14| v_binary_search_~high_41) (<= v_binary_search_~element_36 |v_binary_search_#in~element_14|) (<= (+ (* 2 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|) 1) v_binary_search_~high_41) (<= (+ |v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* v_binary_search_~low_43 4) (- 4) v_binary_search_~sorted_list.offset_36)]_1| 1) v_binary_search_~element_36)) (and (<= v_binary_search_~high_41 (+ 2 (* 2 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|))) (<= v_binary_search_~sorted_list.offset_36 |v_binary_search_#in~sorted_list.offset_14|) (<= 1 |v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_38]_1|) (<= (+ v_binary_search_~high_41 |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 2) (* v_binary_search_~low_43 2)) (<= (+ |v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* 4 (div (+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14)) 2)) (* v_binary_search_#in~low_14 4) (- 4) (* v_binary_search_~high_41 4) (* (mod (+ v_binary_search_~high_41 1) 2) (- 4)) (* (div (+ (- 1) v_binary_search_~high_41) 2) (- 8)) v_binary_search_~sorted_list.offset_36)]_1| 1) v_binary_search_~element_36) (<= (+ (* |v_mod_aux(+ v_binary_search_~high_41 1)2_1| 4) 4 (* 8 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|)) (+ (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 4) (* |v_binary_search_#in~low_14| 4) (* v_binary_search_~high_41 4) v_binary_search_~sorted_list.offset_36)) (<= v_binary_search_~high_41 (+ |v_binary_search_#in~low_14| (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 2) 1)) (<= 0 (+ |v_binary_search_#in~element_14| 2147483648)) (<= (+ (* v_binary_search_~low_43 4) v_binary_search_~sorted_list.offset_36) |v_arrayCell_v_#length_21[v_binary_search_~sorted_list.base_38]_1|) (<= (+ (* v_binary_search_~low_43 2) |v_mod_aux(+ v_binary_search_~high_41 1)2_1|) (+ v_binary_search_~high_41 |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 3)) (<= (+ |v_binary_search_#in~low_14| (* |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| 2)) v_binary_search_~high_41) (<= v_binary_search_~high_41 |v_binary_search_#in~high_14|) (<= 0 (+ |v_binary_search_#in~low_14| 2147483648)) (<= (+ |v_mod_aux(+ v_binary_search_~high_41 1)2_1| (* 2 |v_div_aux(+ v_binary_search_~high_41 1)2_1|)) (+ v_binary_search_~high_41 1)) (<= |v_binary_search_#in~sorted_list.offset_14| v_binary_search_~sorted_list.offset_36) (<= v_binary_search_~sorted_list.base_38 |v_binary_search_#in~sorted_list.base_14|) (<= (+ |v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1| |v_binary_search_#in~low_14| 1) v_binary_search_~high_41) (<= |v_binary_search_#in~high_14| 2147483647) (<= 0 |v_mod_aux(+ v_binary_search_~high_41 1)2_1|) (<= |v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_38]_1| 1) (<= |v_binary_search_#in~element_14| v_binary_search_~element_36) (<= (+ v_binary_search_~high_41 1) (+ |v_mod_aux(+ v_binary_search_~high_41 1)2_1| (* 2 |v_div_aux(+ v_binary_search_~high_41 1)2_1|))) (<= |v_binary_search_#in~element_14| 2147483647) (<= |v_binary_search_#in~sorted_list.base_14| v_binary_search_~sorted_list.base_38) (<= |v_binary_search_#in~high_14| v_binary_search_~high_41) (<= v_binary_search_~element_36 |v_binary_search_#in~element_14|) (<= (+ (* 2 |v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|) 1) v_binary_search_~high_41) (<= (+ |v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* v_binary_search_~low_43 4) (- 4) v_binary_search_~sorted_list.offset_36)]_1| 1) v_binary_search_~element_36)))",
+      "in_vars": {
+        "binary_search_#in~low": "|v_binary_search_#in~low_14|",
+        "binary_search_#in~sorted_list.offset": "|v_binary_search_#in~sorted_list.offset_14|",
+        "binary_search_#in~high": "|v_binary_search_#in~high_14|",
+        "binary_search_#in~sorted_list.base": "|v_binary_search_#in~sorted_list.base_14|",
+        "binary_search_#in~element": "|v_binary_search_#in~element_14|",
+        "binary_search_~element": "v_binary_search_~element_38",
+        "binary_search_~high": "v_binary_search_~high_44",
+        "binary_search_~middle~0": "v_binary_search_~middle~0_68",
+        "binary_search_~sorted_list.base": "v_binary_search_~sorted_list.base_40",
+        "binary_search_~low": "v_binary_search_~low_47",
+        "binary_search_#t~mem0": "|v_binary_search_#t~mem0_51|",
+        "binary_search_~sorted_list.offset": "v_binary_search_~sorted_list.offset_38",
+        "|v_rep(select #valid binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_40]_1|",
+        "|v_rep(select #length binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#length_21[v_binary_search_~sorted_list.base_40]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) (- 4) binary_search_~sorted_list.offset))_3|": "|v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_40, (+ (* v_binary_search_~low_47 4) (- 4) v_binary_search_~sorted_list.offset_38)]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 (div (+ binary_search_~high (* binary_search_#in~low (- 1))) 2)) (* binary_search_~high 4) (- 4) (* binary_search_#in~low 4) (* (div (+ (- 1) binary_search_~high) 2) (- 8)) binary_search_~sorted_list.offset (* (- 4) (mod (+ binary_search_~high 1) 2))))_1|": "|v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_40, (+ (* (div (+ v_binary_search_~high_44 (* (- 1) v_binary_search_#in~low_14)) 2) 4) (* v_binary_search_~high_44 4) (* (- 4) (mod (+ v_binary_search_~high_44 1) 2)) (* v_binary_search_#in~low_14 4) (* (div (+ (- 1) v_binary_search_~high_44) 2) (- 8)) (- 4) v_binary_search_~sorted_list.offset_38)]_1|"
+      },
+      "out_vars": {
+        "binary_search_~element": "v_binary_search_~element_36",
+        "binary_search_~high": "v_binary_search_~high_41",
+        "binary_search_~middle~0": "v_binary_search_~middle~0_62",
+        "binary_search_#in~high": "|v_binary_search_#in~high_14|",
+        "binary_search_#in~sorted_list.base": "|v_binary_search_#in~sorted_list.base_14|",
+        "binary_search_~sorted_list.base": "v_binary_search_~sorted_list.base_38",
+        "binary_search_#in~element": "|v_binary_search_#in~element_14|",
+        "binary_search_#in~low": "|v_binary_search_#in~low_14|",
+        "binary_search_#in~sorted_list.offset": "|v_binary_search_#in~sorted_list.offset_14|",
+        "binary_search_~low": "v_binary_search_~low_43",
+        "binary_search_#t~mem0": "|v_binary_search_#t~mem0_46|",
+        "binary_search_~sorted_list.offset": "v_binary_search_~sorted_list.offset_36",
+        "|v_rep(select #valid binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#valid_21[v_binary_search_~sorted_list.base_38]_1|",
+        "|v_rep(select #length binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#length_21[v_binary_search_~sorted_list.base_38]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) (- 4) binary_search_~sorted_list.offset))_3|": "|v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* v_binary_search_~low_43 4) (- 4) v_binary_search_~sorted_list.offset_36)]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 (div (+ binary_search_~high (* binary_search_#in~low (- 1))) 2)) (* binary_search_~high 4) (- 4) (* binary_search_#in~low 4) (* (div (+ (- 1) binary_search_~high) 2) (- 8)) binary_search_~sorted_list.offset (* (- 4) (mod (+ binary_search_~high 1) 2))))_1|": "|v_arrayCell_v_#memory_int_19[v_binary_search_~sorted_list.base_38, (+ (* 4 (div (+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14)) 2)) (* v_binary_search_#in~low_14 4) (- 4) (* v_binary_search_~high_41 4) (* (mod (+ v_binary_search_~high_41 1) 2) (- 4)) (* (div (+ (- 1) v_binary_search_~high_41) 2) (- 8)) v_binary_search_~sorted_list.offset_36)]_1|"
+      },
+      "aux_vars": [
+        "|v_div_aux(+ (- 1) v_binary_search_~high_41)2_1|",
+        "|v_div_aux(+ v_binary_search_~high_41 (* (- 1) v_binary_search_#in~low_14))2_1|",
+        "|v_div_aux(+ v_binary_search_~high_41 1)2_1|",
+        "|v_mod_aux(+ v_binary_search_~high_41 1)2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_binary_search_~high_43 (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 2) 1)) (<= (+ v_binary_search_~low_46 |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1|) (+ v_binary_search_~high_42 1)) (<= (+ (* v_binary_search_~low_46 4) (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 4) 4 v_binary_search_~sorted_list.offset_37) |v_arrayCell_v_#length_22[v_binary_search_~sorted_list.base_39]_1|) (<= |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (* 4 (div (+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1))) 2)) v_binary_search_~sorted_list.offset_37)]_1| |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (- 4) v_binary_search_~sorted_list.offset_37)]_1|) (<= 0 (+ (* v_binary_search_~low_46 4) (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 4) v_binary_search_~sorted_list.offset_37)) (<= 1 |v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1|) (<= v_binary_search_~high_42 (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1| 2) 1)) (<= v_binary_search_~low_46 v_binary_search_~high_43) (<= (+ v_binary_search_~high_42 1) (+ v_binary_search_~low_46 |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1|)) (<= |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (- 4) v_binary_search_~sorted_list.offset_37)]_1| |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (* 4 (div (+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1))) 2)) v_binary_search_~sorted_list.offset_37)]_1|) (<= (+ v_binary_search_~element_37 1) |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* (div (+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1))) 2) 4) (* v_binary_search_~low_46 4) v_binary_search_~sorted_list.offset_37)]_1|) (<= (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 2)) v_binary_search_~high_43) (<= |v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1| 1) (<= (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1| 2)) v_binary_search_~high_42)) (and (<= v_binary_search_~high_43 (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 2) 1)) (<= (+ v_binary_search_~low_46 |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1|) (+ v_binary_search_~high_42 1)) (<= (+ (* v_binary_search_~low_46 4) (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 4) 4 v_binary_search_~sorted_list.offset_37) |v_arrayCell_v_#length_22[v_binary_search_~sorted_list.base_39]_1|) (<= 0 (+ (* v_binary_search_~low_46 4) (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 4) v_binary_search_~sorted_list.offset_37)) (<= 1 |v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1|) (<= v_binary_search_~high_42 (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1| 2) 1)) (<= (+ v_binary_search_~high_42 1) (+ v_binary_search_~low_46 |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1|)) (<= (+ v_binary_search_~element_37 1) |v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* (div (+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1))) 2) 4) (* v_binary_search_~low_46 4) v_binary_search_~sorted_list.offset_37)]_1|) (<= (+ 0 1) (+ |v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1| 1)) (<= (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1| 2)) v_binary_search_~high_43) (<= |v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1| 1) (<= (+ v_binary_search_~low_46 (* |v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1| 2)) v_binary_search_~high_42)))",
+      "in_vars": {
+        "binary_search_~element": "v_binary_search_~element_37",
+        "binary_search_~high": "v_binary_search_~high_43",
+        "binary_search_~sorted_list.base": "v_binary_search_~sorted_list.base_39",
+        "binary_search_~sorted_list.offset": "v_binary_search_~sorted_list.offset_37",
+        "binary_search_~low": "v_binary_search_~low_46",
+        "binary_search_~middle~0": "v_binary_search_~middle~0_69",
+        "binary_search_#t~mem1": "|v_binary_search_#t~mem1_28|",
+        "binary_search_#t~mem0": "|v_binary_search_#t~mem0_52|",
+        "binary_search_#in~low": "|v_binary_search_#in~low_ForeignInOutVar_1|",
+        "|v_rep(select #valid binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 (div (+ binary_search_~high (* binary_search_#in~low (- 1))) 2)) (* binary_search_~high 4) (- 4) (* binary_search_#in~low 4) (* (div (+ (- 1) binary_search_~high) 2) (- 8)) binary_search_~sorted_list.offset (* (- 4) (mod (+ binary_search_~high 1) 2))))_1|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_#in~low_ForeignInOutVar_1 4) (* v_binary_search_~high_43 4) (* (- 8) (div (+ (- 1) v_binary_search_~high_43) 2)) (- 4) (* (- 4) (mod (+ v_binary_search_~high_43 1) 2)) v_binary_search_~sorted_list.offset_37 (* (div (+ (* (- 1) v_binary_search_#in~low_ForeignInOutVar_1) v_binary_search_~high_43) 2) 4))]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) binary_search_~sorted_list.offset (* (div (+ binary_search_~high (* (- 1) binary_search_~low)) 2) 4)))_4|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* (div (+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1))) 2) 4) (* v_binary_search_~low_46 4) v_binary_search_~sorted_list.offset_37)]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) (- 4) binary_search_~sorted_list.offset))_3|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (- 4) v_binary_search_~sorted_list.offset_37)]_1|",
+        "|v_rep(select #length binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#length_22[v_binary_search_~sorted_list.base_39]_1|"
+      },
+      "out_vars": {
+        "binary_search_~element": "v_binary_search_~element_37",
+        "binary_search_~high": "v_binary_search_~high_42",
+        "binary_search_~middle~0": "v_binary_search_~middle~0_66",
+        "binary_search_~sorted_list.base": "v_binary_search_~sorted_list.base_39",
+        "binary_search_#t~mem1": "|v_binary_search_#t~mem1_26|",
+        "binary_search_~sorted_list.offset": "v_binary_search_~sorted_list.offset_37",
+        "binary_search_#t~mem0": "|v_binary_search_#t~mem0_49|",
+        "binary_search_~low": "v_binary_search_~low_46",
+        "binary_search_#in~low": "|v_binary_search_#in~low_ForeignInOutVar_1|",
+        "|v_rep(select #valid binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#valid_22[v_binary_search_~sorted_list.base_39]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 (div (+ binary_search_~high (* binary_search_#in~low (- 1))) 2)) (* binary_search_~high 4) (- 4) (* binary_search_#in~low 4) (* (div (+ (- 1) binary_search_~high) 2) (- 8)) binary_search_~sorted_list.offset (* (- 4) (mod (+ binary_search_~high 1) 2))))_1|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_#in~low_ForeignInOutVar_1 4) (* (div (+ (- 1) v_binary_search_~high_42) 2) (- 8)) (- 4) (* v_binary_search_~high_42 4) v_binary_search_~sorted_list.offset_37 (* (mod (+ v_binary_search_~high_42 1) 2) (- 4)) (* (div (+ (* (- 1) v_binary_search_#in~low_ForeignInOutVar_1) v_binary_search_~high_42) 2) 4))]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) binary_search_~sorted_list.offset (* (div (+ binary_search_~high (* (- 1) binary_search_~low)) 2) 4)))_4|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (* 4 (div (+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1))) 2)) v_binary_search_~sorted_list.offset_37)]_1|",
+        "|v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) (- 4) binary_search_~sorted_list.offset))_3|": "|v_arrayCell_v_#memory_int_20[v_binary_search_~sorted_list.base_39, (+ (* v_binary_search_~low_46 4) (- 4) v_binary_search_~sorted_list.offset_37)]_1|",
+        "|v_rep(select #length binary_search_~sorted_list.base)_7|": "|v_arrayCell_v_#length_22[v_binary_search_~sorted_list.base_39]_1|"
+      },
+      "aux_vars": [
+        "|v_div_aux(+ v_binary_search_~high_42 (* v_binary_search_~low_46 (- 1)))2_1|",
+        "|v_div_aux(+ v_binary_search_~high_43 (* v_binary_search_~low_46 (- 1)))2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

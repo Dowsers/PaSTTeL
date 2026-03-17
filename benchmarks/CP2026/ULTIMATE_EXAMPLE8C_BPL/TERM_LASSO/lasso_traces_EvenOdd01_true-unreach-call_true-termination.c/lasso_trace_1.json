@@ -1,0 +1,82 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret4",
+    "isEven_#in~n",
+    "isEven_#res",
+    "isEven_#t~ret1",
+    "isOdd_#in~n",
+    "isOdd_#res",
+    "isOdd_#t~ret0",
+    "main_#res",
+    "main_#t~nondet2",
+    "main_#t~ret3",
+    "main_~mod~0",
+    "main_~result~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret4": "Int",
+    "isEven_#in~n": "Int",
+    "isEven_#res": "Int",
+    "isEven_#t~ret1": "Int",
+    "isOdd_#in~n": "Int",
+    "isOdd_#res": "Int",
+    "isOdd_#t~ret0": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet2": "Int",
+    "main_#t~ret3": "Int",
+    "main_~mod~0": "Int",
+    "main_~result~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 |v_isOdd_#in~n_5|) (<= |v_isOdd_#in~n_5| 2147483647))",
+      "in_vars": {
+        "main_~result~0": "v_main_~result~0_8",
+        "ULTIMATE.start_#t~ret4": "|v_ULTIMATE.start_#t~ret4_6|",
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_9|",
+        "main_#t~ret3": "|v_main_#t~ret3_9|",
+        "isOdd_#in~n": "|v_isOdd_#in~n_13|",
+        "main_~mod~0": "v_main_~mod~0_8"
+      },
+      "out_vars": {
+        "main_~result~0": "v_main_~result~0_7",
+        "ULTIMATE.start_#t~ret4": "|v_ULTIMATE.start_#t~ret4_5|",
+        "main_#res": "|v_main_#res_6|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_8|",
+        "main_#t~ret3": "|v_main_#t~ret3_8|",
+        "isOdd_#in~n": "|v_isOdd_#in~n_5|",
+        "main_~mod~0": "v_main_~mod~0_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ (+ |v_isOdd_#in~n_11| 2) 1) 0) (<= (+ |v_isOdd_#in~n_11| 2) |v_isOdd_#in~n_12|) (<= |v_isOdd_#in~n_12| (+ |v_isOdd_#in~n_11| 2))) (and (<= (+ |v_isOdd_#in~n_11| 2) |v_isOdd_#in~n_12|) (<= (+ 0 1) |v_isOdd_#in~n_11|) (<= |v_isOdd_#in~n_12| (+ |v_isOdd_#in~n_11| 2))))",
+      "in_vars": {
+        "isOdd_#in~n": "|v_isOdd_#in~n_12|",
+        "isOdd_#res": "|v_isOdd_#res_6|",
+        "isEven_#in~n": "|v_isEven_#in~n_11|",
+        "isEven_#res": "|v_isEven_#res_8|",
+        "isOdd_#t~ret0": "|v_isOdd_#t~ret0_7|",
+        "isEven_#t~ret1": "|v_isEven_#t~ret1_9|"
+      },
+      "out_vars": {
+        "isOdd_#res": "|v_isOdd_#res_5|",
+        "isEven_#in~n": "|v_isEven_#in~n_9|",
+        "isEven_#res": "|v_isEven_#res_7|",
+        "isOdd_#in~n": "|v_isOdd_#in~n_11|",
+        "isOdd_#t~ret0": "|v_isOdd_#t~ret0_6|",
+        "isEven_#t~ret1": "|v_isEven_#t~ret1_8|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

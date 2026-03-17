@@ -1,0 +1,64 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret3",
+    "main_#res",
+    "main_#t~ret2",
+    "test_fun_#in~x",
+    "test_fun_#in~y",
+    "test_fun_~x",
+    "test_fun_~y"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret3": "Int",
+    "main_#res": "Int",
+    "main_#t~ret2": "Int",
+    "test_fun_#in~x": "Int",
+    "test_fun_#in~y": "Int",
+    "test_fun_~x": "Int",
+    "test_fun_~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 (+ |v_test_fun_#in~y_45| 2147483648)) (<= 0 (+ |v_test_fun_#in~x_45| 2147483648)) (<= |v_test_fun_#in~y_45| v_test_fun_~y_51) (>= |v_test_fun_#in~x_45| v_test_fun_~x_51) (<= |v_test_fun_#in~y_45| 2147483647) (>= |v_test_fun_#in~y_45| v_test_fun_~y_51) (<= |v_test_fun_#in~x_45| 2147483647) (<= |v_test_fun_#in~x_45| v_test_fun_~x_51))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_53",
+        "test_fun_~y": "v_test_fun_~y_54",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_20|",
+        "main_#res": "|v_main_#res_34|",
+        "test_fun_#in~y": "|v_test_fun_#in~y_46|",
+        "main_#t~ret2": "|v_main_#t~ret2_39|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_46|"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_51",
+        "test_fun_~y": "v_test_fun_~y_51",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_19|",
+        "main_#res": "|v_main_#res_33|",
+        "test_fun_#in~y": "|v_test_fun_#in~y_45|",
+        "main_#t~ret2": "|v_main_#t~ret2_38|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_45|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_test_fun_~y_53 (+ v_test_fun_~y_52 1)) (<= v_test_fun_~y_52 0) (<= v_test_fun_~x_52 v_test_fun_~y_53) (<= 1 v_test_fun_~x_52))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_52",
+        "test_fun_~y": "v_test_fun_~y_53"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_52",
+        "test_fun_~y": "v_test_fun_~y_52"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

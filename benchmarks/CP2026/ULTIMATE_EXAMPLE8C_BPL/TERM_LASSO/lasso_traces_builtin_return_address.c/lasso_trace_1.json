@@ -1,0 +1,62 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret2",
+    "main_#t~nondet0.base",
+    "main_#t~nondet0.offset",
+    "main_#t~post1",
+    "main_~i~0",
+    "main_~tmp~0.base",
+    "main_~tmp~0.offset"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret2": "Int",
+    "main_#t~nondet0.base": "Int",
+    "main_#t~nondet0.offset": "Int",
+    "main_#t~post1": "Int",
+    "main_~i~0": "Int",
+    "main_~tmp~0.base": "Int",
+    "main_~tmp~0.offset": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_main_~i~0_8 0) (<= v_main_~i~0_8 0))",
+      "in_vars": {
+        "ULTIMATE.start_#t~ret2": "|v_ULTIMATE.start_#t~ret2_6|",
+        "main_~i~0": "v_main_~i~0_11"
+      },
+      "out_vars": {
+        "ULTIMATE.start_#t~ret2": "|v_ULTIMATE.start_#t~ret2_5|",
+        "main_~i~0": "v_main_~i~0_8"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= v_main_~i~0_9 (+ v_main_~i~0_10 1)) (<= v_main_~i~0_10 3) (<= v_main_~i~0_9 (+ v_main_~i~0_10 1)))",
+      "in_vars": {
+        "main_~i~0": "v_main_~i~0_10",
+        "main_#t~nondet0.base": "|v_main_#t~nondet0.base_4|",
+        "main_#t~post1": "|v_main_#t~post1_4|",
+        "main_~tmp~0.base": "v_main_~tmp~0.base_5",
+        "main_~tmp~0.offset": "v_main_~tmp~0.offset_5",
+        "main_#t~nondet0.offset": "|v_main_#t~nondet0.offset_4|"
+      },
+      "out_vars": {
+        "main_#t~nondet0.base": "|v_main_#t~nondet0.base_3|",
+        "main_#t~post1": "|v_main_#t~post1_3|",
+        "main_~i~0": "v_main_~i~0_9",
+        "main_~tmp~0.base": "v_main_~tmp~0.base_4",
+        "main_~tmp~0.offset": "v_main_~tmp~0.offset_4",
+        "main_#t~nondet0.offset": "|v_main_#t~nondet0.offset_3|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

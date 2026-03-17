@@ -1,0 +1,176 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  void$Cousot$loop$2229_$param_1                     : Int
+  void$Cousot$loop$2229_$param_0                     : Int
+  void$Cousot$loop$2229_i15                          : Int
+  void$Cousot$loop$2229_i04                          : Int
+  void$Cousot$loop$2229_i26                          : Int
+  v_rep$arrSizeIdx_1                                 : Int
+  v_void$Cousot$loop$2229_$param_1_7                 : Int
+  v_void$Cousot$loop$2229_$param_0_7                 : Int
+  v_void$Cousot$loop$2229_i15_23                     : Int
+  v_void$Cousot$loop$2229_i04_19                     : Int
+  v_void$Cousot$loop$2229_i26_12                     : Int
+  v_void$Cousot$loop$2229_i15_22                     : Int
+  v_void$Cousot$loop$2229_i04_18                     : Int
+  v_void$Cousot$loop$2229_i26_11                     : Int
+  v_void$Cousot$loop$2229_$param_1_6                 : Int
+  v_void$Cousot$loop$2229_$param_0_6                 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (or (and (<= v_void$Cousot$loop$2229_$param_1_19 v_void$Cousot$loop$2229_$param_0_19) (= v_void$Cousot$loop$2229_$param_0_18 (+ v_void$Cousot$loop$2229_$param_0_19 2)) (= v_void$Cousot$loop$2229_$param_1_18 (+ v_void$Cousot$loop$2229_$param_1_19 1))) (and (= v_void$Cousot$loop$2229_$param_1_19 v_void$Cousot$loop$2229_$param_1_18) (<= (+ v_void$Cousot$loop$2229_$param_0_19 1) v_void$Cousot$loop$2229_$param_1_19) (= v_void$Cousot$loop$2229_$param_0_18 (+ v_void$Cousot$loop$2229_$param_0_19 4))))  InVars {void$Cousot$loop$2229_$param_1=v_void$Cousot$loop$2229_$param_1_19, void$Cousot$loop$2229_$param_0=v_void$Cousot$loop$2229_$param_0_19}  OutVars{void$Cousot$loop$2229_i15=v_void$Cousot$loop$2229_i15_33, void$Cousot$loop$2229_i04=v_void$Cousot$loop$2229_i04_32, void$Cousot$loop$2229_i26=v_void$Cousot$loop$2229_i26_22, void$Cousot$loop$2229_$param_1=v_void$Cousot$loop$2229_$param_1_18, void$Cousot$loop$2229_$param_0=v_void$Cousot$loop$2229_$param_0_18}  AuxVars[]  AssignedVars[void$Cousot$loop$2229_i15, void$Cousot$loop$2229_i04, void$Cousot$loop$2229_i26, void$Cousot$loop$2229_$param_1, void$Cousot$loop$2229_$param_0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 30
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,3333
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8500
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9324
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,1304
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= (+ v_rep$arrSizeIdx_1 1) 0))
+  InVars:   {v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1}
+  OutVars:  {v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (>= v_void$Cousot$loop$2229_$param_1_7 v_void$Cousot$loop$2229_$param_1_6) (<= v_void$Cousot$loop$2229_$param_1_7 v_void$Cousot$loop$2229_$param_1_6) (>= (+ 4 v_void$Cousot$loop$2229_$param_0_7) v_void$Cousot$loop$2229_$param_0_6) (<= (+ 4 v_void$Cousot$loop$2229_$param_0_7) v_void$Cousot$loop$2229_$param_0_6) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= (+ 1 v_void$Cousot$loop$2229_$param_0_7) v_void$Cousot$loop$2229_$param_1_7) (<= (+ v_rep$arrSizeIdx_1 1) 0)) (and (<= v_void$Cousot$loop$2229_$param_1_7 v_void$Cousot$loop$2229_$param_0_7) (<= (+ 1 v_void$Cousot$loop$2229_$param_1_7) v_void$Cousot$loop$2229_$param_1_6) (>= (+ 2 v_void$Cousot$loop$2229_$param_0_7) v_void$Cousot$loop$2229_$param_0_6) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= (+ 2 v_void$Cousot$loop$2229_$param_0_7) v_void$Cousot$loop$2229_$param_0_6) (<= (+ v_rep$arrSizeIdx_1 1) 0) (>= (+ 1 v_void$Cousot$loop$2229_$param_1_7) v_void$Cousot$loop$2229_$param_1_6)))
+  InVars:   {void$Cousot$loop$2229_$param_1=v_void$Cousot$loop$2229_$param_1_7, void$Cousot$loop$2229_$param_0=v_void$Cousot$loop$2229_$param_0_7, void$Cousot$loop$2229_i15=v_void$Cousot$loop$2229_i15_23, void$Cousot$loop$2229_i04=v_void$Cousot$loop$2229_i04_19, void$Cousot$loop$2229_i26=v_void$Cousot$loop$2229_i26_12, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1}
+  OutVars:  {void$Cousot$loop$2229_i15=v_void$Cousot$loop$2229_i15_22, void$Cousot$loop$2229_i04=v_void$Cousot$loop$2229_i04_18, void$Cousot$loop$2229_i26=v_void$Cousot$loop$2229_i26_11, void$Cousot$loop$2229_$param_1=v_void$Cousot$loop$2229_$param_1_6, void$Cousot$loop$2229_$param_0=v_void$Cousot$loop$2229_$param_0_6, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=0):
+Loop (length=2):
+  [0] i04 := $param_0;i15 := $param_1;BeginParallelComposition{ParallelCodeBlock0: assume (if (if i04 >= i15 then 1 else 0) == 0 then 1 else 0) == 1;i26 := i04 + 4;ParallelCodeBlock1: assume (if i04 >= i15 then 1 else 0) == 1;i15 := i15 + 1;i26 := i04 + 2;}EndParallelComposition
+  [1] call void$Cousot$loop$2229(i26, i15);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   3171614 ns (3,17 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    void$Cousot$loop$2229_i15                = 0
+    void$Cousot$loop$2229_i04                = 0
+    void$Cousot$loop$2229_i26                = 0
+    void$Cousot$loop$2229_$param_1           = 0
+    v_rep$arrSizeIdx_2                       = -1
+    void$Cousot$loop$2229_$param_0           = 0
+  State at honda:
+    void$Cousot$loop$2229_i15                = 0
+    void$Cousot$loop$2229_i04                = 0
+    void$Cousot$loop$2229_i26                = 0
+    void$Cousot$loop$2229_$param_1           = 0
+    v_rep$arrSizeIdx_2                       = -1
+    void$Cousot$loop$2229_$param_0           = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    void$Cousot$loop$2229_i15                = 0
+    void$Cousot$loop$2229_i04                = 0
+    void$Cousot$loop$2229_i26                = 0
+    void$Cousot$loop$2229_$param_1           = 1
+    v_rep$arrSizeIdx_2                       = 0
+    void$Cousot$loop$2229_$param_0           = 1
+  GEV[1] (lambda=1):
+    void$Cousot$loop$2229_i15                = 0
+    void$Cousot$loop$2229_i04                = 0
+    void$Cousot$loop$2229_i26                = 0
+    void$Cousot$loop$2229_$param_1           = 0
+    v_rep$arrSizeIdx_2                       = 0
+    void$Cousot$loop$2229_$param_0           = 0
+  GEV[2] (lambda=1):
+    void$Cousot$loop$2229_i15                = 0
+    void$Cousot$loop$2229_i04                = 0
+    void$Cousot$loop$2229_i26                = 0
+    void$Cousot$loop$2229_$param_1           = 0
+    v_rep$arrSizeIdx_2                       = 0
+    void$Cousot$loop$2229_$param_0           = 1
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 51084617 ns (51,08 ms)
+       Variables (stem/loop): 1/5  Disjuncts (stem/loop): 1/2
+  Total nontermination analysis time: 51,08 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 30
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,3333
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8500
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9324
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,1304
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,17 ms
+Total LassoRanker time: 51,08 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   51,08 ms

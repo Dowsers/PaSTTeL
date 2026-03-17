@@ -1,0 +1,128 @@
+{
+  "program_vars": [
+    "b_search_recursive_#in~a",
+    "b_search_recursive_#in~arrayEnd",
+    "b_search_recursive_#in~arrayStart",
+    "b_search_recursive_#in~l.base",
+    "b_search_recursive_#in~l.offset",
+    "b_search_recursive_#res",
+    "b_search_recursive_#t~mem0",
+    "b_search_recursive_#t~mem1",
+    "b_search_recursive_#t~ret2",
+    "b_search_recursive_#t~ret3",
+    "b_search_recursive_~#l.base",
+    "b_search_recursive_~#l.offset",
+    "b_search_recursive_~a",
+    "b_search_recursive_~arrayEnd",
+    "b_search_recursive_~arrayStart",
+    "b_search_recursive_~m~0",
+    "|v_rep(select #length b_search_recursive_~#l.base)_1|",
+    "|v_rep(select #valid b_search_recursive_~#l.base)_1|"
+  ],
+  "var_types": {
+    "b_search_recursive_#in~a": "Int",
+    "b_search_recursive_#in~arrayEnd": "Int",
+    "b_search_recursive_#in~arrayStart": "Int",
+    "b_search_recursive_#in~l.base": "Int",
+    "b_search_recursive_#in~l.offset": "Int",
+    "b_search_recursive_#res": "Int",
+    "b_search_recursive_#t~mem0": "Int",
+    "b_search_recursive_#t~mem1": "Int",
+    "b_search_recursive_#t~ret2": "Int",
+    "b_search_recursive_#t~ret3": "Int",
+    "b_search_recursive_~#l.base": "Int",
+    "b_search_recursive_~#l.offset": "Int",
+    "b_search_recursive_~a": "Int",
+    "b_search_recursive_~arrayEnd": "Int",
+    "b_search_recursive_~arrayStart": "Int",
+    "b_search_recursive_~m~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 (+ |v_b_search_recursive_#in~arrayEnd_18| 2147483648)) (>= v_b_search_recursive_~arrayEnd_28 |v_b_search_recursive_#in~arrayEnd_18|) (<= v_b_search_recursive_~a_24 |v_b_search_recursive_#in~a_18|) (<= |v_b_search_recursive_~#l.offset_24| |v_b_search_recursive_#in~l.offset_18|) (<= |v_b_search_recursive_#in~a_18| 2147483647) (<= 0 (+ |v_b_search_recursive_#in~a_18| 2147483648)) (<= v_b_search_recursive_~arrayStart_20 |v_b_search_recursive_#in~arrayStart_18|) (>= v_b_search_recursive_~a_24 |v_b_search_recursive_#in~a_18|) (>= |v_b_search_recursive_~#l.offset_24| |v_b_search_recursive_#in~l.offset_18|) (<= |v_b_search_recursive_#in~arrayStart_18| 2147483647) (<= v_b_search_recursive_~arrayEnd_28 |v_b_search_recursive_#in~arrayEnd_18|) (<= |v_b_search_recursive_#in~arrayEnd_18| 2147483647) (>= v_b_search_recursive_~arrayStart_20 |v_b_search_recursive_#in~arrayStart_18|) (>= |v_b_search_recursive_#in~l.base_18| |v_b_search_recursive_~#l.base_26|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_18| 2147483648)) (<= |v_b_search_recursive_#in~l.base_18| |v_b_search_recursive_~#l.base_26|))",
+      "in_vars": {
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_18|",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_18|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_18|",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_18|",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_18|",
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_37",
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_33|",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_31",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_27",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_35",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_31|"
+      },
+      "out_vars": {
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_30",
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_26|",
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_18|",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_24",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_20",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_18|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_18|",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_28",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_24|",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_18|",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_18|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.base_22| |v_b_search_recursive_~#l.base_31|) (<= (+ |v_arrayCell_v_#memory_int_12[v_b_search_recursive_~#l.base_32, (+ v_b_search_recursive_~#l.offset_30 (* v_b_search_recursive_#in~arrayStart_22 4) (- 4))]_1| 1) v_b_search_recursive_~a_30) (<= |v_b_search_recursive_#in~arrayStart_22| v_b_search_recursive_~arrayStart_25) (<= 4 (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4))) (<= 0 (+ |v_b_search_recursive_#in~a_22| 2147483648)) (<= v_b_search_recursive_~arrayEnd_34 |v_b_search_recursive_#in~arrayEnd_22|) (<= v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_29|) (<= (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (+ |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|))) (<= |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| 0) (<= |v_b_search_recursive_~#l.offset_29| |v_b_search_recursive_#in~l.offset_22|) (<= (+ |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| 1) |v_b_search_recursive_#in~arrayStart_22|) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1| 1) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_33) (<= v_b_search_recursive_~a_29 |v_b_search_recursive_#in~a_22|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_22| 2147483648)) (<= |v_b_search_recursive_#in~arrayEnd_22| 2147483647) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_30) (<= (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_#in~l.base_22|) (<= v_b_search_recursive_~arrayStart_25 |v_b_search_recursive_#in~arrayStart_22|) (<= v_b_search_recursive_~arrayEnd_33 |v_b_search_recursive_#in~arrayEnd_22|) (<= |v_b_search_recursive_#in~a_22| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_22| 2147483647) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_~#l.base_32|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_30|) (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= |v_b_search_recursive_#in~arrayStart_22| (+ |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| 1)) (<= |v_b_search_recursive_~#l.offset_30| |v_b_search_recursive_#in~l.offset_22|) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_34) (<= 0 (+ |v_b_search_recursive_#in~arrayEnd_22| 2147483648)) (<= v_b_search_recursive_~a_30 |v_b_search_recursive_#in~a_22|) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1| 1) (<= (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4)) |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_29) (<= |v_b_search_recursive_~#l.base_32| |v_b_search_recursive_~#l.base_31|)) (and (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.base_22| |v_b_search_recursive_~#l.base_31|) (<= (+ |v_arrayCell_v_#memory_int_12[v_b_search_recursive_~#l.base_32, (+ v_b_search_recursive_~#l.offset_30 (* v_b_search_recursive_#in~arrayStart_22 4) (- 4))]_1| 1) v_b_search_recursive_~a_30) (<= |v_b_search_recursive_#in~arrayStart_22| v_b_search_recursive_~arrayStart_25) (<= 4 (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4))) (<= 0 (+ |v_b_search_recursive_#in~a_22| 2147483648)) (<= v_b_search_recursive_~arrayEnd_34 |v_b_search_recursive_#in~arrayEnd_22|) (<= v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_29|) (<= (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (+ |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|))) (<= |v_b_search_recursive_~#l.offset_29| |v_b_search_recursive_#in~l.offset_22|) (<= (+ |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| 1) |v_b_search_recursive_#in~arrayStart_22|) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1| 1) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_33) (<= v_b_search_recursive_~a_29 |v_b_search_recursive_#in~a_22|) (<= (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (+ (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) 1)) (<= |v_b_search_recursive_#in~arrayEnd_22| 2147483647) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_30) (<= (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_#in~l.base_22|) (<= v_b_search_recursive_~arrayStart_25 |v_b_search_recursive_#in~arrayStart_22|) (<= v_b_search_recursive_~arrayEnd_33 |v_b_search_recursive_#in~arrayEnd_22|) (<= |v_b_search_recursive_#in~a_22| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_22| 2147483647) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_~#l.base_32|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_30|) (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= |v_b_search_recursive_#in~arrayStart_22| (+ |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| 1)) (<= 0 (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)) (<= |v_b_search_recursive_~#l.offset_30| |v_b_search_recursive_#in~l.offset_22|) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_34) (<= v_b_search_recursive_~a_30 |v_b_search_recursive_#in~a_22|) (<= (+ |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|)) (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1| 1) (<= (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4)) |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_29) (<= |v_b_search_recursive_~#l.base_32| |v_b_search_recursive_~#l.base_31|)) (and (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.base_22| |v_b_search_recursive_~#l.base_31|) (<= (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34 1) 0) (<= (+ |v_arrayCell_v_#memory_int_12[v_b_search_recursive_~#l.base_32, (+ v_b_search_recursive_~#l.offset_30 (* v_b_search_recursive_#in~arrayStart_22 4) (- 4))]_1| 1) v_b_search_recursive_~a_30) (<= |v_b_search_recursive_#in~arrayStart_22| v_b_search_recursive_~arrayStart_25) (<= 4 (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4))) (<= 0 (+ |v_b_search_recursive_#in~a_22| 2147483648)) (<= v_b_search_recursive_~arrayEnd_34 |v_b_search_recursive_#in~arrayEnd_22|) (<= v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_29|) (<= |v_b_search_recursive_~#l.offset_29| |v_b_search_recursive_#in~l.offset_22|) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1| 1) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_33) (<= v_b_search_recursive_~a_29 |v_b_search_recursive_#in~a_22|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_22| 2147483648)) (<= (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34) (+ (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) 1)) (<= |v_b_search_recursive_#in~arrayEnd_22| 2147483647) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_30) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_#in~l.base_22|) (<= |v_b_search_recursive_#in~arrayStart_22| (+ 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|)) (<= (+ 0 1) |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) (<= v_b_search_recursive_~arrayStart_25 |v_b_search_recursive_#in~arrayStart_22|) (<= v_b_search_recursive_~arrayEnd_33 |v_b_search_recursive_#in~arrayEnd_22|) (<= |v_b_search_recursive_#in~a_22| 2147483647) (<= |v_b_search_recursive_~#l.base_31| |v_b_search_recursive_~#l.base_32|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1|) (<= 1 |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1|) (<= |v_b_search_recursive_#in~l.offset_22| |v_b_search_recursive_~#l.offset_30|) (<= |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1| |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= (+ 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|) |v_b_search_recursive_#in~arrayStart_22|) (<= |v_b_search_recursive_~#l.offset_30| |v_b_search_recursive_#in~l.offset_22|) (<= |v_b_search_recursive_#in~arrayEnd_22| v_b_search_recursive_~arrayEnd_34) (<= 0 (+ |v_b_search_recursive_#in~arrayEnd_22| 2147483648)) (<= v_b_search_recursive_~a_30 |v_b_search_recursive_#in~a_22|) (<= (+ |v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|)) (+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)) (<= |v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1| 1) (<= (+ |v_b_search_recursive_~#l.offset_30| (* |v_b_search_recursive_#in~arrayStart_22| 4)) |v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|) (<= |v_b_search_recursive_#in~a_22| v_b_search_recursive_~a_29) (<= |v_b_search_recursive_~#l.base_32| |v_b_search_recursive_~#l.base_31|)))",
+      "in_vars": {
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_32|",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_30",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_26",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_30|",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_34",
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_23|",
+        "b_search_recursive_#t~mem0": "|v_b_search_recursive_#t~mem0_33|",
+        "b_search_recursive_#t~mem1": "|v_b_search_recursive_#t~mem1_33|",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_23|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_23|",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_23|",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_23|",
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_38",
+        "b_search_recursive_#t~ret3": "|v_b_search_recursive_#t~ret3_17|",
+        "b_search_recursive_#t~ret2": "|v_b_search_recursive_#t~ret2_17|",
+        "b_search_recursive_#res": "|v_b_search_recursive_#res_17|",
+        "|v_rep(select #length b_search_recursive_~#l.base)_1|": "|v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_32]_1|",
+        "|v_rep(select #valid b_search_recursive_~#l.base)_1|": "|v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_32]_1|"
+      },
+      "out_vars": {
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_31|",
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_22|",
+        "b_search_recursive_#t~mem0": "|v_b_search_recursive_#t~mem0_32|",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_25",
+        "b_search_recursive_#t~mem1": "|v_b_search_recursive_#t~mem1_32|",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_22|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_22|",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_33",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_22|",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_22|",
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_35",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_29",
+        "b_search_recursive_#t~ret3": "|v_b_search_recursive_#t~ret3_16|",
+        "b_search_recursive_#t~ret2": "|v_b_search_recursive_#t~ret2_16|",
+        "b_search_recursive_#res": "|v_b_search_recursive_#res_16|",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_29|",
+        "|v_rep(select #length b_search_recursive_~#l.base)_1|": "|v_arrayCell_v_#length_14[v_b_search_recursive_~#l.base_31]_1|",
+        "|v_rep(select #valid b_search_recursive_~#l.base)_1|": "|v_arrayCell_v_#valid_14[v_b_search_recursive_~#l.base_31]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#memory_int_12[v_b_search_recursive_~#l.base_32, (+ v_b_search_recursive_~#l.offset_30 (* v_b_search_recursive_#in~arrayStart_22 4) (- 4))]_1|",
+        "|v_div_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|",
+        "|v_mod_aux(+ v_b_search_recursive_~arrayStart_26 v_b_search_recursive_~arrayEnd_34)2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

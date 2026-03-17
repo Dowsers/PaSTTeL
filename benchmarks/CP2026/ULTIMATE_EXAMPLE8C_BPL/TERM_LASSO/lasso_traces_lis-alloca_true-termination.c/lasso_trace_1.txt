@@ -1,0 +1,326 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  lis_~prev~0.base                                   : Int
+  main_#t~malloc15.offset                            : Int
+  lis_~prev~0.offset                                 : Int
+  lis_~j~0                                           : Int
+  main_#t~malloc15.base                              : Int
+  lis_~best~0.base                                   : Int
+  ULTIMATE.start_#t~ret17                            : Int
+  lis_~best~0.offset                                 : Int
+  lis_~a.base                                        : Int
+  old(#length)                                       : (Array Int Int)
+  lis_~i~0                                           : Int
+  lis_~a.offset                                      : Int
+  lis_#t~malloc1.base                                : Int
+  lis_~max~0                                         : Int
+  main_#res                                          : Int
+  lis_#t~malloc0.base                                : Int
+  lis_#in~N                                          : Int
+  lis_~N                                             : Int
+  main_#t~nondet14                                   : Int
+  main_#t~ret16                                      : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  lis_#in~a.base                                     : Int
+  lis_#in~a.offset                                   : Int
+  lis_#t~post2                                       : Int
+  v_#StackHeapBarrier_16                             : Int
+  v_lis_~prev~0.base_17                              : Int
+  v_main_#t~malloc15.offset_13                       : Int
+  v_lis_~prev~0.offset_15                            : Int
+  v_lis_~j~0_23                                      : Int
+  v_main_#t~malloc15.base_17                         : Int
+  v_lis_~best~0.base_34                              : Int
+  v_ULTIMATE.start_#t~ret17_6                        : Int
+  v_lis_~best~0.offset_27                            : Int
+  v_lis_~a.base_15                                   : Int
+  v_lis_~i~0_51                                      : Int
+  v_lis_~a.offset_13                                 : Int
+  v_lis_#t~malloc1.base_13                           : Int
+  v_lis_~max~0_17                                    : Int
+  v_main_#res_8                                      : Int
+  v_lis_#t~malloc0.base_13                           : Int
+  v_lis_#in~N_8                                      : Int
+  v_lis_~N_18                                        : Int
+  v_main_#t~nondet14_13                              : Int
+  v_main_#t~ret16_13                                 : Int
+  v_lis_#in~a.base_8                                 : Int
+  v_lis_#in~a.offset_8                               : Int
+  v_arrayCell_v_#valid_76[v_lis_#in~a.base_8]_1      : Int
+  v_arrayCell_v_#valid_76[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_#valid_76[0]_1                       : Int
+  v_arrayCell_v_#valid_76[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_#length_58[v_lis_#in~a.base_8]_1     : Int
+  v_arrayCell_v_#length_58[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_#length_58[v_lis_#t~malloc0.base_13]_1 : Int
+  v_v_rep(select old(#valid) lis_#in~a.base)_1_1     : Int
+  v_v_rep(select old(#valid) lis_#t~malloc1.base)_1_1 : Int
+  v_v_rep(select old(#valid) 0)_1_1                  : Int
+  v_v_rep(select old(#valid) lis_#t~malloc0.base)_1_1 : Int
+  v_v_rep(select old(#length) lis_#in~a.base)_1_1    : Int
+  v_v_rep(select old(#length) lis_#t~malloc1.base)_1_1 : Int
+  v_v_rep(select old(#length) lis_#t~malloc0.base)_1_1 : Int
+  v_lis_~prev~0.base_15                              : Int
+  v_main_#t~malloc15.offset_12                       : Int
+  v_lis_~prev~0.offset_13                            : Int
+  v_lis_~j~0_22                                      : Int
+  v_main_#t~malloc15.base_16                         : Int
+  v_lis_~best~0.base_32                              : Int
+  v_ULTIMATE.start_#t~ret17_5                        : Int
+  v_lis_~best~0.offset_25                            : Int
+  v_lis_~a.base_14                                   : Int
+  v_lis_~i~0_48                                      : Int
+  v_lis_~a.offset_12                                 : Int
+  v_lis_#t~malloc1.base_12                           : Int
+  v_lis_~max~0_16                                    : Int
+  v_main_#res_7                                      : Int
+  v_lis_#t~malloc0.base_12                           : Int
+  v_lis_#in~N_7                                      : Int
+  v_lis_~N_16                                        : Int
+  v_main_#t~nondet14_12                              : Int
+  v_main_#t~ret16_12                                 : Int
+  v_lis_#in~a.base_7                                 : Int
+  v_lis_#in~a.offset_7                               : Int
+  v_arrayCell_v_#valid_75[v_lis_#in~a.base_7]_1      : Int
+  v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_#valid_75[0]_1                       : Int
+  v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_7]_1  : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_old(#valid)_7[0]_1                   : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_#length_57[v_lis_#in~a.base_7]_1     : Int
+  v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_#valid_76[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_#valid_75[v_lis_#in~a.base_8]_1      : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#in~a.base_7]_1 : Int
+  v_arrayCell_v_#length_58[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_#valid_76[v_lis_#t~malloc0.base_12]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#in~a.base_7]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_8]_1  : Int
+  v_arrayCell_v_#length_57[v_lis_#in~a.base_8]_1     : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_8]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_#valid_76[v_lis_#in~a.base_7]_1      : Int
+  v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[0]_1      : Int
+  v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#in~a.base_8]_1 : Int
+  v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_old(#length)_7[v_lis_#t~malloc0.base_13]_1 : Int
+  v_arrayCell_v_#length_58[v_lis_#in~a.base_7]_1     : Int
+  v_arrayCell_v_#length_58[v_lis_#t~malloc1.base_12]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc1.base_13]_1 : Int
+  v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#in~a.base_8]_1 : Int
+  v_div_auxv_lis_~N_164611686018427387904_1          : Int
+  v_mod_auxv_lis_~N_164611686018427387904_1          : Int
+  v_lis_~prev~0.base_16                              : Int
+  v_lis_~best~0.base_33                              : Int
+  v_lis_~best~0.offset_26                            : Int
+  v_lis_~i~0_50                                      : Int
+  v_lis_~prev~0.offset_14                            : Int
+  v_lis_~N_17                                        : Int
+  v_lis_#t~post2_6                                   : Int
+  v_lis_#t~malloc0.base_ForeignInOutVar_1            : Int
+  v_lis_#in~a.base_ForeignInOutVar_1                 : Int
+  v_lis_#t~malloc1.base_ForeignInOutVar_1            : Int
+  v_arrayCell_v_#memory_int_41[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1 : Int
+  v_arrayCell_v_#memory_int_41[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_#valid_77[v_lis_~prev~0.base_16]_1   : Int
+  v_arrayCell_v_#valid_77[v_lis_~best~0.base_33]_1   : Int
+  v_arrayCell_v_#valid_77[0]_1                       : Int
+  v_arrayCell_v_#valid_77[v_lis_#in~a.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#valid_77[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#valid_77[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1  : Int
+  v_arrayCell_v_#length_59[v_lis_~best~0.base_33]_1  : Int
+  v_arrayCell_v_#length_59[v_lis_#in~a.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#length_59[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1 : Int
+  v_lis_#t~post2_5                                   : Int
+  v_lis_~i~0_49                                      : Int
+  v_arrayCell_v_#memory_int_39[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1 : Int
+  v_arrayCell_v_#memory_int_41[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1 : Int
+  v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1 : Int
+  v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1 : Int
+  v_arrayCell_v_#memory_int_41[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_#memory_int_39[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1 : Int
+  v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse2 (store |v_old(#valid)_33| |v_lis_#t~malloc0.base_29| 1)) (.cse1 (+ |v_#StackHeapBarrier_43| 1))) (and (<= 1 |v_lis_#in~N_27|) (= (select |v_old(#valid)_33| |v_lis_#t~malloc0.base_29|) 0) (= v_lis_~best~0.offset_45 0) (<= 1 |v_#StackHeapBarrier_43|) (= (store |v_#valid_130| |v_lis_#in~a.base_27| 1) |v_old(#valid)_33|) (= v_lis_~a.base_31 |v_lis_#in~a.base_27|) (= |v_old(#memory_int)_33| |v_#memory_int_74|) (= (let ((.cse0 (* (mod v_lis_~N_36 4611686018427387904) 4))) (store (store |v_old(#length)_33| |v_lis_#t~malloc0.base_29| .cse0) |v_lis_#t~malloc1.base_29| .cse0)) |v_#length_105|) (= (select |v_#valid_130| 0) 0) (= (store |v_#length_106| |v_lis_#in~a.base_27| (* 4 |v_lis_#in~N_27|)) |v_old(#length)_33|) (<= .cse1 |v_lis_#t~malloc0.base_29|) (= |v_old(#memory_int)_33| |v_#memory_int_73|) (= v_lis_~max~0_33 0) (= v_lis_~prev~0.base_35 |v_lis_#t~malloc1.base_29|) (= v_lis_~i~0_71 0) (= (select .cse2 |v_lis_#t~malloc1.base_29|) 0) (= |v_lis_#t~malloc0.base_29| v_lis_~best~0.base_52) (= v_lis_~a.offset_29 0) (<= .cse1 |v_lis_#t~malloc1.base_29|) (= v_lis_~prev~0.offset_33 0) (<= |v_lis_#in~N_27| 2147483647) (= |v_lis_#in~a.offset_27| 0) (= (store .cse2 |v_lis_#t~malloc1.base_29| 1) |v_#valid_129|) (= v_lis_~N_36 |v_lis_#in~N_27|) (= (select |v_#valid_130| |v_lis_#in~a.base_27|) 0) (<= .cse1 |v_lis_#in~a.base_27|)))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_43|, #valid=|v_#valid_130|, #memory_int=|v_#memory_int_74|, #length=|v_#length_106|}  OutVars{lis_~prev~0.base=v_lis_~prev~0.base_35, main_#t~malloc15.offset=|v_main_#t~malloc15.offset_26|, lis_~prev~0.offset=v_lis_~prev~0.offset_33, lis_~j~0=v_lis_~j~0_39, main_#t~malloc15.base=|v_main_#t~malloc15.base_39|, lis_~best~0.base=v_lis_~best~0.base_52, ULTIMATE.start_#t~ret17=|v_ULTIMATE.start_#t~ret17_13|, lis_~best~0.offset=v_lis_~best~0.offset_45, lis_~a.base=v_lis_~a.base_31, #length=|v_#length_105|, old(#length)=|v_old(#length)_33|, lis_~i~0=v_lis_~i~0_71, lis_~a.offset=v_lis_~a.offset_29, lis_#t~malloc1.base=|v_lis_#t~malloc1.base_29|, lis_~max~0=v_lis_~max~0_33, main_#res=|v_main_#res_21|, lis_#t~malloc0.base=|v_lis_#t~malloc0.base_29|, lis_#in~N=|v_lis_#in~N_27|, lis_~N=v_lis_~N_36, #StackHeapBarrier=|v_#StackHeapBarrier_43|, main_#t~nondet14=|v_main_#t~nondet14_32|, main_#t~ret16=|v_main_#t~ret16_26|, #valid=|v_#valid_129|, old(#valid)=|v_old(#valid)_33|, old(#memory_int)=|v_old(#memory_int)_33|, #memory_int=|v_#memory_int_73|, lis_#in~a.base=|v_lis_#in~a.base_27|, lis_#in~a.offset=|v_lis_#in~a.offset_27|}  AuxVars[]  AssignedVars[lis_~prev~0.base, main_#t~malloc15.offset, lis_~prev~0.offset, lis_~j~0, main_#t~malloc15.base, lis_~best~0.base, ULTIMATE.start_#t~ret17, lis_~best~0.offset, lis_~a.base, #length, old(#length), lis_~i~0, lis_~a.offset, lis_#t~malloc1.base, lis_~max~0, main_#res, lis_#t~malloc0.base, lis_#in~N, lis_~N, main_#t~nondet14, main_#t~ret16, #valid, old(#valid), old(#memory_int), #memory_int, lis_#in~a.base, lis_#in~a.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse1 (* v_lis_~i~0_73 4))) (let ((.cse0 (+ v_lis_~i~0_73 1)) (.cse2 (+ .cse1 v_lis_~prev~0.offset_34)) (.cse4 (+ v_lis_~best~0.offset_46 .cse1))) (and (= (select |v_#valid_131| v_lis_~prev~0.base_36) 1) (= (select |v_#valid_131| v_lis_~best~0.base_53) 1) (= v_lis_~i~0_72 .cse0) (<= (+ .cse1 4 v_lis_~prev~0.offset_34) (select |v_#length_107| v_lis_~prev~0.base_36)) (<= .cse0 v_lis_~N_37) (<= (+ v_lis_~best~0.offset_46 .cse1 4) (select |v_#length_107| v_lis_~best~0.base_53)) (<= 0 .cse2) (= |v_#memory_int_75| (let ((.cse3 (store |v_#memory_int_77| v_lis_~best~0.base_53 (store (select |v_#memory_int_77| v_lis_~best~0.base_53) .cse4 1)))) (store .cse3 v_lis_~prev~0.base_36 (store (select .cse3 v_lis_~prev~0.base_36) .cse2 v_lis_~i~0_73)))) (<= 0 .cse4))))  InVars {lis_~prev~0.base=v_lis_~prev~0.base_36, lis_~best~0.base=v_lis_~best~0.base_53, lis_~best~0.offset=v_lis_~best~0.offset_46, #valid=|v_#valid_131|, #memory_int=|v_#memory_int_77|, #length=|v_#length_107|, lis_~i~0=v_lis_~i~0_73, lis_~prev~0.offset=v_lis_~prev~0.offset_34, lis_~N=v_lis_~N_37}  OutVars{lis_~prev~0.base=v_lis_~prev~0.base_36, lis_~best~0.base=v_lis_~best~0.base_53, lis_#t~post2=|v_lis_#t~post2_10|, lis_~best~0.offset=v_lis_~best~0.offset_46, #valid=|v_#valid_131|, #memory_int=|v_#memory_int_75|, #length=|v_#length_107|, lis_~i~0=v_lis_~i~0_72, lis_~prev~0.offset=v_lis_~prev~0.offset_34, lis_~N=v_lis_~N_37}  AuxVars[]  AssignedVars[lis_#t~post2, #memory_int, lis_~i~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 218
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7982
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,2011
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8038
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8992
+    Simplify formula using some simplification technique -> relative DAG size: 0,9027
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= |v_arrayCell_v_#length_57[v_lis_#in~a.base_7]_1| |v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1|) (<= |v_lis_#in~N_7| 2147483647) (<= |v_lis_#t~malloc0.base_12| v_lis_~best~0.base_32) (<= 0 v_lis_~best~0.offset_25) (<= |v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_12]_1| 1) (<= v_lis_~prev~0.base_15 |v_lis_#t~malloc1.base_12|) (<= 1 |v_lis_#in~N_7|) (<= |v_lis_#t~malloc1.base_12| v_lis_~prev~0.base_15) (<= 1 |v_arrayCell_v_#valid_75[v_lis_#in~a.base_7]_1|) (<= (+ v_mod_auxv_lis_~N_164611686018427387904_1 (* v_div_auxv_lis_~N_164611686018427387904_1 4611686018427387904)) v_lis_~N_16) (<= 0 v_lis_~i~0_48) (<= 0 |v_arrayCell_v_#valid_76[v_lis_#in~a.base_7]_1|) (<= v_lis_~best~0.base_32 |v_lis_#t~malloc0.base_12|) (<= v_lis_~N_16 |v_lis_#in~N_7|) (<= |v_lis_#in~a.base_7| v_lis_~a.base_14) (<= |v_lis_#in~a.offset_7| 0) (<= v_lis_~max~0_16 0) (<= |v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_12]_1| (* v_mod_auxv_lis_~N_164611686018427387904_1 4)) (<= v_lis_~a.offset_12 0) (<= 0 |v_lis_#in~a.offset_7|) (<= v_lis_~i~0_48 0) (<= |v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1| (* |v_lis_#in~N_7| 4)) (<= 0 |v_arrayCell_v_#valid_76[0]_1|) (<= 0 v_lis_~a.offset_12) (<= |v_arrayCell_v_#valid_75[v_lis_#in~a.base_7]_1| 1) (<= |v_arrayCell_v_old(#valid)_7[0]_1| 0) (<= 0 v_mod_auxv_lis_~N_164611686018427387904_1) (<= (+ |v_#StackHeapBarrier_16| 1) |v_lis_#t~malloc0.base_12|) (<= (* |v_lis_#in~N_7| 4) |v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1|) (<= (+ |v_#StackHeapBarrier_16| 1) |v_lis_#t~malloc1.base_12|) (<= 0 |v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_12]_1|) (<= v_lis_~a.base_14 |v_lis_#in~a.base_7|) (<= |v_arrayCell_v_#valid_75[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_75[0]_1|) (<= (* v_mod_auxv_lis_~N_164611686018427387904_1 4) |v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_12]_1|) (<= |v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_12]_1| 0) (<= 1 |v_#StackHeapBarrier_16|) (<= v_mod_auxv_lis_~N_164611686018427387904_1 4611686018427387903) (<= |v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1| |v_arrayCell_v_#length_57[v_lis_#in~a.base_7]_1|) (<= |v_arrayCell_v_#valid_76[v_lis_#in~a.base_7]_1| 0) (<= 0 |v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_12]_1|) (<= |v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_12]_1| (* v_mod_auxv_lis_~N_164611686018427387904_1 4)) (<= (+ |v_#StackHeapBarrier_16| 1) |v_lis_#in~a.base_7|) (<= (* v_mod_auxv_lis_~N_164611686018427387904_1 4) |v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_12]_1|) (<= v_lis_~N_16 (+ v_mod_auxv_lis_~N_164611686018427387904_1 (* v_div_auxv_lis_~N_164611686018427387904_1 4611686018427387904))) (<= 0 |v_arrayCell_v_old(#valid)_7[0]_1|) (<= 0 v_lis_~max~0_16) (<= |v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_12]_1| 1) (<= 0 v_lis_~prev~0.offset_13) (<= 1 |v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_12]_1|) (<= |v_lis_#in~N_7| v_lis_~N_16) (<= 1 |v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_12]_1|) (<= v_lis_~prev~0.offset_13 0) (<= v_lis_~best~0.offset_25 0) (<= |v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_12]_1| 0) (<= 1 |v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_7]_1|) (<= |v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_7]_1| 1) (<= |v_arrayCell_v_#valid_76[0]_1| 0))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_16|, lis_~prev~0.base=v_lis_~prev~0.base_17, main_#t~malloc15.offset=|v_main_#t~malloc15.offset_13|, lis_~prev~0.offset=v_lis_~prev~0.offset_15, lis_~j~0=v_lis_~j~0_23, main_#t~malloc15.base=|v_main_#t~malloc15.base_17|, lis_~best~0.base=v_lis_~best~0.base_34, ULTIMATE.start_#t~ret17=|v_ULTIMATE.start_#t~ret17_6|, lis_~best~0.offset=v_lis_~best~0.offset_27, lis_~a.base=v_lis_~a.base_15, lis_~i~0=v_lis_~i~0_51, lis_~a.offset=v_lis_~a.offset_13, lis_#t~malloc1.base=|v_lis_#t~malloc1.base_13|, lis_~max~0=v_lis_~max~0_17, main_#res=|v_main_#res_8|, lis_#t~malloc0.base=|v_lis_#t~malloc0.base_13|, lis_#in~N=|v_lis_#in~N_8|, lis_~N=v_lis_~N_18, main_#t~nondet14=|v_main_#t~nondet14_13|, main_#t~ret16=|v_main_#t~ret16_13|, lis_#in~a.base=|v_lis_#in~a.base_8|, lis_#in~a.offset=|v_lis_#in~a.offset_8|, v_rep(select #valid lis_#in~a.base)_1=|v_arrayCell_v_#valid_76[v_lis_#in~a.base_8]_1|, v_rep(select #valid lis_#t~malloc1.base)_1=|v_arrayCell_v_#valid_76[v_lis_#t~malloc1.base_13]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_76[0]_1|, v_rep(select #valid lis_#t~malloc0.base)_1=|v_arrayCell_v_#valid_76[v_lis_#t~malloc0.base_13]_1|, v_rep(select #length lis_#in~a.base)_1=|v_arrayCell_v_#length_58[v_lis_#in~a.base_8]_1|, v_rep(select #length lis_#t~malloc1.base)_1=|v_arrayCell_v_#length_58[v_lis_#t~malloc1.base_13]_1|, v_rep(select #length lis_#t~malloc0.base)_1=|v_arrayCell_v_#length_58[v_lis_#t~malloc0.base_13]_1|, v_rep(select old(#valid) lis_#in~a.base)_1=|v_v_rep(select old(#valid) lis_#in~a.base)_1_1|, v_rep(select old(#valid) lis_#t~malloc1.base)_1=|v_v_rep(select old(#valid) lis_#t~malloc1.base)_1_1|, v_rep(select old(#valid) 0)_1=|v_v_rep(select old(#valid) 0)_1_1|, v_rep(select old(#valid) lis_#t~malloc0.base)_1=|v_v_rep(select old(#valid) lis_#t~malloc0.base)_1_1|, v_rep(select old(#length) lis_#in~a.base)_1=|v_v_rep(select old(#length) lis_#in~a.base)_1_1|, v_rep(select old(#length) lis_#t~malloc1.base)_1=|v_v_rep(select old(#length) lis_#t~malloc1.base)_1_1|, v_rep(select old(#length) lis_#t~malloc0.base)_1=|v_v_rep(select old(#length) lis_#t~malloc0.base)_1_1|}
+  OutVars:  {lis_~prev~0.base=v_lis_~prev~0.base_15, main_#t~malloc15.offset=|v_main_#t~malloc15.offset_12|, lis_~prev~0.offset=v_lis_~prev~0.offset_13, lis_~j~0=v_lis_~j~0_22, main_#t~malloc15.base=|v_main_#t~malloc15.base_16|, lis_~best~0.base=v_lis_~best~0.base_32, ULTIMATE.start_#t~ret17=|v_ULTIMATE.start_#t~ret17_5|, lis_~best~0.offset=v_lis_~best~0.offset_25, lis_~a.base=v_lis_~a.base_14, lis_~i~0=v_lis_~i~0_48, lis_~a.offset=v_lis_~a.offset_12, lis_#t~malloc1.base=|v_lis_#t~malloc1.base_12|, lis_~max~0=v_lis_~max~0_16, main_#res=|v_main_#res_7|, lis_#t~malloc0.base=|v_lis_#t~malloc0.base_12|, lis_#in~N=|v_lis_#in~N_7|, lis_~N=v_lis_~N_16, #StackHeapBarrier=|v_#StackHeapBarrier_16|, main_#t~nondet14=|v_main_#t~nondet14_12|, main_#t~ret16=|v_main_#t~ret16_12|, lis_#in~a.base=|v_lis_#in~a.base_7|, lis_#in~a.offset=|v_lis_#in~a.offset_7|, v_rep(select #valid lis_#in~a.base)_1=|v_arrayCell_v_#valid_75[v_lis_#in~a.base_7]_1|, v_rep(select #valid lis_#t~malloc1.base)_1=|v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_12]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_75[0]_1|, v_rep(select #valid lis_#t~malloc0.base)_1=|v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_12]_1|, v_rep(select old(#valid) lis_#in~a.base)_1=|v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_7]_1|, v_rep(select old(#valid) lis_#t~malloc1.base)_1=|v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_12]_1|, v_rep(select old(#valid) 0)_1=|v_arrayCell_v_old(#valid)_7[0]_1|, v_rep(select old(#valid) lis_#t~malloc0.base)_1=|v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_12]_1|, v_rep(select #length lis_#in~a.base)_1=|v_arrayCell_v_#length_57[v_lis_#in~a.base_7]_1|, v_rep(select #length lis_#t~malloc1.base)_1=|v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_12]_1|, v_rep(select #length lis_#t~malloc0.base)_1=|v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_12]_1|, v_rep(select old(#length) lis_#in~a.base)_1=|v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_7]_1|, v_rep(select old(#length) lis_#t~malloc1.base)_1=|v_arrayCell_v_old(#length)_7[v_lis_#t~malloc1.base_12]_1|, v_rep(select old(#length) lis_#t~malloc0.base)_1=|v_arrayCell_v_old(#length)_7[v_lis_#t~malloc0.base_12]_1|}
+  AuxVars:  [|v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_#length_57[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_#valid_75[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc0.base_12]_1|, |v_arrayCell_v_#valid_76[v_lis_#t~malloc1.base_12]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc0.base_12]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_#valid_75[v_lis_#in~a.base_8]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#in~a.base_7]_1|, |v_arrayCell_v_#length_58[v_lis_#t~malloc0.base_12]_1|, |v_arrayCell_v_#valid_76[v_lis_#t~malloc0.base_12]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#in~a.base_7]_1|, |v_arrayCell_v_old(#length)_7[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc1.base_12]_1|, |v_arrayCell_v_old(#valid)_7[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_old(#valid)_7[v_lis_#in~a.base_8]_1|, |v_arrayCell_v_#length_57[v_lis_#in~a.base_8]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_old(#length)_7[v_lis_#in~a.base_8]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_#valid_76[v_lis_#in~a.base_7]_1|, |v_arrayCell_v_#length_57[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#t~malloc1.base_12]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[0]_1|, |v_arrayCell_v_v_old(#length)_7auxArray1_1[v_lis_#in~a.base_8]_1|, |v_arrayCell_v_#valid_75[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_old(#length)_7[v_lis_#t~malloc0.base_13]_1|, |v_arrayCell_v_#length_58[v_lis_#in~a.base_7]_1|, |v_arrayCell_v_#length_58[v_lis_#t~malloc1.base_12]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#t~malloc1.base_13]_1|, |v_arrayCell_v_v_old(#valid)_7auxArray1_1[v_lis_#in~a.base_8]_1|, v_div_auxv_lis_~N_164611686018427387904_1, v_mod_auxv_lis_~N_164611686018427387904_1]
+
+Loop (linearized):
+  Formula:  (and (<= (+ v_lis_~i~0_50 1) v_lis_~N_17) (>= v_lis_~best~0.offset_26 v_lis_~prev~0.offset_14) (>= |v_arrayCell_v_#length_59[v_lis_~best~0.base_33]_1| |v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|) (<= |v_arrayCell_v_#length_59[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1| |v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1|) (>= v_lis_~i~0_50 |v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1|) (<= v_lis_~i~0_49 (+ v_lis_~i~0_50 1)) (<= |v_arrayCell_v_#valid_77[v_lis_~prev~0.base_16]_1| 1) (>= v_lis_~prev~0.base_16 |v_lis_#t~malloc1.base_ForeignInOutVar_1|) (<= |v_arrayCell_v_#valid_77[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1| 1) (>= |v_arrayCell_v_#valid_77[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1| 1) (>= |v_arrayCell_v_#valid_77[v_lis_~prev~0.base_16]_1| 1) (<= v_lis_~best~0.offset_26 v_lis_~prev~0.offset_14) (<= |v_arrayCell_v_#valid_77[v_lis_~best~0.base_33]_1| 1) (<= |v_arrayCell_v_#valid_77[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1| 1) (<= (+ (* v_lis_~i~0_50 4) 4 v_lis_~prev~0.offset_14) |v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1|) (>= |v_arrayCell_v_#valid_77[v_lis_~best~0.base_33]_1| 1) (>= |v_arrayCell_v_#length_59[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1| |v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1|) (<= v_lis_~prev~0.base_16 |v_lis_#t~malloc1.base_ForeignInOutVar_1|) (<= |v_arrayCell_v_#length_59[v_lis_~best~0.base_33]_1| |v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|) (>= |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1| 1) (>= |v_arrayCell_v_#valid_77[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1| 1) (>= |v_lis_#t~malloc0.base_ForeignInOutVar_1| v_lis_~best~0.base_33) (<= v_lis_~i~0_50 |v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1|) (<= |v_lis_#t~malloc0.base_ForeignInOutVar_1| v_lis_~best~0.base_33) (<= (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26 4) |v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|) (<= |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1| 1) (>= v_lis_~i~0_49 (+ v_lis_~i~0_50 1)) (<= 0 (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)))
+  InVars:   {lis_~prev~0.base=v_lis_~prev~0.base_16, lis_~best~0.base=v_lis_~best~0.base_33, lis_~best~0.offset=v_lis_~best~0.offset_26, lis_~i~0=v_lis_~i~0_50, lis_~prev~0.offset=v_lis_~prev~0.offset_14, lis_~N=v_lis_~N_17, lis_#t~post2=|v_lis_#t~post2_6|, lis_#t~malloc0.base=|v_lis_#t~malloc0.base_ForeignInOutVar_1|, lis_#in~a.base=|v_lis_#in~a.base_ForeignInOutVar_1|, lis_#t~malloc1.base=|v_lis_#t~malloc1.base_ForeignInOutVar_1|, v_rep(select (select #memory_int lis_~prev~0.base) (+ (* lis_~i~0 4) lis_~prev~0.offset))_1=|v_arrayCell_v_#memory_int_41[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1|, v_rep(select (select #memory_int lis_~best~0.base) (+ (* lis_~i~0 4) lis_~best~0.offset))_1=|v_arrayCell_v_#memory_int_41[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1|, v_rep(select #valid lis_~prev~0.base)_1=|v_arrayCell_v_#valid_77[v_lis_~prev~0.base_16]_1|, v_rep(select #valid lis_~best~0.base)_1=|v_arrayCell_v_#valid_77[v_lis_~best~0.base_33]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_77[0]_1|, v_rep(select #valid lis_#in~a.base)_1=|v_arrayCell_v_#valid_77[v_lis_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #valid lis_#t~malloc1.base)_1=|v_arrayCell_v_#valid_77[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1|, v_rep(select #valid lis_#t~malloc0.base)_1=|v_arrayCell_v_#valid_77[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_~prev~0.base)_1=|v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1|, v_rep(select #length lis_~best~0.base)_1=|v_arrayCell_v_#length_59[v_lis_~best~0.base_33]_1|, v_rep(select #length lis_#in~a.base)_1=|v_arrayCell_v_#length_59[v_lis_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_#t~malloc1.base)_1=|v_arrayCell_v_#length_59[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_#t~malloc0.base)_1=|v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|}
+  OutVars:  {lis_~prev~0.base=v_lis_~prev~0.base_16, lis_~best~0.base=v_lis_~best~0.base_33, lis_#t~post2=|v_lis_#t~post2_5|, lis_~best~0.offset=v_lis_~best~0.offset_26, lis_~i~0=v_lis_~i~0_49, lis_~prev~0.offset=v_lis_~prev~0.offset_14, lis_~N=v_lis_~N_17, lis_#t~malloc0.base=|v_lis_#t~malloc0.base_ForeignInOutVar_1|, lis_#in~a.base=|v_lis_#in~a.base_ForeignInOutVar_1|, lis_#t~malloc1.base=|v_lis_#t~malloc1.base_ForeignInOutVar_1|, v_rep(select (select #memory_int lis_~best~0.base) (+ (* lis_~i~0 4) lis_~best~0.offset))_1=|v_arrayCell_v_#memory_int_39[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1|, v_rep(select (select #memory_int lis_~prev~0.base) (+ (* lis_~i~0 4) lis_~prev~0.offset))_1=|v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1|, v_rep(select #valid lis_~prev~0.base)_1=|v_arrayCell_v_#valid_77[v_lis_~prev~0.base_16]_1|, v_rep(select #valid lis_~best~0.base)_1=|v_arrayCell_v_#valid_77[v_lis_~best~0.base_33]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_77[0]_1|, v_rep(select #valid lis_#in~a.base)_1=|v_arrayCell_v_#valid_77[v_lis_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #valid lis_#t~malloc1.base)_1=|v_arrayCell_v_#valid_77[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1|, v_rep(select #valid lis_#t~malloc0.base)_1=|v_arrayCell_v_#valid_77[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_~prev~0.base)_1=|v_arrayCell_v_#length_59[v_lis_~prev~0.base_16]_1|, v_rep(select #length lis_~best~0.base)_1=|v_arrayCell_v_#length_59[v_lis_~best~0.base_33]_1|, v_rep(select #length lis_#in~a.base)_1=|v_arrayCell_v_#length_59[v_lis_#in~a.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_#t~malloc1.base)_1=|v_arrayCell_v_#length_59[v_lis_#t~malloc1.base_ForeignInOutVar_1]_1|, v_rep(select #length lis_#t~malloc0.base)_1=|v_arrayCell_v_#length_59[v_lis_#t~malloc0.base_ForeignInOutVar_1]_1|}
+  AuxVars:  [|v_arrayCell_v_#memory_int_41[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1|, |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_49 4) v_lis_~prev~0.offset_14)]_1|, |v_arrayCell_v_#memory_int_39[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1|, |v_arrayCell_v_#memory_int_41[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1|, |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_49 4) v_lis_~best~0.offset_26)]_1|, |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1|, |v_arrayCell_v_#memory_int_39[v_lis_~best~0.base_33, (+ (* v_lis_~i~0_50 4) v_lis_~best~0.offset_26)]_1|, |v_arrayCell_v_v_#memory_int_41auxArray1_1[v_lis_~prev~0.base_16, (+ (* v_lis_~i~0_50 4) v_lis_~prev~0.offset_14)]_1|]
+
+--- RAW TRACE ---
+Stem (length=7):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #100#return;
+  [3] call #t~ret17 := main();
+  [4] havoc #t~nondet14;assume -2147483648 <= #t~nondet14 && #t~nondet14 <= 2147483647;~array_size~0 := #t~nondet14;havoc #t~nondet14;BeginParallelComposition{ParallelCodeBlock0: assume ~array_size~0 < 1;~array_size~0 := 1;ParallelCodeBlock1: assume !(~array_size~0 < 1);}EndParallelCompositioncall #t~malloc15.base, #t~malloc15.offset := #Ultimate.allocOnStack(4 * ~array_size~0 % 18446744073709551616);~numbers~0.base, ~numbers~0.offset := #t~malloc15.base, #t~malloc15.offset;
+  [5] call #t~ret16 := lis(~numbers~0.base, ~numbers~0.offset, ~array_size~0);
+  [6] ~a.base, ~a.offset := #in~a.base, #in~a.offset;~N := #in~N;havoc ~best~0.base, ~best~0.offset;havoc ~prev~0.base, ~prev~0.offset;havoc ~i~0;havoc ~j~0;~max~0 := 0;call #t~malloc0.base, #t~malloc0.offset := #Ultimate.allocOnStack(4 * ~N % 18446744073709551616);~best~0.base, ~best~0.offset := #t~malloc0.base, #t~malloc0.offset;call #t~malloc1.base, #t~malloc1.offset := #Ultimate.allocOnStack(4 * ~N % 18446744073709551616);~prev~0.base, ~prev~0.offset := #t~malloc1.base, #t~malloc1.offset;~i~0 := 0;
+Loop (length=3):
+  [0] assume ~i~0 < ~N;
+  [1] SUMMARY for call write~int(1, ~best~0.base, ~best~0.offset + 4 * ~i~0, 4); srcloc: L15
+  [2] call write~int(~i~0, ~prev~0.base, ~prev~0.offset + 4 * ~i~0, 4);#t~post2 := ~i~0;~i~0 := 1 + #t~post2;havoc #t~post2;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2802767 ns (2,80 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 94645545 ns (94,65 ms)
+       Variables (stem/loop): 31/19  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 94,65 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(lis_~i~0, lis_~N) = -1*lis_~i~0 + 1*lis_~N
+  Variables:
+    lis_~i~0
+    lis_~N
+  Supporting invariants:
+    (none)
+  Array index supporting invariants:
+    [0] (not (= |lis_#in~a.base| 0))
+    [1] (= lis_~prev~0.offset lis_~best~0.offset)
+    [2] (not (= |lis_#in~a.base| |lis_#t~malloc0.base|))
+    [3] (not (= lis_~best~0.base lis_~prev~0.base))
+    [4] (not (= 0 |lis_#t~malloc0.base|))
+    [5] (not (= lis_~best~0.base |lis_#in~a.base|))
+    [6] (not (= lis_~prev~0.base |lis_#t~malloc0.base|))
+    [7] (= lis_~best~0.base |lis_#t~malloc0.base|)
+    [8] (not (= 0 |lis_#t~malloc1.base|))
+    [9] (not (= |lis_#in~a.base| lis_~prev~0.base))
+    [10] (= lis_~prev~0.base |lis_#t~malloc1.base|)
+    [11] (not (= lis_~best~0.base |lis_#t~malloc1.base|))
+    [12] (not (= |lis_#in~a.base| |lis_#t~malloc1.base|))
+    [13] (not (= 0 lis_~prev~0.base))
+    [14] (not (= |lis_#t~malloc0.base| |lis_#t~malloc1.base|))
+    [15] (not (= lis_~best~0.base 0))
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 218
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7982
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,2011
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8038
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8992
+    Simplify formula using some simplification technique -> relative DAG size: 0,9027
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,80 ms
+Total LassoRanker time: 94,65 ms
+  Termination analysis:     94,65 ms
+  Nontermination analysis:   0,00 ms

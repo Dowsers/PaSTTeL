@@ -1,0 +1,59 @@
+{
+  "program_vars": [
+    "main_#t~post1",
+    "main_#t~ret0",
+    "main_~age~0",
+    "main_~i~0",
+    "main_~temp~0"
+  ],
+  "var_types": {
+    "main_#t~post1": "Int",
+    "main_#t~ret0": "Int",
+    "main_~age~0": "(Array Int Int)",
+    "main_~i~0": "Int",
+    "main_~temp~0": "Int"
+  },
+  "array_vars": {
+    "main_~age~0": "(Array Int Int)"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_~i~0_15 0) (>= v_main_~i~0_15 0))",
+      "in_vars": {
+        "main_~temp~0": "v_main_~temp~0_11",
+        "main_~age~0": "v_main_~age~0_7",
+        "main_~i~0": "v_main_~i~0_18"
+      },
+      "out_vars": {
+        "main_~temp~0": "v_main_~temp~0_8",
+        "main_~age~0": "v_main_~age~0_6",
+        "main_~i~0": "v_main_~i~0_15"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_main_~i~0_16 (+ v_main_~i~0_17 1)) (>= v_main_~i~0_16 (+ v_main_~i~0_17 1)) (<= v_main_~i~0_17 2))",
+      "in_vars": {
+        "main_~i~0": "v_main_~i~0_17",
+        "main_~temp~0": "v_main_~temp~0_12",
+        "main_#t~post1": "|v_main_#t~post1_4|",
+        "main_#t~ret0": "|v_main_#t~ret0_4|"
+      },
+      "out_vars": {
+        "main_~temp~0": "v_main_~temp~0_9",
+        "main_#t~post1": "|v_main_#t~post1_3|",
+        "main_~i~0": "v_main_~i~0_16",
+        "main_#t~ret0": "|v_main_#t~ret0_3|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

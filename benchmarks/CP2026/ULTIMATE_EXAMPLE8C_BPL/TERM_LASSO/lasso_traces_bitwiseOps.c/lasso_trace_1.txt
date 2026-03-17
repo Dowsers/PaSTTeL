@@ -1,0 +1,186 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_#t~ret3                             : Int
+  main_~x~0                                          : Int
+  main_~i~0                                          : Int
+  main_#t~pre2                                       : Int
+  main_#t~bitwise0                                   : Int
+  main_#t~bitwise1                                   : Int
+  v_ULTIMATE.start_#t~ret3_6                         : Int
+  v_main_~x~0_34                                     : Int
+  v_main_~i~0_24                                     : Int
+  v_ULTIMATE.start_#t~ret3_5                         : Int
+  v_main_~x~0_31                                     : Int
+  v_main_~i~0_21                                     : Int
+  v_main_~x~0_33                                     : Int
+  v_main_~i~0_23                                     : Int
+  v_main_#t~pre2_6                                   : Int
+  v_main_#t~bitwise0_30                              : Int
+  v_main_#t~bitwise1_17                              : Int
+  v_main_#t~pre2_5                                   : Int
+  v_main_~x~0_32                                     : Int
+  v_main_#t~bitwise0_28                              : Int
+  v_main_~i~0_22                                     : Int
+  v_main_#t~bitwise1_15                              : Int
+  v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1       : Int
+  v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1       : Int
+  v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1 : Int
+  v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1 : Int
+  v_div_aux(* v_main_~x~0_32 255)256_1               : Int
+  v_mod_aux(* v_main_~x~0_32 255)256_1               : Int
+  v_div_auxv_main_~x~0_33256_1                       : Int
+  v_mod_auxv_main_~x~0_33256_1                       : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_main_~i~0_39 0) (= v_main_~x~0_49 0))  InVars {}  OutVars{ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_14|, main_~x~0=v_main_~x~0_49, main_~i~0=v_main_~i~0_39}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret3, main_~x~0, main_~i~0]
+
+Loop TransFormula:
+Formula: (and (let ((.cse7 (= v_main_~x~0_51 1)) (.cse1 (<= (+ v_main_~x~0_50 1) 0)) (.cse2 (<= 0 (+ v_main_~x~0_50 128))) (.cse4 (<= v_main_~x~0_50 127)) (.cse5 (<= 0 v_main_~x~0_50)) (.cse6 (* v_main_~x~0_50 255))) (or (and (let ((.cse0 (mod v_main_~x~0_51 256))) (or (and (= (+ v_main_~x~0_50 256) .cse0) (<= 128 .cse0)) (and (<= .cse0 127) (= v_main_~x~0_50 .cse0)) (and (<= 0 v_main_~x~0_51) (let ((.cse3 (<= (+ (mod (+ 255 .cse6) 256) v_main_~x~0_51) 2147483646))) (or (and .cse1 .cse2 .cse3) (and .cse3 .cse4 .cse5)))))) (not (= v_main_~i~0_41 0))) (and .cse7 (= v_main_~x~0_50 1)) (and (not .cse7) (let ((.cse11 (mod (+ v_main_~x~0_51 255 .cse6) 256))) (let ((.cse8 (<= v_main_~x~0_51 (+ 2147483392 .cse11))) (.cse9 (<= 254 .cse11)) (.cse10 (<= (+ v_main_~x~0_51 256) .cse11))) (or (and .cse8 .cse1 .cse2 .cse9) (and .cse1 .cse10 .cse2) (and .cse8 (<= 255 (+ (mod .cse6 256) v_main_~x~0_51)) .cse4 .cse9 .cse5) (and .cse10 .cse4 .cse5))))))) (= v_main_~i~0_40 (+ v_main_~i~0_41 1)) (<= v_main_~i~0_41 7))  InVars {main_~x~0=v_main_~x~0_51, main_~i~0=v_main_~i~0_41}  OutVars{main_#t~pre2=|v_main_#t~pre2_11|, main_~x~0=v_main_~x~0_50, main_#t~bitwise0=|v_main_#t~bitwise0_39|, main_~i~0=v_main_~i~0_40, main_#t~bitwise1=|v_main_#t~bitwise1_26|}  AuxVars[]  AssignedVars[main_#t~pre2, main_~x~0, main_#t~bitwise0, main_~i~0, main_#t~bitwise1]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 219
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,5114
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3807
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9716
+    Simplify formula using some simplification technique -> relative DAG size: 0,6532
+    Transform into disjunctive normal form -> relative DAG size: 8,3379
+    Simplify formula using some simplification technique -> relative DAG size: 0,7543
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0110
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~x~0_31 0) (>= v_main_~x~0_31 0) (>= v_main_~i~0_21 0) (<= v_main_~i~0_21 0))
+  InVars:   {ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_6|, main_~x~0=v_main_~x~0_34, main_~i~0=v_main_~i~0_24}
+  OutVars:  {ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_5|, main_~x~0=v_main_~x~0_31, main_~i~0=v_main_~i~0_21}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= 0 v_main_~x~0_32) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_32 127) (<= 0 v_main_~x~0_33) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~i~0_23 1) 0) (<= (+ v_main_~x~0_33 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) 2147483646) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 (+ v_main_~x~0_32 128)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= 0 v_main_~x~0_33) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~i~0_23 1) 0) (<= (+ v_main_~x~0_33 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) 2147483646) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ v_main_~x~0_32 1) 0) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ v_main_~x~0_32 256) v_mod_auxv_main_~x~0_33256_1) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 0 1) v_main_~i~0_23) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= 128 v_mod_auxv_main_~x~0_33256_1) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 (+ v_main_~x~0_32 256)) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= v_mod_auxv_main_~x~0_33256_1 127) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 0 1) v_main_~i~0_23) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~x~0_32 v_mod_auxv_main_~x~0_33256_1) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= v_mod_auxv_main_~x~0_33256_1 v_main_~x~0_32) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= 0 v_main_~x~0_32) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_32 127) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~x~0_33 256) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= 0 v_main_~x~0_32) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 0 1) v_main_~i~0_23) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_32 127) (<= 0 v_main_~x~0_33) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~x~0_33 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) 2147483646) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ v_main_~x~0_32 256) v_mod_auxv_main_~x~0_33256_1) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= 128 v_mod_auxv_main_~x~0_33256_1) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 (+ v_main_~x~0_32 256)) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~i~0_23 1) 0) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= 0 v_main_~x~0_32) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= (+ 1 1) v_main_~x~0_33) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_32 127) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= 254 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= v_main_~x~0_33 (+ 2147483392 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 (+ v_main_~x~0_32 128)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 0 1) v_main_~i~0_23) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= 0 v_main_~x~0_33) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~x~0_33 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) 2147483646) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ v_main_~x~0_32 1) 0) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 (+ v_main_~x~0_32 128)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= 254 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= v_main_~x~0_33 (+ 2147483392 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ v_main_~x~0_32 1) 0) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= 0 v_main_~x~0_32) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= 255 (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| v_main_~x~0_33)) (<= v_main_~x~0_32 127) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~x~0_33 1) 1) (<= 254 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= v_mod_auxv_main_~x~0_33256_1 127) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~x~0_32 v_mod_auxv_main_~x~0_33256_1) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~i~0_23 1) 0) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= v_mod_auxv_main_~x~0_33256_1 v_main_~x~0_32) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 0 (+ v_main_~x~0_32 128)) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= (+ v_main_~x~0_33 256) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ v_main_~x~0_32 1) 0) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))) (and (<= |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1| 255) (<= (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1)) v_main_~x~0_33) (<= (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)) (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|)) (<= 1 v_main_~x~0_33) (<= 0 |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (<= (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|) (+ 255 (* v_main_~x~0_32 255))) (<= (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|)) (* v_main_~x~0_32 255)) (<= |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1| 255) (<= 0 |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (<= v_main_~x~0_32 v_mod_auxv_main_~x~0_33256_1) (<= (+ 255 (* v_main_~x~0_32 255)) (+ (* |v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1| 256) |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|)) (<= (* v_main_~x~0_32 255) (+ |v_mod_aux(* v_main_~x~0_32 255)256_1| (* 256 |v_div_aux(* v_main_~x~0_32 255)256_1|))) (<= 0 v_mod_auxv_main_~x~0_33256_1) (<= v_main_~x~0_33 (+ v_mod_auxv_main_~x~0_33256_1 (* 256 v_div_auxv_main_~x~0_33256_1))) (<= |v_mod_aux(* v_main_~x~0_32 255)256_1| 255) (<= v_mod_auxv_main_~x~0_33256_1 255) (<= v_main_~i~0_23 7) (<= (+ v_main_~i~0_23 1) v_main_~i~0_22) (<= v_main_~i~0_22 (+ v_main_~i~0_23 1)) (<= v_main_~x~0_33 1) (<= v_mod_auxv_main_~x~0_33256_1 v_main_~x~0_32) (<= 0 |v_mod_aux(* v_main_~x~0_32 255)256_1|) (<= (+ (* 256 |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|) (+ v_main_~x~0_33 255 (* v_main_~x~0_32 255)))))
+  InVars:   {main_~x~0=v_main_~x~0_33, main_~i~0=v_main_~i~0_23, main_#t~pre2=|v_main_#t~pre2_6|, main_#t~bitwise0=|v_main_#t~bitwise0_30|, main_#t~bitwise1=|v_main_#t~bitwise1_17|}
+  OutVars:  {main_#t~pre2=|v_main_#t~pre2_5|, main_~x~0=v_main_~x~0_32, main_#t~bitwise0=|v_main_#t~bitwise0_28|, main_~i~0=v_main_~i~0_22, main_#t~bitwise1=|v_main_#t~bitwise1_15|}
+  AuxVars:  [|v_div_aux(+ 255 (* v_main_~x~0_32 255))256_1|, |v_mod_aux(+ 255 (* v_main_~x~0_32 255))256_1|, |v_div_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|, |v_mod_aux(+ v_main_~x~0_33 255 (* v_main_~x~0_32 255))256_1|, |v_div_aux(* v_main_~x~0_32 255)256_1|, |v_mod_aux(* v_main_~x~0_32 255)256_1|, v_div_auxv_main_~x~0_33256_1, v_mod_auxv_main_~x~0_33256_1]
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #35#return;
+  [3] call #t~ret3 := main();
+  [4] ~x~0 := 0;~i~0 := 0;
+Loop (length=1):
+  [0] assume ~i~0 < 8;BeginParallelComposition{ParallelCodeBlock0: assume 0 == ~i~0;#t~bitwise0 := 1;ParallelCodeBlock1: assume !(0 == ~i~0);havoc #t~bitwise0;assume #t~bitwise0 > 1;}EndParallelCompositionBeginParallelComposition{ParallelCodeBlock0: assume 0 == ~x~0 || ~x~0 == #t~bitwise0;#t~bitwise1 := #t~bitwise0;ParallelCodeBlock1: assume !(0 == ~x~0 || ~x~0 == #t~bitwise0);BeginParallelComposition{ParallelCodeBlock0: assume 0 == #t~bitwise0;#t~bitwise1 := ~x~0;ParallelCodeBlock1: assume !(0 == #t~bitwise0);havoc #t~bitwise1;assume (((((~x~0 < 0 && #t~bitwise0 >= 0) || #t~bitwise1 >= #t~bitwise0) && ((~x~0 >= 0 && #t~bitwise0 < 0) || #t~bitwise1 >= ~x~0)) && ((~x~0 < 0 || #t~bitwise0 < 0) || #t~bitwise1 <= ~x~0 + #t~bitwise0)) && ((~x~0 >= 0 && #t~bitwise0 >= 0) || #t~bitwise1 < 0)) && #t~bitwise1 <= 2147483647;}EndParallelComposition}EndParallelComposition~x~0 := (if #t~bitwise1 % 256 <= 127 then #t~bitwise1 % 256 else #t~bitwise1 % 256 - 256);#t~pre2 := 1 + ~i~0;~i~0 := 1 + ~i~0;havoc #t~pre2;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1512548 ns (1,51 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 16896302356 ns (16896,30 ms)
+       Variables (stem/loop): 2/12  Disjuncts (stem/loop): 1/14
+       Supporting invariants: 28  Motzkin applications: 448
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 16896,30 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(main_~i~0) = -2*main_~i~0 + 15
+  Variables:
+    main_~i~0
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 100895201 ns (100,90 ms)
+       Variables (stem/loop): 2/12  Disjuncts (stem/loop): 1/14
+  Total nontermination analysis time: 100,90 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 218
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,5138
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3818
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9671
+    Simplify formula using some simplification technique -> relative DAG size: 0,6508
+    Transform into disjunctive normal form -> relative DAG size: 7,9443
+    Simplify formula using some simplification technique -> relative DAG size: 0,8000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0110
+  [Lasso 2] Initial max DAG size: 218
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,5138
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3818
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9671
+    Simplify formula using some simplification technique -> relative DAG size: 0,6508
+    Transform into disjunctive normal form -> relative DAG size: 7,9443
+    Simplify formula using some simplification technique -> relative DAG size: 0,8000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0110
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,51 ms
+Total LassoRanker time: 16997,20 ms
+  Termination analysis:     16896,30 ms
+  Nontermination analysis:   100,90 ms

@@ -1,0 +1,68 @@
+{
+  "program_vars": [
+    "test_fun_#in~l",
+    "test_fun_#in~tmp",
+    "test_fun_#in~u",
+    "test_fun_#t~ret1",
+    "test_fun_#t~ret2",
+    "test_fun_#t~ret3",
+    "test_fun_~l",
+    "test_fun_~u"
+  ],
+  "var_types": {
+    "test_fun_#in~l": "Int",
+    "test_fun_#in~tmp": "Int",
+    "test_fun_#in~u": "Int",
+    "test_fun_#t~ret1": "Int",
+    "test_fun_#t~ret2": "Int",
+    "test_fun_#t~ret3": "Int",
+    "test_fun_~l": "Int",
+    "test_fun_~u": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_test_fun_#in~l_2| 2147483647) (<= 0 (+ |v_test_fun_#in~tmp_2| 2147483648)) (<= |v_test_fun_#in~tmp_2| 2147483647) (<= |v_test_fun_#in~l_2| v_test_fun_~l_15) (>= |v_test_fun_#in~l_2| v_test_fun_~l_15) (<= |v_test_fun_#in~u_2| v_test_fun_~u_15) (<= 0 (+ |v_test_fun_#in~l_2| 2147483648)) (>= |v_test_fun_#in~u_2| v_test_fun_~u_15) (<= 0 (+ |v_test_fun_#in~u_2| 2147483648)) (<= |v_test_fun_#in~u_2| 2147483647))",
+      "in_vars": {
+        "test_fun_#in~u": "|v_test_fun_#in~u_2|",
+        "test_fun_#in~l": "|v_test_fun_#in~l_2|",
+        "test_fun_#in~tmp": "|v_test_fun_#in~tmp_2|",
+        "test_fun_~u": "v_test_fun_~u_18",
+        "test_fun_~l": "v_test_fun_~l_18"
+      },
+      "out_vars": {
+        "test_fun_#in~u": "|v_test_fun_#in~u_2|",
+        "test_fun_~u": "v_test_fun_~u_15",
+        "test_fun_#in~l": "|v_test_fun_#in~l_2|",
+        "test_fun_#in~tmp": "|v_test_fun_#in~tmp_2|",
+        "test_fun_~l": "v_test_fun_~l_15"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_test_fun_~l_16 2147483648) (>= |v_test_fun_#t~ret3_8| |v_test_fun_#t~ret3_7|) (<= 0 (+ 2147483647 v_test_fun_~l_16)) (>= v_test_fun_~u_17 v_test_fun_~u_16) (<= v_test_fun_~u_17 v_test_fun_~u_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= |v_test_fun_#t~ret3_8| |v_test_fun_#t~ret3_7|)) (and (>= |v_test_fun_#t~ret2_8| |v_test_fun_#t~ret2_7|) (>= v_test_fun_~l_17 v_test_fun_~l_16) (<= v_test_fun_~u_16 2147483647) (<= v_test_fun_~l_17 v_test_fun_~l_16) (<= (+ v_test_fun_~l_17 1) v_test_fun_~u_17) (<= 0 (+ v_test_fun_~u_16 2147483648)) (<= |v_test_fun_#t~ret2_8| |v_test_fun_#t~ret2_7|)))",
+      "in_vars": {
+        "test_fun_~u": "v_test_fun_~u_17",
+        "test_fun_#t~ret3": "|v_test_fun_#t~ret3_8|",
+        "test_fun_#t~ret2": "|v_test_fun_#t~ret2_8|",
+        "test_fun_~l": "v_test_fun_~l_17",
+        "test_fun_#t~ret1": "|v_test_fun_#t~ret1_12|"
+      },
+      "out_vars": {
+        "test_fun_#t~ret1": "|v_test_fun_#t~ret1_10|",
+        "test_fun_~u": "v_test_fun_~u_16",
+        "test_fun_#t~ret3": "|v_test_fun_#t~ret3_7|",
+        "test_fun_#t~ret2": "|v_test_fun_#t~ret2_7|",
+        "test_fun_~l": "v_test_fun_~l_16"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

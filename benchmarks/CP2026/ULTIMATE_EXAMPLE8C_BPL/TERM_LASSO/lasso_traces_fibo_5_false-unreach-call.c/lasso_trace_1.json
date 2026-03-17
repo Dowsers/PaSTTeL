@@ -1,0 +1,70 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret3",
+    "fibo_#in~n",
+    "fibo_#res",
+    "fibo_#t~ret0",
+    "fibo_#t~ret1",
+    "fibo_~n",
+    "main_#res",
+    "main_#t~ret2",
+    "main_~result~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret3": "Int",
+    "fibo_#in~n": "Int",
+    "fibo_#res": "Int",
+    "fibo_#t~ret0": "Int",
+    "fibo_#t~ret1": "Int",
+    "fibo_~n": "Int",
+    "main_#res": "Int",
+    "main_#t~ret2": "Int",
+    "main_~result~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 5 |v_fibo_#in~n_5|) (>= 5 |v_fibo_#in~n_5|))",
+      "in_vars": {
+        "main_~result~0": "v_main_~result~0_8",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_6|",
+        "fibo_#in~n": "|v_fibo_#in~n_10|",
+        "main_#res": "|v_main_#res_8|",
+        "main_#t~ret2": "|v_main_#t~ret2_9|"
+      },
+      "out_vars": {
+        "main_~result~0": "v_main_~result~0_7",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_5|",
+        "fibo_#in~n": "|v_fibo_#in~n_5|",
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~ret2": "|v_main_#t~ret2_8|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ |v_fibo_#in~n_8| 1) |v_fibo_#in~n_9|) (<= |v_fibo_#in~n_9| (+ |v_fibo_#in~n_8| 1)) (<= (+ 1 1) |v_fibo_#in~n_9|))",
+      "in_vars": {
+        "fibo_#in~n": "|v_fibo_#in~n_9|",
+        "fibo_~n": "v_fibo_~n_13",
+        "fibo_#t~ret0": "|v_fibo_#t~ret0_8|",
+        "fibo_#t~ret1": "|v_fibo_#t~ret1_7|",
+        "fibo_#res": "|v_fibo_#res_6|"
+      },
+      "out_vars": {
+        "fibo_~n": "v_fibo_~n_12",
+        "fibo_#in~n": "|v_fibo_#in~n_8|",
+        "fibo_#t~ret0": "|v_fibo_#t~ret0_7|",
+        "fibo_#t~ret1": "|v_fibo_#t~ret1_6|",
+        "fibo_#res": "|v_fibo_#res_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

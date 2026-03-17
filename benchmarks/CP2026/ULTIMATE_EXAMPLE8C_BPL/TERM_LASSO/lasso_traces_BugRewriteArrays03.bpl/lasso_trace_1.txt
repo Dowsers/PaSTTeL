@@ -1,0 +1,145 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  a                                                  : (Array Int Int)
+  c                                                  : (Array Int Int)
+  b                                                  : (Array Int Int)
+  x                                                  : Int
+  v_arrayCell_v_c_2[23]_1                            : Int
+  v_arrayCell_v_b_2[23]_1                            : Int
+  v_arrayCell_v_a_9[23]_1                            : Int
+  v_arrayCell_v_a_8[23]_1                            : Int
+  v_x_5                                              : Int
+  v_arrayCell_v_a_11[v_x_5]_1                        : Int
+  v_arrayCell_v_a_11[23]_1                           : Int
+  v_arrayCell_v_a_10[v_x_5]_1                        : Int
+  v_arrayCell_v_a_10[23]_1                           : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_c_5 v_b_5) (= v_a_20 (store v_a_21 23 (select v_b_5 23))))  InVars {a=v_a_21, c=v_c_5, b=v_b_5}  OutVars{a=v_a_20, c=v_c_5, b=v_b_5}  AuxVars[]  AssignedVars[a]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (select v_a_23 v_x_8))) (and (<= 1 .cse0) (= v_a_22 (store v_a_23 v_x_8 (+ .cse0 (- 1))))))  InVars {a=v_a_23, x=v_x_8}  OutVars{a=v_a_22, x=v_x_8}  AuxVars[]  AssignedVars[a]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 28
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,4643
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9756
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9630
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,2821
+    Simplify formula using some simplification technique -> relative DAG size: 0,5393
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0417
+
+Stem (linearized):
+  Formula:  (and (<= |v_arrayCell_v_c_2[23]_1| |v_arrayCell_v_a_8[23]_1|) (<= |v_arrayCell_v_c_2[23]_1| |v_arrayCell_v_b_2[23]_1|) (>= |v_arrayCell_v_c_2[23]_1| |v_arrayCell_v_a_8[23]_1|) (>= |v_arrayCell_v_c_2[23]_1| |v_arrayCell_v_b_2[23]_1|))
+  InVars:   {v_rep(select c 23)_1=|v_arrayCell_v_c_2[23]_1|, v_rep(select b 23)_1=|v_arrayCell_v_b_2[23]_1|, v_rep(select a 23)_1=|v_arrayCell_v_a_9[23]_1|}
+  OutVars:  {v_rep(select c 23)_1=|v_arrayCell_v_c_2[23]_1|, v_rep(select b 23)_1=|v_arrayCell_v_b_2[23]_1|, v_rep(select a 23)_1=|v_arrayCell_v_a_8[23]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ 23 1) v_x_5) (<= |v_arrayCell_v_a_10[23]_1| |v_arrayCell_v_a_11[23]_1|) (<= |v_arrayCell_v_a_11[23]_1| |v_arrayCell_v_a_10[23]_1|) (<= |v_arrayCell_v_a_11[v_x_5]_1| (+ |v_arrayCell_v_a_10[v_x_5]_1| 1)) (<= (+ |v_arrayCell_v_a_10[v_x_5]_1| 1) |v_arrayCell_v_a_11[v_x_5]_1|) (<= 1 |v_arrayCell_v_a_11[v_x_5]_1|)) (and (<= |v_arrayCell_v_a_11[v_x_5]_1| |v_arrayCell_v_a_11[23]_1|) (<= 23 v_x_5) (<= v_x_5 23) (<= (+ |v_arrayCell_v_a_10[23]_1| 1) |v_arrayCell_v_a_11[v_x_5]_1|) (<= |v_arrayCell_v_a_11[v_x_5]_1| (+ |v_arrayCell_v_a_10[23]_1| 1)) (<= |v_arrayCell_v_a_11[23]_1| |v_arrayCell_v_a_11[v_x_5]_1|) (<= |v_arrayCell_v_a_11[v_x_5]_1| (+ |v_arrayCell_v_a_10[v_x_5]_1| 1)) (<= (+ |v_arrayCell_v_a_10[v_x_5]_1| 1) |v_arrayCell_v_a_11[v_x_5]_1|) (<= 1 |v_arrayCell_v_a_11[v_x_5]_1|)) (and (<= |v_arrayCell_v_a_10[23]_1| |v_arrayCell_v_a_11[23]_1|) (<= |v_arrayCell_v_a_11[23]_1| |v_arrayCell_v_a_10[23]_1|) (<= (+ v_x_5 1) 23) (<= |v_arrayCell_v_a_11[v_x_5]_1| (+ |v_arrayCell_v_a_10[v_x_5]_1| 1)) (<= (+ |v_arrayCell_v_a_10[v_x_5]_1| 1) |v_arrayCell_v_a_11[v_x_5]_1|) (<= 1 |v_arrayCell_v_a_11[v_x_5]_1|)))
+  InVars:   {x=v_x_5, v_rep(select a x)_1=|v_arrayCell_v_a_11[v_x_5]_1|, v_rep(select a 23)_1=|v_arrayCell_v_a_11[23]_1|}
+  OutVars:  {x=v_x_5, v_rep(select a x)_1=|v_arrayCell_v_a_10[v_x_5]_1|, v_rep(select a 23)_1=|v_arrayCell_v_a_10[23]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume b == c;a := a[23 := b[23]];
+Loop (length=1):
+  [0] assume a[x] > 0;a := a[x := a[x] - 1];
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2150026 ns (2,15 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 128539135 ns (128,54 ms)
+       Variables (stem/loop): 3/5  Disjuncts (stem/loop): 1/3
+       Supporting invariants: 6  Motzkin applications: 30
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 128,54 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(v_rep(select a x)_2) = 1*v_rep(select a x)_2
+  Variables:
+    v_rep(select a x)_2
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 28
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,4643
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9756
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9630
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,2821
+    Simplify formula using some simplification technique -> relative DAG size: 0,5393
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0417
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,15 ms
+Total LassoRanker time: 128,54 ms
+  Termination analysis:     128,54 ms
+  Nontermination analysis:   0,00 ms

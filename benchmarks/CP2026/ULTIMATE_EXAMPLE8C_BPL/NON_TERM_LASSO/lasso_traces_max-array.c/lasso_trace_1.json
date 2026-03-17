@@ -1,0 +1,93 @@
+{
+  "program_vars": [
+    "max_#in~a.base",
+    "max_#in~a.offset",
+    "max_#in~high",
+    "max_#in~low",
+    "max_#res",
+    "max_#t~mem0",
+    "max_#t~ret1",
+    "max_#t~ret2",
+    "max_~#a.base",
+    "max_~#a.offset",
+    "max_~high",
+    "max_~leftmax~0",
+    "max_~low",
+    "max_~mid~0",
+    "max_~rightmax~0"
+  ],
+  "var_types": {
+    "max_#in~a.base": "Int",
+    "max_#in~a.offset": "Int",
+    "max_#in~high": "Int",
+    "max_#in~low": "Int",
+    "max_#res": "Int",
+    "max_#t~mem0": "Int",
+    "max_#t~ret1": "Int",
+    "max_#t~ret2": "Int",
+    "max_~#a.base": "Int",
+    "max_~#a.offset": "Int",
+    "max_~high": "Int",
+    "max_~leftmax~0": "Int",
+    "max_~low": "Int",
+    "max_~mid~0": "Int",
+    "max_~rightmax~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= |v_max_#in~high_4| |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= (+ 0 1) (+ |v_max_#in~low_4| |v_max_#in~high_5| 1)) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) (<= |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| |v_max_#in~high_4|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= |v_max_#in~high_5| 2147483647)) (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= |v_max_#in~high_4| |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| |v_max_#in~high_4|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 0) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= |v_max_#in~high_5| 2147483647) (<= 0 (+ |v_max_#in~low_5| 2147483648))) (and (<= |v_max_#in~a.base_4| |v_max_#in~a.base_5|) (<= (+ |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) |v_max_#in~high_4|) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5|) (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|)) (<= |v_max_#in~a.base_5| |v_max_#in~a.base_4|) (<= |v_max_#in~a.offset_5| |v_max_#in~a.offset_4|) (<= |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1) (<= (+ 0 1) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (<= (+ (* 2 |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) |v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|) (+ |v_max_#in~low_4| |v_max_#in~high_5|)) (<= |v_max_#in~low_4| |v_max_#in~low_5|) (<= |v_max_#in~high_4| (+ |v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1| 1)) (<= (+ |v_max_#in~low_4| |v_max_#in~high_5| 1) 0) (<= (+ |v_max_#in~low_4| 1) |v_max_#in~high_5|) (<= |v_max_#in~a.offset_4| |v_max_#in~a.offset_5|) (<= |v_max_#in~low_5| |v_max_#in~low_4|) (<= 0 (+ |v_max_#in~low_5| 2147483648))))",
+      "in_vars": {
+        "max_#in~low": "|v_max_#in~low_5|",
+        "max_#in~high": "|v_max_#in~high_5|",
+        "max_#in~a.offset": "|v_max_#in~a.offset_5|",
+        "max_#in~a.base": "|v_max_#in~a.base_5|",
+        "max_#t~ret2": "|v_max_#t~ret2_11|",
+        "max_~#a.base": "|v_max_~#a.base_16|",
+        "max_~leftmax~0": "v_max_~leftmax~0_10",
+        "max_~rightmax~0": "v_max_~rightmax~0_10",
+        "max_~mid~0": "v_max_~mid~0_9",
+        "max_~high": "v_max_~high_11",
+        "max_~low": "v_max_~low_15",
+        "max_#t~mem0": "|v_max_#t~mem0_10|",
+        "max_#t~ret1": "|v_max_#t~ret1_7|",
+        "max_~#a.offset": "|v_max_~#a.offset_15|",
+        "max_#res": "|v_max_#res_10|"
+      },
+      "out_vars": {
+        "max_#in~low": "|v_max_#in~low_4|",
+        "max_#in~high": "|v_max_#in~high_4|",
+        "max_#t~ret2": "|v_max_#t~ret2_10|",
+        "max_~#a.base": "|v_max_~#a.base_15|",
+        "max_~leftmax~0": "v_max_~leftmax~0_9",
+        "max_~rightmax~0": "v_max_~rightmax~0_9",
+        "max_#in~a.offset": "|v_max_#in~a.offset_4|",
+        "max_~mid~0": "v_max_~mid~0_8",
+        "max_#in~a.base": "|v_max_#in~a.base_4|",
+        "max_~high": "v_max_~high_9",
+        "max_~low": "v_max_~low_14",
+        "max_#t~mem0": "|v_max_#t~mem0_9|",
+        "max_#t~ret1": "|v_max_#t~ret1_6|",
+        "max_~#a.offset": "|v_max_~#a.offset_14|",
+        "max_#res": "|v_max_#res_9|"
+      },
+      "aux_vars": [
+        "|v_div_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|",
+        "|v_mod_aux(+ v_max_#in~low_4 v_max_#in~high_5)2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "program_vars": [
+    "main_i",
+    "|v_rep(select main_arr 0)_1|",
+    "|v_rep(select main_arr main_i)_1|",
+    "|v_rep(select main_arr2 0)_1|"
+  ],
+  "var_types": {
+    "main_i": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= 20 |v_arrayCell_v_main_arr2_9[0]_1|) (<= v_main_i_11 0) (>= v_main_i_11 0) (<= 20 |v_arrayCell_v_main_arr2_9[0]_1|))",
+      "in_vars": {
+        "main_i": "v_main_i_14",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_6[0]_1|",
+        "|v_rep(select main_arr2 0)_1|": "|v_v_rep(select main_arr2 0)_1_1|"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_11",
+        "|v_rep(select main_arr2 0)_1|": "|v_arrayCell_v_main_arr2_9[0]_1|",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_6[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_main_i_13 0) (<= |v_arrayCell_v_main_arr_7[0]_1| 0) (<= |v_arrayCell_v_main_arr_8[0]_1| |v_arrayCell_v_main_arr_8[v_main_i_13]_1|) (<= 0 v_main_i_13) (<= |v_arrayCell_v_main_arr_8[v_main_i_13]_1| |v_arrayCell_v_main_arr_8[0]_1|) (<= |v_arrayCell_v_main_arr_7[v_main_i_13]_1| v_main_i_13) (<= v_main_i_12 (+ v_main_i_13 1)) (<= (+ v_main_i_13 1) v_main_i_12) (<= v_main_i_13 |v_arrayCell_v_main_arr_7[v_main_i_13]_1|) (<= 0 |v_arrayCell_v_main_arr_7[0]_1|)) (and (<= |v_arrayCell_v_main_arr_7[0]_1| |v_arrayCell_v_main_arr_8[0]_1|) (<= (+ 0 1) v_main_i_13) (<= |v_arrayCell_v_main_arr_8[0]_1| |v_arrayCell_v_main_arr_7[0]_1|) (<= |v_arrayCell_v_main_arr_7[v_main_i_13]_1| v_main_i_13) (<= v_main_i_13 10) (<= v_main_i_12 (+ v_main_i_13 1)) (<= (+ v_main_i_13 1) v_main_i_12) (<= v_main_i_13 |v_arrayCell_v_main_arr_7[v_main_i_13]_1|)) (and (<= |v_arrayCell_v_main_arr_7[0]_1| |v_arrayCell_v_main_arr_8[0]_1|) (<= |v_arrayCell_v_main_arr_8[0]_1| |v_arrayCell_v_main_arr_7[0]_1|) (<= |v_arrayCell_v_main_arr_7[v_main_i_13]_1| v_main_i_13) (<= (+ v_main_i_13 1) 0) (<= |v_arrayCell_v_main_arr_7[v_main_i_12]_1| |v_arrayCell_v_main_arr_7[0]_1|) (<= v_main_i_12 (+ v_main_i_13 1)) (<= (+ v_main_i_13 1) v_main_i_12) (<= v_main_i_13 |v_arrayCell_v_main_arr_7[v_main_i_13]_1|) (<= |v_arrayCell_v_main_arr_7[0]_1| |v_arrayCell_v_main_arr_7[v_main_i_12]_1|)) (and (<= |v_arrayCell_v_main_arr_7[0]_1| |v_arrayCell_v_main_arr_8[0]_1|) (<= |v_arrayCell_v_main_arr_8[0]_1| |v_arrayCell_v_main_arr_7[0]_1|) (<= |v_arrayCell_v_main_arr_7[v_main_i_13]_1| v_main_i_13) (<= (+ v_main_i_12 1) 0) (<= v_main_i_12 (+ v_main_i_13 1)) (<= (+ v_main_i_13 1) v_main_i_12) (<= v_main_i_13 |v_arrayCell_v_main_arr_7[v_main_i_13]_1|)))",
+      "in_vars": {
+        "main_i": "v_main_i_13",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_8[v_main_i_13]_1|",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_8[0]_1|"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_12",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_7[v_main_i_12]_1|",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_7[0]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_main_arr_7[v_main_i_13]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

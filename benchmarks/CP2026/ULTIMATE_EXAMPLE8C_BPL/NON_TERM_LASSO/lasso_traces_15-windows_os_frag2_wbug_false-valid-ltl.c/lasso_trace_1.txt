@@ -1,0 +1,150 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ~__INITIALIZED~0                                   : Int
+  old(~__INITIALIZED~0)                              : Int
+  ~PowerStateIsAC~0                                  : Int
+  old(~PowerStateIsAC~0)                             : Int
+  ~polling~0                                         : Int
+  old(~polling~0)                                    : Int
+  ~WarmPollPeriod~0                                  : Int
+  old(~WarmPollPeriod~0)                             : Int
+  ULTIMATE.start_#t~ret22                            : Int
+  ~status~0                                          : Int
+  old(~status~0)                                     : Int
+  main_#t~nondet21                                   : Int
+  v_~__INITIALIZED~0_30                              : Int
+  v_old(~__INITIALIZED~0)_10                         : Int
+  v_~PowerStateIsAC~0_38                             : Int
+  v_old(~PowerStateIsAC~0)_10                        : Int
+  v_~polling~0_56                                    : Int
+  v_old(~polling~0)_10                               : Int
+  v_~WarmPollPeriod~0_49                             : Int
+  v_old(~WarmPollPeriod~0)_10                        : Int
+  v_ULTIMATE.start_#t~ret22_6                        : Int
+  v_~status~0_32                                     : Int
+  v_old(~status~0)_10                                : Int
+  v_~__INITIALIZED~0_28                              : Int
+  v_old(~__INITIALIZED~0)_9                          : Int
+  v_~PowerStateIsAC~0_36                             : Int
+  v_old(~PowerStateIsAC~0)_9                         : Int
+  v_~polling~0_54                                    : Int
+  v_old(~polling~0)_9                                : Int
+  v_~WarmPollPeriod~0_47                             : Int
+  v_old(~WarmPollPeriod~0)_9                         : Int
+  v_ULTIMATE.start_#t~ret22_5                        : Int
+  v_~status~0_30                                     : Int
+  v_old(~status~0)_9                                 : Int
+  v_main_#t~nondet21_6                               : Int
+  v_main_#t~nondet21_4                               : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 0 (+ v_~status~0_82 2147483648)) (= v_~__INITIALIZED~0_80 1) (= |v_old(~PowerStateIsAC~0)_37| 0) (<= v_~WarmPollPeriod~0_99 2147483647) (= v_~polling~0_109 1) (= |v_old(~__INITIALIZED~0)_37| 0) (<= v_~PowerStateIsAC~0_88 2147483647) (<= 0 (+ v_~PowerStateIsAC~0_88 2147483648)) (= |v_old(~WarmPollPeriod~0)_37| 0) (<= v_~status~0_82 0) (<= 0 (+ v_~WarmPollPeriod~0_99 2147483648)) (= |v_old(~status~0)_37| 0) (= |v_old(~polling~0)_37| 0))  InVars {}  OutVars{~__INITIALIZED~0=v_~__INITIALIZED~0_80, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_37|, ~PowerStateIsAC~0=v_~PowerStateIsAC~0_88, old(~PowerStateIsAC~0)=|v_old(~PowerStateIsAC~0)_37|, ~polling~0=v_~polling~0_109, old(~polling~0)=|v_old(~polling~0)_37|, ~WarmPollPeriod~0=v_~WarmPollPeriod~0_99, old(~WarmPollPeriod~0)=|v_old(~WarmPollPeriod~0)_37|, ULTIMATE.start_#t~ret22=|v_ULTIMATE.start_#t~ret22_12|, ~status~0=v_~status~0_82, old(~status~0)=|v_old(~status~0)_37|}  AuxVars[]  AssignedVars[~__INITIALIZED~0, old(~__INITIALIZED~0), ~PowerStateIsAC~0, old(~PowerStateIsAC~0), ~polling~0, old(~polling~0), ~WarmPollPeriod~0, old(~WarmPollPeriod~0), ULTIMATE.start_#t~ret22, ~status~0, old(~status~0)]
+
+Loop TransFormula:
+Formula: true  InVars {}  OutVars{main_#t~nondet21=|v_main_#t~nondet21_13|}  AuxVars[]  AssignedVars[main_#t~nondet21]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 47
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,5957
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9067
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0294
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_~__INITIALIZED~0_28 1) (<= |v_old(~status~0)_9| 0) (>= |v_old(~PowerStateIsAC~0)_9| 0) (>= |v_old(~WarmPollPeriod~0)_9| 0) (<= v_~polling~0_54 1) (>= |v_old(~polling~0)_9| 0) (<= |v_old(~__INITIALIZED~0)_9| 0) (<= 0 (+ v_~status~0_30 2147483648)) (<= 0 (+ v_~WarmPollPeriod~0_47 2147483648)) (<= |v_old(~WarmPollPeriod~0)_9| 0) (<= v_~status~0_30 0) (>= v_~polling~0_54 1) (>= |v_old(~__INITIALIZED~0)_9| 0) (<= v_~WarmPollPeriod~0_47 2147483647) (<= |v_old(~PowerStateIsAC~0)_9| 0) (<= v_~__INITIALIZED~0_28 1) (<= 0 (+ v_~PowerStateIsAC~0_36 2147483648)) (>= |v_old(~status~0)_9| 0) (<= v_~PowerStateIsAC~0_36 2147483647) (<= |v_old(~polling~0)_9| 0))
+  InVars:   {~__INITIALIZED~0=v_~__INITIALIZED~0_30, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_10|, ~PowerStateIsAC~0=v_~PowerStateIsAC~0_38, old(~PowerStateIsAC~0)=|v_old(~PowerStateIsAC~0)_10|, ~polling~0=v_~polling~0_56, old(~polling~0)=|v_old(~polling~0)_10|, ~WarmPollPeriod~0=v_~WarmPollPeriod~0_49, old(~WarmPollPeriod~0)=|v_old(~WarmPollPeriod~0)_10|, ULTIMATE.start_#t~ret22=|v_ULTIMATE.start_#t~ret22_6|, ~status~0=v_~status~0_32, old(~status~0)=|v_old(~status~0)_10|}
+  OutVars:  {~__INITIALIZED~0=v_~__INITIALIZED~0_28, old(~__INITIALIZED~0)=|v_old(~__INITIALIZED~0)_9|, ~PowerStateIsAC~0=v_~PowerStateIsAC~0_36, old(~PowerStateIsAC~0)=|v_old(~PowerStateIsAC~0)_9|, ~polling~0=v_~polling~0_54, old(~polling~0)=|v_old(~polling~0)_9|, ~WarmPollPeriod~0=v_~WarmPollPeriod~0_47, old(~WarmPollPeriod~0)=|v_old(~WarmPollPeriod~0)_9|, ULTIMATE.start_#t~ret22=|v_ULTIMATE.start_#t~ret22_5|, ~status~0=v_~status~0_30, old(~status~0)=|v_old(~status~0)_9|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {main_#t~nondet21=|v_main_#t~nondet21_6|}
+  OutVars:  {main_#t~nondet21=|v_main_#t~nondet21_4|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=9):
+  [0] call ULTIMATE.init();
+  [1] ~WarmPollPeriod~0 := 0;~status~0 := 0;~polling~0 := 0;~PowerStateIsAC~0 := 0;~__INITIALIZED~0 := 0;assume true;
+  [2] #143#return;
+  [3] call #t~ret22 := main();
+  [4] call env_init();
+  [5] havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~WarmPollPeriod~0 := #t~nondet1;havoc #t~nondet1;havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;~status~0 := #t~nondet2;havoc #t~nondet2;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;~polling~0 := #t~nondet3;havoc #t~nondet3;havoc #t~nondet4;assume -2147483648 <= #t~nondet4 && #t~nondet4 <= 2147483647;~PowerStateIsAC~0 := #t~nondet4;havoc #t~nondet4;~__INITIALIZED~0 := 1;assume true;
+  [6] #147#return;
+  [7] assume !(~status~0 > 0);
+  [8] ~polling~0 := 1;
+Loop (length=1):
+  [0] havoc #t~nondet21;assume -2147483648 <= #t~nondet21 && #t~nondet21 <= 2147483647;havoc #t~nondet21;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2716324 ns (2,72 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@34f32288
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,72 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "Main_z",
+    "inc_res",
+    "inc_x",
+    "inc_y"
+  ],
+  "var_types": {
+    "Main_z": "Int",
+    "inc_res": "Int",
+    "inc_x": "Int",
+    "inc_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_inc_x_20 0) (>= v_inc_x_20 0))",
+      "in_vars": {
+        "inc_x": "v_inc_x_25",
+        "Main_z": "v_Main_z_11"
+      },
+      "out_vars": {
+        "inc_x": "v_inc_x_20",
+        "Main_z": "v_Main_z_10"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_inc_x_24 10) (>= v_inc_x_23 (+ v_inc_x_24 5)) (<= v_inc_x_23 (+ v_inc_x_24 5)))",
+      "in_vars": {
+        "inc_x": "v_inc_x_24",
+        "inc_res": "v_inc_res_17",
+        "inc_y": "v_inc_y_22"
+      },
+      "out_vars": {
+        "inc_res": "v_inc_res_16",
+        "inc_x": "v_inc_x_23",
+        "inc_y": "v_inc_y_21"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

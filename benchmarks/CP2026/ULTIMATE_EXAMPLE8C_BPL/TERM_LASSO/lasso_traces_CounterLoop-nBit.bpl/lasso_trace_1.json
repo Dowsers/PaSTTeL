@@ -1,0 +1,49 @@
+{
+  "program_vars": [
+    "nBitCounter_i",
+    "nBitCounter_n",
+    "|v_rep(select nBitCounter_x nBitCounter_i)_1|"
+  ],
+  "var_types": {
+    "nBitCounter_i": "Int",
+    "nBitCounter_n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_nBitCounter_n_9 100) (>= v_nBitCounter_i_5 0) (<= v_nBitCounter_i_5 0) (>= v_nBitCounter_n_9 100))",
+      "in_vars": {
+        "nBitCounter_i": "v_nBitCounter_i_8",
+        "nBitCounter_n": "v_nBitCounter_n_11"
+      },
+      "out_vars": {
+        "nBitCounter_i": "v_nBitCounter_i_5",
+        "nBitCounter_n": "v_nBitCounter_n_9"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_nBitCounter_i_7 1) v_nBitCounter_n_10) (>= 0 |v_arrayCell_v_nBitCounter_x_13[v_nBitCounter_i_7]_1|) (<= 0 |v_arrayCell_v_nBitCounter_x_13[v_nBitCounter_i_7]_1|) (>= (+ v_nBitCounter_i_7 1) v_nBitCounter_i_6) (<= (+ v_nBitCounter_i_7 1) v_nBitCounter_i_6))",
+      "in_vars": {
+        "nBitCounter_i": "v_nBitCounter_i_7",
+        "nBitCounter_n": "v_nBitCounter_n_10",
+        "|v_rep(select nBitCounter_x nBitCounter_i)_1|": "|v_arrayCell_v_nBitCounter_x_14[v_nBitCounter_i_7]_1|"
+      },
+      "out_vars": {
+        "nBitCounter_i": "v_nBitCounter_i_6",
+        "nBitCounter_n": "v_nBitCounter_n_10",
+        "|v_rep(select nBitCounter_x nBitCounter_i)_1|": "|v_arrayCell_v_nBitCounter_x_13[v_nBitCounter_i_6]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_nBitCounter_x_13[v_nBitCounter_i_7]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

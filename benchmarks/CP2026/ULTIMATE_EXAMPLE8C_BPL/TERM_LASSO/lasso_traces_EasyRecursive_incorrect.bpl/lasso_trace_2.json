@@ -1,0 +1,46 @@
+{
+  "program_vars": [
+    "add_a",
+    "add_b",
+    "add_res"
+  ],
+  "var_types": {
+    "add_a": "Int",
+    "add_b": "Int",
+    "add_res": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(<= v_add_b_25 0)",
+      "in_vars": {
+        "add_b": "v_add_b_25"
+      },
+      "out_vars": {
+        "add_b": "v_add_b_25"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_add_b_31 1) v_add_b_30) (>= (+ v_add_a_24 1) v_add_a_25) (<= (+ v_add_a_24 1) v_add_a_25) (<= v_add_b_30 0) (>= (+ v_add_b_31 1) v_add_b_30))",
+      "in_vars": {
+        "add_b": "v_add_b_31",
+        "add_a": "v_add_a_25",
+        "add_res": "v_add_res_19"
+      },
+      "out_vars": {
+        "add_res": "v_add_res_18",
+        "add_b": "v_add_b_30",
+        "add_a": "v_add_a_24"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

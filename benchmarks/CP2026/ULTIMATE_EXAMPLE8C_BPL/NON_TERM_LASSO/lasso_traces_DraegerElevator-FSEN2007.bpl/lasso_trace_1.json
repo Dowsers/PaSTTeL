@@ -1,0 +1,60 @@
+{
+  "program_vars": [
+    "main_current",
+    "main_input",
+    "main_max",
+    "main_pc",
+    "main_req"
+  ],
+  "var_types": {
+    "main_current": "Int",
+    "main_input": "Int",
+    "main_max": "Int",
+    "main_pc": "Int",
+    "main_req": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_current_50 v_main_max_27) (>= v_main_pc_68 0) (<= v_main_input_52 v_main_max_27) (<= v_main_pc_68 0))",
+      "in_vars": {
+        "main_input": "v_main_input_52",
+        "main_max": "v_main_max_27",
+        "main_current": "v_main_current_50",
+        "main_pc": "v_main_pc_74"
+      },
+      "out_vars": {
+        "main_input": "v_main_input_52",
+        "main_max": "v_main_max_27",
+        "main_current": "v_main_current_50",
+        "main_pc": "v_main_pc_68"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 1) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51) (<= 1 v_main_pc_70)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_input_54 v_main_req_42) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_max_28) (<= v_main_current_51 v_main_current_52) (<= v_main_current_52 v_main_req_42) (<= v_main_pc_70 0)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_pc_70 2) (<= v_main_current_52 v_main_req_42)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_input_54 v_main_req_42) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_input_54 v_main_input_53) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51) (<= v_main_pc_70 0)) (and (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 3) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_current_52 v_main_req_42)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 1) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= (+ 0 1) v_main_pc_70) (<= v_main_current_52 v_main_req_42)) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_req_43) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_pc_70 1) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1)) (<= 1 v_main_pc_70)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= v_main_pc_69 v_main_pc_70) (<= v_main_pc_70 v_main_pc_69) (<= (+ 3 1) v_main_pc_69)) (and (<= v_main_current_52 v_main_max_28) (<= (+ v_main_pc_70 1) 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= v_main_pc_69 v_main_pc_70) (<= v_main_pc_70 v_main_pc_69)) (and (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_pc_70 3) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3)) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_req_43) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_input_54 v_main_input_53) (<= v_main_pc_70 3) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1))) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= v_main_current_52 v_main_max_28) (<= v_main_input_54 v_main_req_42) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_input_54 v_main_input_53) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1)) (<= v_main_pc_70 0)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_pc_70 2) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_52 v_main_current_51) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_pc_70 2) (<= v_main_input_53 v_main_input_54)))",
+      "in_vars": {
+        "main_input": "v_main_input_54",
+        "main_max": "v_main_max_28",
+        "main_current": "v_main_current_52",
+        "main_req": "v_main_req_43",
+        "main_pc": "v_main_pc_70"
+      },
+      "out_vars": {
+        "main_input": "v_main_input_53",
+        "main_max": "v_main_max_28",
+        "main_current": "v_main_current_51",
+        "main_req": "v_main_req_42",
+        "main_pc": "v_main_pc_69"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

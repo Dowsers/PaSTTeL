@@ -1,0 +1,88 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret5",
+    "gcd_#in~y1",
+    "gcd_#in~y2",
+    "gcd_#res",
+    "gcd_#t~ret0",
+    "gcd_#t~ret1",
+    "gcd_~y1",
+    "gcd_~y2",
+    "main_#res",
+    "main_#t~nondet2",
+    "main_#t~nondet3",
+    "main_#t~ret4",
+    "main_~z~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret5": "Int",
+    "gcd_#in~y1": "Int",
+    "gcd_#in~y2": "Int",
+    "gcd_#res": "Int",
+    "gcd_#t~ret0": "Int",
+    "gcd_#t~ret1": "Int",
+    "gcd_~y1": "Int",
+    "gcd_~y2": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet2": "Int",
+    "main_#t~nondet3": "Int",
+    "main_#t~ret4": "Int",
+    "main_~z~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 1 |v_gcd_#in~y2_5|) (<= |v_gcd_#in~y1_5| 2147483647) (<= |v_gcd_#in~y2_5| 2147483647) (<= 1 |v_gcd_#in~y1_5|))",
+      "in_vars": {
+        "main_#res": "|v_main_#res_8|",
+        "gcd_#in~y1": "|v_gcd_#in~y1_10|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_9|",
+        "main_#t~ret4": "|v_main_#t~ret4_9|",
+        "main_~z~0": "v_main_~z~0_8",
+        "gcd_#in~y2": "|v_gcd_#in~y2_10|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_9|",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_6|"
+      },
+      "out_vars": {
+        "main_#res": "|v_main_#res_7|",
+        "gcd_#in~y1": "|v_gcd_#in~y1_5|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_8|",
+        "main_#t~ret4": "|v_main_#t~ret4_8|",
+        "main_~z~0": "v_main_~z~0_7",
+        "gcd_#in~y2": "|v_gcd_#in~y2_5|",
+        "main_#t~nondet2": "|v_main_#t~nondet2_8|",
+        "ULTIMATE.start_#t~ret5": "|v_ULTIMATE.start_#t~ret5_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ |v_gcd_#in~y2_8| 1) |v_gcd_#in~y1_9|) (<= |v_gcd_#in~y2_9| |v_gcd_#in~y2_8|) (<= |v_gcd_#in~y1_9| (+ |v_gcd_#in~y1_8| |v_gcd_#in~y2_8|)) (<= 1 |v_gcd_#in~y2_8|) (>= |v_gcd_#in~y1_9| (+ |v_gcd_#in~y1_8| |v_gcd_#in~y2_8|)) (>= |v_gcd_#in~y2_9| |v_gcd_#in~y2_8|))",
+      "in_vars": {
+        "gcd_#in~y1": "|v_gcd_#in~y1_9|",
+        "gcd_#in~y2": "|v_gcd_#in~y2_9|",
+        "gcd_~y2": "v_gcd_~y2_15",
+        "gcd_~y1": "v_gcd_~y1_15",
+        "gcd_#t~ret0": "|v_gcd_#t~ret0_7|",
+        "gcd_#t~ret1": "|v_gcd_#t~ret1_7|",
+        "gcd_#res": "|v_gcd_#res_7|"
+      },
+      "out_vars": {
+        "gcd_~y2": "v_gcd_~y2_14",
+        "gcd_~y1": "v_gcd_~y1_14",
+        "gcd_#in~y1": "|v_gcd_#in~y1_8|",
+        "gcd_#in~y2": "|v_gcd_#in~y2_8|",
+        "gcd_#t~ret0": "|v_gcd_#t~ret0_6|",
+        "gcd_#t~ret1": "|v_gcd_#t~ret1_6|",
+        "gcd_#res": "|v_gcd_#res_6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

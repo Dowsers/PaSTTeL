@@ -1,0 +1,123 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_mem                                           : (Array Int Int)
+  main_max_head                                      : Int
+  main_head                                          : Int
+  v_main_max_head_20                                 : Int
+  v_main_head_41                                     : Int
+  v_arrayCell_v_main_mem_52[0]_1                     : Int
+  v_arrayCell_v_main_mem_52[1]_1                     : Int
+  v_main_max_head_18                                 : Int
+  v_main_head_39                                     : Int
+  v_arrayCell_v_main_mem_51[0]_1                     : Int
+  v_arrayCell_v_main_mem_51[1]_1                     : Int
+  v_arrayCell_v_v_main_mem_52auxArray1_1[1]_1        : Int
+  v_arrayCell_v_v_main_mem_52auxArray1_1[0]_1        : Int
+  v_main_head_40                                     : Int
+  v_arrayCell_v_main_mem_54[0]_1                     : Int
+  v_arrayCell_v_main_mem_54[v_main_head_40]_1        : Int
+  v_arrayCell_v_main_mem_54[1]_1                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_main_head_46 1) (= v_main_mem_65 (store (store v_main_mem_66 0 0) 1 1)))  InVars {main_mem=v_main_mem_66}  OutVars{main_max_head=v_main_max_head_27, main_mem=v_main_mem_65, main_head=v_main_head_46}  AuxVars[]  AssignedVars[main_max_head, main_mem, main_head]
+
+Loop TransFormula:
+Formula: (not (= (select v_main_mem_68 v_main_head_47) 0))  InVars {main_mem=v_main_mem_68, main_head=v_main_head_47}  OutVars{main_mem=v_main_mem_68, main_head=v_main_head_47}  AuxVars[]  AssignedVars[]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 19
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,1053
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,1429
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8889
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,3000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0769
+
+Stem (linearized):
+  Formula:  (and (<= v_main_head_39 1) (<= |v_arrayCell_v_main_mem_51[0]_1| 0) (>= |v_arrayCell_v_main_mem_51[0]_1| 0) (>= |v_arrayCell_v_main_mem_51[1]_1| 1) (>= v_main_head_39 1) (<= |v_arrayCell_v_main_mem_51[1]_1| 1))
+  InVars:   {main_max_head=v_main_max_head_20, main_head=v_main_head_41, v_rep(select main_mem 0)_1=|v_arrayCell_v_main_mem_52[0]_1|, v_rep(select main_mem 1)_1=|v_arrayCell_v_main_mem_52[1]_1|}
+  OutVars:  {main_max_head=v_main_max_head_18, main_head=v_main_head_39, v_rep(select main_mem 0)_1=|v_arrayCell_v_main_mem_51[0]_1|, v_rep(select main_mem 1)_1=|v_arrayCell_v_main_mem_51[1]_1|}
+  AuxVars:  [|v_arrayCell_v_v_main_mem_52auxArray1_1[1]_1|, |v_arrayCell_v_v_main_mem_52auxArray1_1[0]_1|]
+
+Loop (linearized):
+  Formula:  (or (and (>= |v_arrayCell_v_main_mem_54[1]_1| |v_arrayCell_v_main_mem_54[v_main_head_40]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_54[1]_1|) (<= |v_arrayCell_v_main_mem_54[1]_1| |v_arrayCell_v_main_mem_54[v_main_head_40]_1|) (>= v_main_head_40 1) (<= v_main_head_40 1)) (and (>= |v_arrayCell_v_main_mem_54[1]_1| |v_arrayCell_v_main_mem_54[v_main_head_40]_1|) (<= |v_arrayCell_v_main_mem_54[1]_1| |v_arrayCell_v_main_mem_54[v_main_head_40]_1|) (>= v_main_head_40 1) (<= v_main_head_40 1) (<= (+ |v_arrayCell_v_main_mem_54[1]_1| 1) 0)))
+  InVars:   {main_head=v_main_head_40, v_rep(select main_mem 0)_1=|v_arrayCell_v_main_mem_54[0]_1|, v_rep(select main_mem main_head)_1=|v_arrayCell_v_main_mem_54[v_main_head_40]_1|, v_rep(select main_mem 1)_1=|v_arrayCell_v_main_mem_54[1]_1|}
+  OutVars:  {main_head=v_main_head_40, v_rep(select main_mem 0)_1=|v_arrayCell_v_main_mem_54[0]_1|, v_rep(select main_mem main_head)_1=|v_arrayCell_v_main_mem_54[v_main_head_40]_1|, v_rep(select main_mem 1)_1=|v_arrayCell_v_main_mem_54[1]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] head := 0;max_head := 0;mem := mem[0 := 0];head := head + 1;BeginParallelComposition{ParallelCodeBlock0: assume head > max_head;mem := mem[head := 0];max_head := max_head + 1;ParallelCodeBlock1: assume !(head > max_head);}EndParallelCompositionmem := mem[head := mem[head] + 1];
+Loop (length=1):
+  [0] assume mem[head] != 0;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2822978 ns (2,82 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@61f8ce98
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,82 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

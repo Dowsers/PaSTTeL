@@ -1,0 +1,68 @@
+{
+  "program_vars": [
+    "BouncingBallExample_v",
+    "BouncingBallExample_v_new",
+    "BouncingBallExample_v_old",
+    "BouncingBallExample_v_tmp",
+    "BouncingBallExample_x",
+    "BouncingBallExample_x_new",
+    "BouncingBallExample_x_old",
+    "BouncingBallExample_x_tmp"
+  ],
+  "var_types": {
+    "BouncingBallExample_v": "Real",
+    "BouncingBallExample_v_new": "Real",
+    "BouncingBallExample_v_old": "Real",
+    "BouncingBallExample_v_tmp": "Real",
+    "BouncingBallExample_x": "Real",
+    "BouncingBallExample_x_new": "Real",
+    "BouncingBallExample_x_old": "Real",
+    "BouncingBallExample_x_tmp": "Real"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_BouncingBallExample_x_24 (/ 51.0 5.0)) (<= 10.0 v_BouncingBallExample_x_24) (>= v_BouncingBallExample_v_27 0.0) (<= v_BouncingBallExample_v_27 0.0))",
+      "in_vars": {
+        "BouncingBallExample_x": "v_BouncingBallExample_x_24",
+        "BouncingBallExample_v": "v_BouncingBallExample_v_27"
+      },
+      "out_vars": {
+        "BouncingBallExample_x": "v_BouncingBallExample_x_24",
+        "BouncingBallExample_v": "v_BouncingBallExample_v_27"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29) v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_26 v_BouncingBallExample_x_25) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_v_28) (<= v_BouncingBallExample_v_28 (+ v_BouncingBallExample_v_29 1.0)) (<= 1.0 v_BouncingBallExample_x_26)) (and (<= v_BouncingBallExample_v_29 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_26 (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29)) (<= v_BouncingBallExample_x_25 0.0) (<= (+ (* v_BouncingBallExample_v_28 (/ 4.0 3.0)) v_BouncingBallExample_v_29) 0.0) (<= 1.0 v_BouncingBallExample_x_26) (<= 0.0 (+ (* v_BouncingBallExample_v_28 (/ 4.0 3.0)) v_BouncingBallExample_v_29 1.0))) (and (< 0.0 v_BouncingBallExample_x_25) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_v_29 v_BouncingBallExample_v_28) (<= v_BouncingBallExample_v_28 (+ v_BouncingBallExample_v_29 1.0)) (<= v_BouncingBallExample_x_26 (+ v_BouncingBallExample_x_25 v_BouncingBallExample_v_29)) (<= 1.0 v_BouncingBallExample_x_26) (<= v_BouncingBallExample_x_25 v_BouncingBallExample_x_26)))",
+      "in_vars": {
+        "BouncingBallExample_x": "v_BouncingBallExample_x_26",
+        "BouncingBallExample_v": "v_BouncingBallExample_v_29",
+        "BouncingBallExample_v_tmp": "v_BouncingBallExample_v_tmp_16",
+        "BouncingBallExample_v_new": "v_BouncingBallExample_v_new_15",
+        "BouncingBallExample_x_old": "v_BouncingBallExample_x_old_13",
+        "BouncingBallExample_v_old": "v_BouncingBallExample_v_old_15",
+        "BouncingBallExample_x_tmp": "v_BouncingBallExample_x_tmp_22",
+        "BouncingBallExample_x_new": "v_BouncingBallExample_x_new_13"
+      },
+      "out_vars": {
+        "BouncingBallExample_v_tmp": "v_BouncingBallExample_v_tmp_15",
+        "BouncingBallExample_v_new": "v_BouncingBallExample_v_new_14",
+        "BouncingBallExample_x_old": "v_BouncingBallExample_x_old_12",
+        "BouncingBallExample_x": "v_BouncingBallExample_x_25",
+        "BouncingBallExample_v": "v_BouncingBallExample_v_28",
+        "BouncingBallExample_v_old": "v_BouncingBallExample_v_old_14",
+        "BouncingBallExample_x_tmp": "v_BouncingBallExample_x_tmp_21",
+        "BouncingBallExample_x_new": "v_BouncingBallExample_x_new_12"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

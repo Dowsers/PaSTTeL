@@ -1,0 +1,58 @@
+{
+  "program_vars": [
+    "mdiv_#in~x",
+    "mdiv_#in~y",
+    "mdiv_~res~0",
+    "mdiv_~x",
+    "mdiv_~y"
+  ],
+  "var_types": {
+    "mdiv_#in~x": "Int",
+    "mdiv_#in~y": "Int",
+    "mdiv_~res~0": "Int",
+    "mdiv_~x": "Int",
+    "mdiv_~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 (+ |v_mdiv_#in~x_2| 2147483648)) (<= |v_mdiv_#in~x_2| v_mdiv_~x_9) (>= |v_mdiv_#in~x_2| v_mdiv_~x_9) (<= |v_mdiv_#in~x_2| 2147483647) (>= |v_mdiv_#in~y_2| v_mdiv_~y_8) (<= |v_mdiv_#in~y_2| 2147483647) (<= 0 (+ |v_mdiv_#in~y_2| 2147483648)) (<= |v_mdiv_#in~y_2| v_mdiv_~y_8) (>= v_mdiv_~res~0_9 0) (<= v_mdiv_~res~0_9 0))",
+      "in_vars": {
+        "mdiv_#in~x": "|v_mdiv_#in~x_2|",
+        "mdiv_#in~y": "|v_mdiv_#in~y_2|",
+        "mdiv_~res~0": "v_mdiv_~res~0_12",
+        "mdiv_~y": "v_mdiv_~y_10",
+        "mdiv_~x": "v_mdiv_~x_12"
+      },
+      "out_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_9",
+        "mdiv_#in~x": "|v_mdiv_#in~x_2|",
+        "mdiv_#in~y": "|v_mdiv_#in~y_2|",
+        "mdiv_~y": "v_mdiv_~y_8",
+        "mdiv_~x": "v_mdiv_~x_9"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_mdiv_~x_10 v_mdiv_~y_9) v_mdiv_~x_11) (>= (+ v_mdiv_~x_10 v_mdiv_~y_9) v_mdiv_~x_11) (<= v_mdiv_~y_9 v_mdiv_~x_11) (<= v_mdiv_~res~0_10 (+ v_mdiv_~res~0_11 1)) (>= v_mdiv_~res~0_10 (+ v_mdiv_~res~0_11 1)) (<= 1 v_mdiv_~y_9))",
+      "in_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_11",
+        "mdiv_~y": "v_mdiv_~y_9",
+        "mdiv_~x": "v_mdiv_~x_11"
+      },
+      "out_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_10",
+        "mdiv_~y": "v_mdiv_~y_9",
+        "mdiv_~x": "v_mdiv_~x_10"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

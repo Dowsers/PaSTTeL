@@ -1,0 +1,52 @@
+{
+  "program_vars": [
+    "old_~x_",
+    "old_~y_",
+    "~x",
+    "~y"
+  ],
+  "var_types": {
+    "old_~x_": "Int",
+    "old_~y_": "Int",
+    "~x": "Int",
+    "~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_~x_21 300) (<= |v_old_~x__6| 300) (>= |v_old_~x__6| 300) (>= v_~x_21 300) (>= 2 v_~y_22) (<= 2 v_~y_22) (<= 2 |v_old_~y__6|) (>= 2 |v_old_~y__6|))",
+      "in_vars": {
+        "old_~x_": "|v_old_~x__7|",
+        "~x": "v_~x_25",
+        "~y": "v_~y_25",
+        "old_~y_": "|v_old_~y__7|"
+      },
+      "out_vars": {
+        "old_~x_": "|v_old_~x__6|",
+        "~x": "v_~x_21",
+        "~y": "v_~y_22",
+        "old_~y_": "|v_old_~y__6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 1 v_~x_24) (>= (+ v_~x_23 v_~y_24) v_~x_24) (<= (+ v_~x_23 v_~y_24) v_~x_24))",
+      "in_vars": {
+        "~x": "v_~x_24",
+        "~y": "v_~y_24"
+      },
+      "out_vars": {
+        "~x": "v_~x_23",
+        "~y": "v_~y_24"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

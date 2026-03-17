@@ -1,0 +1,78 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret3",
+    "doSum_#in~n",
+    "doSum_#res",
+    "doSum_#t~ret1",
+    "doSum_~s~0",
+    "factorial_#in~n",
+    "factorial_#res",
+    "factorial_#t~ret0",
+    "factorial_~n",
+    "main_#res",
+    "main_#t~ret2"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret3": "Int",
+    "doSum_#in~n": "Int",
+    "doSum_#res": "Int",
+    "doSum_#t~ret1": "Int",
+    "doSum_~s~0": "Int",
+    "factorial_#in~n": "Int",
+    "factorial_#res": "Int",
+    "factorial_#t~ret0": "Int",
+    "factorial_~n": "Int",
+    "main_#res": "Int",
+    "main_#t~ret2": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= 10 |v_factorial_#in~n_23|) (<= 10 |v_factorial_#in~n_23|))",
+      "in_vars": {
+        "doSum_#t~ret1": "|v_doSum_#t~ret1_26|",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_13|",
+        "doSum_#res": "|v_doSum_#res_10|",
+        "main_#res": "|v_main_#res_21|",
+        "factorial_#in~n": "|v_factorial_#in~n_28|",
+        "main_#t~ret2": "|v_main_#t~ret2_26|",
+        "doSum_~s~0": "v_doSum_~s~0_42",
+        "doSum_#in~n": "|v_doSum_#in~n_32|"
+      },
+      "out_vars": {
+        "doSum_#t~ret1": "|v_doSum_#t~ret1_25|",
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_12|",
+        "doSum_#res": "|v_doSum_#res_9|",
+        "main_#res": "|v_main_#res_20|",
+        "factorial_#in~n": "|v_factorial_#in~n_23|",
+        "main_#t~ret2": "|v_main_#t~ret2_25|",
+        "doSum_~s~0": "v_doSum_~s~0_41",
+        "doSum_#in~n": "|v_doSum_#in~n_31|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ |v_factorial_#in~n_26| 1) |v_factorial_#in~n_27|) (<= 1 |v_factorial_#in~n_27|) (>= (+ |v_factorial_#in~n_26| 1) |v_factorial_#in~n_27|))",
+      "in_vars": {
+        "factorial_#in~n": "|v_factorial_#in~n_27|",
+        "factorial_~n": "v_factorial_~n_27",
+        "factorial_#t~ret0": "|v_factorial_#t~ret0_7|",
+        "factorial_#res": "|v_factorial_#res_21|"
+      },
+      "out_vars": {
+        "factorial_~n": "v_factorial_~n_26",
+        "factorial_#in~n": "|v_factorial_#in~n_26|",
+        "factorial_#t~ret0": "|v_factorial_#t~ret0_6|",
+        "factorial_#res": "|v_factorial_#res_20|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

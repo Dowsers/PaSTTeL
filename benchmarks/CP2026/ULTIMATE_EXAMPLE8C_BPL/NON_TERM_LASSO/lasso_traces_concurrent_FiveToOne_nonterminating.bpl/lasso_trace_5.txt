@@ -1,0 +1,134 @@
+========================================
+LASSO TRACE REPORT - Iteration #5
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  fiveThread1of1ForFork0_thidvar0                    : Int
+  onceThread1of1ForFork1_thidvar0                    : Int
+  x                                                  : Int
+  v_fiveThread1of1ForFork0_thidvar0_21               : Int
+  v_onceThread1of1ForFork1_thidvar0_14               : Int
+  v_x_87                                             : Int
+  v_fiveThread1of1ForFork0_thidvar0_20               : Int
+  v_onceThread1of1ForFork1_thidvar0_13               : Int
+  v_x_77                                             : Int
+  v_x_86                                             : Int
+  v_x_82                                             : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_x_108 1) (= v_onceThread1of1ForFork1_thidvar0_17 2) (= v_fiveThread1of1ForFork0_thidvar0_24 1))  InVars {}  OutVars{fiveThread1of1ForFork0_thidvar0=v_fiveThread1of1ForFork0_thidvar0_24, onceThread1of1ForFork1_thidvar0=v_onceThread1of1ForFork1_thidvar0_17, x=v_x_108}  AuxVars[]  AssignedVars[fiveThread1of1ForFork0_thidvar0, onceThread1of1ForFork1_thidvar0, x]
+
+Loop TransFormula:
+Formula: (and (= v_x_113 1) (= v_x_117 1))  InVars {x=v_x_117}  OutVars{x=v_x_113}  AuxVars[]  AssignedVars[x]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 17
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,1765
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8649
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_x_77 1) (<= v_fiveThread1of1ForFork0_thidvar0_20 1) (>= v_onceThread1of1ForFork1_thidvar0_13 2) (>= v_fiveThread1of1ForFork0_thidvar0_20 1) (<= v_onceThread1of1ForFork1_thidvar0_13 2) (>= v_x_77 1))
+  InVars:   {fiveThread1of1ForFork0_thidvar0=v_fiveThread1of1ForFork0_thidvar0_21, onceThread1of1ForFork1_thidvar0=v_onceThread1of1ForFork1_thidvar0_14, x=v_x_87}
+  OutVars:  {fiveThread1of1ForFork0_thidvar0=v_fiveThread1of1ForFork0_thidvar0_20, onceThread1of1ForFork1_thidvar0=v_onceThread1of1ForFork1_thidvar0_13, x=v_x_77}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_x_82 1) (<= v_x_86 1) (>= v_x_86 1) (>= v_x_82 1))
+  InVars:   {x=v_x_86}
+  OutVars:  {x=v_x_82}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=11):
+  [0] [31] $Ultimate##0-->L8: Formula: (= v_x_4 1)  InVars {}  OutVars{x=v_x_4}  AuxVars[]  AssignedVars[x]
+  [1] [44] L8-->L17: Formula: (= v_fiveThread1of1ForFork0_thidvar0_2 1)  InVars {}  OutVars{fiveThread1of1ForFork0_thidvar0=v_fiveThread1of1ForFork0_thidvar0_2}  AuxVars[]  AssignedVars[fiveThread1of1ForFork0_thidvar0]
+  [2] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [3] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [4] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [5] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [6] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [7] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [8] [47] L8-1-->L25: Formula: (= v_onceThread1of1ForFork1_thidvar0_2 2)  InVars {}  OutVars{onceThread1of1ForFork1_thidvar0=v_onceThread1of1ForFork1_thidvar0_2}  AuxVars[]  AssignedVars[onceThread1of1ForFork1_thidvar0]
+  [9] [35] L25-->L26: Formula: (= v_x_1 4)  InVars {x=v_x_1}  OutVars{x=v_x_1}  AuxVars[]  AssignedVars[]
+  [10] [37] L26-->L25: Formula: (= v_x_2 1)  InVars {}  OutVars{x=v_x_2}  AuxVars[]  AssignedVars[x]
+Loop (length=8):
+  [0] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [1] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [2] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [3] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [4] [39] L17-->L18: Formula: (< v_x_8 4)  InVars {x=v_x_8}  OutVars{x=v_x_8}  AuxVars[]  AssignedVars[]
+  [5] [41] L18-->L17: Formula: (= (+ v_x_6 1) v_x_5)  InVars {x=v_x_6}  OutVars{x=v_x_5}  AuxVars[]  AssignedVars[x]
+  [6] [35] L25-->L26: Formula: (= v_x_1 4)  InVars {x=v_x_1}  OutVars{x=v_x_1}  AuxVars[]  AssignedVars[]
+  [7] [37] L26-->L25: Formula: (= v_x_2 1)  InVars {}  OutVars{x=v_x_2}  AuxVars[]  AssignedVars[x]
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   1080292 ns (1,08 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@6c4edee6
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,08 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

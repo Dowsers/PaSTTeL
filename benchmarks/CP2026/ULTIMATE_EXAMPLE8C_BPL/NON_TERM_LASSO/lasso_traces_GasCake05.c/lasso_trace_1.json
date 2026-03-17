@@ -1,0 +1,54 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "ULTIMATE.start_#t~ret58",
+    "main_#t~ret56",
+    "main_#t~ret57",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select old_#valid_ 0)_1|"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "ULTIMATE.start_#t~ret58": "Int",
+    "main_#t~ret56": "Int",
+    "main_#t~ret57": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_arrayCell_v_#valid_136[0]_1| 0) (<= |v_arrayCell_v_#valid_135[0]_1| 0) (<= |v_arrayCell_v_old_#valid__3[0]_1| 0) (<= 1 |v_#StackHeapBarrier_10|) (>= |v_arrayCell_v_#valid_135[0]_1| 0) (>= |v_arrayCell_v_#valid_136[0]_1| 0) (>= |v_arrayCell_v_old_#valid__3[0]_1| 0))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "ULTIMATE.start_#t~ret58": "|v_ULTIMATE.start_#t~ret58_6|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_136[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_v_rep(select old_#valid_ 0)_1_1|"
+      },
+      "out_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "ULTIMATE.start_#t~ret58": "|v_ULTIMATE.start_#t~ret58_5|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_135[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_arrayCell_v_old_#valid__3[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {
+        "main_#t~ret56": "|v_main_#t~ret56_12|",
+        "main_#t~ret57": "|v_main_#t~ret57_10|"
+      },
+      "out_vars": {
+        "main_#t~ret56": "|v_main_#t~ret56_10|",
+        "main_#t~ret57": "|v_main_#t~ret57_8|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

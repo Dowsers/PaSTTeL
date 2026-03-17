@@ -1,0 +1,63 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret2",
+    "main_#t~nondet0",
+    "main_#t~ret1",
+    "main_~days~0",
+    "main_~year~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret2": "Int",
+    "main_#t~nondet0": "Int",
+    "main_#t~ret1": "Int",
+    "main_~days~0": "Int",
+    "main_~year~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_~days~0_31 366) (<= 1980 v_main_~year~0_20) (<= 0 v_main_~days~0_31) (>= 1980 v_main_~year~0_20))",
+      "in_vars": {
+        "ULTIMATE.start_#t~ret2": "|v_ULTIMATE.start_#t~ret2_6|",
+        "main_#t~nondet0": "|v_main_#t~nondet0_8|",
+        "main_~days~0": "v_main_~days~0_34",
+        "main_~year~0": "v_main_~year~0_25"
+      },
+      "out_vars": {
+        "ULTIMATE.start_#t~ret2": "|v_ULTIMATE.start_#t~ret2_5|",
+        "main_#t~nondet0": "|v_main_#t~nondet0_7|",
+        "main_~days~0": "v_main_~days~0_31",
+        "main_~year~0": "v_main_~year~0_20"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_main_~days~0_33 (+ 366 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= (+ 0 1) v_mod_auxv_main_~year~0_24100_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_mod_auxv_main_~year~0_244_1 0) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= 367 v_main_~days~0_33) (<= (+ 366 v_main_~days~0_32) v_main_~days~0_33) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24)) (and (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ 365 v_main_~days~0_32) v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= (+ 0 1) v_mod_auxv_main_~year~0_24400_1) (<= v_main_~days~0_33 (+ 365 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ 365 v_main_~days~0_32) v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= v_main_~days~0_33 (+ 365 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= (+ 0 1) v_mod_auxv_main_~year~0_244_1) (<= 366 v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= 366 v_main_~days~0_32) (<= v_main_~year~0_24 v_main_~year~0_23) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= (+ 0 1) v_mod_auxv_main_~year~0_24100_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= v_mod_auxv_main_~year~0_244_1 0) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= v_main_~days~0_33 366) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_main_~days~0_32 366) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24)) (and (<= v_main_~days~0_33 (+ 366 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= 367 v_main_~days~0_33) (<= (+ 366 v_main_~days~0_32) v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24400_1 0) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= 366 v_main_~days~0_32) (<= v_main_~year~0_24 v_main_~year~0_23) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= v_main_~days~0_33 366) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_main_~days~0_32 366) (<= v_mod_auxv_main_~year~0_24400_1 0) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)))",
+      "in_vars": {
+        "main_~days~0": "v_main_~days~0_33",
+        "main_~year~0": "v_main_~year~0_24",
+        "main_#t~ret1": "|v_main_#t~ret1_19|"
+      },
+      "out_vars": {
+        "main_#t~ret1": "|v_main_#t~ret1_17|",
+        "main_~days~0": "v_main_~days~0_32",
+        "main_~year~0": "v_main_~year~0_23"
+      },
+      "aux_vars": [
+        "v_div_auxv_main_~year~0_24100_1",
+        "v_div_auxv_main_~year~0_24400_1",
+        "v_div_auxv_main_~year~0_244_1",
+        "v_mod_auxv_main_~year~0_24100_1",
+        "v_mod_auxv_main_~year~0_24400_1",
+        "v_mod_auxv_main_~year~0_244_1"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

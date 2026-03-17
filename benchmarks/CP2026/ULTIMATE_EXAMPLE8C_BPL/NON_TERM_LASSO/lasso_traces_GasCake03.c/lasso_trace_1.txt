@@ -1,0 +1,150 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ~inputSignal_u8~0                                  : Int
+  old(~inputSignal_u8~0)                             : Int
+  ~stop_b~0                                          : Int
+  old(~stop_b~0)                                     : Int
+  old(~init_b~0)                                     : Int
+  ~init_b~0                                          : Int
+  old(~state_u16~0)                                  : Int
+  ~state_u16~0                                       : Int
+  old(~init_b~1)                                     : Int
+  ~init_b~1                                          : Int
+  ULTIMATE.start_#t~ret5                             : Int
+  main_#t~ret4                                       : Int
+  main_#t~ret3                                       : Int
+  v_~inputSignal_u8~0_13                             : Int
+  v_old(~inputSignal_u8~0)_6                         : Int
+  v_~stop_b~0_13                                     : Int
+  v_old(~stop_b~0)_6                                 : Int
+  v_old(~init_b~0)_7                                 : Int
+  v_~init_b~0_25                                     : Int
+  v_old(~state_u16~0)_7                              : Int
+  v_~state_u16~0_32                                  : Int
+  v_old(~init_b~1)_7                                 : Int
+  v_~init_b~1_33                                     : Int
+  v_ULTIMATE.start_#t~ret5_6                         : Int
+  v_~inputSignal_u8~0_12                             : Int
+  v_old(~inputSignal_u8~0)_5                         : Int
+  v_~stop_b~0_12                                     : Int
+  v_old(~stop_b~0)_5                                 : Int
+  v_old(~init_b~0)_6                                 : Int
+  v_~init_b~0_23                                     : Int
+  v_old(~state_u16~0)_6                              : Int
+  v_~state_u16~0_30                                  : Int
+  v_old(~init_b~1)_6                                 : Int
+  v_~init_b~1_31                                     : Int
+  v_ULTIMATE.start_#t~ret5_5                         : Int
+  v_main_#t~ret4_10                                  : Int
+  v_main_#t~ret3_12                                  : Int
+  v_main_#t~ret4_8                                   : Int
+  v_main_#t~ret3_10                                  : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_~stop_b~0_34 0) (= |v_old(~state_u16~0)_25| 0) (= v_~init_b~1_62 0) (= |v_old(~init_b~0)_25| 1) (= v_~inputSignal_u8~0_34 0) (= v_~init_b~0_54 1) (= v_~state_u16~0_61 0) (= |v_old(~init_b~1)_25| 0))  InVars {}  OutVars{~inputSignal_u8~0=v_~inputSignal_u8~0_34, old(~inputSignal_u8~0)=|v_old(~inputSignal_u8~0)_21|, ~stop_b~0=v_~stop_b~0_34, old(~stop_b~0)=|v_old(~stop_b~0)_21|, old(~init_b~0)=|v_old(~init_b~0)_25|, ~init_b~0=v_~init_b~0_54, old(~state_u16~0)=|v_old(~state_u16~0)_25|, ~state_u16~0=v_~state_u16~0_61, old(~init_b~1)=|v_old(~init_b~1)_25|, ~init_b~1=v_~init_b~1_62, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_12|}  AuxVars[]  AssignedVars[~inputSignal_u8~0, old(~inputSignal_u8~0), ~stop_b~0, old(~stop_b~0), old(~init_b~0), ~init_b~0, old(~state_u16~0), ~state_u16~0, old(~init_b~1), ~init_b~1, ULTIMATE.start_#t~ret5]
+
+Loop TransFormula:
+Formula: true  InVars {}  OutVars{main_#t~ret4=|v_main_#t~ret4_15|, main_#t~ret3=|v_main_#t~ret3_17|}  AuxVars[]  AssignedVars[main_#t~ret4, main_#t~ret3]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2308
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8621
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0400
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= |v_old(~init_b~0)_6| 1) (<= |v_old(~state_u16~0)_6| 0) (>= v_~stop_b~0_12 0) (<= v_~inputSignal_u8~0_12 0) (>= |v_old(~init_b~1)_6| 0) (<= v_~init_b~1_31 0) (>= v_~inputSignal_u8~0_12 0) (>= v_~state_u16~0_30 0) (<= v_~init_b~0_23 1) (>= |v_old(~state_u16~0)_6| 0) (>= v_~init_b~1_31 0) (>= |v_old(~init_b~0)_6| 1) (<= |v_old(~init_b~1)_6| 0) (<= v_~stop_b~0_12 0) (<= v_~state_u16~0_30 0) (>= v_~init_b~0_23 1))
+  InVars:   {~inputSignal_u8~0=v_~inputSignal_u8~0_13, old(~inputSignal_u8~0)=|v_old(~inputSignal_u8~0)_6|, ~stop_b~0=v_~stop_b~0_13, old(~stop_b~0)=|v_old(~stop_b~0)_6|, old(~init_b~0)=|v_old(~init_b~0)_7|, ~init_b~0=v_~init_b~0_25, old(~state_u16~0)=|v_old(~state_u16~0)_7|, ~state_u16~0=v_~state_u16~0_32, old(~init_b~1)=|v_old(~init_b~1)_7|, ~init_b~1=v_~init_b~1_33, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_6|}
+  OutVars:  {~inputSignal_u8~0=v_~inputSignal_u8~0_12, old(~inputSignal_u8~0)=|v_old(~inputSignal_u8~0)_5|, ~stop_b~0=v_~stop_b~0_12, old(~stop_b~0)=|v_old(~stop_b~0)_5|, old(~init_b~0)=|v_old(~init_b~0)_6|, ~init_b~0=v_~init_b~0_23, old(~state_u16~0)=|v_old(~state_u16~0)_6|, ~state_u16~0=v_~state_u16~0_30, old(~init_b~1)=|v_old(~init_b~1)_6|, ~init_b~1=v_~init_b~1_31, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_5|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {main_#t~ret4=|v_main_#t~ret4_10|, main_#t~ret3=|v_main_#t~ret3_12|}
+  OutVars:  {main_#t~ret4=|v_main_#t~ret4_8|, main_#t~ret3=|v_main_#t~ret3_10|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=4):
+  [0] call ULTIMATE.init();
+  [1] ~inputSignal_u8~0 := 0;~stop_b~0 := 0;~init_b~0 := 1;~init_b~1 := 0;~state_u16~0 := 0;assume true;
+  [2] #66#return;
+  [3] call #t~ret5 := main();
+Loop (length=3):
+  [0] call #t~ret3 := tclRange_b(0, 1);
+  [1] assume 0 != #t~ret3;havoc #t~ret3;call #t~ret4 := tclRange_b(0, 1);
+  [2] assume !(0 != #t~ret4);havoc #t~ret4;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2676259 ns (2,68 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7269e3d3
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,68 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,181 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_#t~ret4                             : Int
+  main_#t~nondet1                                    : Int
+  main_~x~0                                          : Int
+  main_#t~nondet0                                    : Int
+  main_~a~0                                          : Int
+  main_#t~post2                                      : Int
+  main_#t~bitwise3                                   : Int
+  v_ULTIMATE.start_#t~ret4_6                         : Int
+  v_main_#t~nondet1_8                                : Int
+  v_main_~x~0_38                                     : Int
+  v_main_#t~nondet0_8                                : Int
+  v_main_~a~0_31                                     : Int
+  v_ULTIMATE.start_#t~ret4_5                         : Int
+  v_main_#t~nondet1_7                                : Int
+  v_main_~x~0_35                                     : Int
+  v_main_#t~nondet0_7                                : Int
+  v_main_~a~0_28                                     : Int
+  v_main_~x~0_37                                     : Int
+  v_main_~a~0_30                                     : Int
+  v_main_#t~post2_8                                  : Int
+  v_main_#t~bitwise3_17                              : Int
+  v_main_~x~0_36                                     : Int
+  v_main_#t~post2_7                                  : Int
+  v_main_#t~bitwise3_16                              : Int
+  v_main_~a~0_29                                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 1 v_main_~a~0_46) (<= 0 (+ v_main_~x~0_53 2147483648)) (<= v_main_~a~0_46 2147483647) (<= v_main_~x~0_53 2147483647))  InVars {}  OutVars{ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_14|, main_#t~nondet1=|v_main_#t~nondet1_19|, main_~x~0=v_main_~x~0_53, main_#t~nondet0=|v_main_#t~nondet0_19|, main_~a~0=v_main_~a~0_46}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret4, main_#t~nondet1, main_~x~0, main_#t~nondet0, main_~a~0]
+
+Loop TransFormula:
+Formula: (let ((.cse1 (+ 1 v_main_~a~0_47))) (and (<= 1 v_main_~x~0_55) (let ((.cse0 (= v_main_~x~0_55 v_main_~a~0_47))) (or (and .cse0 (= v_main_~x~0_55 v_main_~x~0_54)) (and (or (< v_main_~a~0_47 0) (< v_main_~x~0_54 .cse1)) (<= v_main_~x~0_54 v_main_~x~0_55) (not .cse0) (or (< (+ v_main_~x~0_55 v_main_~a~0_47) v_main_~x~0_54) (< 0 .cse1)) (<= 0 v_main_~x~0_54)))) (= .cse1 v_main_~a~0_48)))  InVars {main_~x~0=v_main_~x~0_55, main_~a~0=v_main_~a~0_48}  OutVars{main_~x~0=v_main_~x~0_54, main_#t~post2=|v_main_#t~post2_13|, main_#t~bitwise3=|v_main_#t~bitwise3_22|, main_~a~0=v_main_~a~0_47}  AuxVars[]  AssignedVars[main_~x~0, main_#t~post2, main_#t~bitwise3, main_~a~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 63
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9630
+    Simplify formula using some simplification technique -> relative DAG size: 0,9615
+    Transform into disjunctive normal form -> relative DAG size: 3,9333
+    Simplify formula using some simplification technique -> relative DAG size: 0,3695
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0734
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~a~0_28 2147483647) (<= v_main_~x~0_35 2147483647) (<= 1 v_main_~a~0_28) (<= 0 (+ v_main_~x~0_35 2147483648)))
+  InVars:   {ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_6|, main_#t~nondet1=|v_main_#t~nondet1_8|, main_~x~0=v_main_~x~0_38, main_#t~nondet0=|v_main_#t~nondet0_8|, main_~a~0=v_main_~a~0_31}
+  OutVars:  {ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_5|, main_#t~nondet1=|v_main_#t~nondet1_7|, main_~x~0=v_main_~x~0_35, main_#t~nondet0=|v_main_#t~nondet0_7|, main_~a~0=v_main_~a~0_28}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= 0 v_main_~x~0_36) (<= 1 v_main_~x~0_37) (<= (+ 1 v_main_~a~0_29) v_main_~a~0_30) (<= (+ v_main_~x~0_37 1) v_main_~a~0_29) (<= v_main_~a~0_30 (+ 1 v_main_~a~0_29)) (<= v_main_~x~0_36 v_main_~x~0_37)) (and (<= 0 v_main_~x~0_36) (<= (+ v_main_~x~0_36 1) (+ 1 v_main_~a~0_29)) (<= (+ 1 v_main_~a~0_29) v_main_~a~0_30) (<= v_main_~a~0_30 (+ 1 v_main_~a~0_29)) (<= (+ v_main_~a~0_29 1) v_main_~x~0_37)) (and (<= 1 v_main_~x~0_37) (<= (+ 1 v_main_~a~0_29) v_main_~a~0_30) (<= v_main_~x~0_37 v_main_~a~0_29) (<= v_main_~a~0_30 (+ 1 v_main_~a~0_29)) (<= v_main_~x~0_36 v_main_~x~0_37) (<= v_main_~x~0_37 v_main_~x~0_36)) (and (<= (+ (+ v_main_~x~0_37 v_main_~a~0_29) 1) v_main_~x~0_36) (<= 0 v_main_~x~0_36) (<= 1 v_main_~x~0_37) (<= (+ 1 v_main_~a~0_29) v_main_~a~0_30) (<= v_main_~a~0_30 (+ 1 v_main_~a~0_29)) (<= v_main_~x~0_36 v_main_~x~0_37)))
+  InVars:   {main_~x~0=v_main_~x~0_37, main_~a~0=v_main_~a~0_30, main_#t~post2=|v_main_#t~post2_8|, main_#t~bitwise3=|v_main_#t~bitwise3_17|}
+  OutVars:  {main_~x~0=v_main_~x~0_36, main_#t~post2=|v_main_#t~post2_7|, main_#t~bitwise3=|v_main_#t~bitwise3_16|, main_~a~0=v_main_~a~0_29}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #31#return;
+  [3] call #t~ret4 := main();
+  [4] havoc ~a~0;havoc ~x~0;havoc #t~nondet0;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;~x~0 := #t~nondet0;havoc #t~nondet0;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~a~0 := #t~nondet1;havoc #t~nondet1;BeginParallelComposition{ParallelCodeBlock0: assume !(~a~0 > 0);assume false;ParallelCodeBlock1: assume !!(~a~0 > 0);}EndParallelComposition
+Loop (length=1):
+  [0] assume ~x~0 > 0;#t~post2 := ~a~0;~a~0 := #t~post2 - 1;havoc #t~post2;BeginParallelComposition{ParallelCodeBlock0: assume 0 == ~x~0 || 0 == ~a~0;#t~bitwise3 := 0;ParallelCodeBlock1: assume !(0 == ~x~0 || 0 == ~a~0);BeginParallelComposition{ParallelCodeBlock0: assume ~x~0 == ~a~0;#t~bitwise3 := ~x~0;ParallelCodeBlock1: assume !(~x~0 == ~a~0);havoc #t~bitwise3;assume (((((~x~0 < 0 && ~a~0 >= 0) || #t~bitwise3 <= ~x~0) && ((~x~0 >= 0 && ~a~0 < 0) || #t~bitwise3 <= ~a~0)) && ((~x~0 < 0 && ~a~0 < 0) || #t~bitwise3 >= 0)) && ((~x~0 >= 0 && ~a~0 >= 0) || #t~bitwise3 > ~x~0 + ~a~0)) && #t~bitwise3 >= -2147483648;}EndParallelComposition}EndParallelComposition~x~0 := #t~bitwise3;havoc #t~bitwise3;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1847054 ns (1,85 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 281062556 ns (281,06 ms)
+       Variables (stem/loop): 2/4  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 281,06 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(main_~a~0) = 1*main_~a~0
+  Variables:
+    main_~a~0
+  Supporting invariants:
+    [0] -1*main_~x~0 + 2147483647*main_~a~0 >= 0
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 45560092 ns (45,56 ms)
+       Variables (stem/loop): 2/4  Disjuncts (stem/loop): 1/4
+  Total nontermination analysis time: 45,56 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 63
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9630
+    Simplify formula using some simplification technique -> relative DAG size: 0,9615
+    Transform into disjunctive normal form -> relative DAG size: 3,9333
+    Simplify formula using some simplification technique -> relative DAG size: 0,3695
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0734
+  [Lasso 2] Initial max DAG size: 63
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9630
+    Simplify formula using some simplification technique -> relative DAG size: 0,9615
+    Transform into disjunctive normal form -> relative DAG size: 3,9333
+    Simplify formula using some simplification technique -> relative DAG size: 0,3695
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0734
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,85 ms
+Total LassoRanker time: 326,62 ms
+  Termination analysis:     281,06 ms
+  Nontermination analysis:   45,56 ms

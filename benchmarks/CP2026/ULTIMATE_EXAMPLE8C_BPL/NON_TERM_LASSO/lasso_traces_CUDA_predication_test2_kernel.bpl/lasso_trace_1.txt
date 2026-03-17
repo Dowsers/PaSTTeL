@@ -1,0 +1,130 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_p0$1                                : Bool
+  ULTIMATE.start_p0$2                                : Bool
+  ULTIMATE.start_v8$2                                : Bool
+  ULTIMATE.start_v3$1                                : Bool
+  ULTIMATE.start_v8$1                                : Bool
+  ULTIMATE.start_v3$2                                : Bool
+  ULTIMATE.start_v1$2                                : Bool
+  ULTIMATE.start_v1$1                                : Bool
+  ULTIMATE.start_$c.0$1                              : (_ BitVec 8)
+  ULTIMATE.start_$c.0$2                              : (_ BitVec 8)
+  ULTIMATE.start_v6$2                                : Bool
+  ULTIMATE.start_v6$1                                : Bool
+  ULTIMATE.start_p4$1                                : Bool
+  ULTIMATE.start_p4$2                                : Bool
+  ULTIMATE.start_p2$1                                : Bool
+  ULTIMATE.start_p7$2                                : Bool
+  ULTIMATE.start_p2$2                                : Bool
+  ULTIMATE.start_p7$1                                : Bool
+  ULTIMATE.start_v4$2                                : (_ BitVec 8)
+  ULTIMATE.start_p1$1                                : Bool
+  ULTIMATE.start_v4$1                                : (_ BitVec 8)
+  ULTIMATE.start_p1$2                                : Bool
+
+Function signatures:
+  group_size_z() -> (_ BitVec 32)
+  group_id_z$1() -> (_ BitVec 32)
+  local_id_z$1() -> (_ BitVec 32)
+  local_id_x$2() -> (_ BitVec 32)
+  group_id_y$1() -> (_ BitVec 32)
+  local_id_x$1() -> (_ BitVec 32)
+  num_groups_y() -> (_ BitVec 32)
+  group_size_y() -> (_ BitVec 32)
+  num_groups_z() -> (_ BitVec 32)
+  local_id_y$2() -> (_ BitVec 32)
+  local_id_y$1() -> (_ BitVec 32)
+  group_id_x$2() -> (_ BitVec 32)
+  num_groups_x() -> (_ BitVec 32)
+  group_size_x() -> (_ BitVec 32)
+  group_id_x$1() -> (_ BitVec 32)
+  local_id_z$2() -> (_ BitVec 32)
+  group_id_y$2() -> (_ BitVec 32)
+  group_id_z$2() -> (_ BitVec 32)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (bvslt local_id_z$2 group_size_z) (bvsge local_id_z$2 (_ bv0 32)) (bvsge group_id_z$1 (_ bv0 32)) (bvslt local_id_y$1 group_size_y) (bvslt group_id_z$2 num_groups_z) (bvsge group_id_z$2 (_ bv0 32)) (bvslt local_id_x$2 group_size_x) (bvsge local_id_x$1 (_ bv0 32)) (bvsge local_id_z$1 (_ bv0 32)) (bvsge local_id_x$2 (_ bv0 32)) (bvsge group_id_y$1 (_ bv0 32)) (bvslt group_id_y$2 num_groups_y) (bvsge group_id_y$2 (_ bv0 32)) (not (= local_id_x$1 local_id_x$2)) (bvslt local_id_x$1 group_size_x) (bvsge local_id_y$1 (_ bv0 32)) (bvslt group_id_x$2 num_groups_x) (bvslt local_id_z$1 group_size_z) (bvslt group_id_y$1 num_groups_y) (bvslt group_id_x$1 num_groups_x) v_ULTIMATE.start_p0$2_40 v_ULTIMATE.start_p0$1_41 (bvsge local_id_y$2 (_ bv0 32)) (bvsge group_id_x$1 (_ bv0 32)) (bvslt group_id_z$1 num_groups_z) (bvslt local_id_y$2 group_size_y) (bvsge group_id_x$2 (_ bv0 32)))  InVars {}  OutVars{ULTIMATE.start_p0$1=v_ULTIMATE.start_p0$1_41, ULTIMATE.start_p0$2=v_ULTIMATE.start_p0$2_40}  AuxVars[]  AssignedVars[ULTIMATE.start_p0$1, ULTIMATE.start_p0$2]
+
+Loop TransFormula:
+Formula: (let ((.cse8 (not v_ULTIMATE.start_v1$1_9)) (.cse0 (not v_ULTIMATE.start_v1$2_9))) (and (or (and (or v_ULTIMATE.start_p0$2_44 (not v_ULTIMATE.start_v1$2_10)) .cse0) (and (or v_ULTIMATE.start_p0$2_44 v_ULTIMATE.start_v1$2_10) v_ULTIMATE.start_v1$2_9)) (let ((.cse1 (= v_ULTIMATE.start_$c.0$1_15 v_ULTIMATE.start_$c.0$1_17)) (.cse3 (or .cse8 (not v_ULTIMATE.start_p0$1_45))) (.cse4 (not v_ULTIMATE.start_p0$1_43)) (.cse5 (= (_ bv0 8) v_ULTIMATE.start_$c.0$1_15)) (.cse2 (or (and v_ULTIMATE.start_v8$1_10 v_ULTIMATE.start_v8$1_9) (and (not v_ULTIMATE.start_v8$1_10) (not v_ULTIMATE.start_v8$1_9))))) (let ((.cse6 (not v_ULTIMATE.start_v3$1_9)) (.cse7 (or (and .cse1 .cse2 .cse3 (not v_ULTIMATE.start_v3$1_10) .cse4) (and .cse5 .cse2 v_ULTIMATE.start_p0$1_45 v_ULTIMATE.start_p0$1_43 v_ULTIMATE.start_v1$1_9)))) (or (and (or (and v_ULTIMATE.start_v3$1_9 (or (and .cse1 .cse2 .cse3 .cse4 v_ULTIMATE.start_v3$1_10 v_ULTIMATE.start_v6$1_10) (and v_ULTIMATE.start_p0$1_45 v_ULTIMATE.start_p0$1_43 v_ULTIMATE.start_v1$1_9 v_ULTIMATE.start_v8$1_9 (not .cse5)))) (and .cse6 .cse7 v_ULTIMATE.start_v6$1_10)) v_ULTIMATE.start_v6$1_9) (and (not v_ULTIMATE.start_v6$1_9) (or (and .cse6 .cse7) (and .cse1 .cse2 .cse3 .cse4 v_ULTIMATE.start_v3$1_9 v_ULTIMATE.start_v3$1_10)) (not v_ULTIMATE.start_v6$1_10))))) (or (and v_ULTIMATE.start_v1$1_9 (or v_ULTIMATE.start_p0$1_45 v_ULTIMATE.start_v1$1_10)) (and .cse8 (or (not v_ULTIMATE.start_v1$1_10) v_ULTIMATE.start_p0$1_45))) (let ((.cse10 (= (_ bv0 8) v_ULTIMATE.start_$c.0$2_15)) (.cse9 (let ((.cse14 (or (and (not v_ULTIMATE.start_v8$2_9) (not v_ULTIMATE.start_v8$2_10)) (and v_ULTIMATE.start_v8$2_10 v_ULTIMATE.start_v8$2_9)))) (or (and v_ULTIMATE.start_v6$2_9 .cse14 v_ULTIMATE.start_v6$2_10) (and (not v_ULTIMATE.start_v6$2_9) .cse14 (not v_ULTIMATE.start_v6$2_10))))) (.cse11 (let ((.cse12 (not v_ULTIMATE.start_p0$2_42)) (.cse13 (= v_ULTIMATE.start_$c.0$2_15 v_ULTIMATE.start_$c.0$2_17))) (or (and .cse12 .cse13 .cse0) (and .cse12 (not v_ULTIMATE.start_p0$2_44) .cse13))))) (or (and .cse9 (or (and .cse10 v_ULTIMATE.start_p0$2_42 v_ULTIMATE.start_p0$2_44 v_ULTIMATE.start_v1$2_9) (and (not v_ULTIMATE.start_v3$2_10) .cse11)) (not v_ULTIMATE.start_v3$2_9)) (and (or (and (not .cse10) v_ULTIMATE.start_p0$2_42 v_ULTIMATE.start_p0$2_44 v_ULTIMATE.start_v1$2_9 v_ULTIMATE.start_v6$2_9 v_ULTIMATE.start_v8$2_9) (and .cse9 .cse11 v_ULTIMATE.start_v3$2_10)) v_ULTIMATE.start_v3$2_9))) (or v_ULTIMATE.start_p0$2_42 v_ULTIMATE.start_p0$1_43)))  InVars {ULTIMATE.start_v8$2=v_ULTIMATE.start_v8$2_10, ULTIMATE.start_v3$1=v_ULTIMATE.start_v3$1_10, ULTIMATE.start_v8$1=v_ULTIMATE.start_v8$1_10, ULTIMATE.start_v3$2=v_ULTIMATE.start_v3$2_10, ULTIMATE.start_v1$2=v_ULTIMATE.start_v1$2_10, ULTIMATE.start_v1$1=v_ULTIMATE.start_v1$1_10, ULTIMATE.start_p0$1=v_ULTIMATE.start_p0$1_45, ULTIMATE.start_p0$2=v_ULTIMATE.start_p0$2_44, ULTIMATE.start_$c.0$1=v_ULTIMATE.start_$c.0$1_17, ULTIMATE.start_$c.0$2=v_ULTIMATE.start_$c.0$2_17, ULTIMATE.start_v6$2=v_ULTIMATE.start_v6$2_10, ULTIMATE.start_v6$1=v_ULTIMATE.start_v6$1_10}  OutVars{ULTIMATE.start_v8$2=v_ULTIMATE.start_v8$2_9, ULTIMATE.start_v3$1=v_ULTIMATE.start_v3$1_9, ULTIMATE.start_v8$1=v_ULTIMATE.start_v8$1_9, ULTIMATE.start_v3$2=v_ULTIMATE.start_v3$2_9, ULTIMATE.start_v1$2=v_ULTIMATE.start_v1$2_9, ULTIMATE.start_p4$1=v_ULTIMATE.start_p4$1_30, ULTIMATE.start_v1$1=v_ULTIMATE.start_v1$1_9, ULTIMATE.start_p4$2=v_ULTIMATE.start_p4$2_29, ULTIMATE.start_p0$1=v_ULTIMATE.start_p0$1_43, ULTIMATE.start_p0$2=v_ULTIMATE.start_p0$2_42, ULTIMATE.start_p2$1=v_ULTIMATE.start_p2$1_41, ULTIMATE.start_p7$2=v_ULTIMATE.start_p7$2_18, ULTIMATE.start_p2$2=v_ULTIMATE.start_p2$2_40, ULTIMATE.start_p7$1=v_ULTIMATE.start_p7$1_18, ULTIMATE.start_$c.0$1=v_ULTIMATE.start_$c.0$1_15, ULTIMATE.start_$c.0$2=v_ULTIMATE.start_$c.0$2_15, ULTIMATE.start_v4$2=v_ULTIMATE.start_v4$2_10, ULTIMATE.start_p1$1=v_ULTIMATE.start_p1$1_18, ULTIMATE.start_v4$1=v_ULTIMATE.start_v4$1_10, ULTIMATE.start_p1$2=v_ULTIMATE.start_p1$2_18, ULTIMATE.start_v6$2=v_ULTIMATE.start_v6$2_9, ULTIMATE.start_v6$1=v_ULTIMATE.start_v6$1_9}  AuxVars[]  AssignedVars[ULTIMATE.start_v8$2, ULTIMATE.start_v3$1, ULTIMATE.start_v8$1, ULTIMATE.start_v3$2, ULTIMATE.start_v1$2, ULTIMATE.start_p4$1, ULTIMATE.start_v1$1, ULTIMATE.start_p4$2, ULTIMATE.start_p0$1, ULTIMATE.start_p0$2, ULTIMATE.start_p2$1, ULTIMATE.start_p7$2, ULTIMATE.start_p2$2, ULTIMATE.start_p7$1, ULTIMATE.start_$c.0$1, ULTIMATE.start_$c.0$2, ULTIMATE.start_v4$2, ULTIMATE.start_p1$1, ULTIMATE.start_v4$1, ULTIMATE.start_p1$2, ULTIMATE.start_v6$2, ULTIMATE.start_v6$1]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  (not available)
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume BV32_SGT(group_size_x, 0bv32);assume BV32_SGT(num_groups_x, 0bv32);assume BV32_SGE(group_id_x$1, 0bv32);assume BV32_SGE(group_id_x$2, 0bv32);assume BV32_SLT(group_id_x$1, num_groups_x);assume BV32_SLT(group_id_x$2, num_groups_x);assume BV32_SGE(local_id_x$1, 0bv32);assume BV32_SGE(local_id_x$2, 0bv32);assume BV32_SLT(local_id_x$1, group_size_x);assume BV32_SLT(local_id_x$2, group_size_x);assume BV32_SGT(group_size_y, 0bv32);assume BV32_SGT(num_groups_y, 0bv32);assume BV32_SGE(group_id_y$1, 0bv32);assume BV32_SGE(group_id_y$2, 0bv32);assume BV32_SLT(group_id_y$1, num_groups_y);assume BV32_SLT(group_id_y$2, num_groups_y);assume BV32_SGE(local_id_y$1, 0bv32);assume BV32_SGE(local_id_y$2, 0bv32);assume BV32_SLT(local_id_y$1, group_size_y);assume BV32_SLT(local_id_y$2, group_size_y);assume BV32_SGT(group_size_z, 0bv32);assume BV32_SGT(num_groups_z, 0bv32);assume BV32_SGE(group_id_z$1, 0bv32);assume BV32_SGE(group_id_z$2, 0bv32);assume BV32_SLT(group_id_z$1, num_groups_z);assume BV32_SLT(group_id_z$2, num_groups_z);assume BV32_SGE(local_id_z$1, 0bv32);assume BV32_SGE(local_id_z$2, 0bv32);assume BV32_SLT(local_id_z$1, group_size_z);assume BV32_SLT(local_id_z$2, group_size_z);assume group_id_x$1 == group_id_x$2 && group_id_y$1 == group_id_y$2 && group_id_z$1 == group_id_z$2 ==> local_id_x$1 != local_id_x$2 || local_id_y$1 != local_id_y$2 || local_id_z$1 != local_id_z$2;p0$1 := false;p0$2 := false;p0$1 := true;p0$2 := true;assume { :captureState "loop_entry_state_0_0" } true;
+Loop (length=15):
+  [0] assume { :captureState "loop_head_state_0" } true;
+  [1] assume p0$1 ==> true;call v0$1, v0$2 := $_Z6nondetv(p0$1, p0$2);assume { :captureState "call_return_state_0" } { :procedureName "$_Z6nondetv" } true;v1$1 := (if p0$1 then v0$1 != 0bv8 else v1$1);v1$2 := (if p0$2 then v0$2 != 0bv8 else v1$2);p1$1 := false;p1$2 := false;p2$1 := false;p2$2 := false;p10$1 := false;p10$2 := false;p1$1 := (if p0$1 && v1$1 then v1$1 else p1$1);p1$2 := (if p0$2 && v1$2 then v1$2 else p1$2);p0$1 := (if p0$1 && !v1$1 then v1$1 else p0$1);p0$2 := (if p0$2 && !v1$2 then v1$2 else p0$2);call v2$1, v2$2 := $_Z6nondetv(p1$1, p1$2);assume { :captureState "call_return_state_0" } { :procedureName "$_Z6nondetv" } true;$c.0$1 := (if p1$1 then v2$1 else $c.0$1);$c.0$2 := (if p1$2 then v2$2 else $c.0$2);p2$1 := (if p1$1 then true else p2$1);p2$2 := (if p1$2 then true else p2$2);assume { :captureState "loop_entry_state_1_0" } true;
+  [2] assume { :captureState "loop_head_state_1" } true;assume { :predicate "p2" } { :dominator_predicate "p1" } true;
+  [3] assume p2$1 ==> p0$1;
+  [4] assume p2$2 ==> p0$2;
+  [5] assume p2$1 ==> true;v3$1 := (if p2$1 then $c.0$1 != 0bv8 else v3$1);v3$2 := (if p2$2 then $c.0$2 != 0bv8 else v3$2);p3$1 := false;p3$2 := false;p4$1 := false;p4$2 := false;p8$1 := false;p8$2 := false;p3$1 := (if p2$1 && v3$1 then v3$1 else p3$1);p3$2 := (if p2$2 && v3$2 then v3$2 else p3$2);p2$1 := (if p2$1 && !v3$1 then v3$1 else p2$1);p2$2 := (if p2$2 && !v3$2 then v3$2 else p2$2);call v4$1, v4$2 := $_Z6nondetv(p3$1, p3$2);assume { :captureState "call_return_state_0" } { :procedureName "$_Z6nondetv" } true;p4$1 := (if p3$1 then true else p4$1);p4$2 := (if p3$2 then true else p4$2);assume { :captureState "loop_entry_state_2_0" } true;
+  [6] assume { :captureState "loop_head_state_2" } true;assume { :predicate "p4" } { :dominator_predicate "p3" } true;
+  [7] assume p4$1 ==> p2$1;
+  [8] assume p4$2 ==> p2$2;
+  [9] assume p2$1 ==> p0$1;
+  [10] assume p2$2 ==> p0$2;
+  [11] assume p4$1 ==> true;call v5$1, v5$2 := $_Z6nondetv(p4$1, p4$2);assume { :captureState "call_return_state_0" } { :procedureName "$_Z6nondetv" } true;v6$1 := (if p4$1 then v5$1 != 0bv8 else v6$1);v6$2 := (if p4$2 then v5$2 != 0bv8 else v6$2);p5$1 := false;p5$2 := false;p6$1 := false;p6$2 := false;p7$1 := false;p7$2 := false;p9$1 := false;p9$2 := false;p5$1 := (if p4$1 && v6$1 then v6$1 else p5$1);p5$2 := (if p4$2 && v6$2 then v6$2 else p5$2);p7$1 := (if p4$1 && !v6$1 then !v6$1 else p7$1);p7$2 := (if p4$2 && !v6$2 then !v6$2 else p7$2);p4$1 := (if p4$1 && !v6$1 then v6$1 else p4$1);p4$2 := (if p4$2 && !v6$2 then v6$2 else p4$2);call v7$1, v7$2 := $_Z6nondetv(p5$1, p5$2);assume { :captureState "call_return_state_0" } { :procedureName "$_Z6nondetv" } true;v8$1 := (if p5$1 then v7$1 != 0bv8 else v8$1);v8$2 := (if p5$2 then v7$2 != 0bv8 else v8$2);p4$1 := (if p5$1 && v8$1 then !v8$1 else p4$1);p4$2 := (if p5$2 && v8$2 then !v8$2 else p4$2);p2$1 := (if p5$1 && v8$1 then !v8$1 else p2$1);p2$2 := (if p5$2 && v8$2 then !v8$2 else p2$2);p4$1 := (if p5$1 && !v8$1 then !v8$1 else p4$1);p4$2 := (if p5$2 && !v8$2 then !v8$2 else p4$2);p4$1 := (if p6$1 then true else p4$1);p4$2 := (if p6$2 then true else p4$2);
+  [12] assume !p4$1 && !p4$2;$c.0$1 := (if p7$1 then v4$1 else $c.0$1);$c.0$2 := (if p7$2 then v4$2 else $c.0$2);p2$1 := (if p7$1 then true else p2$1);p2$2 := (if p7$2 then true else p2$2);
+  [13] assume !p2$1 && !p2$2;p0$1 := (if p1$1 then true else p0$1);p0$2 := (if p1$2 then true else p0$2);
+  [14] assume { :backedge } p0$1 || p0$2;assume { :captureState "loop_back_edge_state_0_0" } true;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   4067079 ns (4,07 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@69c219c0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  4,07 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

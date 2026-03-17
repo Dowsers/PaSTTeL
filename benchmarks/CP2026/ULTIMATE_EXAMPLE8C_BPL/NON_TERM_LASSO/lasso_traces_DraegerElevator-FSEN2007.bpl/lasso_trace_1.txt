@@ -1,0 +1,126 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_input                                         : Int
+  main_max                                           : Int
+  main_current                                       : Int
+  main_pc                                            : Int
+  main_req                                           : Int
+  v_main_input_52                                    : Int
+  v_main_max_27                                      : Int
+  v_main_current_50                                  : Int
+  v_main_pc_74                                       : Int
+  v_main_pc_68                                       : Int
+  v_main_input_54                                    : Int
+  v_main_max_28                                      : Int
+  v_main_current_52                                  : Int
+  v_main_req_43                                      : Int
+  v_main_pc_70                                       : Int
+  v_main_input_53                                    : Int
+  v_main_current_51                                  : Int
+  v_main_req_42                                      : Int
+  v_main_pc_69                                       : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= v_main_current_64 v_main_max_33) (= v_main_pc_93 0) (<= v_main_input_71 v_main_max_33))  InVars {main_input=v_main_input_71, main_max=v_main_max_33, main_current=v_main_current_64}  OutVars{main_input=v_main_input_71, main_max=v_main_max_33, main_current=v_main_current_64, main_pc=v_main_pc_93}  AuxVars[]  AssignedVars[main_pc]
+
+Loop TransFormula:
+Formula: (and (let ((.cse2 (= 2 v_main_pc_94)) (.cse5 (= v_main_input_73 v_main_input_72)) (.cse10 (= 3 v_main_pc_94)) (.cse11 (= v_main_req_48 v_main_current_66)) (.cse12 (<= v_main_input_72 v_main_max_34)) (.cse4 (= v_main_current_66 v_main_current_65)) (.cse13 (= v_main_pc_94 0))) (let ((.cse6 (and .cse11 .cse12 .cse4 .cse13)) (.cse14 (and (<= (+ v_main_req_48 1) v_main_current_66) .cse5 .cse10 (= v_main_current_66 (+ v_main_current_65 1)))) (.cse7 (let ((.cse16 (+ v_main_current_66 1))) (and .cse2 .cse5 (= .cse16 v_main_current_65) (<= .cse16 v_main_req_48))))) (let ((.cse15 (= v_main_pc_95 0)) (.cse1 (or .cse6 .cse14 .cse7))) (or (and (let ((.cse0 (= v_main_pc_95 1))) (or (and .cse0 .cse1) (and (not .cse0) (let ((.cse3 (not .cse11)) (.cse8 (= 2 v_main_pc_95))) (or (and (or (and (or (and .cse2 .cse3 .cse4 .cse5) .cse6) (<= v_main_req_48 v_main_current_66)) .cse7) .cse8) (and (let ((.cse9 (= 3 v_main_pc_95))) (or (and .cse4 (= v_main_pc_95 v_main_pc_94) .cse5 (not .cse9)) (and .cse9 (or (and .cse4 (<= v_main_current_66 v_main_req_48) (or (and .cse3 .cse5 .cse10) (and .cse11 .cse12 .cse13))) .cse14)))) (not .cse8))))))) (not .cse15) (= v_main_req_49 v_main_req_48)) (and (= v_main_req_48 v_main_input_73) .cse15 .cse1))))) (<= v_main_current_66 v_main_max_34))  InVars {main_input=v_main_input_73, main_max=v_main_max_34, main_current=v_main_current_66, main_req=v_main_req_49, main_pc=v_main_pc_95}  OutVars{main_input=v_main_input_72, main_max=v_main_max_34, main_current=v_main_current_65, main_req=v_main_req_48, main_pc=v_main_pc_94}  AuxVars[]  AssignedVars[main_input, main_current, main_req, main_pc]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 245
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8898
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8985
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 4,0601
+    Simplify formula using some simplification technique -> relative DAG size: 0,3292
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0180
+
+Stem (linearized):
+  Formula:  (and (<= v_main_current_50 v_main_max_27) (>= v_main_pc_68 0) (<= v_main_input_52 v_main_max_27) (<= v_main_pc_68 0))
+  InVars:   {main_input=v_main_input_52, main_max=v_main_max_27, main_current=v_main_current_50, main_pc=v_main_pc_74}
+  OutVars:  {main_input=v_main_input_52, main_max=v_main_max_27, main_current=v_main_current_50, main_pc=v_main_pc_68}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 1) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51) (<= 1 v_main_pc_70)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_input_54 v_main_req_42) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_max_28) (<= v_main_current_51 v_main_current_52) (<= v_main_current_52 v_main_req_42) (<= v_main_pc_70 0)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_pc_70 2) (<= v_main_current_52 v_main_req_42)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_input_54 v_main_req_42) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_input_54 v_main_input_53) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51) (<= v_main_pc_70 0)) (and (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 3) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_current_52 v_main_req_42)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_current_52) (<= 0 v_main_pc_69) (<= v_main_pc_69 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_pc_70 1) (<= v_main_input_53 v_main_max_28) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= (+ 0 1) v_main_pc_70) (<= v_main_current_52 v_main_req_42)) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_req_43) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_pc_70 1) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1)) (<= 1 v_main_pc_70)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= v_main_pc_69 v_main_pc_70) (<= v_main_pc_70 v_main_pc_69) (<= (+ 3 1) v_main_pc_69)) (and (<= v_main_current_52 v_main_max_28) (<= (+ v_main_pc_70 1) 0) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= v_main_pc_69 v_main_pc_70) (<= v_main_pc_70 v_main_pc_69)) (and (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_current_52 v_main_current_51) (<= v_main_req_42 v_main_req_43) (<= v_main_input_54 v_main_input_53) (<= v_main_pc_70 3) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3)) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= 3 v_main_pc_70) (<= v_main_current_52 v_main_max_28) (<= v_main_req_42 v_main_req_43) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_input_54 v_main_input_53) (<= v_main_pc_70 3) (<= v_main_req_43 v_main_req_42) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1))) (and (<= (+ v_main_current_51 1) v_main_current_52) (<= v_main_current_52 v_main_max_28) (<= v_main_input_54 v_main_req_42) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_input_54 v_main_input_53) (<= 0 v_main_pc_70) (<= v_main_req_42 v_main_input_54) (<= v_main_input_53 v_main_input_54) (<= 3 v_main_pc_69) (<= v_main_pc_69 3) (<= v_main_current_52 (+ v_main_current_51 1)) (<= v_main_pc_70 0)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_51 (+ v_main_current_52 1)) (<= (+ v_main_current_52 1) v_main_req_42) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_pc_70 2) (<= v_main_input_53 v_main_input_54) (<= (+ v_main_current_52 1) v_main_current_51)) (and (<= v_main_current_52 v_main_max_28) (<= v_main_pc_69 2) (<= 2 v_main_pc_69) (<= v_main_current_52 v_main_current_51) (<= (+ v_main_req_42 1) v_main_current_52) (<= v_main_req_42 v_main_req_43) (<= 2 v_main_pc_70) (<= v_main_input_54 v_main_input_53) (<= v_main_req_43 v_main_req_42) (<= v_main_current_51 v_main_current_52) (<= v_main_pc_70 2) (<= v_main_input_53 v_main_input_54)))
+  InVars:   {main_input=v_main_input_54, main_max=v_main_max_28, main_current=v_main_current_52, main_req=v_main_req_43, main_pc=v_main_pc_70}
+  OutVars:  {main_input=v_main_input_53, main_max=v_main_max_28, main_current=v_main_current_51, main_req=v_main_req_42, main_pc=v_main_pc_69}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume current <= max;assume input <= max;pc := 0;
+Loop (length=2):
+  [0] assume current <= max;
+  [1] BeginParallelComposition{ParallelCodeBlock0: assume pc == 0;pc := 1;req := input;ParallelCodeBlock1: assume !(pc == 0);}EndParallelCompositionBeginParallelComposition{ParallelCodeBlock0: assume !(pc == 1);ParallelCodeBlock1: assume pc == 1;BeginParallelComposition{ParallelCodeBlock0: assume req > current;pc := 2;ParallelCodeBlock1: assume !(req > current);BeginParallelComposition{ParallelCodeBlock0: assume req < current;pc := 3;ParallelCodeBlock1: assume !(req < current);BeginParallelComposition{ParallelCodeBlock0: assume req == current;pc := 0;havoc input;assume input <= max;ParallelCodeBlock1: assume !(req == current);}EndParallelComposition}EndParallelComposition}EndParallelComposition}EndParallelCompositionBeginParallelComposition{ParallelCodeBlock0: assume !(pc == 2);ParallelCodeBlock1: assume pc == 2;BeginParallelComposition{ParallelCodeBlock0: assume req > current;current := current + 1;ParallelCodeBlock1: assume !(req > current);BeginParallelComposition{ParallelCodeBlock0: assume req == current;pc := 0;havoc input;assume input <= max;ParallelCodeBlock1: assume !(req == current);}EndParallelComposition}EndParallelComposition}EndParallelCompositionBeginParallelComposition{ParallelCodeBlock0: assume !(pc == 3);ParallelCodeBlock1: assume pc == 3;BeginParallelComposition{ParallelCodeBlock0: assume req < current;current := current - 1;ParallelCodeBlock1: assume !(req < current);BeginParallelComposition{ParallelCodeBlock0: assume req == current;pc := 0;havoc input;assume input <= max;ParallelCodeBlock1: assume !(req == current);}EndParallelComposition}EndParallelComposition}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   4010428 ns (4,01 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7b0fd868
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  4,01 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

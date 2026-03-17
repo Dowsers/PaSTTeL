@@ -1,0 +1,149 @@
+========================================
+LASSO TRACE REPORT - Iteration #3
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  encT_n                                             : Int
+  encT_star                                          : Bool
+  encT_n_local                                       : Int
+  encT_x_local                                       : Int
+  encT_blockCall                                     : Bool
+  v_encT_n_8                                         : Int
+  v_encT_n_local_39                                  : Int
+  v_v_rep(ite encT_star 1 0)_3_in_bool_1             : Int
+  v_encT_n_local_32                                  : Int
+  v_v_rep(ite encT_star 1 0)_3_out_bool_1            : Int
+  v_encT_x_local_38                                  : Int
+  v_encT_n_local_40                                  : Int
+  v_v_rep(ite encT_blockCall 1 0)_3_in_bool_1        : Int
+  v_encT_x_local_36                                  : Int
+  v_encT_n_local_37                                  : Int
+  v_v_rep(ite encT_blockCall 1 0)_3_out_bool_1       : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (= v_encT_n_local_55 v_encT_n_11)  InVars {encT_n=v_encT_n_11}  OutVars{encT_n=v_encT_n_11, encT_star=v_encT_star_46, encT_n_local=v_encT_n_local_55}  AuxVars[]  AssignedVars[encT_star, encT_n_local]
+
+Loop TransFormula:
+Formula: (and (= v_encT_x_local_60 0) v_encT_star_50 (<= v_encT_n_local_60 0))  InVars {encT_star=v_encT_star_50}  OutVars{encT_x_local=v_encT_x_local_60, encT_blockCall=v_encT_blockCall_40, encT_n_local=v_encT_n_local_60}  AuxVars[]  AssignedVars[encT_x_local, encT_star, encT_blockCall, encT_n_local]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 11
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,1818
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6154
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9524
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_encT_n_local_32 v_encT_n_8) (<= v_encT_n_local_32 v_encT_n_8))
+  InVars:   {encT_n=v_encT_n_8, encT_n_local=v_encT_n_local_39, v_rep(ite encT_star 1 0)_3=|v_v_rep(ite encT_star 1 0)_3_in_bool_1|}
+  OutVars:  {encT_n=v_encT_n_8, encT_n_local=v_encT_n_local_32, v_rep(ite encT_star 1 0)_3=|v_v_rep(ite encT_star 1 0)_3_out_bool_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (>= v_encT_x_local_36 0) (>= |v_v_rep(ite encT_star 1 0)_3_in_bool_1| 1) (<= v_encT_n_local_37 0) (<= v_encT_x_local_36 0))
+  InVars:   {encT_x_local=v_encT_x_local_38, encT_n_local=v_encT_n_local_40, v_rep(ite encT_star 1 0)_3=|v_v_rep(ite encT_star 1 0)_3_in_bool_1|, v_rep(ite encT_blockCall 1 0)_3=|v_v_rep(ite encT_blockCall 1 0)_3_in_bool_1|}
+  OutVars:  {encT_x_local=v_encT_x_local_36, encT_n_local=v_encT_n_local_37, v_rep(ite encT_blockCall 1 0)_3=|v_v_rep(ite encT_blockCall 1 0)_3_out_bool_1|, v_rep(ite encT_star 1 0)_3=|v_v_rep(ite encT_star 1 0)_3_out_bool_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] x_local := x;n_local := n;havoc star;
+Loop (length=28):
+  [0] assume star;x_local := 1;
+  [1] call blockCall := encLT(x_local, n_local);
+  [2] x_local := x;n_local := n;
+  [3] call CallRet := encLLT(x_local, n_local);
+  [4] BeginParallelComposition{ParallelCodeBlock0: assume x == 0;ret := true;ParallelCodeBlock1: assume !(x == 0);ret := false;}EndParallelComposition
+  [5] assume x == 0 <==> ret != false;
+  [6] #72#return;
+  [7] assume !CallRet;
+  [8] call ret := encRLT(x_local, n_local);
+  [9] BeginParallelComposition{ParallelCodeBlock0: assume x == 1;ret := true;ParallelCodeBlock1: assume !(x == 1);ret := false;}EndParallelComposition
+  [10] assume x == 1 <==> ret != false;
+  [11] #74#return;
+  [12] assume x == 0 || x == 1 ==> ret != false;
+  [13] #78#return;
+  [14] assume !!blockCall;havoc star;
+  [15] assume !star;havoc n_local;
+  [16] assume !(n_local > 0);x_local := 0;
+  [17] call blockCall := encLT(x_local, n_local);
+  [18] x_local := x;n_local := n;
+  [19] call CallRet := encLLT(x_local, n_local);
+  [20] BeginParallelComposition{ParallelCodeBlock0: assume x == 0;ret := true;ParallelCodeBlock1: assume !(x == 0);ret := false;}EndParallelComposition
+  [21] assume x == 0 <==> ret != false;
+  [22] #72#return;
+  [23] assume CallRet;ret := true;
+  [24] assume x == 0 || x == 1 ==> ret != false;
+  [25] #80#return;
+  [26] assume !!blockCall;havoc star;
+  [27] assume !star;havoc star;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   2848586 ns (2,85 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@117dd291
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,85 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

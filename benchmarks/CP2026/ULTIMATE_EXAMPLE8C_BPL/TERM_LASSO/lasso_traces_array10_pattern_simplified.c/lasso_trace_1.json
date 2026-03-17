@@ -1,0 +1,103 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "ULTIMATE.start_#t~ret6",
+    "main_#t~nondet4",
+    "main_#t~post5",
+    "main_~count~0",
+    "main_~sum~0",
+    "main_~x~0",
+    "old_~ARR_SIZE~0_",
+    "|v_rep(select #length 1)_1|",
+    "|v_rep(select #length 2)_1|",
+    "|v_rep(select #length 3)_1|",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select #valid 1)_1|",
+    "|v_rep(select #valid 2)_1|",
+    "|v_rep(select #valid 3)_1|",
+    "|v_rep(select (select #memory_int 1) 0)_1|",
+    "|v_rep(select (select #memory_int 1) 1)_1|",
+    "~ARR_SIZE~0"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "ULTIMATE.start_#t~ret6": "Int",
+    "main_#t~nondet4": "Int",
+    "main_#t~post5": "Int",
+    "main_~count~0": "Int",
+    "main_~sum~0": "Int",
+    "main_~x~0": "Int",
+    "old_~ARR_SIZE~0_": "Int",
+    "~ARR_SIZE~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= |v_arrayCell_v_#valid_7[3]_1| 1) (<= |v_arrayCell_v_#valid_7[0]_1| 0) (>= v_main_~count~0_8 0) (<= 1 v_~ARR_SIZE~0_26) (>= |v_arrayCell_v_#valid_7[2]_1| 1) (<= |v_arrayCell_v_#valid_7[1]_1| 1) (>= |v_arrayCell_v_#memory_int_7[1, 1]_1| 0) (>= |v_arrayCell_v_#length_7[2]_1| 18) (>= 0 v_main_~sum~0_8) (<= 1 |v_#StackHeapBarrier_7|) (>= |v_old_~ARR_SIZE~0__6| 0) (<= |v_arrayCell_v_#length_7[1]_1| 2) (<= |v_arrayCell_v_#length_7[3]_1| 12) (<= 0 v_main_~sum~0_8) (<= v_~ARR_SIZE~0_26 32767) (<= |v_old_~ARR_SIZE~0__6| 0) (>= |v_arrayCell_v_#valid_7[0]_1| 0) (<= v_main_~count~0_8 0) (>= |v_arrayCell_v_#length_7[3]_1| 12) (>= |v_arrayCell_v_#memory_int_7[1, 0]_1| 48) (>= |v_arrayCell_v_#length_7[1]_1| 2) (<= |v_arrayCell_v_#length_7[2]_1| 18) (>= |v_arrayCell_v_#valid_7[1]_1| 1) (<= |v_arrayCell_v_#memory_int_7[1, 1]_1| 0) (<= |v_arrayCell_v_#valid_7[2]_1| 1) (<= v_main_~x~0_5 0) (<= |v_arrayCell_v_#valid_7[3]_1| 1) (<= |v_arrayCell_v_#memory_int_7[1, 0]_1| 48) (>= v_main_~x~0_5 0))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_7|",
+        "main_#t~nondet4": "|v_main_#t~nondet4_6|",
+        "main_~x~0": "v_main_~x~0_7",
+        "main_~sum~0": "v_main_~sum~0_11",
+        "main_~count~0": "v_main_~count~0_11",
+        "~ARR_SIZE~0": "v_~ARR_SIZE~0_29",
+        "old_~ARR_SIZE~0_": "|v_old_~ARR_SIZE~0__7|",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_6|",
+        "|v_rep(select (select #memory_int 1) 0)_1|": "|v_arrayCell_v_#memory_int_7[1, 0]_1|",
+        "|v_rep(select (select #memory_int 1) 1)_1|": "|v_arrayCell_v_#memory_int_7[1, 1]_1|",
+        "|v_rep(select #length 3)_1|": "|v_arrayCell_v_#length_7[3]_1|",
+        "|v_rep(select #length 1)_1|": "|v_arrayCell_v_#length_7[1]_1|",
+        "|v_rep(select #length 2)_1|": "|v_arrayCell_v_#length_7[2]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_7[0]_1|",
+        "|v_rep(select #valid 3)_1|": "|v_arrayCell_v_#valid_7[3]_1|",
+        "|v_rep(select #valid 1)_1|": "|v_arrayCell_v_#valid_7[1]_1|",
+        "|v_rep(select #valid 2)_1|": "|v_arrayCell_v_#valid_7[2]_1|"
+      },
+      "out_vars": {
+        "main_#t~nondet4": "|v_main_#t~nondet4_5|",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_7|",
+        "main_~x~0": "v_main_~x~0_5",
+        "main_~sum~0": "v_main_~sum~0_8",
+        "main_~count~0": "v_main_~count~0_8",
+        "~ARR_SIZE~0": "v_~ARR_SIZE~0_26",
+        "old_~ARR_SIZE~0_": "|v_old_~ARR_SIZE~0__6|",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_5|",
+        "|v_rep(select (select #memory_int 1) 0)_1|": "|v_arrayCell_v_#memory_int_7[1, 0]_1|",
+        "|v_rep(select (select #memory_int 1) 1)_1|": "|v_arrayCell_v_#memory_int_7[1, 1]_1|",
+        "|v_rep(select #length 3)_1|": "|v_arrayCell_v_#length_7[3]_1|",
+        "|v_rep(select #length 1)_1|": "|v_arrayCell_v_#length_7[1]_1|",
+        "|v_rep(select #length 2)_1|": "|v_arrayCell_v_#length_7[2]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_7[0]_1|",
+        "|v_rep(select #valid 3)_1|": "|v_arrayCell_v_#valid_7[3]_1|",
+        "|v_rep(select #valid 1)_1|": "|v_arrayCell_v_#valid_7[1]_1|",
+        "|v_rep(select #valid 2)_1|": "|v_arrayCell_v_#valid_7[2]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_main_~count~0_10 1) v_main_~count~0_9) (<= (+ v_main_~count~0_10 1) v_~ARR_SIZE~0_28) (>= (+ v_main_~x~0_6 v_main_~sum~0_10) v_main_~sum~0_9) (>= (+ v_main_~count~0_10 1) v_main_~count~0_9) (<= (+ v_main_~x~0_6 v_main_~sum~0_10) v_main_~sum~0_9))",
+      "in_vars": {
+        "main_~x~0": "v_main_~x~0_6",
+        "main_~sum~0": "v_main_~sum~0_10",
+        "main_~count~0": "v_main_~count~0_10",
+        "~ARR_SIZE~0": "v_~ARR_SIZE~0_28",
+        "main_#t~post5": "|v_main_#t~post5_4|"
+      },
+      "out_vars": {
+        "main_~x~0": "v_main_~x~0_6",
+        "main_~sum~0": "v_main_~sum~0_9",
+        "main_#t~post5": "|v_main_#t~post5_3|",
+        "main_~count~0": "v_main_~count~0_9",
+        "~ARR_SIZE~0": "v_~ARR_SIZE~0_28"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

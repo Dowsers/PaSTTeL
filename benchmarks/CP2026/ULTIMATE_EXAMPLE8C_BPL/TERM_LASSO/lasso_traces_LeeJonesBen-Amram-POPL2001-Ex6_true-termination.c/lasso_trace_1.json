@@ -1,0 +1,84 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret6",
+    "f_#in~a",
+    "f_#in~b",
+    "f_#res",
+    "f_#t~ret0",
+    "f_#t~ret1",
+    "f_~a",
+    "f_~b",
+    "main_#res",
+    "main_#t~nondet3",
+    "main_#t~nondet4",
+    "main_#t~ret5"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret6": "Int",
+    "f_#in~a": "Int",
+    "f_#in~b": "Int",
+    "f_#res": "Int",
+    "f_#t~ret0": "Int",
+    "f_#t~ret1": "Int",
+    "f_~a": "Int",
+    "f_~b": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet3": "Int",
+    "main_#t~nondet4": "Int",
+    "main_#t~ret5": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 |v_f_#in~a_5|) (<= 0 |v_f_#in~b_5|) (<= |v_f_#in~b_5| 2147483647) (<= |v_f_#in~a_5| 2147483647))",
+      "in_vars": {
+        "main_#t~nondet4": "|v_main_#t~nondet4_9|",
+        "main_#t~ret5": "|v_main_#t~ret5_9|",
+        "main_#res": "|v_main_#res_8|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_9|",
+        "f_#in~a": "|v_f_#in~a_10|",
+        "f_#in~b": "|v_f_#in~b_10|",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_6|"
+      },
+      "out_vars": {
+        "main_#t~nondet4": "|v_main_#t~nondet4_8|",
+        "main_#t~ret5": "|v_main_#t~ret5_8|",
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_8|",
+        "f_#in~a": "|v_f_#in~a_5|",
+        "f_#in~b": "|v_f_#in~b_5|",
+        "ULTIMATE.start_#t~ret6": "|v_ULTIMATE.start_#t~ret6_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_f_#in~b_9| (+ |v_f_#in~b_8| 1)) (>= |v_f_#in~a_8| (+ |v_f_#in~a_9| 1)) (<= (+ 0 1) (+ |v_f_#in~b_8| 1)) (<= |v_f_#in~a_8| (+ |v_f_#in~a_9| 1)) (>= |v_f_#in~b_9| (+ |v_f_#in~b_8| 1))) (and (<= |v_f_#in~b_9| (+ |v_f_#in~b_8| 1)) (<= (+ (+ |v_f_#in~b_8| 1) 1) 0) (>= |v_f_#in~a_8| (+ |v_f_#in~a_9| 1)) (<= |v_f_#in~a_8| (+ |v_f_#in~a_9| 1)) (>= |v_f_#in~b_9| (+ |v_f_#in~b_8| 1))))",
+      "in_vars": {
+        "f_#in~a": "|v_f_#in~a_9|",
+        "f_#in~b": "|v_f_#in~b_9|",
+        "f_~a": "v_f_~a_9",
+        "f_#res": "|v_f_#res_5|",
+        "f_#t~ret0": "|v_f_#t~ret0_7|",
+        "f_~b": "v_f_~b_9",
+        "f_#t~ret1": "|v_f_#t~ret1_7|"
+      },
+      "out_vars": {
+        "f_~a": "v_f_~a_8",
+        "f_#in~a": "|v_f_#in~a_8|",
+        "f_#in~b": "|v_f_#in~b_8|",
+        "f_#res": "|v_f_#res_4|",
+        "f_#t~ret0": "|v_f_#t~ret0_6|",
+        "f_~b": "v_f_~b_8",
+        "f_#t~ret1": "|v_f_#t~ret1_6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

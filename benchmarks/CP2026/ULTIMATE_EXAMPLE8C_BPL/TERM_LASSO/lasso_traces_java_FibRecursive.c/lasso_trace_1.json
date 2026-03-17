@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "fib_#in~n",
+    "fib_#res",
+    "fib_#t~ret0",
+    "fib_#t~ret1",
+    "fib_~n"
+  ],
+  "var_types": {
+    "fib_#in~n": "Int",
+    "fib_#res": "Int",
+    "fib_#t~ret0": "Int",
+    "fib_#t~ret1": "Int",
+    "fib_~n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_fib_#in~n_5| 2147483647) (<= (+ |v_fib_#in~n_4| 1) |v_fib_#in~n_5|) (<= (+ 0 1) |v_fib_#in~n_4|) (<= |v_fib_#in~n_5| (+ |v_fib_#in~n_4| 1)))",
+      "in_vars": {
+        "fib_#in~n": "|v_fib_#in~n_5|",
+        "fib_#t~ret0": "|v_fib_#t~ret0_8|",
+        "fib_#t~ret1": "|v_fib_#t~ret1_7|",
+        "fib_~n": "v_fib_~n_13",
+        "fib_#res": "|v_fib_#res_6|"
+      },
+      "out_vars": {
+        "fib_#t~ret0": "|v_fib_#t~ret0_7|",
+        "fib_#t~ret1": "|v_fib_#t~ret1_6|",
+        "fib_#in~n": "|v_fib_#in~n_4|",
+        "fib_~n": "v_fib_~n_12",
+        "fib_#res": "|v_fib_#res_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

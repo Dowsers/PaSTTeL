@@ -1,0 +1,61 @@
+{
+  "program_vars": [
+    "power_#in~base",
+    "power_#in~exponent",
+    "power_~base",
+    "power_~exponent",
+    "power_~result~0"
+  ],
+  "var_types": {
+    "power_#in~base": "Int",
+    "power_#in~exponent": "Int",
+    "power_~base": "Int",
+    "power_~exponent": "Int",
+    "power_~result~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(or (and (<= |v_power_#in~base_2| 2147483647) (<= (+ 2 1) v_power_~base_29) (<= v_power_~result~0_13 1) (<= |v_power_#in~exponent_2| 2147483647) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= (+ 1 1) v_power_~exponent_32) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= v_power_~result~0_13 1) (<= |v_power_#in~exponent_2| 2147483647) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= (+ 1 1) v_power_~exponent_32) (<= 0 (+ |v_power_#in~base_2| 2147483648)) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= (+ v_power_~base_29 1) 2) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= 0 (+ |v_power_#in~exponent_2| 2147483648)) (<= (+ v_power_~exponent_32 1) 0) (<= v_power_~result~0_13 1) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= 0 (+ |v_power_#in~base_2| 2147483648)) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= (+ v_power_~base_29 1) 2) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= |v_power_#in~base_2| 2147483647) (<= (+ 2 1) v_power_~base_29) (<= 0 (+ |v_power_#in~exponent_2| 2147483648)) (<= (+ v_power_~exponent_32 1) 0) (<= v_power_~result~0_13 1) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= |v_power_#in~exponent_2| v_power_~exponent_32)))",
+      "in_vars": {
+        "power_#in~base": "|v_power_#in~base_2|",
+        "power_#in~exponent": "|v_power_#in~exponent_2|",
+        "power_~exponent": "v_power_~exponent_35",
+        "power_~base": "v_power_~base_32",
+        "power_~result~0": "v_power_~result~0_16"
+      },
+      "out_vars": {
+        "power_~exponent": "v_power_~exponent_32",
+        "power_#in~base": "|v_power_#in~base_2|",
+        "power_#in~exponent": "|v_power_#in~exponent_2|",
+        "power_~base": "v_power_~base_29",
+        "power_~result~0": "v_power_~result~0_13"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_power_~exponent_33 v_div_auxv_power_~exponent_342_1) (<= v_power_~base_30 (* v_power_~base_31 v_power_~base_31)) (<= v_power_~result~0_15 v_power_~result~0_14) (<= (* v_power_~base_31 v_power_~base_31) v_power_~base_30) (<= v_power_~exponent_34 (+ (* v_div_auxv_power_~exponent_342_1 2) v_mod_auxv_power_~exponent_342_1)) (<= 1 v_power_~exponent_34) (<= v_div_auxv_power_~exponent_342_1 v_power_~exponent_33) (<= (+ v_mod_auxv_power_~exponent_342_1 1) 1) (<= (* v_div_auxv_power_~exponent_342_1 2) v_power_~exponent_34) (<= v_power_~result~0_14 v_power_~result~0_15)) (and (<= 1 v_mod_auxv_power_~exponent_342_1) (<= v_power_~exponent_34 (+ (* v_div_auxv_power_~exponent_342_1 2) 1)) (<= v_power_~exponent_33 v_div_auxv_power_~exponent_342_1) (<= (+ (* v_div_auxv_power_~exponent_342_1 2) v_mod_auxv_power_~exponent_342_1) v_power_~exponent_34) (<= v_power_~base_30 (* v_power_~base_31 v_power_~base_31)) (<= (* v_power_~base_31 v_power_~result~0_15) v_power_~result~0_14) (<= v_power_~result~0_14 (* v_power_~base_31 v_power_~result~0_15)) (<= (* v_power_~base_31 v_power_~base_31) v_power_~base_30) (<= 1 v_power_~exponent_34) (<= v_div_auxv_power_~exponent_342_1 v_power_~exponent_33)))",
+      "in_vars": {
+        "power_~exponent": "v_power_~exponent_34",
+        "power_~base": "v_power_~base_31",
+        "power_~result~0": "v_power_~result~0_15"
+      },
+      "out_vars": {
+        "power_~exponent": "v_power_~exponent_33",
+        "power_~base": "v_power_~base_30",
+        "power_~result~0": "v_power_~result~0_14"
+      },
+      "aux_vars": [
+        "v_div_auxv_power_~exponent_342_1",
+        "v_mod_auxv_power_~exponent_342_1"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "program_vars": [
+    "error",
+    "init",
+    "old_error_",
+    "old_init_",
+    "old_tempIn_",
+    "tempIn"
+  ],
+  "var_types": {
+    "error": "Int",
+    "init": "Int",
+    "old_error_": "Int",
+    "old_init_": "Int",
+    "old_tempIn_": "Int",
+    "tempIn": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= |v_old_error__3| 0) (>= v_init_4 1) (>= |v_old_tempIn__3| 0) (>= v_tempIn_14 0) (<= v_init_4 1) (<= v_tempIn_14 0) (<= |v_old_tempIn__3| 0) (>= v_error_13 0) (<= |v_old_error__3| 0) (<= v_error_13 0))",
+      "in_vars": {
+        "old_tempIn_": "|v_old_tempIn__4|",
+        "tempIn": "v_tempIn_19",
+        "init": "v_init_5",
+        "old_init_": "|v_old_init__3|",
+        "old_error_": "|v_old_error__7|",
+        "error": "v_error_21"
+      },
+      "out_vars": {
+        "old_tempIn_": "|v_old_tempIn__3|",
+        "tempIn": "v_tempIn_14",
+        "init": "v_init_4",
+        "old_init_": "|v_old_init__2|",
+        "old_error_": "|v_old_error__3|",
+        "error": "v_error_13"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= v_error_19 1) (<= (+ v_tempIn_18 1) 0) (<= v_error_19 1)) (and (<= v_error_19 0) (<= 0 v_tempIn_18) (>= v_error_19 0)))",
+      "in_vars": {
+        "tempIn": "v_tempIn_20",
+        "error": "v_error_22"
+      },
+      "out_vars": {
+        "tempIn": "v_tempIn_18",
+        "error": "v_error_19"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

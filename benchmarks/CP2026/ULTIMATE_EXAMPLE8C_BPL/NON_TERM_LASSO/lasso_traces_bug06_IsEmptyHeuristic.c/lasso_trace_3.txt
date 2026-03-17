@@ -1,0 +1,138 @@
+========================================
+LASSO TRACE REPORT - Iteration #3
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_#t~nondet1                                    : Int
+  main_~j~0                                          : Int
+  main_~i~0                                          : Int
+  v_main_#t~nondet1_23                               : Int
+  v_main_~j~0_30                                     : Int
+  v_main_~i~0_51                                     : Int
+  v_main_#t~nondet1_20                               : Int
+  v_main_~j~0_29                                     : Int
+  v_main_~i~0_47                                     : Int
+  v_main_~i~0_50                                     : Int
+  v_main_#t~nondet1_24                               : Int
+  v_main_#t~nondet1_21                               : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (= v_main_~i~0_66 0)  InVars {}  OutVars{main_#t~nondet1=|v_main_#t~nondet1_40|, main_~j~0=v_main_~j~0_39, main_~i~0=v_main_~i~0_66}  AuxVars[]  AssignedVars[main_#t~nondet1, main_~j~0, main_~i~0]
+
+Loop TransFormula:
+Formula: (= v_main_~i~0_69 0)  InVars {main_~i~0=v_main_~i~0_69}  OutVars{main_#t~nondet1=|v_main_#t~nondet1_41|, main_~i~0=v_main_~i~0_69}  AuxVars[]  AssignedVars[main_#t~nondet1]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 6
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,3333
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_main_~i~0_47 0) (<= v_main_~i~0_47 0))
+  InVars:   {main_#t~nondet1=|v_main_#t~nondet1_23|, main_~j~0=v_main_~j~0_30, main_~i~0=v_main_~i~0_51}
+  OutVars:  {main_#t~nondet1=|v_main_#t~nondet1_20|, main_~j~0=v_main_~j~0_29, main_~i~0=v_main_~i~0_47}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_main_~i~0_50 0) (>= v_main_~i~0_50 0))
+  InVars:   {main_~i~0=v_main_~i~0_50, main_#t~nondet1=|v_main_#t~nondet1_24|}
+  OutVars:  {main_#t~nondet1=|v_main_#t~nondet1_21|, main_~i~0=v_main_~i~0_50}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=8):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #48#return;
+  [3] call main();
+  [4] havoc ~i~0;havoc ~j~0;~i~0 := 0;
+  [5] assume ~i~0 <= 1;
+  [6] havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;
+  [7] assume 0 != #t~nondet1;havoc #t~nondet1;
+Loop (length=14):
+  [0] call sll_append(0, ~i~0);
+  [1] ~head := #in~head;~sublist_length := #in~sublist_length;
+  [2] call node_create_with_sublist(~sublist_length);
+  [3] ~sublist_length := #in~sublist_length;
+  [4] call sll_create(~sublist_length);
+  [5] ~len := #in~len;
+  [6] assume !(0 != ~len);assume true;
+  [7] #52#return;
+  [8] assume true;
+  [9] #46#return;
+  [10] assume true;
+  [11] #54#return;
+  [12] havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;
+  [13] assume 0 != #t~nondet1;havoc #t~nondet1;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   962614 ns (0,96 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@3e623289
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,96 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

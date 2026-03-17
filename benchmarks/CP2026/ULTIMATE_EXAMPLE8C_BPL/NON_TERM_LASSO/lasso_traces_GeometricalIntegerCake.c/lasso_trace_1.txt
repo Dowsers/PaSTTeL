@@ -1,0 +1,114 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  main_#t~mem0                                       : Int
+  main_#t~mem3                                       : Int
+  main_#t~mem4                                       : Int
+  main_#t~mem1                                       : Int
+  main_#t~nondet2                                    : Int
+  ULTIMATE.start_#t~ret7                             : Int
+  main_~cakeLeft~0.base                              : Int
+  main_~cakeLeft~0.offset                            : Int
+  main_~eat~0.offset                                 : Int
+  main_~eat~0.base                                   : Int
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  main_#t~mem5                                       : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse5 (div (select (select |v_old(#memory_int)_21| v_main_~cakeLeft~0.base_46) v_main_~cakeLeft~0.offset_41) 3))) (let ((.cse3 (store |v_old(#memory_int)_21| v_main_~eat~0.base_45 (store (select |v_old(#memory_int)_21| v_main_~eat~0.base_45) v_main_~eat~0.offset_41 .cse5)))) (let ((.cse4 (select .cse3 v_main_~cakeLeft~0.base_46))) (let ((.cse0 (select .cse4 v_main_~cakeLeft~0.offset_41))) (and (= |v_old(#memory_int)_21| |v_#memory_int_91|) (<= (+ v_main_~eat~0.offset_41 4) (select |v_#length_47| v_main_~eat~0.base_45)) (<= 1 |v_#StackHeapBarrier_27|) (= (select |v_#valid_68| v_main_~eat~0.base_45) 1) (= (select |v_#valid_68| v_main_~cakeLeft~0.base_46) 1) (<= (+ v_main_~cakeLeft~0.offset_41 4) (select |v_#length_47| v_main_~cakeLeft~0.base_46)) (<= 10000 .cse0) (<= 0 v_main_~eat~0.offset_41) (= 0 (select |v_#valid_68| 0)) (= (let ((.cse1 (store .cse4 v_main_~cakeLeft~0.offset_41 (+ .cse0 (* (- 1) .cse5))))) (store (store |v_old(#memory_int)_21| v_main_~cakeLeft~0.base_46 .cse1) v_main_~eat~0.base_45 (let ((.cse2 (select (store .cse3 v_main_~cakeLeft~0.base_46 .cse1) v_main_~eat~0.base_45))) (store .cse2 v_main_~eat~0.offset_41 (div (+ (select .cse2 v_main_~eat~0.offset_41) 1) 3))))) |v_#memory_int_90|) (<= 0 v_main_~cakeLeft~0.offset_41))))))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_27|, #valid=|v_#valid_68|, #memory_int=|v_#memory_int_91|, #length=|v_#length_47|}  OutVars{main_#t~mem0=|v_main_#t~mem0_34|, main_#t~mem3=|v_main_#t~mem3_37|, main_#t~mem4=|v_main_#t~mem4_37|, main_#t~mem1=|v_main_#t~mem1_32|, main_#t~nondet2=|v_main_#t~nondet2_35|, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_18|, main_~cakeLeft~0.base=v_main_~cakeLeft~0.base_46, main_~cakeLeft~0.offset=v_main_~cakeLeft~0.offset_41, main_~eat~0.offset=v_main_~eat~0.offset_41, #StackHeapBarrier=|v_#StackHeapBarrier_27|, main_~eat~0.base=v_main_~eat~0.base_45, #valid=|v_#valid_68|, #memory_int=|v_#memory_int_90|, old(#memory_int)=|v_old(#memory_int)_21|, #length=|v_#length_47|, main_#t~mem5=|v_main_#t~mem5_37|}  AuxVars[]  AssignedVars[main_#t~mem0, main_#t~mem3, main_#t~mem4, main_#t~mem1, main_#t~nondet2, ULTIMATE.start_#t~ret7, main_~cakeLeft~0.base, main_~cakeLeft~0.offset, main_~eat~0.offset, main_~eat~0.base, #memory_int, old(#memory_int), main_#t~mem5]
+
+Loop TransFormula:
+Formula: (and (<= 0 v_main_~cakeLeft~0.offset_42) (<= (+ v_main_~eat~0.offset_42 4) (select |v_#length_48| v_main_~eat~0.base_46)) (= (select |v_#valid_69| v_main_~cakeLeft~0.base_47) 1) (= (select |v_#valid_69| v_main_~eat~0.base_46) 1) (<= (+ v_main_~cakeLeft~0.offset_42 4) (select |v_#length_48| v_main_~cakeLeft~0.base_47)) (let ((.cse0 (store |v_#memory_int_94| v_main_~cakeLeft~0.base_47 (let ((.cse7 (select |v_#memory_int_94| v_main_~cakeLeft~0.base_47))) (store .cse7 v_main_~cakeLeft~0.offset_42 (+ (* (- 1) (select (select |v_#memory_int_94| v_main_~eat~0.base_46) v_main_~eat~0.offset_42)) (select .cse7 v_main_~cakeLeft~0.offset_42))))))) (let ((.cse1 (select .cse0 v_main_~eat~0.base_46))) (let ((.cse6 (select .cse1 v_main_~eat~0.offset_42))) (let ((.cse5 (+ .cse6 1))) (let ((.cse3 (+ .cse6 2)) (.cse2 (div .cse5 3)) (.cse4 (= (mod .cse5 3) 0))) (or (and (= |v_#memory_int_92| (store .cse0 v_main_~eat~0.base_46 (store .cse1 v_main_~eat~0.offset_42 .cse2))) (or (< 0 .cse3) .cse4)) (and (<= .cse3 0) (= |v_#memory_int_92| (store .cse0 v_main_~eat~0.base_46 (store .cse1 v_main_~eat~0.offset_42 (+ .cse2 1)))) (not .cse4)))))))) (<= 0 v_main_~eat~0.offset_42))  InVars {main_~eat~0.offset=v_main_~eat~0.offset_42, main_~eat~0.base=v_main_~eat~0.base_46, #valid=|v_#valid_69|, #memory_int=|v_#memory_int_94|, #length=|v_#length_48|, main_~cakeLeft~0.base=v_main_~cakeLeft~0.base_47, main_~cakeLeft~0.offset=v_main_~cakeLeft~0.offset_42}  OutVars{main_~eat~0.offset=v_main_~eat~0.offset_42, main_#t~mem3=|v_main_#t~mem3_38|, main_~eat~0.base=v_main_~eat~0.base_46, main_#t~mem4=|v_main_#t~mem4_38|, #valid=|v_#valid_69|, main_#t~nondet2=|v_main_#t~nondet2_36|, #memory_int=|v_#memory_int_92|, #length=|v_#length_48|, main_#t~mem5=|v_main_#t~mem5_38|, main_~cakeLeft~0.base=v_main_~cakeLeft~0.base_47, main_~cakeLeft~0.offset=v_main_~cakeLeft~0.offset_42}  AuxVars[]  AssignedVars[main_#t~mem3, main_#t~mem4, main_#t~nondet2, #memory_int, main_#t~mem5]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  (not available)
+
+--- RAW TRACE ---
+Stem (length=16):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #72#return;
+  [3] call #t~ret7 := main();
+  [4] havoc ~cakeLeft~0.base, ~cakeLeft~0.offset;havoc ~eat~0.base, ~eat~0.offset;
+  [5] SUMMARY for call #t~mem0 := read~int(~cakeLeft~0.base, ~cakeLeft~0.offset, 4); srcloc: L16
+  [6] call write~int((if #t~mem0 < 0 && 0 != #t~mem0 % 3 then 1 + #t~mem0 / 3 else #t~mem0 / 3), ~eat~0.base, ~eat~0.offset, 4);havoc #t~mem0;
+  [7] SUMMARY for call #t~mem1 := read~int(~cakeLeft~0.base, ~cakeLeft~0.offset, 4); srcloc: L17
+  [8] assume #t~mem1 >= 10000;havoc #t~mem1;
+  [9] havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;
+  [10] assume 0 != #t~nondet2;havoc #t~nondet2;
+  [11] SUMMARY for call #t~mem3 := read~int(~cakeLeft~0.base, ~cakeLeft~0.offset, 4); srcloc: L18-2
+  [12] SUMMARY for call #t~mem4 := read~int(~eat~0.base, ~eat~0.offset, 4); srcloc: L19
+  [13] call write~int(#t~mem3 - #t~mem4, ~cakeLeft~0.base, ~cakeLeft~0.offset, 4);havoc #t~mem3;havoc #t~mem4;
+  [14] SUMMARY for call #t~mem5 := read~int(~eat~0.base, ~eat~0.offset, 4); srcloc: L20
+  [15] call write~int((if 1 + #t~mem5 < 0 && 0 != (1 + #t~mem5) % 3 then 1 + (1 + #t~mem5) / 3 else (1 + #t~mem5) / 3), ~eat~0.base, ~eat~0.offset, 4);havoc #t~mem5;
+Loop (length=7):
+  [0] havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;
+  [1] assume 0 != #t~nondet2;havoc #t~nondet2;
+  [2] SUMMARY for call #t~mem3 := read~int(~cakeLeft~0.base, ~cakeLeft~0.offset, 4); srcloc: L18-2
+  [3] SUMMARY for call #t~mem4 := read~int(~eat~0.base, ~eat~0.offset, 4); srcloc: L19
+  [4] call write~int(#t~mem3 - #t~mem4, ~cakeLeft~0.base, ~cakeLeft~0.offset, 4);havoc #t~mem3;havoc #t~mem4;
+  [5] SUMMARY for call #t~mem5 := read~int(~eat~0.base, ~eat~0.offset, 4); srcloc: L20
+  [6] call write~int((if 1 + #t~mem5 < 0 && 0 != (1 + #t~mem5) % 3 then 1 + (1 + #t~mem5) / 3 else (1 + #t~mem5) / 3), ~eat~0.base, ~eat~0.offset, 4);havoc #t~mem5;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   4777257 ns (4,78 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@1ffa11e1
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  4,78 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

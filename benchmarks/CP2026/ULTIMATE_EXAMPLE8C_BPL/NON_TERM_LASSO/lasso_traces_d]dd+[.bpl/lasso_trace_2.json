@@ -1,0 +1,46 @@
+{
+  "program_vars": [
+    "main_head",
+    "|v_rep(select main_mem 0)_2|",
+    "|v_rep(select main_mem main_head)_2|"
+  ],
+  "var_types": {
+    "main_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_main_head_64 0) (<= v_main_head_64 0) (<= |v_arrayCell_v_main_mem_36[0]_1| 1) (>= |v_arrayCell_v_main_mem_36[0]_1| 1))",
+      "in_vars": {
+        "main_head": "v_main_head_68",
+        "|v_rep(select main_mem 0)_2|": "|v_arrayCell_v_main_mem_38[0]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_64",
+        "|v_rep(select main_mem 0)_2|": "|v_arrayCell_v_main_mem_36[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= v_main_head_67 0) (<= (+ |v_arrayCell_v_main_mem_39[0]_1| 1) 0) (<= |v_arrayCell_v_main_mem_39[v_main_head_67]_1| |v_arrayCell_v_main_mem_39[0]_1|) (>= |v_arrayCell_v_main_mem_39[v_main_head_67]_1| |v_arrayCell_v_main_mem_39[0]_1|) (<= v_main_head_67 0)) (and (>= v_main_head_67 0) (<= |v_arrayCell_v_main_mem_39[v_main_head_67]_1| |v_arrayCell_v_main_mem_39[0]_1|) (>= |v_arrayCell_v_main_mem_39[v_main_head_67]_1| |v_arrayCell_v_main_mem_39[0]_1|) (<= v_main_head_67 0) (<= (+ 0 1) |v_arrayCell_v_main_mem_39[0]_1|)))",
+      "in_vars": {
+        "main_head": "v_main_head_67",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_39[v_main_head_67]_1|",
+        "|v_rep(select main_mem 0)_2|": "|v_arrayCell_v_main_mem_39[0]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_67",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_39[v_main_head_67]_1|",
+        "|v_rep(select main_mem 0)_2|": "|v_arrayCell_v_main_mem_39[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

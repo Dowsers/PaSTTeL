@@ -1,0 +1,175 @@
+========================================
+LASSO TRACE REPORT - Iteration #4
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_#t~nondet5                                    : Int
+  main_#t~ret6                                       : Int
+  main_#res                                          : Int
+  rec_~x                                             : Int
+  main_~y~0                                          : Int
+  ULTIMATE.start_#t~ret7                             : Int
+  rec_#t~pre1                                        : Int
+  rec_#in~x                                          : Int
+  rec_#t~ret0                                        : Int
+  rec_#res                                           : Int
+  rec_~store~0                                       : Int
+  rec_#t~ret2                                        : Int
+  rec_#t~pre3                                        : Int
+  rec_#t~ret4                                        : Int
+  v_main_#t~nondet5_89                               : Int
+  v_main_#t~ret6_69                                  : Int
+  v_main_#res_61                                     : Int
+  v_rec_~x_158                                       : Int
+  v_main_~y~0_92                                     : Int
+  v_ULTIMATE.start_#t~ret7_38                        : Int
+  v_rec_#t~pre1_104                                  : Int
+  v_rec_#in~x_154                                    : Int
+  v_main_#t~nondet5_88                               : Int
+  v_main_#t~ret6_68                                  : Int
+  v_main_#res_60                                     : Int
+  v_rec_~x_146                                       : Int
+  v_main_~y~0_91                                     : Int
+  v_ULTIMATE.start_#t~ret7_37                        : Int
+  v_rec_#t~pre1_93                                   : Int
+  v_rec_#in~x_142                                    : Int
+  v_div_aux(+ v_rec_~x_146 1)2_1                     : Int
+  v_mod_aux(+ v_rec_~x_146 1)2_1                     : Int
+  v_rec_#t~pre1_103                                  : Int
+  v_rec_#t~ret0_67                                   : Int
+  v_rec_#res_69                                      : Int
+  v_rec_~x_159                                       : Int
+  v_rec_~store~0_62                                  : Int
+  v_rec_#t~ret2_66                                   : Int
+  v_rec_#t~pre3_63                                   : Int
+  v_rec_#in~x_155                                    : Int
+  v_rec_#t~ret4_62                                   : Int
+  v_rec_#t~ret0_65                                   : Int
+  v_rec_#res_67                                      : Int
+  v_rec_~x_156                                       : Int
+  v_rec_~store~0_60                                  : Int
+  v_rec_#t~ret2_64                                   : Int
+  v_rec_#t~pre3_61                                   : Int
+  v_rec_#t~pre1_102                                  : Int
+  v_rec_#in~x_152                                    : Int
+  v_rec_#t~ret4_60                                   : Int
+  v_div_auxv_rec_#in~x_1522_1                        : Int
+  v_mod_auxv_rec_#in~x_1522_1                        : Int
+  v_div_auxv_rec_#t~pre1_1032_1                      : Int
+  v_mod_auxv_rec_#t~pre1_1032_1                      : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse0 (+ |v_rec_#in~x_195| 1))) (and (= |v_rec_#t~pre1_139| .cse0) (<= |v_rec_#in~x_195| 2147483647) (<= 1 |v_rec_#in~x_195|) (= v_rec_~x_199 .cse0) (not (= (mod |v_rec_#in~x_195| 2) 0))))  InVars {}  OutVars{main_#t~nondet5=|v_main_#t~nondet5_107|, main_#t~ret6=|v_main_#t~ret6_81|, main_#res=|v_main_#res_73|, rec_~x=v_rec_~x_199, main_~y~0=v_main_~y~0_110, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_44|, rec_#t~pre1=|v_rec_#t~pre1_139|, rec_#in~x=|v_rec_#in~x_195|}  AuxVars[]  AssignedVars[main_#t~nondet5, main_#t~ret6, main_#res, rec_~x, main_~y~0, ULTIMATE.start_#t~ret7, rec_#t~pre1, rec_#in~x]
+
+Loop TransFormula:
+Formula: (and (<= 1 |v_rec_#t~pre1_149|) (= (+ |v_rec_#in~x_205| 1) |v_rec_#t~pre1_148|) (= |v_rec_#in~x_205| (div |v_rec_#t~pre1_149| 2)) (= (mod |v_rec_#t~pre1_149| 2) 0) (= v_rec_~x_209 |v_rec_#t~pre1_148|) (not (= (mod (+ |v_rec_#t~pre1_148| 1) 2) 0)))  InVars {rec_#t~pre1=|v_rec_#t~pre1_149|}  OutVars{rec_#t~ret0=|v_rec_#t~ret0_84|, rec_#res=|v_rec_#res_86|, rec_~x=v_rec_~x_209, rec_~store~0=v_rec_~store~0_79, rec_#t~ret2=|v_rec_#t~ret2_83|, rec_#t~pre3=|v_rec_#t~pre3_80|, rec_#t~pre1=|v_rec_#t~pre1_148|, rec_#in~x=|v_rec_#in~x_205|, rec_#t~ret4=|v_rec_#t~ret4_79|}  AuxVars[]  AssignedVars[rec_#t~ret0, rec_#res, rec_~x, rec_~store~0, rec_#t~ret2, rec_#t~pre3, rec_#t~pre1, rec_#in~x, rec_#t~ret4]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 53
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 3,7925
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4478
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9588
+    Simplify formula using some simplification technique -> relative DAG size: 0,4194
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0342
+
+Stem (linearized):
+  Formula:  (and (<= (+ |v_mod_aux(+ v_rec_~x_146 1)2_1| (* |v_div_aux(+ v_rec_~x_146 1)2_1| 2)) (+ v_rec_~x_146 1)) (<= |v_rec_#t~pre1_93| v_rec_~x_146) (<= (+ |v_rec_#in~x_142| 1) v_rec_~x_146) (<= v_rec_~x_146 (+ |v_rec_#in~x_142| 1)) (<= v_rec_~x_146 |v_rec_#t~pre1_93|) (<= |v_rec_#in~x_142| 2147483647) (<= |v_mod_aux(+ v_rec_~x_146 1)2_1| 1) (<= (+ v_rec_~x_146 1) (+ |v_mod_aux(+ v_rec_~x_146 1)2_1| (* |v_div_aux(+ v_rec_~x_146 1)2_1| 2))) (<= 2 v_rec_~x_146) (<= (+ 0 1) |v_mod_aux(+ v_rec_~x_146 1)2_1|))
+  InVars:   {main_#t~nondet5=|v_main_#t~nondet5_89|, main_#t~ret6=|v_main_#t~ret6_69|, main_#res=|v_main_#res_61|, rec_~x=v_rec_~x_158, main_~y~0=v_main_~y~0_92, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_38|, rec_#t~pre1=|v_rec_#t~pre1_104|, rec_#in~x=|v_rec_#in~x_154|}
+  OutVars:  {main_#t~nondet5=|v_main_#t~nondet5_88|, main_#t~ret6=|v_main_#t~ret6_68|, main_#res=|v_main_#res_60|, rec_~x=v_rec_~x_146, main_~y~0=v_main_~y~0_91, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_37|, rec_#t~pre1=|v_rec_#t~pre1_93|, rec_#in~x=|v_rec_#in~x_142|}
+  AuxVars:  [|v_div_aux(+ v_rec_~x_146 1)2_1|, |v_mod_aux(+ v_rec_~x_146 1)2_1|]
+
+Loop (linearized):
+  Formula:  (and (<= |v_rec_#t~pre1_103| (+ |v_mod_auxv_rec_#t~pre1_1032_1| (* |v_div_auxv_rec_#t~pre1_1032_1| 2))) (<= |v_mod_auxv_rec_#in~x_1522_1| 1) (<= |v_rec_#t~pre1_102| (+ |v_rec_#in~x_152| 1)) (<= (+ |v_rec_#in~x_152| 1) |v_rec_#t~pre1_102|) (<= (+ |v_mod_auxv_rec_#t~pre1_1032_1| (* |v_div_auxv_rec_#t~pre1_1032_1| 2)) |v_rec_#t~pre1_103|) (<= (+ |v_rec_#in~x_152| 1) v_rec_~x_156) (<= v_rec_~x_156 (+ |v_rec_#in~x_152| 1)) (<= 0 |v_mod_auxv_rec_#t~pre1_1032_1|) (<= |v_div_auxv_rec_#t~pre1_1032_1| |v_rec_#in~x_152|) (<= |v_rec_#in~x_152| (+ |v_mod_auxv_rec_#in~x_1522_1| (* 2 |v_div_auxv_rec_#in~x_1522_1|))) (<= 1 |v_rec_#t~pre1_103|) (<= (+ |v_mod_auxv_rec_#in~x_1522_1| (* 2 |v_div_auxv_rec_#in~x_1522_1|)) |v_rec_#in~x_152|) (<= |v_rec_#in~x_152| |v_div_auxv_rec_#t~pre1_1032_1|) (<= (+ 0 1) |v_mod_auxv_rec_#in~x_1522_1|) (<= |v_mod_auxv_rec_#t~pre1_1032_1| 0))
+  InVars:   {rec_#t~pre1=|v_rec_#t~pre1_103|, rec_#t~ret0=|v_rec_#t~ret0_67|, rec_#res=|v_rec_#res_69|, rec_~x=v_rec_~x_159, rec_~store~0=v_rec_~store~0_62, rec_#t~ret2=|v_rec_#t~ret2_66|, rec_#t~pre3=|v_rec_#t~pre3_63|, rec_#in~x=|v_rec_#in~x_155|, rec_#t~ret4=|v_rec_#t~ret4_62|}
+  OutVars:  {rec_#t~ret0=|v_rec_#t~ret0_65|, rec_#res=|v_rec_#res_67|, rec_~x=v_rec_~x_156, rec_~store~0=v_rec_~store~0_60, rec_#t~ret2=|v_rec_#t~ret2_64|, rec_#t~pre3=|v_rec_#t~pre3_61|, rec_#t~pre1=|v_rec_#t~pre1_102|, rec_#in~x=|v_rec_#in~x_152|, rec_#t~ret4=|v_rec_#t~ret4_60|}
+  AuxVars:  [|v_div_auxv_rec_#in~x_1522_1|, |v_mod_auxv_rec_#in~x_1522_1|, |v_div_auxv_rec_#t~pre1_1032_1|, |v_mod_auxv_rec_#t~pre1_1032_1|]
+
+--- RAW TRACE ---
+Stem (length=9):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #31#return;
+  [3] call #t~ret7 := main();
+  [4] havoc #t~nondet5;assume -2147483648 <= #t~nondet5 && #t~nondet5 <= 2147483647;~x~0 := #t~nondet5;havoc #t~nondet5;havoc ~y~0;
+  [5] call #t~ret6 := rec(~x~0);
+  [6] ~x := #in~x;
+  [7] assume !(~x <= 0);
+  [8] assume !(0 == (if ~x < 0 && 0 != ~x % 2 then ~x % 2 - 2 else ~x % 2));#t~pre1 := 1 + ~x;~x := 1 + ~x;
+Loop (length=8):
+  [0] call #t~ret2 := rec(#t~pre1);
+  [1] ~x := #in~x;
+  [2] assume !(~x <= 0);
+  [3] assume 0 == (if ~x < 0 && 0 != ~x % 2 then ~x % 2 - 2 else ~x % 2);
+  [4] call #t~ret0 := rec((if ~x < 0 && 0 != ~x % 2 then 1 + ~x / 2 else ~x / 2));
+  [5] ~x := #in~x;
+  [6] assume !(~x <= 0);
+  [7] assume !(0 == (if ~x < 0 && 0 != ~x % 2 then ~x % 2 - 2 else ~x % 2));#t~pre1 := 1 + ~x;~x := 1 + ~x;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   1579353 ns (1,58 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@2d32d69b
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,58 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

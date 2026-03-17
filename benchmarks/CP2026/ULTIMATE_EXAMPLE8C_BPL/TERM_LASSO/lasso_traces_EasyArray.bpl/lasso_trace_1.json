@@ -1,0 +1,43 @@
+{
+  "program_vars": [
+    "main_i",
+    "|v_rep(select main_arr main_i)_1|"
+  ],
+  "var_types": {
+    "main_i": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_i_15 0) (>= v_main_i_15 0))",
+      "in_vars": {
+        "main_i": "v_main_i_18"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_15"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_arrayCell_v_main_arr_5[v_main_i_17]_1| v_main_i_17) (<= (+ v_main_i_17 1) v_main_i_16) (>= |v_arrayCell_v_main_arr_5[v_main_i_17]_1| v_main_i_17) (>= (+ v_main_i_17 1) v_main_i_16) (<= v_main_i_17 10))",
+      "in_vars": {
+        "main_i": "v_main_i_17",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_6[v_main_i_17]_1|"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_16",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_5[v_main_i_16]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_main_arr_5[v_main_i_17]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

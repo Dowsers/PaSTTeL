@@ -1,0 +1,80 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_limes",
+    "chainBroken",
+    "error",
+    "init",
+    "temp",
+    "tempDisplay",
+    "tempIn",
+    "time",
+    "warnLED",
+    "warnLight"
+  ],
+  "var_types": {
+    "ULTIMATE.start_limes": "Int",
+    "chainBroken": "Int",
+    "error": "Int",
+    "init": "Int",
+    "temp": "Int",
+    "tempDisplay": "Int",
+    "tempIn": "Int",
+    "time": "Int",
+    "warnLED": "Int",
+    "warnLight": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_init_9 1) (<= v_tempIn_16 0) (<= v_warnLED_39 1) (>= v_warnLight_7 0) (>= v_chainBroken_12 0) (<= v_error_30 1) (>= v_warnLED_39 1) (>= v_time_11 0) (>= v_tempDisplay_42 0) (<= v_warnLight_7 0) (<= v_tempDisplay_42 0) (<= v_init_9 1) (<= v_temp_13 0) (>= v_error_30 1) (<= v_time_11 0) (>= v_tempIn_16 0) (<= v_chainBroken_12 0) (>= v_temp_13 0))",
+      "in_vars": {
+        "time": "v_time_12",
+        "tempDisplay": "v_tempDisplay_51",
+        "ULTIMATE.start_limes": "v_ULTIMATE.start_limes_15",
+        "tempIn": "v_tempIn_17",
+        "init": "v_init_10",
+        "error": "v_error_34",
+        "warnLight": "v_warnLight_8",
+        "warnLED": "v_warnLED_47",
+        "temp": "v_temp_14",
+        "chainBroken": "v_chainBroken_13"
+      },
+      "out_vars": {
+        "time": "v_time_11",
+        "tempDisplay": "v_tempDisplay_42",
+        "ULTIMATE.start_limes": "v_ULTIMATE.start_limes_11",
+        "tempIn": "v_tempIn_16",
+        "init": "v_init_9",
+        "error": "v_error_30",
+        "warnLight": "v_warnLight_7",
+        "warnLED": "v_warnLED_39",
+        "temp": "v_temp_13",
+        "chainBroken": "v_chainBroken_12"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= v_warnLED_45 1) (<= v_error_33 1) (<= v_warnLED_45 1) (<= v_tempDisplay_49 0) (>= v_tempDisplay_49 0) (>= v_error_33 1))",
+      "in_vars": {
+        "tempDisplay": "v_tempDisplay_52",
+        "ULTIMATE.start_limes": "v_ULTIMATE.start_limes_16",
+        "error": "v_error_35",
+        "warnLED": "v_warnLED_48"
+      },
+      "out_vars": {
+        "tempDisplay": "v_tempDisplay_49",
+        "ULTIMATE.start_limes": "v_ULTIMATE.start_limes_13",
+        "error": "v_error_33",
+        "warnLED": "v_warnLED_45"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

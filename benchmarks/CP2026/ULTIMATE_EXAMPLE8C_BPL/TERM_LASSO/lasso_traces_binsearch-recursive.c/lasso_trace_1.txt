@@ -1,0 +1,195 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  b_search_recursive_#in~l.base                      : Int
+  #valid                                             : (Array Int Int)
+  b_search_recursive_#in~a                           : Int
+  #memory_int                                        : (Array Int (Array Int Int))
+  b_search_recursive_#in~arrayStart                  : Int
+  #length                                            : (Array Int Int)
+  b_search_recursive_#in~l.offset                    : Int
+  b_search_recursive_#in~arrayEnd                    : Int
+  b_search_recursive_~#l.base                        : Int
+  b_search_recursive_#t~mem0                         : Int
+  b_search_recursive_~arrayStart                     : Int
+  b_search_recursive_#t~mem1                         : Int
+  b_search_recursive_~arrayEnd                       : Int
+  b_search_recursive_~m~0                            : Int
+  b_search_recursive_~a                              : Int
+  b_search_recursive_#t~ret3                         : Int
+  b_search_recursive_#t~ret2                         : Int
+  b_search_recursive_#res                            : Int
+  b_search_recursive_~#l.offset                      : Int
+  v_b_search_recursive_#in~l.base_5                  : Int
+  v_b_search_recursive_#in~a_5                       : Int
+  v_b_search_recursive_#in~arrayStart_5              : Int
+  v_b_search_recursive_#in~l.offset_5                : Int
+  v_b_search_recursive_#in~arrayEnd_5                : Int
+  v_b_search_recursive_~#l.base_15                   : Int
+  v_b_search_recursive_#t~mem0_11                    : Int
+  v_b_search_recursive_~arrayStart_9                 : Int
+  v_b_search_recursive_#t~mem1_11                    : Int
+  v_b_search_recursive_~arrayEnd_11                  : Int
+  v_b_search_recursive_~m~0_16                       : Int
+  v_b_search_recursive_~a_13                         : Int
+  v_b_search_recursive_#t~ret3_7                     : Int
+  v_b_search_recursive_#t~ret2_7                     : Int
+  v_b_search_recursive_#res_7                        : Int
+  v_b_search_recursive_~#l.offset_13                 : Int
+  v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1 : Int
+  v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1 : Int
+  v_b_search_recursive_~#l.base_14                   : Int
+  v_b_search_recursive_#in~l.base_4                  : Int
+  v_b_search_recursive_#t~mem0_10                    : Int
+  v_b_search_recursive_~arrayStart_8                 : Int
+  v_b_search_recursive_#t~mem1_10                    : Int
+  v_b_search_recursive_#in~a_4                       : Int
+  v_b_search_recursive_#in~arrayStart_4              : Int
+  v_b_search_recursive_~arrayEnd_9                   : Int
+  v_b_search_recursive_#in~l.offset_4                : Int
+  v_b_search_recursive_#in~arrayEnd_4                : Int
+  v_b_search_recursive_~m~0_15                       : Int
+  v_b_search_recursive_~a_12                         : Int
+  v_b_search_recursive_#t~ret3_6                     : Int
+  v_b_search_recursive_#t~ret2_6                     : Int
+  v_b_search_recursive_#res_6                        : Int
+  v_b_search_recursive_~#l.offset_12                 : Int
+  v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1 : Int
+  v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1 : Int
+  v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1 : Int
+  v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1 : Int
+  v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (let ((.cse1 (* |v_b_search_recursive_#in~arrayEnd_16| 4))) (let ((.cse0 (+ |v_b_search_recursive_#in~l.offset_17| 4 .cse1))) (and (<= 0 .cse0) (= |v_b_search_recursive_#in~l.offset_17| |v_b_search_recursive_#in~l.offset_16|) (<= |v_b_search_recursive_#in~arrayEnd_17| 2147483647) (<= (+ |v_b_search_recursive_#in~a_17| 1) (select (select |v_#memory_int_10| |v_b_search_recursive_#in~l.base_16|) .cse0)) (<= |v_b_search_recursive_#in~a_17| 2147483647) (= (select |v_#valid_12| |v_b_search_recursive_#in~l.base_16|) 1) (= |v_b_search_recursive_#in~a_17| |v_b_search_recursive_#in~a_16|) (<= (+ |v_b_search_recursive_#in~l.offset_17| 8 .cse1) (select |v_#length_12| |v_b_search_recursive_#in~l.base_16|)) (= |v_b_search_recursive_#in~l.base_17| |v_b_search_recursive_#in~l.base_16|) (<= |v_b_search_recursive_#in~arrayStart_16| |v_b_search_recursive_#in~arrayEnd_17|) (<= 0 (+ |v_b_search_recursive_#in~a_17| 2147483648)) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_17| 2147483648)) (let ((.cse5 (+ |v_b_search_recursive_#in~arrayStart_16| |v_b_search_recursive_#in~arrayEnd_17|))) (let ((.cse4 (div .cse5 2)) (.cse2 (= (mod .cse5 2) 0)) (.cse3 (+ |v_b_search_recursive_#in~arrayStart_16| |v_b_search_recursive_#in~arrayEnd_17| 1))) (or (and (or .cse2 (< 0 .cse3)) (= (+ |v_b_search_recursive_#in~arrayEnd_16| 1) .cse4)) (and (= |v_b_search_recursive_#in~arrayEnd_16| .cse4) (not .cse2) (<= .cse3 0))))) (= |v_b_search_recursive_#in~arrayStart_17| |v_b_search_recursive_#in~arrayStart_16|))))  InVars {b_search_recursive_#in~l.base=|v_b_search_recursive_#in~l.base_17|, #valid=|v_#valid_12|, b_search_recursive_#in~a=|v_b_search_recursive_#in~a_17|, #memory_int=|v_#memory_int_10|, b_search_recursive_#in~arrayStart=|v_b_search_recursive_#in~arrayStart_17|, #length=|v_#length_12|, b_search_recursive_#in~l.offset=|v_b_search_recursive_#in~l.offset_17|, b_search_recursive_#in~arrayEnd=|v_b_search_recursive_#in~arrayEnd_17|}  OutVars{b_search_recursive_~#l.base=|v_b_search_recursive_~#l.base_25|, b_search_recursive_#in~l.base=|v_b_search_recursive_#in~l.base_16|, b_search_recursive_#t~mem0=|v_b_search_recursive_#t~mem0_27|, b_search_recursive_~arrayStart=v_b_search_recursive_~arrayStart_19, b_search_recursive_#t~mem1=|v_b_search_recursive_#t~mem1_27|, b_search_recursive_#in~a=|v_b_search_recursive_#in~a_16|, b_search_recursive_#in~arrayStart=|v_b_search_recursive_#in~arrayStart_16|, b_search_recursive_~arrayEnd=v_b_search_recursive_~arrayEnd_26, b_search_recursive_#in~l.offset=|v_b_search_recursive_#in~l.offset_16|, b_search_recursive_#in~arrayEnd=|v_b_search_recursive_#in~arrayEnd_16|, b_search_recursive_~m~0=v_b_search_recursive_~m~0_29, b_search_recursive_~a=v_b_search_recursive_~a_23, b_search_recursive_#t~ret3=|v_b_search_recursive_#t~ret3_14|, #valid=|v_#valid_12|, b_search_recursive_#t~ret2=|v_b_search_recursive_#t~ret2_14|, #memory_int=|v_#memory_int_10|, #length=|v_#length_12|, b_search_recursive_#res=|v_b_search_recursive_#res_14|, b_search_recursive_~#l.offset=|v_b_search_recursive_~#l.offset_23|}  AuxVars[]  AssignedVars[b_search_recursive_~#l.base, b_search_recursive_#in~l.base, b_search_recursive_#t~mem0, b_search_recursive_~arrayStart, b_search_recursive_#t~mem1, b_search_recursive_#in~a, b_search_recursive_#in~arrayStart, b_search_recursive_~arrayEnd, b_search_recursive_#in~l.offset, b_search_recursive_#in~arrayEnd, b_search_recursive_~m~0, b_search_recursive_~a, b_search_recursive_#t~ret3, b_search_recursive_#t~ret2, b_search_recursive_#res, b_search_recursive_~#l.offset]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 117
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,9744
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,2987
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4267
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9369
+    Simplify formula using some simplification technique -> relative DAG size: 0,8005
+    Transform into disjunctive normal form -> relative DAG size: 1,2087
+    Simplify formula using some simplification technique -> relative DAG size: 0,9124
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0056
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0056
+
+Stem (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|))) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (+ |v_b_search_recursive_#in~arrayEnd_4| 1)) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~arrayEnd_5| 2147483647) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_5| 2147483648)) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= (+ |v_b_search_recursive_#in~arrayEnd_4| 1) |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| 0) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|)) (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4| 1) 0) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_5| 2147483648)) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) 1)) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= |v_b_search_recursive_#in~arrayEnd_4| |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= (+ 0 1) |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|) (<= (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|)) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| |v_b_search_recursive_#in~arrayEnd_4|)) (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|))) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (+ |v_b_search_recursive_#in~arrayEnd_4| 1)) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= 0 (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~arrayEnd_5| 2147483647) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= (+ |v_b_search_recursive_#in~arrayEnd_4| 1) |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) 1)) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|) (<= (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|)) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|))))
+  InVars:   {b_search_recursive_#in~l.base=|v_b_search_recursive_#in~l.base_5|, b_search_recursive_#in~a=|v_b_search_recursive_#in~a_5|, b_search_recursive_#in~arrayStart=|v_b_search_recursive_#in~arrayStart_5|, b_search_recursive_#in~l.offset=|v_b_search_recursive_#in~l.offset_5|, b_search_recursive_#in~arrayEnd=|v_b_search_recursive_#in~arrayEnd_5|, b_search_recursive_~#l.base=|v_b_search_recursive_~#l.base_15|, b_search_recursive_#t~mem0=|v_b_search_recursive_#t~mem0_11|, b_search_recursive_~arrayStart=v_b_search_recursive_~arrayStart_9, b_search_recursive_#t~mem1=|v_b_search_recursive_#t~mem1_11|, b_search_recursive_~arrayEnd=v_b_search_recursive_~arrayEnd_11, b_search_recursive_~m~0=v_b_search_recursive_~m~0_16, b_search_recursive_~a=v_b_search_recursive_~a_13, b_search_recursive_#t~ret3=|v_b_search_recursive_#t~ret3_7|, b_search_recursive_#t~ret2=|v_b_search_recursive_#t~ret2_7|, b_search_recursive_#res=|v_b_search_recursive_#res_7|, b_search_recursive_~#l.offset=|v_b_search_recursive_~#l.offset_13|, v_rep(select #length b_search_recursive_#in~l.base)_1=|v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|, v_rep(select #valid b_search_recursive_#in~l.base)_1=|v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|}
+  OutVars:  {b_search_recursive_~#l.base=|v_b_search_recursive_~#l.base_14|, b_search_recursive_#in~l.base=|v_b_search_recursive_#in~l.base_4|, b_search_recursive_#t~mem0=|v_b_search_recursive_#t~mem0_10|, b_search_recursive_~arrayStart=v_b_search_recursive_~arrayStart_8, b_search_recursive_#t~mem1=|v_b_search_recursive_#t~mem1_10|, b_search_recursive_#in~a=|v_b_search_recursive_#in~a_4|, b_search_recursive_#in~arrayStart=|v_b_search_recursive_#in~arrayStart_4|, b_search_recursive_~arrayEnd=v_b_search_recursive_~arrayEnd_9, b_search_recursive_#in~l.offset=|v_b_search_recursive_#in~l.offset_4|, b_search_recursive_#in~arrayEnd=|v_b_search_recursive_#in~arrayEnd_4|, b_search_recursive_~m~0=v_b_search_recursive_~m~0_15, b_search_recursive_~a=v_b_search_recursive_~a_12, b_search_recursive_#t~ret3=|v_b_search_recursive_#t~ret3_6|, b_search_recursive_#t~ret2=|v_b_search_recursive_#t~ret2_6|, b_search_recursive_#res=|v_b_search_recursive_#res_6|, b_search_recursive_~#l.offset=|v_b_search_recursive_~#l.offset_12|, v_rep(select #length b_search_recursive_#in~l.base)_1=|v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|, v_rep(select #valid b_search_recursive_#in~l.base)_1=|v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|}
+  AuxVars:  [|v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|, |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|, |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|]
+
+--- RAW TRACE ---
+Stem (length=0):
+Loop (length=7):
+  [0] ~#l.base, ~#l.offset := #in~l.base, #in~l.offset;assume -2147483648 <= #in~arrayStart && #in~arrayStart <= 2147483647;~arrayStart := #in~arrayStart;assume -2147483648 <= #in~arrayEnd && #in~arrayEnd <= 2147483647;~arrayEnd := #in~arrayEnd;assume -2147483648 <= #in~a && #in~a <= 2147483647;~a := #in~a;havoc ~m~0;
+  [1] assume ~arrayStart <= ~arrayEnd;~m~0 := (if ~arrayStart + ~arrayEnd < 0 && 0 != (~arrayStart + ~arrayEnd) % 2 then 1 + (~arrayStart + ~arrayEnd) / 2 else (~arrayStart + ~arrayEnd) / 2);
+  [2] SUMMARY for call #t~mem0 := read~int(~#l.base, ~#l.offset + 4 * ~m~0, 4); srcloc: L8
+  [3] assume !(#t~mem0 == ~a);havoc #t~mem0;
+  [4] SUMMARY for call #t~mem1 := read~int(~#l.base, ~#l.offset + 4 * ~m~0, 4); srcloc: L10
+  [5] assume ~a < #t~mem1;havoc #t~mem1;
+  [6] call #t~ret2 := b_search_recursive(~#l.base, ~#l.offset, ~arrayStart, ~m~0 - 1, ~a);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2126979 ns (2,13 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 47162671 ns (47,16 ms)
+       Variables (stem/loop): 0/17  Disjuncts (stem/loop): 1/3
+       Supporting invariants: 0  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 47,16 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(b_search_recursive_#in~arrayEnd) = 4*b_search_recursive_#in~arrayEnd + 8589934593
+  Variables:
+    b_search_recursive_#in~arrayEnd
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 117
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,9744
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,2987
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4267
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9369
+    Simplify formula using some simplification technique -> relative DAG size: 0,7756
+    Transform into disjunctive normal form -> relative DAG size: 1,1511
+    Simplify formula using some simplification technique -> relative DAG size: 0,9832
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0057
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0056
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,13 ms
+Total LassoRanker time: 47,16 ms
+  Termination analysis:     47,16 ms
+  Nontermination analysis:   0,00 ms

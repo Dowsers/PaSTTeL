@@ -1,0 +1,184 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  int$example_1.Test$add$2235_$param_0               : Int
+  int$example_1.Test$add$2235_$param_1               : ref
+  int$example_1.Test$add$2235___this                 : ref
+  int$example_1.Test$add$2235_i022                   : Int
+  int$example_1.Test$add$2235_i227                   : Int
+  int$example_1.Test$add$2235_i126                   : Int
+  int$example_1.Test$add$2235_r123                   : ref
+  v_int$example_1.Test$add$2235_$param_0_4           : Int
+  v_int$example_1.Test$add$2235_i022_16              : Int
+  v_int$example_1.Test$add$2235_i227_23              : Int
+  v_int$example_1.Test$add$2235_i126_18              : Int
+  v_rep$arrSizeIdx_1                                 : Int
+  v_v_rep$null_1_inout_udt_1                         : Int
+  v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1 : Int
+  v_v_repint$example_1.Test$add$2235___this_1_inout_udt_1 : Int
+  v_v_repint$example_1.Test$add$2235_r123_1_in_udt_1 : Int
+  v_int$example_1.Test$add$2235_i022_14              : Int
+  v_int$example_1.Test$add$2235_i227_18              : Int
+  v_int$example_1.Test$add$2235_i126_15              : Int
+  v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1 : Int
+  v_int$example_1.Test$add$2235_i022_15              : Int
+  v_int$example_1.Test$add$2235_i227_22              : Int
+  v_int$example_1.Test$add$2235_i126_17              : Int
+  v_v_repint$example_1.Test$add$2235_r123_1_inout_udt_1 : Int
+  v_int$example_1.Test$add$2235_i227_21              : Int
+  v_int$example_1.Test$add$2235_i126_16              : Int
+
+Function signatures:
+  $null() -> ref
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_int$example_1.Test$add$2235_i126_27 0) (= v_int$example_1.Test$add$2235_i227_36 0) (= v_int$example_1.Test$add$2235_i022_23 v_int$example_1.Test$add$2235_$param_0_7) (= v_int$example_1.Test$add$2235_r123_24 v_int$example_1.Test$add$2235_$param_1_7) (not (= v_int$example_1.Test$add$2235___this_8 $null)))  InVars {int$example_1.Test$add$2235_$param_0=v_int$example_1.Test$add$2235_$param_0_7, int$example_1.Test$add$2235_$param_1=v_int$example_1.Test$add$2235_$param_1_7, int$example_1.Test$add$2235___this=v_int$example_1.Test$add$2235___this_8}  OutVars{int$example_1.Test$add$2235_$param_0=v_int$example_1.Test$add$2235_$param_0_7, int$example_1.Test$add$2235_$param_1=v_int$example_1.Test$add$2235_$param_1_7, int$example_1.Test$add$2235___this=v_int$example_1.Test$add$2235___this_8, int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_23, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_36, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_27, int$example_1.Test$add$2235_r123=v_int$example_1.Test$add$2235_r123_24}  AuxVars[]  AssignedVars[int$example_1.Test$add$2235_i022, int$example_1.Test$add$2235_i227, int$example_1.Test$add$2235_i126, int$example_1.Test$add$2235_r123]
+
+Loop TransFormula:
+Formula: (and (not (= v_int$example_1.Test$add$2235_r123_27 $null)) (= v_int$example_1.Test$add$2235_i126_28 (+ v_int$example_1.Test$add$2235_i126_29 v_int$example_1.Test$add$2235_i227_40)) (= v_int$example_1.Test$add$2235_i227_39 (+ v_int$example_1.Test$add$2235_i227_40 1)) (<= v_int$example_1.Test$add$2235_i227_40 v_int$example_1.Test$add$2235_i022_24))  InVars {int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_24, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_40, int$example_1.Test$add$2235_r123=v_int$example_1.Test$add$2235_r123_27, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_29}  OutVars{int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_24, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_39, int$example_1.Test$add$2235_r123=v_int$example_1.Test$add$2235_r123_27, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_28}  AuxVars[]  AssignedVars[int$example_1.Test$add$2235_i227, int$example_1.Test$add$2235_i126]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0667
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,7882
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0526
+
+Stem (linearized):
+  Formula:  (or (and (>= v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1 v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1) (>= v_int$example_1.Test$add$2235_i126_15 0) (<= v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1 v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1) (>= v_int$example_1.Test$add$2235_i022_14 v_int$example_1.Test$add$2235_$param_0_4) (<= v_int$example_1.Test$add$2235_i126_15 0) (<= v_int$example_1.Test$add$2235_i022_14 v_int$example_1.Test$add$2235_$param_0_4) (<= v_int$example_1.Test$add$2235_i227_18 0) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= (+ v_rep$arrSizeIdx_1 1) 0) (>= v_int$example_1.Test$add$2235_i227_18 0) (<= (+ v_v_rep$null_1_inout_udt_1 1) v_v_repint$example_1.Test$add$2235___this_1_inout_udt_1)) (and (>= v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1 v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1) (>= v_int$example_1.Test$add$2235_i126_15 0) (<= v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1 v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1) (>= v_int$example_1.Test$add$2235_i022_14 v_int$example_1.Test$add$2235_$param_0_4) (<= (+ v_v_repint$example_1.Test$add$2235___this_1_inout_udt_1 1) v_v_rep$null_1_inout_udt_1) (<= v_int$example_1.Test$add$2235_i126_15 0) (<= v_int$example_1.Test$add$2235_i022_14 v_int$example_1.Test$add$2235_$param_0_4) (<= v_int$example_1.Test$add$2235_i227_18 0) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= (+ v_rep$arrSizeIdx_1 1) 0) (>= v_int$example_1.Test$add$2235_i227_18 0)))
+  InVars:   {int$example_1.Test$add$2235_$param_0=v_int$example_1.Test$add$2235_$param_0_4, int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_16, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_23, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_18, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1, v_rep$null_1=v_v_rep$null_1_inout_udt_1, v_repint$example_1.Test$add$2235_$param_1_1=v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1, v_repint$example_1.Test$add$2235___this_1=v_v_repint$example_1.Test$add$2235___this_1_inout_udt_1, v_repint$example_1.Test$add$2235_r123_1=v_v_repint$example_1.Test$add$2235_r123_1_in_udt_1}
+  OutVars:  {int$example_1.Test$add$2235_$param_0=v_int$example_1.Test$add$2235_$param_0_4, int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_14, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_18, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_15, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1, v_rep$null_1=v_v_rep$null_1_inout_udt_1, v_repint$example_1.Test$add$2235_$param_1_1=v_v_repint$example_1.Test$add$2235_$param_1_1_inout_udt_1, v_repint$example_1.Test$add$2235___this_1=v_v_repint$example_1.Test$add$2235___this_1_inout_udt_1, v_repint$example_1.Test$add$2235_r123_1=v_v_repint$example_1.Test$add$2235_r123_1_out_udt_1}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (>= v_int$example_1.Test$add$2235_i227_21 (+ v_int$example_1.Test$add$2235_i227_22 1)) (<= v_int$example_1.Test$add$2235_i126_16 (+ v_int$example_1.Test$add$2235_i126_17 v_int$example_1.Test$add$2235_i227_22)) (<= (+ v_v_repint$example_1.Test$add$2235_r123_1_inout_udt_1 1) v_v_rep$null_1_inout_udt_1) (<= v_int$example_1.Test$add$2235_i227_22 v_int$example_1.Test$add$2235_i022_15) (>= v_int$example_1.Test$add$2235_i126_16 (+ v_int$example_1.Test$add$2235_i126_17 v_int$example_1.Test$add$2235_i227_22)) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= v_int$example_1.Test$add$2235_i227_21 (+ v_int$example_1.Test$add$2235_i227_22 1)) (<= (+ v_rep$arrSizeIdx_1 1) 0)) (and (>= v_int$example_1.Test$add$2235_i227_21 (+ v_int$example_1.Test$add$2235_i227_22 1)) (<= (+ v_v_rep$null_1_inout_udt_1 1) v_v_repint$example_1.Test$add$2235_r123_1_inout_udt_1) (<= v_int$example_1.Test$add$2235_i126_16 (+ v_int$example_1.Test$add$2235_i126_17 v_int$example_1.Test$add$2235_i227_22)) (<= v_int$example_1.Test$add$2235_i227_22 v_int$example_1.Test$add$2235_i022_15) (>= v_int$example_1.Test$add$2235_i126_16 (+ v_int$example_1.Test$add$2235_i126_17 v_int$example_1.Test$add$2235_i227_22)) (>= (+ v_rep$arrSizeIdx_1 1) 0) (<= v_int$example_1.Test$add$2235_i227_21 (+ v_int$example_1.Test$add$2235_i227_22 1)) (<= (+ v_rep$arrSizeIdx_1 1) 0)))
+  InVars:   {int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_15, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_22, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_17, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1, v_rep$null_1=v_v_rep$null_1_inout_udt_1, v_repint$example_1.Test$add$2235_r123_1=v_v_repint$example_1.Test$add$2235_r123_1_inout_udt_1}
+  OutVars:  {int$example_1.Test$add$2235_i022=v_int$example_1.Test$add$2235_i022_15, int$example_1.Test$add$2235_i227=v_int$example_1.Test$add$2235_i227_21, int$example_1.Test$add$2235_i126=v_int$example_1.Test$add$2235_i126_16, v_rep$arrSizeIdx_1=v_rep$arrSizeIdx_1, v_rep$null_1=v_v_rep$null_1_inout_udt_1, v_repint$example_1.Test$add$2235_r123_1=v_v_repint$example_1.Test$add$2235_r123_1_inout_udt_1}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] assume (if __this != $null then 1 else 0) == 1;r025 := __this;i022 := $param_0;r123 := $param_1;i126 := 0;i227 := 0;
+Loop (length=5):
+  [0] assume (if (if i227 > i022 then 1 else 0) == 0 then 1 else 0) == 1;i126 := i126 + i227;
+  [1] assume (if r123 != $null then 1 else 0) == 1;
+  [2] call i227 := int$example_1.A$incr$2229(r123, i227);
+  [3] assume (if __this != $null then 1 else 0) == 1;r04 := __this;i15 := $param_0;$i03 := i15 + 1;__ret := $i03;assume true;
+  [4] #85#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   9023840 ns (9,02 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 132447114 ns (132,45 ms)
+       Variables (stem/loop): 9/8  Disjuncts (stem/loop): 2/2
+       Supporting invariants: 4  Motzkin applications: 20
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 132,45 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(int$example_1.Test$add$2235_$param_0, v_rep$arrSizeIdx_3, int$example_1.Test$add$2235_i227) = 2*int$example_1.Test$add$2235_$param_0 - 1*v_rep$arrSizeIdx_3 - 2*int$example_1.Test$add$2235_i227
+  Variables:
+    int$example_1.Test$add$2235_$param_0
+    v_rep$arrSizeIdx_3
+    int$example_1.Test$add$2235_i227
+  Supporting invariants:
+    [0] 1*int$example_1.Test$add$2235_$param_0 - 1*int$example_1.Test$add$2235_i022 >= 0
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 48200879 ns (48,20 ms)
+       Variables (stem/loop): 9/8  Disjuncts (stem/loop): 2/2
+  Total nontermination analysis time: 48,20 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0667
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,7882
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0526
+  [Lasso 2] Initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,2857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0667
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,7882
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0526
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  9,02 ms
+Total LassoRanker time: 180,65 ms
+  Termination analysis:     132,45 ms
+  Nontermination analysis:   48,20 ms

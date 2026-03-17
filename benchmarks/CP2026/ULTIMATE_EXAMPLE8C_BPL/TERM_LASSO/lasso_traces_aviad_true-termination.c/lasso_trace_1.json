@@ -1,0 +1,81 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret3",
+    "f_#in~a",
+    "f_#t~post0",
+    "f_~a",
+    "f_~count~0",
+    "f_~tmp~0",
+    "main_#res",
+    "main_#t~nondet1",
+    "main_#t~ret2",
+    "main_~count~1"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret3": "Int",
+    "f_#in~a": "Int",
+    "f_#t~post0": "Int",
+    "f_~a": "Int",
+    "f_~count~0": "Int",
+    "f_~tmp~0": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet1": "Int",
+    "main_#t~ret2": "Int",
+    "main_~count~1": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_f_~count~0_17 0) (<= 0 (+ |v_f_#in~a_7| 2147483648)) (<= v_f_~a_24 |v_f_#in~a_7|) (>= v_f_~a_24 |v_f_#in~a_7|) (>= v_f_~count~0_17 0) (<= |v_f_#in~a_7| 2147483647))",
+      "in_vars": {
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_6|",
+        "main_#res": "|v_main_#res_8|",
+        "main_#t~nondet1": "|v_main_#t~nondet1_9|",
+        "main_#t~ret2": "|v_main_#t~ret2_13|",
+        "f_~tmp~0": "v_f_~tmp~0_17",
+        "f_~a": "v_f_~a_27",
+        "f_~count~0": "v_f_~count~0_20",
+        "main_~count~1": "v_main_~count~1_9",
+        "f_#in~a": "|v_f_#in~a_8|"
+      },
+      "out_vars": {
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_5|",
+        "main_#res": "|v_main_#res_7|",
+        "main_#t~nondet1": "|v_main_#t~nondet1_8|",
+        "main_#t~ret2": "|v_main_#t~ret2_12|",
+        "f_~tmp~0": "v_f_~tmp~0_15",
+        "f_~a": "v_f_~a_24",
+        "f_~count~0": "v_f_~count~0_17",
+        "main_~count~1": "v_main_~count~1_8",
+        "f_#in~a": "|v_f_#in~a_7|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_div_auxv_f_~a_262_1 v_f_~a_25) (<= v_f_~a_26 (+ (* v_div_auxv_f_~a_262_1 2) v_mod_auxv_f_~a_262_1)) (<= (* v_div_auxv_f_~a_262_1 2) v_f_~a_26) (<= (+ v_f_~count~0_19 1) v_f_~count~0_18) (<= v_f_~a_25 v_div_auxv_f_~a_262_1) (<= 2 v_f_~a_26) (<= v_mod_auxv_f_~a_262_1 0) (<= v_f_~count~0_18 (+ v_f_~count~0_19 1))) (and (<= v_f_~a_26 (+ (* v_div_auxv_f_~a_262_1 2) 1)) (<= (+ (* v_div_auxv_f_~a_262_1 2) v_mod_auxv_f_~a_262_1) v_f_~a_26) (<= (+ 0 1) v_mod_auxv_f_~a_262_1) (<= (+ v_f_~count~0_19 1) v_f_~count~0_18) (<= 2 v_f_~a_26) (<= (+ v_f_~a_25 1) v_f_~a_26) (<= v_f_~count~0_18 (+ v_f_~count~0_19 1)) (<= v_f_~a_26 (+ v_f_~a_25 1))))",
+      "in_vars": {
+        "f_~a": "v_f_~a_26",
+        "f_~count~0": "v_f_~count~0_19",
+        "f_~tmp~0": "v_f_~tmp~0_18",
+        "f_#t~post0": "|v_f_#t~post0_6|"
+      },
+      "out_vars": {
+        "f_~tmp~0": "v_f_~tmp~0_16",
+        "f_~a": "v_f_~a_25",
+        "f_~count~0": "v_f_~count~0_18",
+        "f_#t~post0": "|v_f_#t~post0_5|"
+      },
+      "aux_vars": [
+        "v_div_auxv_f_~a_262_1",
+        "v_mod_auxv_f_~a_262_1"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  even_n                                             : Int
+  odd_res                                            : Bool
+  even_res                                           : Bool
+  odd_n                                              : Int
+  v_even_n_11                                        : Int
+  v_odd_n_14                                         : Int
+  v_v_rep(ite odd_res 1 0)_1_in_bool_1               : Int
+  v_v_rep(ite even_res 1 0)_1_in_bool_1              : Int
+  v_even_n_10                                        : Int
+  v_odd_n_12                                         : Int
+  v_v_rep(ite odd_res 1 0)_1_out_bool_1              : Int
+  v_v_rep(ite even_res 1 0)_1_out_bool_1             : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (and (= (+ 2 v_even_n_31) v_even_n_32) (not (= v_even_n_32 0)) (not (= (+ v_even_n_31 1) 0)))  InVars {even_n=v_even_n_32}  OutVars{even_n=v_even_n_31, odd_res=v_odd_res_21, even_res=v_even_res_13, odd_n=v_odd_n_41}  AuxVars[]  AssignedVars[even_n, odd_res, even_res, odd_n]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 15
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9333
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9655
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,5000
+    Simplify formula using some simplification technique -> relative DAG size: 0,4286
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0667
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,1250
+
+Stem (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_even_n_11 1) 0) (<= v_even_n_11 (+ 2 v_even_n_10)) (<= (+ 2 v_even_n_10) v_even_n_11)) (and (<= (+ 1 1) v_even_n_11) (<= v_even_n_11 (+ 2 v_even_n_10)) (<= (+ 2 v_even_n_10) v_even_n_11)))
+  InVars:   {even_n=v_even_n_11, odd_n=v_odd_n_14, v_rep(ite odd_res 1 0)_1=|v_v_rep(ite odd_res 1 0)_1_in_bool_1|, v_rep(ite even_res 1 0)_1=|v_v_rep(ite even_res 1 0)_1_in_bool_1|}
+  OutVars:  {even_n=v_even_n_10, odd_n=v_odd_n_12, v_rep(ite odd_res 1 0)_1=|v_v_rep(ite odd_res 1 0)_1_out_bool_1|, v_rep(ite even_res 1 0)_1=|v_v_rep(ite even_res 1 0)_1_out_bool_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=0):
+Loop (length=4):
+  [0] assume !(n == 0);
+  [1] call res := odd(n - 1);
+  [2] assume !(n == 0);
+  [3] call res := even(n - 1);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2004206 ns (2,00 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    even_n                                   = -1
+    odd_n                                    = 0
+    v_rep(ite odd_res 1 0)_2                 = 0
+    v_rep(ite even_res 1 0)_2                = 0
+  State at honda:
+    even_n                                   = -1
+    odd_n                                    = 0
+    v_rep(ite odd_res 1 0)_2                 = 0
+    v_rep(ite even_res 1 0)_2                = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    even_n                                   = -1
+    odd_n                                    = 0
+    v_rep(ite odd_res 1 0)_2                 = 0
+    v_rep(ite even_res 1 0)_2                = 0
+  GEV[1] (lambda=1):
+    even_n                                   = 0
+    odd_n                                    = 0
+    v_rep(ite odd_res 1 0)_2                 = 0
+    v_rep(ite even_res 1 0)_2                = 0
+  GEV[2] (lambda=1):
+    even_n                                   = -1
+    odd_n                                    = 0
+    v_rep(ite odd_res 1 0)_2                 = 0
+    v_rep(ite even_res 1 0)_2                = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 37868279 ns (37,87 ms)
+       Variables (stem/loop): 0/2  Disjuncts (stem/loop): 1/2
+  Total nontermination analysis time: 37,87 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 17
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9412
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9697
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,4375
+    Simplify formula using some simplification technique -> relative DAG size: 0,4103
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0625
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,1176
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,00 ms
+Total LassoRanker time: 37,87 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   37,87 ms

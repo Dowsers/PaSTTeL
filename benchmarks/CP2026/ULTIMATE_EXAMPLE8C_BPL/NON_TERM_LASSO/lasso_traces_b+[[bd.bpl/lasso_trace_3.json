@@ -1,0 +1,65 @@
+{
+  "program_vars": [
+    "main_head",
+    "main_max_head",
+    "|v_rep(select main_mem (+ main_head 1))_4|",
+    "|v_rep(select main_mem 0)_5|",
+    "|v_rep(select main_mem 1)_5|",
+    "|v_rep(select main_mem 2)_1|",
+    "|v_rep(select main_mem main_head)_4|"
+  ],
+  "var_types": {
+    "main_head": "Int",
+    "main_max_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= |v_arrayCell_v_main_mem_86[1]_1| 1) (<= v_main_head_68 1) (<= v_main_max_head_51 2) (>= |v_arrayCell_v_main_mem_86[0]_1| 0) (<= |v_arrayCell_v_main_mem_86[1]_1| 1) (>= v_main_head_68 1) (<= |v_arrayCell_v_main_mem_86[2]_1| 0) (>= v_main_max_head_51 2) (>= |v_arrayCell_v_main_mem_86[2]_1| 0) (<= |v_arrayCell_v_main_mem_86[0]_1| 0))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_55",
+        "main_head": "v_main_head_72",
+        "|v_rep(select main_mem 0)_5|": "|v_arrayCell_v_main_mem_88[0]_1|",
+        "|v_rep(select main_mem 1)_5|": "|v_arrayCell_v_main_mem_88[1]_1|",
+        "|v_rep(select main_mem 2)_1|": "|v_arrayCell_v_main_mem_88[2]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_51",
+        "main_head": "v_main_head_68",
+        "|v_rep(select main_mem 0)_5|": "|v_arrayCell_v_main_mem_86[0]_1|",
+        "|v_rep(select main_mem 1)_5|": "|v_arrayCell_v_main_mem_86[1]_1|",
+        "|v_rep(select main_mem 2)_1|": "|v_arrayCell_v_main_mem_86[2]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= 0 |v_arrayCell_v_main_mem_90[2]_1|) (<= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_max_head_54 1) (<= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_90[v_main_head_70]_1|) (>= v_main_head_71 1) (>= 0 |v_arrayCell_v_main_mem_90[2]_1|) (<= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_head_71 1) (>= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (<= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= v_main_max_head_53 (+ v_main_max_head_54 1)) (>= v_main_head_70 1) (<= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= v_main_head_70 1) (>= v_main_max_head_53 (+ v_main_max_head_54 1)) (>= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|)) (and (>= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= 2 v_main_max_head_54) (<= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (>= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1|) (>= v_main_head_71 1) (>= v_main_max_head_54 v_main_max_head_53) (<= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_head_71 1) (>= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (>= |v_arrayCell_v_main_mem_90[2]_1| |v_arrayCell_v_main_mem_91[2]_1|) (>= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= (+ |v_arrayCell_v_main_mem_90[v_main_head_70]_1| 1) 0) (<= |v_arrayCell_v_main_mem_90[2]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1|) (<= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (>= v_main_head_70 1) (<= v_main_max_head_54 v_main_max_head_53) (<= v_main_head_70 1) (>= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|)) (and (<= 0 |v_arrayCell_v_main_mem_90[2]_1|) (<= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_max_head_54 1) (<= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (>= v_main_head_71 1) (>= 0 |v_arrayCell_v_main_mem_90[2]_1|) (<= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_head_71 1) (>= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (<= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= v_main_max_head_53 (+ v_main_max_head_54 1)) (<= (+ |v_arrayCell_v_main_mem_90[v_main_head_70]_1| 1) 0) (>= v_main_head_70 1) (<= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= v_main_head_70 1) (>= v_main_max_head_53 (+ v_main_max_head_54 1)) (>= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|)) (and (>= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= 2 v_main_max_head_54) (<= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_90[v_main_head_70]_1|) (>= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1|) (>= v_main_head_71 1) (>= v_main_max_head_54 v_main_max_head_53) (<= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= v_main_head_71 1) (>= |v_arrayCell_v_main_mem_90[0]_1| |v_arrayCell_v_main_mem_91[0]_1|) (>= |v_arrayCell_v_main_mem_90[2]_1| |v_arrayCell_v_main_mem_91[2]_1|) (>= |v_arrayCell_v_main_mem_90[1]_1| |v_arrayCell_v_main_mem_91[1]_1|) (<= |v_arrayCell_v_main_mem_90[2]_1| |v_arrayCell_v_main_mem_91[2]_1|) (<= |v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1| |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1|) (<= |v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1| |v_arrayCell_v_main_mem_91[2]_1|) (>= v_main_head_70 1) (<= v_main_max_head_54 v_main_max_head_53) (<= v_main_head_70 1) (>= |v_arrayCell_v_main_mem_91[v_main_head_71]_1| |v_arrayCell_v_main_mem_91[1]_1|) (>= |v_arrayCell_v_main_mem_90[v_main_head_70]_1| |v_arrayCell_v_main_mem_91[1]_1|)))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_54",
+        "main_head": "v_main_head_71",
+        "|v_rep(select main_mem (+ main_head 1))_4|": "|v_arrayCell_v_main_mem_91[(+ v_main_head_71 1)]_1|",
+        "|v_rep(select main_mem main_head)_4|": "|v_arrayCell_v_main_mem_91[v_main_head_71]_1|",
+        "|v_rep(select main_mem 0)_5|": "|v_arrayCell_v_main_mem_91[0]_1|",
+        "|v_rep(select main_mem 1)_5|": "|v_arrayCell_v_main_mem_91[1]_1|",
+        "|v_rep(select main_mem 2)_1|": "|v_arrayCell_v_main_mem_91[2]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_53",
+        "main_head": "v_main_head_70",
+        "|v_rep(select main_mem main_head)_4|": "|v_arrayCell_v_main_mem_90[v_main_head_70]_1|",
+        "|v_rep(select main_mem 0)_5|": "|v_arrayCell_v_main_mem_90[0]_1|",
+        "|v_rep(select main_mem 1)_5|": "|v_arrayCell_v_main_mem_90[1]_1|",
+        "|v_rep(select main_mem (+ main_head 1))_4|": "|v_arrayCell_v_main_mem_90[(+ v_main_head_70 1)]_1|",
+        "|v_rep(select main_mem 2)_1|": "|v_arrayCell_v_main_mem_90[2]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

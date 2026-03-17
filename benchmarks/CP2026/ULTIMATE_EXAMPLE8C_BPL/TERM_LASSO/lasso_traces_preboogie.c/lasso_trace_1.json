@@ -1,0 +1,58 @@
+{
+  "program_vars": [
+    "fibo_#in~n",
+    "fibo_#res",
+    "fibo_#t~ret0",
+    "fibo_#t~ret1",
+    "fibo_~n",
+    "main_#t~ret2"
+  ],
+  "var_types": {
+    "fibo_#in~n": "Int",
+    "fibo_#res": "Int",
+    "fibo_#t~ret0": "Int",
+    "fibo_#t~ret1": "Int",
+    "fibo_~n": "Int",
+    "main_#t~ret2": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_fibo_#in~n_5| 10) (>= |v_fibo_#in~n_5| 10))",
+      "in_vars": {
+        "fibo_#in~n": "|v_fibo_#in~n_10|",
+        "main_#t~ret2": "|v_main_#t~ret2_9|"
+      },
+      "out_vars": {
+        "fibo_#in~n": "|v_fibo_#in~n_5|",
+        "main_#t~ret2": "|v_main_#t~ret2_8|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= (+ |v_fibo_#in~n_8| 1) |v_fibo_#in~n_9|) (<= (+ |v_fibo_#in~n_8| 1) |v_fibo_#in~n_9|) (<= (+ 0 1) |v_fibo_#in~n_9|)) (and (<= (+ |v_fibo_#in~n_9| 1) 0) (>= (+ |v_fibo_#in~n_8| 1) |v_fibo_#in~n_9|) (<= (+ |v_fibo_#in~n_8| 1) |v_fibo_#in~n_9|)))",
+      "in_vars": {
+        "fibo_#in~n": "|v_fibo_#in~n_9|",
+        "fibo_~n": "v_fibo_~n_11",
+        "fibo_#t~ret0": "|v_fibo_#t~ret0_8|",
+        "fibo_#t~ret1": "|v_fibo_#t~ret1_7|",
+        "fibo_#res": "|v_fibo_#res_4|"
+      },
+      "out_vars": {
+        "fibo_~n": "v_fibo_~n_10",
+        "fibo_#in~n": "|v_fibo_#in~n_8|",
+        "fibo_#t~ret0": "|v_fibo_#t~ret0_7|",
+        "fibo_#t~ret1": "|v_fibo_#t~ret1_6|",
+        "fibo_#res": "|v_fibo_#res_3|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

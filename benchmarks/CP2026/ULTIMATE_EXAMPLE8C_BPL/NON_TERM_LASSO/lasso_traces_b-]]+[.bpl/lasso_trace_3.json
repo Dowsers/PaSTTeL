@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "main_head",
+    "main_max_head",
+    "|v_rep(select main_mem 0)_3|",
+    "|v_rep(select main_mem main_head)_2|"
+  ],
+  "var_types": {
+    "main_head": "Int",
+    "main_max_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_main_max_head_33 0) (<= v_main_head_47 0) (<= |v_arrayCell_v_main_mem_67[0]_1| 1) (<= v_main_max_head_33 0) (>= |v_arrayCell_v_main_mem_67[0]_1| 1) (>= v_main_head_47 0))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_34",
+        "main_head": "v_main_head_49",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_69[0]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_33",
+        "main_head": "v_main_head_47",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_67[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_main_head_48 0) (<= |v_arrayCell_v_main_mem_70[v_main_head_48]_1| |v_arrayCell_v_main_mem_70[0]_1|) (>= v_main_head_48 0) (>= |v_arrayCell_v_main_mem_70[v_main_head_48]_1| |v_arrayCell_v_main_mem_70[0]_1|) (<= (+ |v_arrayCell_v_main_mem_70[0]_1| 1) 0)) (and (<= v_main_head_48 0) (<= |v_arrayCell_v_main_mem_70[v_main_head_48]_1| |v_arrayCell_v_main_mem_70[0]_1|) (>= v_main_head_48 0) (>= |v_arrayCell_v_main_mem_70[v_main_head_48]_1| |v_arrayCell_v_main_mem_70[0]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_70[0]_1|)))",
+      "in_vars": {
+        "main_head": "v_main_head_48",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_70[v_main_head_48]_1|",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_70[0]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_48",
+        "|v_rep(select main_mem main_head)_2|": "|v_arrayCell_v_main_mem_70[v_main_head_48]_1|",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_70[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

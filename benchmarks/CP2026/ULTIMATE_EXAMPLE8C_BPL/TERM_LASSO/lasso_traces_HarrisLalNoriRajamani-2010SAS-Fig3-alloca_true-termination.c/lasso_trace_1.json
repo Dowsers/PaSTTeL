@@ -1,0 +1,123 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "ULTIMATE.start_#t~ret8",
+    "main_#t~malloc2.base",
+    "main_#t~mem4",
+    "main_#t~nondet3",
+    "main_#t~nondet5",
+    "main_#t~ret6",
+    "old_~x~0.base_",
+    "old_~x~0.offset_",
+    "|v_rep(select #length main_#t~malloc2.base)_1|",
+    "|v_rep(select #length ~x~0.base)_1|",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select #valid main_#t~malloc2.base)_1|",
+    "|v_rep(select #valid ~x~0.base)_1|",
+    "|v_rep(select (select #memory_int ~x~0.base) 0)_1|",
+    "|v_rep(select (select #memory_int ~x~0.base) ~x~0.offset)_1|",
+    "|v_rep(select (select old_#memory_int_ ~x~0.base) 0)_1|",
+    "|v_rep(select old_#length_ main_#t~malloc2.base)_1|",
+    "|v_rep(select old_#valid_ 0)_1|",
+    "|v_rep(select old_#valid_ main_#t~malloc2.base)_1|",
+    "~x~0.base",
+    "~x~0.offset"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "ULTIMATE.start_#t~ret8": "Int",
+    "main_#t~malloc2.base": "Int",
+    "main_#t~mem4": "Int",
+    "main_#t~nondet3": "Int",
+    "main_#t~nondet5": "Int",
+    "main_#t~ret6": "Int",
+    "old_~x~0.base_": "Int",
+    "old_~x~0.offset_": "Int",
+    "~x~0.base": "Int",
+    "~x~0.offset": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_arrayCell_v_#valid_37[0]_1| 0) (<= v_~x~0.offset_35 0) (>= |v_old_~x~0.base__6| 0) (<= |v_arrayCell_v_#valid_38[0]_1| 0) (<= (+ |v_#StackHeapBarrier_10| 1) |v_main_#t~malloc2.base_10|) (<= |v_arrayCell_v_#memory_int_32[v_~x~0.base_39, 0]_1| 2147483647) (>= |v_main_#t~malloc2.base_10| v_~x~0.base_39) (<= |v_arrayCell_v_old_#valid__3[0]_1| 0) (<= |v_old_~x~0.offset__6| 0) (>= v_~x~0.offset_35 0) (<= 1 |v_#StackHeapBarrier_10|) (<= |v_arrayCell_v_#length_26[v_main_#t~malloc2.base_10]_1| 4) (<= |v_arrayCell_v_#valid_37[v_main_#t~malloc2.base_10]_1| 1) (<= |v_old_~x~0.base__6| 0) (>= |v_arrayCell_v_#valid_37[0]_1| 0) (>= |v_arrayCell_v_#length_26[v_main_#t~malloc2.base_10]_1| 4) (>= |v_arrayCell_v_#valid_38[0]_1| 0) (>= |v_arrayCell_v_#valid_37[v_main_#t~malloc2.base_10]_1| 1) (<= 0 (+ |v_arrayCell_v_#memory_int_32[v_~x~0.base_39, 0]_1| 2147483648)) (>= |v_arrayCell_v_old_#valid__3[0]_1| 0) (>= |v_old_~x~0.offset__6| 0) (<= |v_main_#t~malloc2.base_10| v_~x~0.base_39) (<= |v_arrayCell_v_old_#valid__3[v_main_#t~malloc2.base_10]_1| 0) (>= |v_arrayCell_v_old_#valid__3[v_main_#t~malloc2.base_10]_1| 0))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "~x~0.base": "v_~x~0.base_44",
+        "~x~0.offset": "v_~x~0.offset_40",
+        "old_~x~0.base_": "|v_old_~x~0.base__7|",
+        "old_~x~0.offset_": "|v_old_~x~0.offset__7|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_12|",
+        "ULTIMATE.start_#t~ret8": "|v_ULTIMATE.start_#t~ret8_6|",
+        "main_#t~malloc2.base": "|v_main_#t~malloc2.base_11|",
+        "|v_rep(select #length main_#t~malloc2.base)_1|": "|v_arrayCell_v_#length_27[v_main_#t~malloc2.base_11]_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) 0)_1|": "|v_arrayCell_v_#memory_int_33[v_~x~0.base_44, 0]_1|",
+        "|v_rep(select #valid main_#t~malloc2.base)_1|": "|v_arrayCell_v_#valid_38[v_main_#t~malloc2.base_11]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_38[0]_1|",
+        "|v_rep(select old_#length_ main_#t~malloc2.base)_1|": "|v_v_rep(select old_#length_ main_#t~malloc2.base)_1_1|",
+        "|v_rep(select (select old_#memory_int_ ~x~0.base) 0)_1|": "|v_v_rep(select (select old_#memory_int_ ~x~0.base) 0)_1_1|",
+        "|v_rep(select old_#valid_ main_#t~malloc2.base)_1|": "|v_v_rep(select old_#valid_ main_#t~malloc2.base)_1_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_v_rep(select old_#valid_ 0)_1_1|"
+      },
+      "out_vars": {
+        "~x~0.base": "v_~x~0.base_39",
+        "~x~0.offset": "v_~x~0.offset_35",
+        "old_~x~0.base_": "|v_old_~x~0.base__6|",
+        "old_~x~0.offset_": "|v_old_~x~0.offset__6|",
+        "main_#t~nondet3": "|v_main_#t~nondet3_11|",
+        "ULTIMATE.start_#t~ret8": "|v_ULTIMATE.start_#t~ret8_5|",
+        "main_#t~malloc2.base": "|v_main_#t~malloc2.base_10|",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "|v_rep(select old_#length_ main_#t~malloc2.base)_1|": "|v_arrayCell_v_old_#length__3[v_main_#t~malloc2.base_10]_1|",
+        "|v_rep(select #length main_#t~malloc2.base)_1|": "|v_arrayCell_v_#length_26[v_main_#t~malloc2.base_10]_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) 0)_1|": "|v_arrayCell_v_#memory_int_32[v_~x~0.base_39, 0]_1|",
+        "|v_rep(select (select old_#memory_int_ ~x~0.base) 0)_1|": "|v_arrayCell_v_old_#memory_int__3[v_~x~0.base_39, 0]_1|",
+        "|v_rep(select #valid main_#t~malloc2.base)_1|": "|v_arrayCell_v_#valid_37[v_main_#t~malloc2.base_10]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_37[0]_1|",
+        "|v_rep(select old_#valid_ main_#t~malloc2.base)_1|": "|v_arrayCell_v_old_#valid__3[v_main_#t~malloc2.base_10]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_arrayCell_v_old_#valid__3[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, v_~x~0.offset_39]_1| |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, 0]_1|) (>= v_~x~0.base_43 |v_main_#t~malloc2.base_ForeignInOutVar_1|) (<= |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, 0]_1| |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|) (<= (+ |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, 0]_1| 1) |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|) (>= |v_arrayCell_v_#valid_41[v_~x~0.base_43]_1| 1) (>= |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, v_~x~0.offset_39]_1| |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, 0]_1|) (<= |v_arrayCell_v_#valid_41[v_main_#t~malloc2.base_ForeignInOutVar_1]_1| 1) (>= (+ |v_arrayCell_v_#memory_int_39[v_~x~0.base_43, 0]_1| 1) |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|) (>= v_~x~0.offset_39 0) (<= 4 |v_arrayCell_v_#length_30[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|) (>= |v_arrayCell_v_#valid_41[v_main_#t~malloc2.base_ForeignInOutVar_1]_1| 1) (<= 1 |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|) (<= v_~x~0.offset_39 0) (<= |v_arrayCell_v_#valid_41[v_~x~0.base_43]_1| 1) (>= |v_arrayCell_v_#length_30[v_~x~0.base_43]_1| |v_arrayCell_v_#length_30[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|) (<= |v_arrayCell_v_#length_30[v_~x~0.base_43]_1| |v_arrayCell_v_#length_30[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|) (>= |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, 0]_1| |v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|) (<= v_~x~0.base_43 |v_main_#t~malloc2.base_ForeignInOutVar_1|))",
+      "in_vars": {
+        "~x~0.base": "v_~x~0.base_43",
+        "~x~0.offset": "v_~x~0.offset_39",
+        "main_#t~ret6": "|v_main_#t~ret6_8|",
+        "main_#t~nondet5": "|v_main_#t~nondet5_10|",
+        "main_#t~mem4": "|v_main_#t~mem4_12|",
+        "main_#t~malloc2.base": "|v_main_#t~malloc2.base_ForeignInOutVar_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) ~x~0.offset)_1|": "|v_arrayCell_v_#memory_int_40[v_~x~0.base_43, v_~x~0.offset_39]_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) 0)_1|": "|v_arrayCell_v_#memory_int_40[v_~x~0.base_43, 0]_1|",
+        "|v_rep(select #valid ~x~0.base)_1|": "|v_arrayCell_v_#valid_41[v_~x~0.base_43]_1|",
+        "|v_rep(select #valid main_#t~malloc2.base)_1|": "|v_arrayCell_v_#valid_41[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_41[0]_1|",
+        "|v_rep(select #length ~x~0.base)_1|": "|v_arrayCell_v_#length_30[v_~x~0.base_43]_1|",
+        "|v_rep(select #length main_#t~malloc2.base)_1|": "|v_arrayCell_v_#length_30[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|"
+      },
+      "out_vars": {
+        "main_#t~ret6": "|v_main_#t~ret6_6|",
+        "main_#t~nondet5": "|v_main_#t~nondet5_8|",
+        "~x~0.base": "v_~x~0.base_43",
+        "~x~0.offset": "v_~x~0.offset_39",
+        "main_#t~mem4": "|v_main_#t~mem4_10|",
+        "main_#t~malloc2.base": "|v_main_#t~malloc2.base_ForeignInOutVar_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) ~x~0.offset)_1|": "|v_arrayCell_v_#memory_int_39[v_~x~0.base_43, v_~x~0.offset_39]_1|",
+        "|v_rep(select (select #memory_int ~x~0.base) 0)_1|": "|v_arrayCell_v_#memory_int_39[v_~x~0.base_43, 0]_1|",
+        "|v_rep(select #valid ~x~0.base)_1|": "|v_arrayCell_v_#valid_41[v_~x~0.base_43]_1|",
+        "|v_rep(select #valid main_#t~malloc2.base)_1|": "|v_arrayCell_v_#valid_41[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_41[0]_1|",
+        "|v_rep(select #length ~x~0.base)_1|": "|v_arrayCell_v_#length_30[v_~x~0.base_43]_1|",
+        "|v_rep(select #length main_#t~malloc2.base)_1|": "|v_arrayCell_v_#length_30[v_main_#t~malloc2.base_ForeignInOutVar_1]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

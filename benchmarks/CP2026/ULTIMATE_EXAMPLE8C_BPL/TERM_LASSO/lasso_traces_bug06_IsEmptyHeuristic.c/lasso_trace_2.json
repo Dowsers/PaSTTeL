@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "main_#t~nondet1",
+    "main_#t~post2",
+    "main_~i~0",
+    "main_~j~0"
+  ],
+  "var_types": {
+    "main_#t~nondet1": "Int",
+    "main_#t~post2": "Int",
+    "main_~i~0": "Int",
+    "main_~j~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_~i~0_24 0) (>= v_main_~i~0_24 0))",
+      "in_vars": {
+        "main_~j~0": "v_main_~j~0_15",
+        "main_~i~0": "v_main_~i~0_27"
+      },
+      "out_vars": {
+        "main_~j~0": "v_main_~j~0_14",
+        "main_~i~0": "v_main_~i~0_24"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_main_~i~0_26 1) (>= v_main_~i~0_25 (+ v_main_~i~0_26 1)) (<= v_main_~i~0_25 (+ v_main_~i~0_26 1)))",
+      "in_vars": {
+        "main_~i~0": "v_main_~i~0_26",
+        "main_#t~nondet1": "|v_main_#t~nondet1_8|",
+        "main_#t~post2": "|v_main_#t~post2_6|"
+      },
+      "out_vars": {
+        "main_#t~nondet1": "|v_main_#t~nondet1_6|",
+        "main_~i~0": "v_main_~i~0_25",
+        "main_#t~post2": "|v_main_#t~post2_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "program_vars": [
+    "hanoi_#in~n",
+    "hanoi_#res",
+    "hanoi_#t~ret0",
+    "hanoi_~n",
+    "main_#t~ret1"
+  ],
+  "var_types": {
+    "hanoi_#in~n": "Int",
+    "hanoi_#res": "Int",
+    "hanoi_#t~ret0": "Int",
+    "hanoi_~n": "Int",
+    "main_#t~ret1": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {
+        "main_#t~ret1": "|v_main_#t~ret1_9|",
+        "hanoi_#in~n": "|v_hanoi_#in~n_10|"
+      },
+      "out_vars": {
+        "main_#t~ret1": "|v_main_#t~ret1_8|",
+        "hanoi_#in~n": "|v_hanoi_#in~n_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ |v_hanoi_#in~n_9| 1) 0) (<= (+ |v_hanoi_#in~n_8| 1) |v_hanoi_#in~n_9|) (>= (+ |v_hanoi_#in~n_8| 1) |v_hanoi_#in~n_9|)) (and (<= (+ |v_hanoi_#in~n_8| 1) |v_hanoi_#in~n_9|) (<= (+ 0 1) |v_hanoi_#in~n_9|) (>= (+ |v_hanoi_#in~n_8| 1) |v_hanoi_#in~n_9|)))",
+      "in_vars": {
+        "hanoi_#in~n": "|v_hanoi_#in~n_9|",
+        "hanoi_~n": "v_hanoi_~n_9",
+        "hanoi_#res": "|v_hanoi_#res_5|",
+        "hanoi_#t~ret0": "|v_hanoi_#t~ret0_7|"
+      },
+      "out_vars": {
+        "hanoi_#in~n": "|v_hanoi_#in~n_8|",
+        "hanoi_~n": "v_hanoi_~n_8",
+        "hanoi_#res": "|v_hanoi_#res_4|",
+        "hanoi_#t~ret0": "|v_hanoi_#t~ret0_6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

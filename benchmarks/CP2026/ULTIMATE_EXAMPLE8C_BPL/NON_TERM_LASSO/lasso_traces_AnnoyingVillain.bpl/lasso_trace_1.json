@@ -1,0 +1,49 @@
+{
+  "program_vars": [
+    "main_x",
+    "main_y"
+  ],
+  "var_types": {
+    "main_x": "Int",
+    "main_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_mod_auxv_main_y_68_1 0) (<= v_mod_auxv_main_x_6256_1 0) (<= (+ v_mod_auxv_main_x_6256_1 (* 256 v_div_auxv_main_x_6256_1)) v_main_x_6) (<= (+ (* v_div_auxv_main_y_68_1 8) v_mod_auxv_main_y_68_1) v_main_y_6) (<= v_main_y_6 (+ (* v_div_auxv_main_y_68_1 8) v_mod_auxv_main_y_68_1)) (<= 0 v_mod_auxv_main_x_6256_1) (<= 0 v_mod_auxv_main_y_68_1) (<= v_main_x_6 (+ v_mod_auxv_main_x_6256_1 (* 256 v_div_auxv_main_x_6256_1))))",
+      "in_vars": {
+        "main_y": "v_main_y_6",
+        "main_x": "v_main_x_6"
+      },
+      "out_vars": {
+        "main_y": "v_main_y_6",
+        "main_x": "v_main_x_6"
+      },
+      "aux_vars": [
+        "v_div_auxv_main_x_6256_1",
+        "v_div_auxv_main_y_68_1",
+        "v_mod_auxv_main_x_6256_1",
+        "v_mod_auxv_main_y_68_1"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= v_main_y_7 (+ v_main_y_8 1)) (>= v_main_x_7 (+ v_main_x_8 1)) (<= v_main_y_7 (+ v_main_y_8 1)) (<= v_main_x_7 (+ v_main_x_8 1)))",
+      "in_vars": {
+        "main_y": "v_main_y_8",
+        "main_x": "v_main_x_8"
+      },
+      "out_vars": {
+        "main_y": "v_main_y_7",
+        "main_x": "v_main_x_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  main_#res                                          : Int
+  main_#t~nondet6                                    : Int
+  bubbleSort_~numbers.offset                         : Int
+  main_#t~malloc7.offset                             : Int
+  ULTIMATE.start_#t~ret8                             : Int
+  bubbleSort_#in~array_size                          : Int
+  bubbleSort_~i~0                                    : Int
+  bubbleSort_~temp~0                                 : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  bubbleSort_#in~numbers.base                        : Int
+  old(#length)                                       : (Array Int Int)
+  main_#t~malloc7.base                               : Int
+  bubbleSort_~j~0                                    : Int
+  bubbleSort_~numbers.base                           : Int
+  bubbleSort_#in~numbers.offset                      : Int
+  bubbleSort_#t~post4                                : Int
+  bubbleSort_#t~mem1                                 : Int
+  bubbleSort_#t~mem0                                 : Int
+  v_#StackHeapBarrier_41                             : Int
+  v_main_#res_26                                     : Int
+  v_main_#t~nondet6_39                               : Int
+  v_bubbleSort_~numbers.offset_46                    : Int
+  v_main_#t~malloc7.offset_31                        : Int
+  v_ULTIMATE.start_#t~ret8_16                        : Int
+  v_bubbleSort_#in~array_size_34                     : Int
+  v_bubbleSort_~i~0_48                               : Int
+  v_bubbleSort_~temp~0_33                            : Int
+  v_bubbleSort_#in~numbers.base_34                   : Int
+  v_main_#t~malloc7.base_47                          : Int
+  v_bubbleSort_~j~0_63                               : Int
+  v_bubbleSort_~numbers.base_52                      : Int
+  v_bubbleSort_#in~numbers.offset_34                 : Int
+  v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_34]_1 : Int
+  v_arrayCell_v_#valid_88[0]_1                       : Int
+  v_arrayCell_v_#length_69[v_bubbleSort_#in~numbers.base_34]_1 : Int
+  v_main_#res_25                                     : Int
+  v_main_#t~nondet6_38                               : Int
+  v_bubbleSort_~numbers.offset_44                    : Int
+  v_main_#t~malloc7.offset_30                        : Int
+  v_ULTIMATE.start_#t~ret8_15                        : Int
+  v_bubbleSort_#in~array_size_33                     : Int
+  v_bubbleSort_~i~0_46                               : Int
+  v_bubbleSort_~temp~0_32                            : Int
+  v_bubbleSort_#in~numbers.base_33                   : Int
+  v_main_#t~malloc7.base_46                          : Int
+  v_bubbleSort_~j~0_60                               : Int
+  v_bubbleSort_~numbers.base_50                      : Int
+  v_bubbleSort_#in~numbers.offset_33                 : Int
+  v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_33]_1 : Int
+  v_arrayCell_v_#valid_87[0]_1                       : Int
+  v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_33]_1 : Int
+  v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_34]_1 : Int
+  v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_33]_1 : Int
+  v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_34]_1 : Int
+  v_arrayCell_v_#length_69[v_bubbleSort_#in~numbers.base_33]_1 : Int
+  v_bubbleSort_~i~0_47                               : Int
+  v_bubbleSort_~numbers.offset_45                    : Int
+  v_bubbleSort_~j~0_62                               : Int
+  v_bubbleSort_~numbers.base_51                      : Int
+  v_bubbleSort_#t~post4_4                            : Int
+  v_bubbleSort_#t~mem1_8                             : Int
+  v_bubbleSort_#t~mem0_8                             : Int
+  v_bubbleSort_#in~numbers.base_ForeignInOutVar_1    : Int
+  v_arrayCell_v_#valid_89[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#valid_89[0]_1                       : Int
+  v_arrayCell_v_#valid_89[v_bubbleSort_~numbers.base_51]_1 : Int
+  v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))]_1 : Int
+  v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_62 4))]_1 : Int
+  v_arrayCell_v_#length_70[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1 : Int
+  v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1 : Int
+  v_bubbleSort_#t~post4_3                            : Int
+  v_bubbleSort_~j~0_61                               : Int
+  v_bubbleSort_#t~mem1_6                             : Int
+  v_bubbleSort_#t~mem0_6                             : Int
+  v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_61 4))]_1 : Int
+  v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_61 4))]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_bubbleSort_#in~numbers.base_53| v_bubbleSort_~numbers.base_70) (= 0 (select |v_#valid_124| 0)) (= |v_old(#memory_int)_67| |v_#memory_int_92|) (= 0 (select |v_#valid_124| |v_bubbleSort_#in~numbers.base_53|)) (<= (+ |v_#StackHeapBarrier_62| 1) |v_bubbleSort_#in~numbers.base_53|) (= v_bubbleSort_~j~0_86 1) (= |v_#valid_123| (store |v_#valid_124| |v_bubbleSort_#in~numbers.base_53| 1)) (= |v_bubbleSort_#in~numbers.offset_53| 0) (= |v_old(#memory_int)_67| |v_#memory_int_93|) (<= 1 |v_#StackHeapBarrier_62|) (<= 1 |v_bubbleSort_#in~array_size_53|) (= v_bubbleSort_~numbers.offset_64 0) (= (+ v_bubbleSort_~i~0_66 1) |v_bubbleSort_#in~array_size_53|) (<= |v_bubbleSort_#in~array_size_53| 2147483647) (= (store |v_#length_99| |v_bubbleSort_#in~numbers.base_53| (* 4 |v_bubbleSort_#in~array_size_53|)) |v_#length_98|))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_62|, #valid=|v_#valid_124|, #memory_int=|v_#memory_int_93|, #length=|v_#length_99|}  OutVars{main_#res=|v_main_#res_39|, main_#t~nondet6=|v_main_#t~nondet6_58|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_64, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_44|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_23|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_53|, bubbleSort_~i~0=v_bubbleSort_~i~0_66, #StackHeapBarrier=|v_#StackHeapBarrier_62|, bubbleSort_~temp~0=v_bubbleSort_~temp~0_49, #valid=|v_#valid_123|, old(#valid)=|v_old(#valid)_59|, old(#memory_int)=|v_old(#memory_int)_67|, #memory_int=|v_#memory_int_92|, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_53|, #length=|v_#length_98|, old(#length)=|v_old(#length)_59|, main_#t~malloc7.base=|v_main_#t~malloc7.base_69|, bubbleSort_~j~0=v_bubbleSort_~j~0_86, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_70, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_53|}  AuxVars[]  AssignedVars[main_#res, main_#t~nondet6, bubbleSort_~numbers.offset, main_#t~malloc7.offset, ULTIMATE.start_#t~ret8, bubbleSort_#in~array_size, bubbleSort_~i~0, bubbleSort_~temp~0, #valid, old(#valid), old(#memory_int), #memory_int, bubbleSort_#in~numbers.base, #length, old(#length), main_#t~malloc7.base, bubbleSort_~j~0, bubbleSort_~numbers.base, bubbleSort_#in~numbers.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (* v_bubbleSort_~j~0_88 4))) (let ((.cse2 (+ v_bubbleSort_~numbers.offset_65 .cse0))) (and (= (select |v_#valid_125| v_bubbleSort_~numbers.base_71) 1) (<= v_bubbleSort_~j~0_88 v_bubbleSort_~i~0_67) (<= (+ v_bubbleSort_~numbers.offset_65 .cse0 4) (select |v_#length_100| v_bubbleSort_~numbers.base_71)) (let ((.cse1 (select |v_#memory_int_94| v_bubbleSort_~numbers.base_71))) (<= (select .cse1 (+ v_bubbleSort_~numbers.offset_65 (- 4) .cse0)) (select .cse1 .cse2))) (<= 4 .cse2) (= (+ v_bubbleSort_~j~0_88 1) v_bubbleSort_~j~0_87))))  InVars {bubbleSort_~i~0=v_bubbleSort_~i~0_67, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_65, #valid=|v_#valid_125|, #memory_int=|v_#memory_int_94|, #length=|v_#length_100|, bubbleSort_~j~0=v_bubbleSort_~j~0_88, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_71}  OutVars{bubbleSort_#t~post4=|v_bubbleSort_#t~post4_8|, bubbleSort_~i~0=v_bubbleSort_~i~0_67, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_65, #valid=|v_#valid_125|, #memory_int=|v_#memory_int_94|, #length=|v_#length_100|, bubbleSort_~j~0=v_bubbleSort_~j~0_87, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_71, bubbleSort_#t~mem1=|v_bubbleSort_#t~mem1_14|, bubbleSort_#t~mem0=|v_bubbleSort_#t~mem0_14|}  AuxVars[]  AssignedVars[bubbleSort_#t~post4, bubbleSort_~j~0, bubbleSort_#t~mem1, bubbleSort_#t~mem0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 113
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8053
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,7692
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9006
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= |v_bubbleSort_#in~numbers.offset_33| 0) (<= |v_arrayCell_v_#valid_87[0]_1| 0) (<= v_bubbleSort_~j~0_60 1) (>= |v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_33]_1| 0) (<= |v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_33]_1| 1) (>= (+ v_bubbleSort_~i~0_46 1) |v_bubbleSort_#in~array_size_33|) (<= v_bubbleSort_~numbers.offset_44 0) (<= |v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_33]_1| 0) (>= |v_bubbleSort_#in~numbers.base_33| v_bubbleSort_~numbers.base_50) (<= |v_arrayCell_v_#valid_88[0]_1| 0) (<= (+ |v_#StackHeapBarrier_41| 1) |v_bubbleSort_#in~numbers.base_33|) (<= 1 |v_#StackHeapBarrier_41|) (>= |v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_33]_1| 1) (<= |v_bubbleSort_#in~numbers.base_33| v_bubbleSort_~numbers.base_50) (>= (* 4 |v_bubbleSort_#in~array_size_33|) |v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_33]_1|) (<= 1 |v_bubbleSort_#in~array_size_33|) (>= |v_arrayCell_v_#valid_87[0]_1| 0) (>= v_bubbleSort_~numbers.offset_44 0) (<= (+ v_bubbleSort_~i~0_46 1) |v_bubbleSort_#in~array_size_33|) (<= |v_bubbleSort_#in~array_size_33| 2147483647) (>= |v_arrayCell_v_#valid_88[0]_1| 0) (>= |v_bubbleSort_#in~numbers.offset_33| 0) (<= (* 4 |v_bubbleSort_#in~array_size_33|) |v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_33]_1|) (>= v_bubbleSort_~j~0_60 1))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_41|, main_#res=|v_main_#res_26|, main_#t~nondet6=|v_main_#t~nondet6_39|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_46, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_31|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_16|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_34|, bubbleSort_~i~0=v_bubbleSort_~i~0_48, bubbleSort_~temp~0=v_bubbleSort_~temp~0_33, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_34|, main_#t~malloc7.base=|v_main_#t~malloc7.base_47|, bubbleSort_~j~0=v_bubbleSort_~j~0_63, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_52, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_34|, v_rep(select #valid bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_34]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_88[0]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#length_69[v_bubbleSort_#in~numbers.base_34]_1|}
+  OutVars:  {main_#res=|v_main_#res_25|, main_#t~nondet6=|v_main_#t~nondet6_38|, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_44, main_#t~malloc7.offset=|v_main_#t~malloc7.offset_30|, ULTIMATE.start_#t~ret8=|v_ULTIMATE.start_#t~ret8_15|, bubbleSort_#in~array_size=|v_bubbleSort_#in~array_size_33|, bubbleSort_~i~0=v_bubbleSort_~i~0_46, #StackHeapBarrier=|v_#StackHeapBarrier_41|, bubbleSort_~temp~0=v_bubbleSort_~temp~0_32, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_33|, main_#t~malloc7.base=|v_main_#t~malloc7.base_46|, bubbleSort_~j~0=v_bubbleSort_~j~0_60, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_50, bubbleSort_#in~numbers.offset=|v_bubbleSort_#in~numbers.offset_33|, v_rep(select #valid bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_33]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_87[0]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_33]_1|}
+  AuxVars:  [|v_arrayCell_v_#length_68[v_bubbleSort_#in~numbers.base_34]_1|, |v_arrayCell_v_#valid_88[v_bubbleSort_#in~numbers.base_33]_1|, |v_arrayCell_v_#valid_87[v_bubbleSort_#in~numbers.base_34]_1|, |v_arrayCell_v_#length_69[v_bubbleSort_#in~numbers.base_33]_1|]
+
+Loop (linearized):
+  Formula:  (and (<= v_bubbleSort_~j~0_61 (+ v_bubbleSort_~j~0_62 1)) (<= |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_62 4))]_1| |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))]_1|) (<= |v_arrayCell_v_#valid_89[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1| 1) (<= |v_bubbleSort_#in~numbers.base_ForeignInOutVar_1| v_bubbleSort_~numbers.base_51) (<= 4 (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))) (>= |v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1| |v_arrayCell_v_#length_70[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|) (>= |v_arrayCell_v_#valid_89[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1| 1) (>= v_bubbleSort_~j~0_61 (+ v_bubbleSort_~j~0_62 1)) (<= |v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1| |v_arrayCell_v_#length_70[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|) (<= 1 |v_arrayCell_v_#valid_89[v_bubbleSort_~numbers.base_51]_1|) (>= |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))]_1| |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_61 4))]_1|) (<= v_bubbleSort_~j~0_62 v_bubbleSort_~i~0_47) (>= |v_bubbleSort_#in~numbers.base_ForeignInOutVar_1| v_bubbleSort_~numbers.base_51) (<= |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))]_1| |v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_61 4))]_1|) (>= 1 |v_arrayCell_v_#valid_89[v_bubbleSort_~numbers.base_51]_1|) (<= (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4) 4) |v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1|))
+  InVars:   {bubbleSort_~i~0=v_bubbleSort_~i~0_47, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_45, bubbleSort_~j~0=v_bubbleSort_~j~0_62, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_51, bubbleSort_#t~post4=|v_bubbleSort_#t~post4_4|, bubbleSort_#t~mem1=|v_bubbleSort_#t~mem1_8|, bubbleSort_#t~mem0=|v_bubbleSort_#t~mem0_8|, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_ForeignInOutVar_1|, v_rep(select #valid bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#valid_89[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_89[0]_1|, v_rep(select #valid bubbleSort_~numbers.base)_1=|v_arrayCell_v_#valid_89[v_bubbleSort_~numbers.base_51]_1|, v_rep(select (select #memory_int bubbleSort_~numbers.base) (+ bubbleSort_~numbers.offset (* bubbleSort_~j~0 4)))_1=|v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_62 4))]_1|, v_rep(select (select #memory_int bubbleSort_~numbers.base) (+ bubbleSort_~numbers.offset (- 4) (* bubbleSort_~j~0 4)))_1=|v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_62 4))]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#length_70[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|, v_rep(select #length bubbleSort_~numbers.base)_1=|v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1|}
+  OutVars:  {bubbleSort_#t~post4=|v_bubbleSort_#t~post4_3|, bubbleSort_~i~0=v_bubbleSort_~i~0_47, bubbleSort_~numbers.offset=v_bubbleSort_~numbers.offset_45, bubbleSort_~j~0=v_bubbleSort_~j~0_61, bubbleSort_~numbers.base=v_bubbleSort_~numbers.base_51, bubbleSort_#t~mem1=|v_bubbleSort_#t~mem1_6|, bubbleSort_#t~mem0=|v_bubbleSort_#t~mem0_6|, bubbleSort_#in~numbers.base=|v_bubbleSort_#in~numbers.base_ForeignInOutVar_1|, v_rep(select #valid bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#valid_89[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|, v_rep(select #valid 0)_3=|v_arrayCell_v_#valid_89[0]_1|, v_rep(select #valid bubbleSort_~numbers.base)_1=|v_arrayCell_v_#valid_89[v_bubbleSort_~numbers.base_51]_1|, v_rep(select (select #memory_int bubbleSort_~numbers.base) (+ bubbleSort_~numbers.offset (- 4) (* bubbleSort_~j~0 4)))_1=|v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (- 4) (* v_bubbleSort_~j~0_61 4))]_1|, v_rep(select (select #memory_int bubbleSort_~numbers.base) (+ bubbleSort_~numbers.offset (* bubbleSort_~j~0 4)))_1=|v_arrayCell_v_#memory_int_64[v_bubbleSort_~numbers.base_51, (+ v_bubbleSort_~numbers.offset_45 (* v_bubbleSort_~j~0_61 4))]_1|, v_rep(select #length bubbleSort_#in~numbers.base)_3=|v_arrayCell_v_#length_70[v_bubbleSort_#in~numbers.base_ForeignInOutVar_1]_1|, v_rep(select #length bubbleSort_~numbers.base)_1=|v_arrayCell_v_#length_70[v_bubbleSort_~numbers.base_51]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=8):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #58#return;
+  [3] call #t~ret8 := main();
+  [4] havoc #t~nondet6;assume -2147483648 <= #t~nondet6 && #t~nondet6 <= 2147483647;~array_size~0 := #t~nondet6;havoc #t~nondet6;BeginParallelComposition{ParallelCodeBlock0: assume ~array_size~0 < 1;~array_size~0 := 1;ParallelCodeBlock1: assume !(~array_size~0 < 1);}EndParallelCompositioncall #t~malloc7.base, #t~malloc7.offset := #Ultimate.allocOnStack(4 * ~array_size~0 % 18446744073709551616);~numbers~0.base, ~numbers~0.offset := #t~malloc7.base, #t~malloc7.offset;
+  [5] call bubbleSort(~numbers~0.base, ~numbers~0.offset, ~array_size~0);
+  [6] ~numbers.base, ~numbers.offset := #in~numbers.base, #in~numbers.offset;~array_size := #in~array_size;havoc ~i~0;havoc ~j~0;havoc ~temp~0;~i~0 := ~array_size - 1;
+  [7] assume ~i~0 >= 0;~j~0 := 1;
+Loop (length=5):
+  [0] assume ~j~0 <= ~i~0;
+  [1] SUMMARY for call #t~mem0 := read~int(~numbers.base, ~numbers.offset + 4 * (~j~0 - 1), 4); srcloc: L11
+  [2] SUMMARY for call #t~mem1 := read~int(~numbers.base, ~numbers.offset + 4 * ~j~0, 4); srcloc: L11-1
+  [3] assume !(#t~mem0 > #t~mem1);havoc #t~mem0;havoc #t~mem1;
+  [4] #t~post4 := ~j~0;~j~0 := 1 + #t~post4;havoc #t~post4;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   593456 ns (0,59 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 78220230 ns (78,22 ms)
+       Variables (stem/loop): 15/13  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 78,22 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(bubbleSort_~j~0, bubbleSort_~numbers.base) = -4*bubbleSort_~j~0 + 4294967293*bubbleSort_~numbers.base
+  Variables:
+    bubbleSort_~j~0
+    bubbleSort_~numbers.base
+  Supporting invariants:
+    [0] -4*bubbleSort_~i~0 + 4294967293*bubbleSort_#in~numbers.base - 2 >= 0
+  Array index supporting invariants:
+    [0] (not (= |bubbleSort_#in~numbers.base| 0))
+    [1] (= |bubbleSort_#in~numbers.base| bubbleSort_~numbers.base)
+    [2] (not (= bubbleSort_~numbers.base 0))
+    [3] true
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 115
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,8087
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,3978
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6615
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9167
+    Simplify formula using some simplification technique -> relative DAG size: 0,8333
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,59 ms
+Total LassoRanker time: 78,22 ms
+  Termination analysis:     78,22 ms
+  Nontermination analysis:   0,00 ms

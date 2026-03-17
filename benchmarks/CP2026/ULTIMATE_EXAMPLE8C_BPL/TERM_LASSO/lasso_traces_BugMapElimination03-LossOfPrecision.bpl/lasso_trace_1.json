@@ -1,0 +1,58 @@
+{
+  "program_vars": [
+    "i",
+    "j",
+    "|v_rep(select a i)_3|",
+    "|v_rep(select a j)_3|",
+    "x"
+  ],
+  "var_types": {
+    "i": "Int",
+    "j": "Int",
+    "x": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_x_11 (+ |v_arrayCell_v_a_9[v_j_9]_1| v_x_10)) (<= 2 |v_arrayCell_v_a_9[v_j_9]_1|) (<= v_i_10 v_j_9) (<= 1 v_x_11) (>= v_i_10 v_j_9) (>= v_x_11 (+ |v_arrayCell_v_a_9[v_j_9]_1| v_x_10)))",
+      "in_vars": {
+        "i": "v_i_10",
+        "x": "v_x_11",
+        "j": "v_j_11",
+        "|v_rep(select a j)_3|": "|v_v_rep(select a j)_3_1|"
+      },
+      "out_vars": {
+        "j": "v_j_9",
+        "x": "v_x_10",
+        "i": "v_i_11",
+        "|v_rep(select a j)_3|": "|v_arrayCell_v_a_9[v_j_9]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_x_12 |v_arrayCell_v_a_10[v_j_10]_1|) v_x_13) (>= (+ v_x_12 |v_arrayCell_v_a_10[v_j_10]_1|) v_x_13) (<= 1 v_x_13))",
+      "in_vars": {
+        "j": "v_j_10",
+        "x": "v_x_13",
+        "i": "v_i_ForeignInOutVar_3",
+        "|v_rep(select a i)_3|": "|v_arrayCell_v_a_10[v_i_ForeignInOutVar_3]_1|",
+        "|v_rep(select a j)_3|": "|v_arrayCell_v_a_10[v_j_10]_1|"
+      },
+      "out_vars": {
+        "j": "v_j_10",
+        "x": "v_x_12",
+        "i": "v_i_ForeignInOutVar_3",
+        "|v_rep(select a i)_3|": "|v_arrayCell_v_a_10[v_i_ForeignInOutVar_3]_1|",
+        "|v_rep(select a j)_3|": "|v_arrayCell_v_a_10[v_j_10]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

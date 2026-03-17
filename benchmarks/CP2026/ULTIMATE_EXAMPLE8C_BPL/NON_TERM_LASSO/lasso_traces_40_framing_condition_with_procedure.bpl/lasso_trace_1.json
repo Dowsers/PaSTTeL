@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "foo_j",
+    "|v_rep(select a foo_j)_1|",
+    "|v_rep(select b foo_j)_1|"
+  ],
+  "var_types": {
+    "foo_j": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= |v_arrayCell_v_a_11[v_foo_j_4]_1| 13) (<= |v_arrayCell_v_b_3[v_foo_j_4]_1| 1) (<= |v_arrayCell_v_a_11[v_foo_j_4]_1| 13) (>= |v_arrayCell_v_b_3[v_foo_j_4]_1| 1))",
+      "in_vars": {
+        "foo_j": "v_foo_j_4",
+        "|v_rep(select b foo_j)_1|": "|v_arrayCell_v_b_3[v_foo_j_4]_1|",
+        "|v_rep(select a foo_j)_1|": "|v_arrayCell_v_a_12[v_foo_j_4]_1|"
+      },
+      "out_vars": {
+        "foo_j": "v_foo_j_5",
+        "|v_rep(select b foo_j)_1|": "|v_arrayCell_v_b_3[v_foo_j_5]_1|",
+        "|v_rep(select a foo_j)_1|": "|v_arrayCell_v_a_11[v_foo_j_5]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_a_11[v_foo_j_4]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

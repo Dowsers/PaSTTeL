@@ -1,0 +1,136 @@
+========================================
+LASSO TRACE REPORT - Iteration #3
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  critical                                           : Int
+  Process0Thread1of1ForFork0_thidvar0                : Int
+  Process1Thread1of1ForFork1_thidvar0                : Int
+  n0                                                 : Int
+  n1                                                 : Int
+  v_critical_46                                      : Int
+  v_Process0Thread1of1ForFork0_thidvar0_12           : Int
+  v_Process1Thread1of1ForFork1_thidvar0_8            : Int
+  v_n0_35                                            : Int
+  v_n1_31                                            : Int
+  v_critical_42                                      : Int
+  v_Process0Thread1of1ForFork0_thidvar0_11           : Int
+  v_Process1Thread1of1ForFork1_thidvar0_7            : Int
+  v_n0_33                                            : Int
+  v_n1_26                                            : Int
+  v_critical_45                                      : Int
+  v_n0_34                                            : Int
+  v_n1_30                                            : Int
+  v_critical_43                                      : Int
+  v_n1_28                                            : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_Process0Thread1of1ForFork0_thidvar0_15 0) (= v_n1_42 1) (= v_critical_55 0) (= v_n0_40 0) (= v_Process1Thread1of1ForFork1_thidvar0_11 1))  InVars {}  OutVars{critical=v_critical_55, Process0Thread1of1ForFork0_thidvar0=v_Process0Thread1of1ForFork0_thidvar0_15, Process1Thread1of1ForFork1_thidvar0=v_Process1Thread1of1ForFork1_thidvar0_11, n0=v_n0_40, n1=v_n1_42}  AuxVars[]  AssignedVars[critical, Process0Thread1of1ForFork0_thidvar0, Process1Thread1of1ForFork1_thidvar0, n0, n1]
+
+Loop TransFormula:
+Formula: (and (= v_critical_56 0) (or (< v_n1_46 v_n0_41) (= v_n0_41 0)) (= (+ v_n0_41 1) v_n1_44) (= v_critical_58 0))  InVars {critical=v_critical_58, n0=v_n0_41, n1=v_n1_46}  OutVars{critical=v_critical_56, n0=v_n0_41, n1=v_n1_44}  AuxVars[]  AssignedVars[critical, n1]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0857
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8904
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,3385
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0230
+
+Stem (linearized):
+  Formula:  (and (>= v_n0_33 0) (>= v_Process0Thread1of1ForFork0_thidvar0_11 0) (>= v_n1_26 1) (>= v_Process1Thread1of1ForFork1_thidvar0_7 1) (<= v_n0_33 0) (>= v_critical_42 0) (<= v_Process0Thread1of1ForFork0_thidvar0_11 0) (<= v_n1_26 1) (<= v_critical_42 0) (<= v_Process1Thread1of1ForFork1_thidvar0_7 1))
+  InVars:   {critical=v_critical_46, Process0Thread1of1ForFork0_thidvar0=v_Process0Thread1of1ForFork0_thidvar0_12, Process1Thread1of1ForFork1_thidvar0=v_Process1Thread1of1ForFork1_thidvar0_8, n0=v_n0_35, n1=v_n1_31}
+  OutVars:  {critical=v_critical_42, Process0Thread1of1ForFork0_thidvar0=v_Process0Thread1of1ForFork0_thidvar0_11, Process1Thread1of1ForFork1_thidvar0=v_Process1Thread1of1ForFork1_thidvar0_7, n0=v_n0_33, n1=v_n1_26}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_critical_45 0) (<= v_critical_43 0) (<= (+ v_n0_34 1) v_n1_28) (>= v_critical_43 0) (>= (+ v_n0_34 1) v_n1_28) (>= v_critical_45 0) (<= (+ v_n1_30 1) v_n0_34)) (and (<= v_critical_45 0) (<= v_critical_43 0) (<= (+ v_n0_34 1) v_n1_28) (>= v_critical_43 0) (>= (+ v_n0_34 1) v_n1_28) (>= v_critical_45 0) (<= v_n0_34 0) (>= v_n0_34 0)))
+  InVars:   {critical=v_critical_45, n0=v_n0_34, n1=v_n1_30}
+  OutVars:  {critical=v_critical_43, n0=v_n0_34, n1=v_n1_28}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=6):
+  [0] [49] $Ultimate##0-->L24: Formula: (= v_critical_9 0)  InVars {}  OutVars{critical=v_critical_9}  AuxVars[]  AssignedVars[critical]
+  [1] [40] L24-->L25: Formula: (= v_n0_6 0)  InVars {}  OutVars{n0=v_n0_6}  AuxVars[]  AssignedVars[n0]
+  [2] [42] L25-->L26: Formula: (= v_n1_6 1)  InVars {}  OutVars{n1=v_n1_6}  AuxVars[]  AssignedVars[n1]
+  [3] [74] L26-->L35: Formula: (= v_Process0Thread1of1ForFork0_thidvar0_2 0)  InVars {}  OutVars{Process0Thread1of1ForFork0_thidvar0=v_Process0Thread1of1ForFork0_thidvar0_2}  AuxVars[]  AssignedVars[Process0Thread1of1ForFork0_thidvar0]
+  [4] [77] L26-1-->L50: Formula: (= v_Process1Thread1of1ForFork1_thidvar0_2 1)  InVars {}  OutVars{Process1Thread1of1ForFork1_thidvar0=v_Process1Thread1of1ForFork1_thidvar0_2}  AuxVars[]  AssignedVars[Process1Thread1of1ForFork1_thidvar0]
+  [5] [64] L50-->L52: Formula: (= v_n1_4 (+ v_n0_4 1))  InVars {n0=v_n0_4}  OutVars{n0=v_n0_4, n1=v_n1_4}  AuxVars[]  AssignedVars[n1]
+Loop (length=6):
+  [0] [66] L52-->L53: Formula: (or (= v_n0_5 0) (< v_n1_5 v_n0_5))  InVars {n0=v_n0_5, n1=v_n1_5}  OutVars{n0=v_n0_5, n1=v_n1_5}  AuxVars[]  AssignedVars[]
+  [1] [68] L53-->L54: Formula: (= v_critical_6 0)  InVars {critical=v_critical_6}  OutVars{critical=v_critical_6}  AuxVars[]  AssignedVars[]
+  [2] [69] L54-->L55: Formula: (= v_critical_7 1)  InVars {}  OutVars{critical=v_critical_7}  AuxVars[]  AssignedVars[critical]
+  [3] [70] L55-->L56: Formula: (= v_critical_8 0)  InVars {}  OutVars{critical=v_critical_8}  AuxVars[]  AssignedVars[critical]
+  [4] [71] L56-->L50: Formula: (= v_n1_3 0)  InVars {}  OutVars{n1=v_n1_3}  AuxVars[]  AssignedVars[n1]
+  [5] [64] L50-->L52: Formula: (= v_n1_4 (+ v_n0_4 1))  InVars {n0=v_n0_4}  OutVars{n0=v_n0_4, n1=v_n1_4}  AuxVars[]  AssignedVars[n1]
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   898854 ns (0,90 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7b57b8ae
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,90 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

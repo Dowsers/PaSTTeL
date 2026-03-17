@@ -1,0 +1,102 @@
+{
+  "program_vars": [
+    "sort_#in~n",
+    "sort_#in~x.base",
+    "sort_#in~x.offset",
+    "sort_#t~mem0",
+    "sort_#t~mem1",
+    "sort_#t~post4",
+    "sort_#t~post5",
+    "sort_~i~0",
+    "sort_~n",
+    "sort_~pass~0",
+    "sort_~x.base",
+    "sort_~x.offset",
+    "|v_rep(select #length sort_~x.base)_1|",
+    "|v_rep(select #valid sort_~x.base)_1|",
+    "|v_rep(select (select #memory_int sort_~x.base) (+ 4 sort_~x.offset))_1|",
+    "|v_rep(select (select #memory_int sort_~x.base) sort_~x.offset)_1|"
+  ],
+  "var_types": {
+    "sort_#in~n": "Int",
+    "sort_#in~x.base": "Int",
+    "sort_#in~x.offset": "Int",
+    "sort_#t~mem0": "Int",
+    "sort_#t~mem1": "Int",
+    "sort_#t~post4": "Int",
+    "sort_#t~post5": "Int",
+    "sort_~i~0": "Int",
+    "sort_~n": "Int",
+    "sort_~pass~0": "Int",
+    "sort_~x.base": "Int",
+    "sort_~x.offset": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= |v_sort_#in~x.base_5| v_sort_~x.base_30) (>= v_sort_~n_15 |v_sort_#in~n_5|) (<= |v_sort_#in~x.base_5| v_sort_~x.base_30) (<= 0 (+ |v_sort_#in~n_5| 2147483648)) (<= v_sort_~n_15 |v_sort_#in~n_5|) (<= v_sort_~pass~0_19 1) (>= v_sort_~pass~0_19 1) (<= |v_sort_#in~n_5| 2147483647) (>= v_sort_~x.offset_24 |v_sort_#in~x.offset_5|) (<= v_sort_~x.offset_24 |v_sort_#in~x.offset_5|))",
+      "in_vars": {
+        "sort_#in~x.offset": "|v_sort_#in~x.offset_5|",
+        "sort_#in~n": "|v_sort_#in~n_5|",
+        "sort_#in~x.base": "|v_sort_#in~x.base_5|",
+        "sort_~x.base": "v_sort_~x.base_32",
+        "sort_~pass~0": "v_sort_~pass~0_22",
+        "sort_~n": "v_sort_~n_17",
+        "sort_~i~0": "v_sort_~i~0_36",
+        "sort_~x.offset": "v_sort_~x.offset_26"
+      },
+      "out_vars": {
+        "sort_#in~x.offset": "|v_sort_#in~x.offset_5|",
+        "sort_~x.base": "v_sort_~x.base_30",
+        "sort_#in~n": "|v_sort_#in~n_5|",
+        "sort_~pass~0": "v_sort_~pass~0_19",
+        "sort_~n": "v_sort_~n_15",
+        "sort_#in~x.base": "|v_sort_#in~x.base_5|",
+        "sort_~i~0": "v_sort_~i~0_32",
+        "sort_~x.offset": "v_sort_~x.offset_24"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1| |v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|) (<= v_sort_~n_16 (+ v_sort_~pass~0_21 1)) (<= (+ v_sort_~x.offset_25 8) |v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|) (<= v_sort_~pass~0_20 (+ v_sort_~pass~0_21 1)) (>= v_sort_~pass~0_20 (+ v_sort_~pass~0_21 1)) (>= v_sort_~n_16 (+ v_sort_~pass~0_21 1)) (<= |v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1| 1) (<= 0 v_sort_~x.offset_25) (>= |v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1| 1))",
+      "in_vars": {
+        "sort_~x.base": "v_sort_~x.base_31",
+        "sort_~pass~0": "v_sort_~pass~0_21",
+        "sort_~n": "v_sort_~n_16",
+        "sort_~x.offset": "v_sort_~x.offset_25",
+        "sort_#t~post5": "|v_sort_#t~post5_6|",
+        "sort_#t~post4": "|v_sort_#t~post4_4|",
+        "sort_#t~mem1": "|v_sort_#t~mem1_8|",
+        "sort_#t~mem0": "|v_sort_#t~mem0_8|",
+        "sort_~i~0": "v_sort_~i~0_37",
+        "|v_rep(select #length sort_~x.base)_1|": "|v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|",
+        "|v_rep(select #valid sort_~x.base)_1|": "|v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1|",
+        "|v_rep(select (select #memory_int sort_~x.base) sort_~x.offset)_1|": "|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1|",
+        "|v_rep(select (select #memory_int sort_~x.base) (+ 4 sort_~x.offset))_1|": "|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|"
+      },
+      "out_vars": {
+        "sort_#t~post5": "|v_sort_#t~post5_5|",
+        "sort_~x.base": "v_sort_~x.base_31",
+        "sort_~pass~0": "v_sort_~pass~0_20",
+        "sort_~n": "v_sort_~n_16",
+        "sort_#t~post4": "|v_sort_#t~post4_3|",
+        "sort_#t~mem1": "|v_sort_#t~mem1_6|",
+        "sort_#t~mem0": "|v_sort_#t~mem0_6|",
+        "sort_~i~0": "v_sort_~i~0_33",
+        "sort_~x.offset": "v_sort_~x.offset_25",
+        "|v_rep(select #length sort_~x.base)_1|": "|v_arrayCell_v_#length_19[v_sort_~x.base_31]_1|",
+        "|v_rep(select #valid sort_~x.base)_1|": "|v_arrayCell_v_#valid_19[v_sort_~x.base_31]_1|",
+        "|v_rep(select (select #memory_int sort_~x.base) sort_~x.offset)_1|": "|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, v_sort_~x.offset_25]_1|",
+        "|v_rep(select (select #memory_int sort_~x.base) (+ 4 sort_~x.offset))_1|": "|v_arrayCell_v_#memory_int_19[v_sort_~x.base_31, (+ v_sort_~x.offset_25 4)]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

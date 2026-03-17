@@ -1,0 +1,179 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  I_m                                                : Int
+  I_loc2                                             : Int
+  I_old_m                                            : Int
+  I_v2                                               : Int
+  I_v1                                               : Int
+  I_value                                            : Int
+  I_loc1                                             : Int
+  I_old_value                                        : Int
+  I_old_v                                            : Int
+  v_I_m_11                                           : Int
+  v_I_loc2_19                                        : Int
+  v_I_old_m_30                                       : Int
+  v_I_v2_22                                          : Int
+  v_I_v1_22                                          : Int
+  v_I_value_19                                       : Int
+  v_I_loc1_18                                        : Int
+  v_I_old_value_13                                   : Int
+  v_I_old_v_12                                       : Int
+  v_I_m_10                                           : Int
+  v_I_loc1_17                                        : Int
+  v_I_loc2_18                                        : Int
+  v_I_old_value_12                                   : Int
+  v_I_v2_21                                          : Int
+  v_I_v1_21                                          : Int
+  v_I_value_18                                       : Int
+  v_I_old_v_11                                       : Int
+  v_I_old_m_31                                       : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+Loop TransFormula:
+Formula: (and (= v_I_m_22 0) (= v_I_value_31 v_I_value_30) (= v_I_v1_34 v_I_v1_33) (= v_I_old_m_45 0) (= v_I_loc2_31 v_I_loc2_30) (= v_I_loc1_26 0) (= v_I_v2_34 v_I_v2_33) (= v_I_m_23 1))  InVars {I_m=v_I_m_23, I_loc2=v_I_loc2_31, I_old_m=v_I_old_m_45, I_v2=v_I_v2_34, I_v1=v_I_v1_34, I_value=v_I_value_31}  OutVars{I_m=v_I_m_22, I_loc1=v_I_loc1_26, I_loc2=v_I_loc2_30, I_old_value=v_I_old_value_21, I_v2=v_I_v2_33, I_v1=v_I_v1_33, I_value=v_I_value_30, I_old_v=v_I_old_v_20}  AuxVars[]  AssignedVars[I_m, I_loc1, I_loc2, I_old_value, I_old_m, I_v2, I_v1, I_value, I_old_v]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2308
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8621
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0400
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (>= v_I_v1_22 v_I_v1_21) (>= v_I_loc2_19 v_I_loc2_18) (<= v_I_value_19 v_I_value_18) (<= v_I_m_11 1) (>= v_I_m_10 0) (<= v_I_old_m_30 0) (<= v_I_loc1_17 0) (<= v_I_loc2_19 v_I_loc2_18) (>= v_I_value_19 v_I_value_18) (<= v_I_v1_22 v_I_v1_21) (>= v_I_old_m_30 0) (<= v_I_m_10 0) (>= v_I_m_11 1) (>= v_I_loc1_17 0) (>= v_I_v2_22 v_I_v2_21) (<= v_I_v2_22 v_I_v2_21))
+  InVars:   {I_m=v_I_m_11, I_loc2=v_I_loc2_19, I_old_m=v_I_old_m_30, I_v2=v_I_v2_22, I_v1=v_I_v1_22, I_value=v_I_value_19, I_loc1=v_I_loc1_18, I_old_value=v_I_old_value_13, I_old_v=v_I_old_v_12}
+  OutVars:  {I_m=v_I_m_10, I_loc1=v_I_loc1_17, I_loc2=v_I_loc2_18, I_old_value=v_I_old_value_12, I_v2=v_I_v2_21, I_v1=v_I_v1_21, I_value=v_I_value_18, I_old_v=v_I_old_v_11, I_old_m=v_I_old_m_31}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=0):
+Loop (length=2):
+  [0] assume m == 1 && old_m == 0;
+  [1] call I(value, old_m, 0, v1, loc2, v2);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1549625 ns (1,55 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 41632251 ns (41,63 ms)
+       Variables (stem/loop): 0/12  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 41,63 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(I_m) = 1*I_m
+  Variables:
+    I_m
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 44377045 ns (44,38 ms)
+       Variables (stem/loop): 0/12  Disjuncts (stem/loop): 1/1
+  Total nontermination analysis time: 44,38 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2308
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8621
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0400
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+  [Lasso 2] Initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2308
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8621
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0400
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,55 ms
+Total LassoRanker time: 86,01 ms
+  Termination analysis:     41,63 ms
+  Nontermination analysis:   44,38 ms

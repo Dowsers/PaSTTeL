@@ -1,0 +1,139 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_#t~ret2                             : Int
+  main_#t~nondet0                                    : Int
+  main_~days~0                                       : Int
+  main_~year~0                                       : Int
+  main_#t~ret1                                       : Int
+  v_ULTIMATE.start_#t~ret2_6                         : Int
+  v_main_#t~nondet0_8                                : Int
+  v_main_~days~0_34                                  : Int
+  v_main_~year~0_25                                  : Int
+  v_ULTIMATE.start_#t~ret2_5                         : Int
+  v_main_#t~nondet0_7                                : Int
+  v_main_~days~0_31                                  : Int
+  v_main_~year~0_20                                  : Int
+  v_main_~days~0_33                                  : Int
+  v_main_~year~0_24                                  : Int
+  v_main_#t~ret1_19                                  : Int
+  v_main_#t~ret1_17                                  : Int
+  v_main_~days~0_32                                  : Int
+  v_main_~year~0_23                                  : Int
+  v_div_auxv_main_~year~0_244_1                      : Int
+  v_mod_auxv_main_~year~0_244_1                      : Int
+  v_div_auxv_main_~year~0_24100_1                    : Int
+  v_mod_auxv_main_~year~0_24100_1                    : Int
+  v_div_auxv_main_~year~0_24400_1                    : Int
+  v_mod_auxv_main_~year~0_24400_1                    : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 0 v_main_~days~0_52) (<= v_main_~days~0_52 366) (= 1980 v_main_~year~0_42))  InVars {}  OutVars{ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_12|, main_#t~nondet0=|v_main_#t~nondet0_17|, main_~days~0=v_main_~days~0_52, main_~year~0=v_main_~year~0_42}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret2, main_#t~nondet0, main_~days~0, main_~year~0]
+
+Loop TransFormula:
+Formula: (and (let ((.cse2 (= (mod v_main_~year~0_46 4) 0)) (.cse1 (= (+ 365 v_main_~days~0_53) v_main_~days~0_54)) (.cse0 (= (+ v_main_~year~0_46 1) v_main_~year~0_45))) (or (and .cse0 .cse1 (not .cse2)) (and .cse2 (let ((.cse5 (= (mod v_main_~year~0_46 100) 0)) (.cse4 (or (and .cse0 (= (+ 366 v_main_~days~0_53) v_main_~days~0_54) (<= 367 v_main_~days~0_54)) (and (= 366 v_main_~days~0_54) (= v_main_~year~0_46 v_main_~year~0_45) (= 366 v_main_~days~0_53))))) (or (and (let ((.cse3 (= (mod v_main_~year~0_46 400) 0))) (or (and .cse0 .cse1 (not .cse3)) (and .cse4 .cse3))) .cse5) (and (not .cse5) .cse4)))))) (<= 366 v_main_~days~0_54))  InVars {main_~days~0=v_main_~days~0_54, main_~year~0=v_main_~year~0_46}  OutVars{main_#t~ret1=|v_main_#t~ret1_27|, main_~days~0=v_main_~days~0_53, main_~year~0=v_main_~year~0_45}  AuxVars[]  AssignedVars[main_#t~ret1, main_~days~0, main_~year~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 126
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,8333
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6407
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9367
+    Simplify formula using some simplification technique -> relative DAG size: 0,6366
+    Transform into disjunctive normal form -> relative DAG size: 2,4602
+    Simplify formula using some simplification technique -> relative DAG size: 0,9137
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0157
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~days~0_31 366) (<= 1980 v_main_~year~0_20) (<= 0 v_main_~days~0_31) (>= 1980 v_main_~year~0_20))
+  InVars:   {ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_6|, main_#t~nondet0=|v_main_#t~nondet0_8|, main_~days~0=v_main_~days~0_34, main_~year~0=v_main_~year~0_25}
+  OutVars:  {ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_5|, main_#t~nondet0=|v_main_#t~nondet0_7|, main_~days~0=v_main_~days~0_31, main_~year~0=v_main_~year~0_20}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_main_~days~0_33 (+ 366 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= (+ 0 1) v_mod_auxv_main_~year~0_24100_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_mod_auxv_main_~year~0_244_1 0) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= 367 v_main_~days~0_33) (<= (+ 366 v_main_~days~0_32) v_main_~days~0_33) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24)) (and (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ 365 v_main_~days~0_32) v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= (+ 0 1) v_mod_auxv_main_~year~0_24400_1) (<= v_main_~days~0_33 (+ 365 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ 365 v_main_~days~0_32) v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= v_main_~days~0_33 (+ 365 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= (+ 0 1) v_mod_auxv_main_~year~0_244_1) (<= 366 v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= 366 v_main_~days~0_32) (<= v_main_~year~0_24 v_main_~year~0_23) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= (+ 0 1) v_mod_auxv_main_~year~0_24100_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= v_mod_auxv_main_~year~0_244_1 0) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= v_main_~days~0_33 366) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_main_~days~0_32 366) (<= v_mod_auxv_main_~year~0_24400_1 399) (<= v_mod_auxv_main_~year~0_24100_1 99) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24)) (and (<= v_main_~days~0_33 (+ 366 v_main_~days~0_32)) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= v_main_~year~0_23 (+ v_main_~year~0_24 1)) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= (+ v_main_~year~0_24 1) v_main_~year~0_23) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= 367 v_main_~days~0_33) (<= (+ 366 v_main_~days~0_32) v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24400_1 0) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)) (and (<= 366 v_main_~days~0_32) (<= v_main_~year~0_24 v_main_~year~0_23) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1))) (<= 0 v_mod_auxv_main_~year~0_24100_1) (<= (+ v_mod_auxv_main_~year~0_24400_1 (* 400 v_div_auxv_main_~year~0_24400_1)) v_main_~year~0_24) (<= v_main_~year~0_23 v_main_~year~0_24) (<= 0 v_mod_auxv_main_~year~0_244_1) (<= 0 v_mod_auxv_main_~year~0_24400_1) (<= v_main_~year~0_24 (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1)) (<= v_main_~days~0_33 366) (<= (+ (* v_div_auxv_main_~year~0_24100_1 100) v_mod_auxv_main_~year~0_24100_1) v_main_~year~0_24) (<= v_main_~days~0_32 366) (<= v_mod_auxv_main_~year~0_24400_1 0) (<= v_main_~year~0_24 (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4))) (<= 366 v_main_~days~0_33) (<= v_mod_auxv_main_~year~0_24100_1 0) (<= (+ v_mod_auxv_main_~year~0_244_1 (* v_div_auxv_main_~year~0_244_1 4)) v_main_~year~0_24) (<= v_mod_auxv_main_~year~0_244_1 3)))
+  InVars:   {main_~days~0=v_main_~days~0_33, main_~year~0=v_main_~year~0_24, main_#t~ret1=|v_main_#t~ret1_19|}
+  OutVars:  {main_#t~ret1=|v_main_#t~ret1_17|, main_~days~0=v_main_~days~0_32, main_~year~0=v_main_~year~0_23}
+  AuxVars:  [v_div_auxv_main_~year~0_244_1, v_mod_auxv_main_~year~0_244_1, v_div_auxv_main_~year~0_24100_1, v_mod_auxv_main_~year~0_24100_1, v_div_auxv_main_~year~0_24400_1, v_mod_auxv_main_~year~0_24400_1]
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #46#return;
+  [3] call #t~ret2 := main();
+  [4] ~year~0 := 1980;havoc #t~nondet0;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;~days~0 := #t~nondet0;havoc #t~nondet0;BeginParallelComposition{ParallelCodeBlock0: assume ~days~0 < 0 || ~days~0 > 366;~days~0 := 0;ParallelCodeBlock1: assume !(~days~0 < 0 || ~days~0 > 366);}EndParallelComposition
+Loop (length=5):
+  [0] assume ~days~0 > 365;
+  [1] call #t~ret1 := isLeapYear(~year~0);
+  [2] ~year := #in~year;BeginParallelComposition{ParallelCodeBlock0: assume !(0 == (if ~year < 0 && 0 != ~year % 4 then ~year % 4 - 4 else ~year % 4));#res := 0;ParallelCodeBlock1: assume 0 == (if ~year < 0 && 0 != ~year % 4 then ~year % 4 - 4 else ~year % 4);BeginParallelComposition{ParallelCodeBlock0: assume !(0 == (if ~year < 0 && 0 != ~year % 100 then ~year % 100 - 100 else ~year % 100));#res := 1;ParallelCodeBlock1: assume 0 == (if ~year < 0 && 0 != ~year % 100 then ~year % 100 - 100 else ~year % 100);BeginParallelComposition{ParallelCodeBlock0: assume 0 == (if ~year < 0 && 0 != ~year % 400 then ~year % 400 - 400 else ~year % 400);#res := 1;ParallelCodeBlock1: assume !(0 == (if ~year < 0 && 0 != ~year % 400 then ~year % 400 - 400 else ~year % 400));#res := 0;}EndParallelComposition}EndParallelComposition}EndParallelCompositionassume true;
+  [3] #50#return;
+  [4] assume -2147483648 <= #t~ret1 && #t~ret1 <= 2147483647;BeginParallelComposition{ParallelCodeBlock0: assume !(0 != #t~ret1);havoc #t~ret1;~days~0 := ~days~0 - 365;~year~0 := 1 + ~year~0;ParallelCodeBlock1: assume 0 != #t~ret1;havoc #t~ret1;BeginParallelComposition{ParallelCodeBlock0: assume ~days~0 > 366;~days~0 := ~days~0 - 366;~year~0 := 1 + ~year~0;ParallelCodeBlock1: assume !(~days~0 > 366);}EndParallelComposition}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3391991 ns (3,39 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@16957441
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,39 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

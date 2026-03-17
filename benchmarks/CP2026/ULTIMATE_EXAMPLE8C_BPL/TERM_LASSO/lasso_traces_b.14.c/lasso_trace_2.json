@@ -1,0 +1,52 @@
+{
+  "program_vars": [
+    "test_fun_#in~x",
+    "test_fun_#in~y",
+    "test_fun_~x",
+    "test_fun_~y"
+  ],
+  "var_types": {
+    "test_fun_#in~x": "Int",
+    "test_fun_#in~y": "Int",
+    "test_fun_~x": "Int",
+    "test_fun_~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_test_fun_#in~y_5| 2147483647) (<= 0 (+ |v_test_fun_#in~y_5| 2147483648)) (<= |v_test_fun_#in~x_5| 2147483647) (<= |v_test_fun_#in~y_5| v_test_fun_~y_16) (<= |v_test_fun_#in~x_5| v_test_fun_~x_15) (>= |v_test_fun_#in~y_5| v_test_fun_~y_16) (<= 0 (+ |v_test_fun_#in~x_5| 2147483648)) (>= |v_test_fun_#in~x_5| v_test_fun_~x_15))",
+      "in_vars": {
+        "test_fun_#in~y": "|v_test_fun_#in~y_5|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_5|",
+        "test_fun_~x": "v_test_fun_~x_18",
+        "test_fun_~y": "v_test_fun_~y_19"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_15",
+        "test_fun_~y": "v_test_fun_~y_16",
+        "test_fun_#in~y": "|v_test_fun_#in~y_5|",
+        "test_fun_#in~x": "|v_test_fun_#in~x_5|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 1 v_test_fun_~x_17) (<= v_test_fun_~x_17 (+ v_test_fun_~x_16 1)) (<= v_test_fun_~x_17 v_test_fun_~y_18) (<= (+ v_test_fun_~x_16 1) v_test_fun_~x_17) (<= v_test_fun_~y_18 (+ v_test_fun_~y_17 1)) (<= v_test_fun_~y_17 0))",
+      "in_vars": {
+        "test_fun_~x": "v_test_fun_~x_17",
+        "test_fun_~y": "v_test_fun_~y_18"
+      },
+      "out_vars": {
+        "test_fun_~x": "v_test_fun_~x_16",
+        "test_fun_~y": "v_test_fun_~y_17"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_#t~ret4                             : Int
+  f_#in~y                                            : Int
+  f_#in~x                                            : Int
+  main_#res                                          : Int
+  f_~x                                               : Int
+  f_~c~0                                             : Int
+  f_~y                                               : Int
+  main_#t~ret3                                       : Int
+  f_~flag~0                                          : Int
+  f_#t~post0                                         : Int
+  v_ULTIMATE.start_#t~ret4_6                         : Int
+  v_f_#in~y_8                                        : Int
+  v_f_#in~x_8                                        : Int
+  v_main_#res_8                                      : Int
+  v_f_~x_11                                          : Int
+  v_f_~c~0_16                                        : Int
+  v_f_~y_9                                           : Int
+  v_main_#t~ret3_13                                  : Int
+  v_f_~flag~0_16                                     : Int
+  v_ULTIMATE.start_#t~ret4_5                         : Int
+  v_f_#in~y_7                                        : Int
+  v_f_#in~x_7                                        : Int
+  v_main_#res_7                                      : Int
+  v_f_~x_8                                           : Int
+  v_f_~c~0_13                                        : Int
+  v_f_~y_7                                           : Int
+  v_main_#t~ret3_12                                  : Int
+  v_f_~flag~0_13                                     : Int
+  v_f_~x_10                                          : Int
+  v_f_~c~0_15                                        : Int
+  v_f_~y_8                                           : Int
+  v_f_~flag~0_15                                     : Int
+  v_f_#t~post0_4                                     : Int
+  v_f_~x_9                                           : Int
+  v_f_~c~0_14                                        : Int
+  v_f_~flag~0_14                                     : Int
+  v_f_#t~post0_3                                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_f_~x_32 |v_f_#in~x_28|) (= v_f_~c~0_37 0) (<= 0 (+ |v_f_#in~y_28| 2147483648)) (= v_f_~flag~0_37 1) (<= |v_f_#in~x_28| 2147483647) (= v_f_~y_28 |v_f_#in~y_28|) (<= |v_f_#in~y_28| 2147483647) (<= 0 (+ |v_f_#in~x_28| 2147483648)))  InVars {}  OutVars{ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_14|, f_#in~y=|v_f_#in~y_28|, f_#in~x=|v_f_#in~x_28|, main_#res=|v_main_#res_22|, f_~x=v_f_~x_32, f_~c~0=v_f_~c~0_37, f_~y=v_f_~y_28, main_#t~ret3=|v_main_#t~ret3_27|, f_~flag~0=v_f_~flag~0_37}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret4, f_#in~y, f_#in~x, main_#res, f_~x, f_~c~0, f_~y, main_#t~ret3, f_~flag~0]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (+ v_f_~x_34 1))) (and (or (and (= v_f_~flag~0_38 1) (<= .cse0 v_f_~y_29)) (and (<= v_f_~y_29 v_f_~x_34) (= v_f_~flag~0_38 0))) (= v_f_~x_33 .cse0) (= v_f_~c~0_38 (+ v_f_~c~0_39 1)) (not (= v_f_~flag~0_39 0))))  InVars {f_~x=v_f_~x_34, f_~c~0=v_f_~c~0_39, f_~y=v_f_~y_29, f_~flag~0=v_f_~flag~0_39}  OutVars{f_~x=v_f_~x_33, f_~c~0=v_f_~c~0_38, f_~y=v_f_~y_29, f_~flag~0=v_f_~flag~0_38, f_#t~post0=|v_f_#t~post0_9|}  AuxVars[]  AssignedVars[f_~x, f_~c~0, f_~flag~0, f_#t~post0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 61
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6557
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9208
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0449
+
+Stem (linearized):
+  Formula:  (and (>= |v_f_#in~x_7| v_f_~x_8) (>= v_f_~flag~0_13 1) (>= |v_f_#in~y_7| v_f_~y_7) (<= |v_f_#in~x_7| v_f_~x_8) (<= 0 (+ |v_f_#in~x_7| 2147483648)) (<= v_f_~c~0_13 0) (<= |v_f_#in~y_7| v_f_~y_7) (<= 0 (+ |v_f_#in~y_7| 2147483648)) (<= |v_f_#in~y_7| 2147483647) (<= v_f_~flag~0_13 1) (<= |v_f_#in~x_7| 2147483647) (>= v_f_~c~0_13 0))
+  InVars:   {ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_6|, f_#in~y=|v_f_#in~y_8|, f_#in~x=|v_f_#in~x_8|, main_#res=|v_main_#res_8|, f_~x=v_f_~x_11, f_~c~0=v_f_~c~0_16, f_~y=v_f_~y_9, main_#t~ret3=|v_main_#t~ret3_13|, f_~flag~0=v_f_~flag~0_16}
+  OutVars:  {ULTIMATE.start_#t~ret4=|v_ULTIMATE.start_#t~ret4_5|, f_#in~y=|v_f_#in~y_7|, f_#in~x=|v_f_#in~x_7|, main_#res=|v_main_#res_7|, f_~x=v_f_~x_8, f_~c~0=v_f_~c~0_13, f_~y=v_f_~y_7, main_#t~ret3=|v_main_#t~ret3_12|, f_~flag~0=v_f_~flag~0_13}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (>= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= v_f_~y_8 v_f_~x_10) (<= v_f_~x_9 (+ v_f_~x_10 1)) (<= v_f_~flag~0_14 0) (>= v_f_~flag~0_14 0) (<= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= (+ 0 1) v_f_~flag~0_15) (>= v_f_~x_9 (+ v_f_~x_10 1))) (and (>= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= v_f_~y_8 v_f_~x_10) (<= v_f_~x_9 (+ v_f_~x_10 1)) (<= v_f_~flag~0_14 0) (>= v_f_~flag~0_14 0) (<= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= (+ v_f_~flag~0_15 1) 0) (>= v_f_~x_9 (+ v_f_~x_10 1))) (and (>= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (>= v_f_~flag~0_14 1) (<= v_f_~flag~0_14 1) (<= (+ v_f_~x_10 1) v_f_~y_8) (<= v_f_~x_9 (+ v_f_~x_10 1)) (<= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= (+ 0 1) v_f_~flag~0_15) (>= v_f_~x_9 (+ v_f_~x_10 1))) (and (>= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (>= v_f_~flag~0_14 1) (<= v_f_~flag~0_14 1) (<= (+ v_f_~x_10 1) v_f_~y_8) (<= v_f_~x_9 (+ v_f_~x_10 1)) (<= v_f_~c~0_14 (+ v_f_~c~0_15 1)) (<= (+ v_f_~flag~0_15 1) 0) (>= v_f_~x_9 (+ v_f_~x_10 1))))
+  InVars:   {f_~x=v_f_~x_10, f_~c~0=v_f_~c~0_15, f_~y=v_f_~y_8, f_~flag~0=v_f_~flag~0_15, f_#t~post0=|v_f_#t~post0_4|}
+  OutVars:  {f_~x=v_f_~x_9, f_~c~0=v_f_~c~0_14, f_~y=v_f_~y_8, f_~flag~0=v_f_~flag~0_14, f_#t~post0=|v_f_#t~post0_3|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=7):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #17#return;
+  [3] call #t~ret4 := main();
+  [4] havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;
+  [5] call #t~ret3 := f(#t~nondet1, #t~nondet2);
+  [6] ~x := #in~x;~y := #in~y;~flag~0 := 1;~c~0 := 0;
+Loop (length=1):
+  [0] assume 0 != ~flag~0;#t~post0 := ~x;~x := 1 + #t~post0;~flag~0 := (if #t~post0 < ~y then 1 else 0);havoc #t~post0;~c~0 := 1 + ~c~0;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1748863 ns (1,75 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 163379020 ns (163,38 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [2] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 163379020 ns (163,38 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [3] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 171588996 ns (171,59 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 12  Motzkin applications: 72
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [4] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 163379020 ns (163,38 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [5] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 171588996 ns (171,59 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 12  Motzkin applications: 72
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [6] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 218600224 ns (218,60 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 16  Motzkin applications: 96
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [7] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 163379020 ns (163,38 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [8] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 171588996 ns (171,59 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 12  Motzkin applications: 72
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [9] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 218600224 ns (218,60 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 16  Motzkin applications: 96
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [10] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 305314772 ns (305,31 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 20  Motzkin applications: 120
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [11] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 163379020 ns (163,38 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 8  Motzkin applications: 48
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [12] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 171588996 ns (171,59 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 12  Motzkin applications: 72
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [13] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 218600224 ns (218,60 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 16  Motzkin applications: 96
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [14] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 305314772 ns (305,31 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 20  Motzkin applications: 120
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [15] Template: 2-phase                    Degree: 1  Satisfiability: sat      Time: 1691753475 ns (1691,75 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+       Supporting invariants: 12  Motzkin applications: 72
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  Total termination analysis time: 4461,43 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: 2-phase
+  Ranking function:      2-phase ranking function:
+  f0 = -1*f_~x + 1*f_~y
+  f1 = 1*f_~flag~0
+  Variables:
+    f_~x
+    f_~y
+    f_~flag~0
+  Supporting invariants:
+    [0] 1*f_~flag~0 >= 0
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 57547325 ns (57,55 ms)
+       Variables (stem/loop): 6/7  Disjuncts (stem/loop): 1/4
+  Total nontermination analysis time: 57,55 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 61
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6557
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9208
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0449
+  [Lasso 2] Initial max DAG size: 61
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6557
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9208
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,9140
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0449
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,75 ms
+Total LassoRanker time: 4518,98 ms
+  Termination analysis:     4461,43 ms
+  Nontermination analysis:   57,55 ms

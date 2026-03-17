@@ -1,0 +1,184 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  bubble_#in~N                                       : Int
+  bubble_#in~a.offset                                : Int
+  bubble_#in~a.base                                  : Int
+  bubble_~a.base                                     : Int
+  bubble_~t~0                                        : Int
+  bubble_~j~0                                        : Int
+  bubble_~i~0                                        : Int
+  bubble_~a.offset                                   : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  bubble_#t~post4                                    : Int
+  bubble_#t~mem1                                     : Int
+  bubble_#t~mem0                                     : Int
+  v_bubble_#in~N_6                                   : Int
+  v_bubble_#in~a.offset_6                            : Int
+  v_bubble_#in~a.base_6                              : Int
+  v_bubble_~a.base_33                                : Int
+  v_bubble_~t~0_14                                   : Int
+  v_bubble_~j~0_45                                   : Int
+  v_bubble_~i~0_29                                   : Int
+  v_bubble_~a.offset_27                              : Int
+  v_bubble_~a.base_31                                : Int
+  v_bubble_~t~0_13                                   : Int
+  v_bubble_~j~0_41                                   : Int
+  v_bubble_~i~0_27                                   : Int
+  v_bubble_~a.offset_25                              : Int
+  v_bubble_~a.base_32                                : Int
+  v_bubble_~j~0_44                                   : Int
+  v_bubble_~i~0_28                                   : Int
+  v_bubble_~a.offset_26                              : Int
+  v_bubble_#t~post4_4                                : Int
+  v_bubble_#t~mem1_8                                 : Int
+  v_bubble_#t~mem0_8                                 : Int
+  v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1    : Int
+  v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 (- 4))]_1 : Int
+  v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1 : Int
+  v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1     : Int
+  v_bubble_#t~post4_3                                : Int
+  v_bubble_~j~0_43                                   : Int
+  v_bubble_#t~mem1_6                                 : Int
+  v_bubble_#t~mem0_6                                 : Int
+  v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1 : Int
+  v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4))]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_bubble_#in~a.base_9| v_bubble_~a.base_39) (= v_bubble_~j~0_55 2) (<= 1 v_bubble_~i~0_35) (= v_bubble_~a.offset_33 |v_bubble_#in~a.offset_9|) (<= |v_bubble_#in~N_9| 2147483647) (= v_bubble_~i~0_35 |v_bubble_#in~N_9|))  InVars {bubble_#in~N=|v_bubble_#in~N_9|, bubble_#in~a.offset=|v_bubble_#in~a.offset_9|, bubble_#in~a.base=|v_bubble_#in~a.base_9|}  OutVars{bubble_~a.base=v_bubble_~a.base_39, bubble_#in~N=|v_bubble_#in~N_9|, bubble_~t~0=v_bubble_~t~0_18, bubble_~j~0=v_bubble_~j~0_55, bubble_#in~a.offset=|v_bubble_#in~a.offset_9|, bubble_~i~0=v_bubble_~i~0_35, bubble_#in~a.base=|v_bubble_#in~a.base_9|, bubble_~a.offset=v_bubble_~a.offset_33}  AuxVars[]  AssignedVars[bubble_~a.base, bubble_~t~0, bubble_~j~0, bubble_~i~0, bubble_~a.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (* v_bubble_~j~0_58 4))) (let ((.cse2 (+ v_bubble_~a.offset_34 .cse0))) (and (<= (+ v_bubble_~a.offset_34 .cse0 4) (select |v_#length_20| v_bubble_~a.base_40)) (= (select |v_#valid_20| v_bubble_~a.base_40) 1) (<= v_bubble_~j~0_58 v_bubble_~i~0_36) (let ((.cse1 (select |v_#memory_int_18| v_bubble_~a.base_40))) (<= (select .cse1 (+ v_bubble_~a.offset_34 .cse0 (- 4))) (select .cse1 .cse2))) (= v_bubble_~j~0_57 (+ v_bubble_~j~0_58 1)) (<= 4 .cse2))))  InVars {bubble_~a.base=v_bubble_~a.base_40, #valid=|v_#valid_20|, #memory_int=|v_#memory_int_18|, bubble_~j~0=v_bubble_~j~0_58, #length=|v_#length_20|, bubble_~i~0=v_bubble_~i~0_36, bubble_~a.offset=v_bubble_~a.offset_34}  OutVars{bubble_~a.base=v_bubble_~a.base_40, bubble_#t~post4=|v_bubble_#t~post4_8|, #valid=|v_#valid_20|, #memory_int=|v_#memory_int_18|, bubble_~j~0=v_bubble_~j~0_57, #length=|v_#length_20|, bubble_~i~0=v_bubble_~i~0_36, bubble_#t~mem1=|v_bubble_#t~mem1_14|, bubble_#t~mem0=|v_bubble_#t~mem0_14|, bubble_~a.offset=v_bubble_~a.offset_34}  AuxVars[]  AssignedVars[bubble_#t~post4, bubble_~j~0, bubble_#t~mem1, bubble_#t~mem0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 70
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7429
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,5769
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9146
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_bubble_~a.offset_25 |v_bubble_#in~a.offset_6|) (<= |v_bubble_#in~a.base_6| v_bubble_~a.base_31) (>= v_bubble_~i~0_27 |v_bubble_#in~N_6|) (<= 1 v_bubble_~i~0_27) (>= v_bubble_~j~0_41 2) (>= |v_bubble_#in~a.base_6| v_bubble_~a.base_31) (<= v_bubble_~a.offset_25 |v_bubble_#in~a.offset_6|) (<= v_bubble_~j~0_41 2) (<= |v_bubble_#in~N_6| 2147483647) (<= v_bubble_~i~0_27 |v_bubble_#in~N_6|))
+  InVars:   {bubble_#in~N=|v_bubble_#in~N_6|, bubble_#in~a.offset=|v_bubble_#in~a.offset_6|, bubble_#in~a.base=|v_bubble_#in~a.base_6|, bubble_~a.base=v_bubble_~a.base_33, bubble_~t~0=v_bubble_~t~0_14, bubble_~j~0=v_bubble_~j~0_45, bubble_~i~0=v_bubble_~i~0_29, bubble_~a.offset=v_bubble_~a.offset_27}
+  OutVars:  {bubble_~a.base=v_bubble_~a.base_31, bubble_#in~N=|v_bubble_#in~N_6|, bubble_~t~0=v_bubble_~t~0_13, bubble_~j~0=v_bubble_~j~0_41, bubble_#in~a.offset=|v_bubble_#in~a.offset_6|, bubble_~i~0=v_bubble_~i~0_27, bubble_#in~a.base=|v_bubble_#in~a.base_6|, bubble_~a.offset=v_bubble_~a.offset_25}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= 4 (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)) (<= v_bubble_~j~0_44 v_bubble_~i~0_28) (<= (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 4) |v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|) (<= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|) (>= v_bubble_~j~0_43 (+ v_bubble_~j~0_44 1)) (<= |v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1| 1) (>= |v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1| 1) (<= v_bubble_~j~0_43 (+ v_bubble_~j~0_44 1)) (<= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 (- 4))]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1|) (>= |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1| |v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|))
+  InVars:   {bubble_~a.base=v_bubble_~a.base_32, bubble_~j~0=v_bubble_~j~0_44, bubble_~i~0=v_bubble_~i~0_28, bubble_~a.offset=v_bubble_~a.offset_26, bubble_#t~post4=|v_bubble_#t~post4_4|, bubble_#t~mem1=|v_bubble_#t~mem1_8|, bubble_#t~mem0=|v_bubble_#t~mem0_8|, v_rep(select #length bubble_~a.base)_1=|v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|, v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) (- 4) bubble_~a.offset))_1=|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26 (- 4))]_1|, v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) bubble_~a.offset))_1=|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ (* v_bubble_~j~0_44 4) v_bubble_~a.offset_26)]_1|, v_rep(select #valid bubble_~a.base)_1=|v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1|}
+  OutVars:  {bubble_~a.base=v_bubble_~a.base_32, bubble_#t~post4=|v_bubble_#t~post4_3|, bubble_~j~0=v_bubble_~j~0_43, bubble_~i~0=v_bubble_~i~0_28, bubble_#t~mem1=|v_bubble_#t~mem1_6|, bubble_#t~mem0=|v_bubble_#t~mem0_6|, bubble_~a.offset=v_bubble_~a.offset_26, v_rep(select #length bubble_~a.base)_1=|v_arrayCell_v_#length_17[v_bubble_~a.base_32]_1|, v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) (- 4) bubble_~a.offset))_1=|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4) (- 4))]_1|, v_rep(select (select #memory_int bubble_~a.base) (+ (* bubble_~j~0 4) bubble_~a.offset))_1=|v_arrayCell_v_#memory_int_15[v_bubble_~a.base_32, (+ v_bubble_~a.offset_26 (* v_bubble_~j~0_43 4))]_1|, v_rep(select #valid bubble_~a.base)_1=|v_arrayCell_v_#valid_17[v_bubble_~a.base_32]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=2):
+  [0] ~a.base, ~a.offset := #in~a.base, #in~a.offset;assume -2147483648 <= #in~N && #in~N <= 2147483647;~N := #in~N;havoc ~i~0;havoc ~j~0;havoc ~t~0;~i~0 := ~N;
+  [1] assume ~i~0 >= 1;~j~0 := 2;
+Loop (length=5):
+  [0] assume ~j~0 <= ~i~0;
+  [1] SUMMARY for call #t~mem0 := read~int(~a.base, ~a.offset + 4 * (~j~0 - 1), 4); srcloc: L6
+  [2] SUMMARY for call #t~mem1 := read~int(~a.base, ~a.offset + 4 * ~j~0, 4); srcloc: L6-1
+  [3] assume !(#t~mem0 > #t~mem1);havoc #t~mem0;havoc #t~mem1;
+  [4] #t~post4 := ~j~0;~j~0 := 1 + #t~post4;havoc #t~post4;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   635101 ns (0,64 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 54653762 ns (54,65 ms)
+       Variables (stem/loop): 7/9  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 54,65 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(bubble_~i~0, bubble_~j~0) = 3*bubble_~i~0 - 2*bubble_~j~0
+  Variables:
+    bubble_~i~0
+    bubble_~j~0
+  Supporting invariants:
+    [0] 1*bubble_~j~0 - 2 >= 0
+  Array index supporting invariants:
+    [0] true
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 70
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7429
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,5769
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9146
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,64 ms
+Total LassoRanker time: 54,65 ms
+  Termination analysis:     54,65 ms
+  Nontermination analysis:   0,00 ms

@@ -1,0 +1,71 @@
+{
+  "program_vars": [
+    "GateController_alarmTrain",
+    "GateController_gate",
+    "GateController_gateMotorFailure",
+    "GateController_hundred",
+    "GateController_thousand",
+    "GateController_time"
+  ],
+  "var_types": {
+    "GateController_alarmTrain": "Bool",
+    "GateController_gate": "Int",
+    "GateController_gateMotorFailure": "Bool",
+    "GateController_hundred": "Int",
+    "GateController_thousand": "Int",
+    "GateController_time": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (= v_GateController_gate_30 0) (not v_GateController_alarmTrain_24) (= v_GateController_time_21 0) (= v_GateController_hundred_21 100) (= 1000 v_GateController_thousand_15))",
+      "in_vars": {},
+      "out_vars": {
+        "GateController_time": "v_GateController_time_21",
+        "GateController_thousand": "v_GateController_thousand_15",
+        "GateController_hundred": "v_GateController_hundred_21",
+        "GateController_alarmTrain": "v_GateController_alarmTrain_24",
+        "GateController_gate": "v_GateController_gate_30"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "GateController_time",
+        "GateController_thousand",
+        "GateController_hundred",
+        "GateController_alarmTrain",
+        "GateController_gate"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_GateController_time_22 (+ v_GateController_time_23 9)) (<= (+ v_GateController_time_23 1) v_GateController_thousand_16) (let ((.cse0 (= v_GateController_gate_32 v_GateController_gate_31))) (or (and .cse0 v_GateController_alarmTrain_25 v_GateController_gateMotorFailure_22) (and (or (let ((.cse1 (+ v_GateController_gate_32 1))) (and (= v_GateController_gate_31 .cse1) (<= .cse1 v_GateController_hundred_22))) (and .cse0 (<= v_GateController_hundred_22 v_GateController_gate_32))) (or (and (not v_GateController_alarmTrain_26) (not v_GateController_alarmTrain_25)) (and v_GateController_alarmTrain_25 v_GateController_alarmTrain_26)) (not v_GateController_gateMotorFailure_22)))) (or (not v_GateController_gateMotorFailure_23) v_GateController_gateMotorFailure_22))",
+      "in_vars": {
+        "GateController_time": "v_GateController_time_23",
+        "GateController_thousand": "v_GateController_thousand_16",
+        "GateController_gateMotorFailure": "v_GateController_gateMotorFailure_23",
+        "GateController_hundred": "v_GateController_hundred_22",
+        "GateController_alarmTrain": "v_GateController_alarmTrain_26",
+        "GateController_gate": "v_GateController_gate_32"
+      },
+      "out_vars": {
+        "GateController_time": "v_GateController_time_22",
+        "GateController_thousand": "v_GateController_thousand_16",
+        "GateController_gateMotorFailure": "v_GateController_gateMotorFailure_22",
+        "GateController_hundred": "v_GateController_hundred_22",
+        "GateController_alarmTrain": "v_GateController_alarmTrain_25",
+        "GateController_gate": "v_GateController_gate_31"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "GateController_time",
+        "GateController_gateMotorFailure",
+        "GateController_alarmTrain",
+        "GateController_gate"
+      ]
+    }
+  ]
+}

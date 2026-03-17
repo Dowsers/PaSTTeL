@@ -1,0 +1,129 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  old(tempIn)                                        : Int
+  tempIn                                             : Int
+  init                                               : Int
+  old(init)                                          : Int
+  old(error)                                         : Int
+  error                                              : Int
+  v_old(tempIn)_4                                    : Int
+  v_tempIn_18                                        : Int
+  v_init_5                                           : Int
+  v_old(init)_3                                      : Int
+  v_old(error)_4                                     : Int
+  v_error_20                                         : Int
+  v_old(tempIn)_3                                    : Int
+  v_tempIn_15                                        : Int
+  v_init_4                                           : Int
+  v_old(init)_2                                      : Int
+  v_old(error)_3                                     : Int
+  v_error_16                                         : Int
+  v_error_19                                         : Int
+  v_tempIn_19                                        : Int
+  v_tempIn_17                                        : Int
+  v_error_18                                         : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_init_11 1) (= |v_old(error)_13| 0) (= |v_old(tempIn)_13| 0) (= v_error_38 0) (= v_tempIn_35 0))  InVars {}  OutVars{old(tempIn)=|v_old(tempIn)_13|, tempIn=v_tempIn_35, init=v_init_11, old(init)=|v_old(init)_9|, old(error)=|v_old(error)_13|, error=v_error_38}  AuxVars[]  AssignedVars[old(tempIn), tempIn, init, old(init), old(error), error]
+
+Loop TransFormula:
+Formula: (or (and (= v_error_40 1) (<= (+ v_tempIn_37 1) 0)) (and (= v_error_41 v_error_40) (<= 0 v_tempIn_37)))  InVars {error=v_error_41}  OutVars{tempIn=v_tempIn_37, error=v_error_40}  AuxVars[]  AssignedVars[tempIn, error]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 33
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8485
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8852
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= |v_old(error)_3| 0) (>= v_init_4 1) (>= v_error_16 0) (>= v_tempIn_15 0) (>= |v_old(tempIn)_3| 0) (<= v_init_4 1) (<= v_error_16 0) (<= |v_old(tempIn)_3| 0) (<= |v_old(error)_3| 0) (<= v_tempIn_15 0))
+  InVars:   {old(tempIn)=|v_old(tempIn)_4|, tempIn=v_tempIn_18, init=v_init_5, old(init)=|v_old(init)_3|, old(error)=|v_old(error)_4|, error=v_error_20}
+  OutVars:  {old(tempIn)=|v_old(tempIn)_3|, tempIn=v_tempIn_15, init=v_init_4, old(init)=|v_old(init)_2|, old(error)=|v_old(error)_3|, error=v_error_16}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= 0 v_tempIn_17) (<= v_error_19 v_error_18) (>= v_error_19 v_error_18)) (and (>= v_error_18 1) (<= v_error_18 1) (<= (+ v_tempIn_17 1) 0)))
+  InVars:   {error=v_error_19, tempIn=v_tempIn_19}
+  OutVars:  {tempIn=v_tempIn_17, error=v_error_18}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=2):
+  [0] init := 0;tempIn := 0;error := 0;init := 1;
+  [1] call coolantControl();
+Loop (length=1):
+  [0] havoc tempIn;BeginParallelComposition{ParallelCodeBlock0: assume tempIn < 0;error := 1;ParallelCodeBlock1: assume !(tempIn < 0);}EndParallelCompositiontemp := tempIn - 273;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3604262 ns (3,60 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@fd474c7
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,60 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

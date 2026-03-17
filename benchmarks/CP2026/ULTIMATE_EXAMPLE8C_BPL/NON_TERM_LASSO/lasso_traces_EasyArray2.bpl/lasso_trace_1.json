@@ -1,0 +1,46 @@
+{
+  "program_vars": [
+    "main_i",
+    "|v_rep(select main_arr 0)_1|",
+    "|v_rep(select main_arr main_i)_1|"
+  ],
+  "var_types": {
+    "main_i": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_i_14 0) (>= |v_arrayCell_v_main_arr_13[0]_1| 0) (>= v_main_i_14 0) (<= |v_arrayCell_v_main_arr_13[0]_1| 0))",
+      "in_vars": {
+        "main_i": "v_main_i_16",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_14[0]_1|"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_14",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_13[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_15[0]_1|) (>= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_15[0]_1|)) (and (<= |v_arrayCell_v_main_arr_15[0]_1| 10) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| 10) (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| 10) (>= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= |v_arrayCell_v_main_arr_15[0]_1| 10) (>= v_main_i_15 0)))",
+      "in_vars": {
+        "main_i": "v_main_i_15",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_16[v_main_i_15]_1|",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_16[0]_1|"
+      },
+      "out_vars": {
+        "main_i": "v_main_i_15",
+        "|v_rep(select main_arr main_i)_1|": "|v_arrayCell_v_main_arr_15[v_main_i_15]_1|",
+        "|v_rep(select main_arr 0)_1|": "|v_arrayCell_v_main_arr_15[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  a                                                  : (Array Int Int)
+  j                                                  : Int
+  i                                                  : Int
+  x                                                  : Int
+  b                                                  : (Array Int Int)
+  y                                                  : Int
+  v_j_2                                              : Int
+  v_i_2                                              : Int
+  v_x_7                                              : Int
+  v_y_5                                              : Int
+  v_arrayCell_v_b_5[v_i_2]_1                         : Int
+  v_arrayCell_v_b_5[v_j_2]_1                         : Int
+  v_arrayCell_v_a_4[v_i_2]_1                         : Int
+  v_y_3                                              : Int
+  v_arrayCell_v_b_4[v_i_2]_1                         : Int
+  v_arrayCell_v_a_3[v_i_2]_1                         : Int
+  v_v_rep(select b j)_1_1                            : Int
+  v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1            : Int
+  v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1            : Int
+  v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1 : Int
+  v_arrayCell_v_a_3[(select v_v_b_5auxArray1_1 v_i_2)]_1 : Int
+  v_y_4                                              : Int
+  v_x_9                                              : Int
+  v_x_8                                              : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= (select v_b_10 v_i_5) 0) (<= 1 v_y_11) (= (store v_a_10 v_i_5 v_x_16) v_a_9) (= (select v_a_10 (select (store v_b_11 v_j_5 0) v_i_5)) v_y_11))  InVars {a=v_a_10, j=v_j_5, i=v_i_5, x=v_x_16, b=v_b_11}  OutVars{a=v_a_9, j=v_j_5, y=v_y_11, i=v_i_5, x=v_x_16, b=v_b_10}  AuxVars[]  AssignedVars[a, y, b]
+
+Loop TransFormula:
+Formula: (and (<= 1 v_x_18) (= v_x_18 (+ v_x_17 v_y_12)))  InVars {y=v_y_12, x=v_x_18}  OutVars{y=v_y_12, x=v_x_17}  AuxVars[]  AssignedVars[x]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 34
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,4118
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9583
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9468
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,8652
+    Simplify formula using some simplification technique -> relative DAG size: 0,5294
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0296
+
+Stem (linearized):
+  Formula:  (or (and (<= |v_arrayCell_v_b_4[v_i_2]_1| 0) (<= v_y_3 |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1|) (<= |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1| v_y_3) (<= (+ v_j_2 1) v_i_2) (<= 0 |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1|) (<= |v_arrayCell_v_a_3[v_i_2]_1| v_x_7) (<= 1 v_y_3) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1| 0) (<= v_x_7 |v_arrayCell_v_a_3[v_i_2]_1|) (<= |v_arrayCell_v_b_5[v_i_2]_1| |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1|) (<= 0 |v_arrayCell_v_b_4[v_i_2]_1|) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1| |v_arrayCell_v_b_5[v_i_2]_1|)) (and (<= |v_arrayCell_v_b_4[v_i_2]_1| 0) (<= v_y_3 |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1|) (<= |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1| v_y_3) (<= 0 |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1|) (<= |v_arrayCell_v_a_3[v_i_2]_1| v_x_7) (<= 1 v_y_3) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1| 0) (<= v_x_7 |v_arrayCell_v_a_3[v_i_2]_1|) (<= |v_arrayCell_v_b_5[v_i_2]_1| |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1|) (<= 0 |v_arrayCell_v_b_4[v_i_2]_1|) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1| |v_arrayCell_v_b_5[v_i_2]_1|) (<= (+ v_i_2 1) v_j_2)) (and (<= v_j_2 v_i_2) (<= |v_arrayCell_v_b_4[v_i_2]_1| 0) (<= v_y_3 |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1|) (<= |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1| v_y_3) (<= |v_arrayCell_v_b_5[v_j_2]_1| |v_arrayCell_v_b_5[v_i_2]_1|) (<= 0 |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1|) (<= |v_arrayCell_v_a_3[v_i_2]_1| v_x_7) (<= 1 v_y_3) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1| 0) (<= v_x_7 |v_arrayCell_v_a_3[v_i_2]_1|) (<= |v_arrayCell_v_b_5[v_i_2]_1| |v_arrayCell_v_b_5[v_j_2]_1|) (<= 0 |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1|) (<= |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1| 0) (<= 0 |v_arrayCell_v_b_4[v_i_2]_1|) (<= v_i_2 v_j_2)))
+  InVars:   {j=v_j_2, i=v_i_2, x=v_x_7, y=v_y_5, v_rep(select b i)_1=|v_arrayCell_v_b_5[v_i_2]_1|, v_rep(select b j)_1=|v_arrayCell_v_b_5[v_j_2]_1|, v_rep(select a i)_1=|v_arrayCell_v_a_4[v_i_2]_1|}
+  OutVars:  {j=v_j_2, y=v_y_3, i=v_i_2, x=v_x_7, v_rep(select b i)_1=|v_arrayCell_v_b_4[v_i_2]_1|, v_rep(select a i)_1=|v_arrayCell_v_a_3[v_i_2]_1|, v_rep(select b j)_1=|v_v_rep(select b j)_1_1|}
+  AuxVars:  [|v_arrayCell_v_v_b_5auxArray1_1[v_j_2]_1|, |v_arrayCell_v_v_b_5auxArray1_1[v_i_2]_1|, |v_arrayCell_v_a_4[(select v_v_b_5auxArray1_1 v_i_2)]_1|, |v_arrayCell_v_a_3[(select v_v_b_5auxArray1_1 v_i_2)]_1|]
+
+Loop (linearized):
+  Formula:  (and (>= v_x_9 (+ v_y_4 v_x_8)) (<= 1 v_x_9) (<= v_x_9 (+ v_y_4 v_x_8)))
+  InVars:   {y=v_y_4, x=v_x_9}
+  OutVars:  {y=v_y_4, x=v_x_8}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] b := b[j := 0];y := a[b[i]];havoc b;a := a[i := x];assume b[i] == 0;assume y > 0;
+Loop (length=1):
+  [0] assume x > 0;x := x - y;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2304725 ns (2,30 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 58945384 ns (58,95 ms)
+       Variables (stem/loop): 11/3  Disjuncts (stem/loop): 3/1
+       Supporting invariants: 2  Motzkin applications: 10
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 58,95 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(x) = 1*x
+  Variables:
+    x
+  Supporting invariants:
+    [0] 1*y - 1 >= 0
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 34
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,4118
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9583
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9468
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 2,8652
+    Simplify formula using some simplification technique -> relative DAG size: 0,5294
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0296
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,30 ms
+Total LassoRanker time: 58,95 ms
+  Termination analysis:     58,95 ms
+  Nontermination analysis:   0,00 ms

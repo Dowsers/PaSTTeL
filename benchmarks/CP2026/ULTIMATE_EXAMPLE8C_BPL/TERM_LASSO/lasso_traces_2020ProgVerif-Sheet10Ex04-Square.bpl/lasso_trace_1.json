@@ -1,0 +1,56 @@
+{
+  "program_vars": [
+    "square_i",
+    "square_n",
+    "square_odd",
+    "square_res"
+  ],
+  "var_types": {
+    "square_i": "Int",
+    "square_n": "Int",
+    "square_odd": "Int",
+    "square_res": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_square_odd_6 1) (<= 3 v_square_n_8) (<= v_square_odd_6 1) (<= v_square_i_7 0) (>= v_square_res_8 0) (>= v_square_i_7 0) (<= v_square_res_8 0))",
+      "in_vars": {
+        "square_n": "v_square_n_8",
+        "square_res": "v_square_res_11",
+        "square_odd": "v_square_odd_9",
+        "square_i": "v_square_i_10"
+      },
+      "out_vars": {
+        "square_res": "v_square_res_8",
+        "square_n": "v_square_n_8",
+        "square_odd": "v_square_odd_6",
+        "square_i": "v_square_i_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_square_res_10 v_square_odd_8) v_square_res_9) (>= (+ v_square_res_10 v_square_odd_8) v_square_res_9) (<= (+ 2 v_square_odd_8) v_square_odd_7) (<= (+ v_square_i_9 1) v_square_i_8) (>= (+ v_square_i_9 1) v_square_i_8) (<= (+ v_square_i_9 1) v_square_n_9) (>= (+ 2 v_square_odd_8) v_square_odd_7))",
+      "in_vars": {
+        "square_res": "v_square_res_10",
+        "square_n": "v_square_n_9",
+        "square_i": "v_square_i_9",
+        "square_odd": "v_square_odd_8"
+      },
+      "out_vars": {
+        "square_res": "v_square_res_9",
+        "square_n": "v_square_n_9",
+        "square_i": "v_square_i_8",
+        "square_odd": "v_square_odd_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

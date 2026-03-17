@@ -1,0 +1,164 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  main_~x~0                                          : Int
+  main_~z~0                                          : Int
+  main_~y~0                                          : Int
+  ULTIMATE.start_#t~ret7                             : Int
+  main_#t~nondet5                                    : Int
+  main_#t~nondet4                                    : Int
+  main_#t~nondet6                                    : Int
+  v_#StackHeapBarrier_7                              : Int
+  v_main_~x~0_14                                     : Int
+  v_main_~z~0_14                                     : Int
+  v_main_~y~0_14                                     : Int
+  v_ULTIMATE.start_#t~ret7_6                         : Int
+  v_arrayCell_v_#memory_int_7[1, 0]_1                : Int
+  v_arrayCell_v_#memory_int_7[1, 1]_1                : Int
+  v_arrayCell_v_#length_7[3]_1                       : Int
+  v_arrayCell_v_#length_7[1]_1                       : Int
+  v_arrayCell_v_#length_7[2]_1                       : Int
+  v_arrayCell_v_#valid_7[0]_1                        : Int
+  v_arrayCell_v_#valid_7[3]_1                        : Int
+  v_arrayCell_v_#valid_7[1]_1                        : Int
+  v_arrayCell_v_#valid_7[2]_1                        : Int
+  v_main_~x~0_9                                      : Int
+  v_main_~z~0_9                                      : Int
+  v_main_~y~0_9                                      : Int
+  v_ULTIMATE.start_#t~ret7_5                         : Int
+  v_main_~x~0_13                                     : Int
+  v_main_~z~0_13                                     : Int
+  v_main_~y~0_13                                     : Int
+  v_main_#t~nondet5_6                                : Int
+  v_main_#t~nondet4_6                                : Int
+  v_main_#t~nondet6_6                                : Int
+  v_main_#t~nondet5_4                                : Int
+  v_main_#t~nondet4_4                                : Int
+  v_main_#t~nondet6_4                                : Int
+  v_main_~x~0_12                                     : Int
+  v_main_~z~0_12                                     : Int
+  v_main_~y~0_12                                     : Int
+  v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1 : Int
+  v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1 : Int
+  v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1 : Int
+  v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1 : Int
+  v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1      : Int
+  v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1      : Int
+  v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1 : Int
+  v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (let ((.cse0 (select |v_#memory_int_19| 1))) (and (= (select |v_#valid_19| 2) 1) (= (select |v_#length_19| 2) 11) (= (select .cse0 0) 48) (= (select |v_#length_19| 1) 2) (= 12 (select |v_#length_19| 3)) (= (select .cse0 1) 0) (= (select |v_#valid_19| 0) 0) (= v_main_~y~0_31 0) (= v_main_~z~0_31 0) (= (select |v_#valid_19| 1) 1) (= (select |v_#valid_19| 3) 1) (= v_main_~x~0_31 0) (<= 1 |v_#StackHeapBarrier_19|)))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_19|, #valid=|v_#valid_19|, #memory_int=|v_#memory_int_19|, #length=|v_#length_19|}  OutVars{#StackHeapBarrier=|v_#StackHeapBarrier_19|, main_~x~0=v_main_~x~0_31, main_~z~0=v_main_~z~0_31, #valid=|v_#valid_19|, #memory_int=|v_#memory_int_19|, main_~y~0=v_main_~y~0_31, #length=|v_#length_19|, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_12|}  AuxVars[]  AssignedVars[main_~x~0, main_~z~0, main_~y~0, ULTIMATE.start_#t~ret7]
+
+Loop TransFormula:
+Formula: (and (= (mod (+ v_main_~y~0_35 (* v_main_~y~0_34 3)) 4) 0) (= 0 (mod (+ v_main_~z~0_35 (* v_main_~z~0_34 7)) 8)) (= (mod (+ v_main_~x~0_35 v_main_~x~0_34) 2) 0) (not (= (mod (+ v_main_~z~0_34 (* v_main_~x~0_34 4) (* v_main_~y~0_34 2)) 4294967296) 4)))  InVars {main_~x~0=v_main_~x~0_35, main_~z~0=v_main_~z~0_35, main_~y~0=v_main_~y~0_35}  OutVars{main_#t~nondet5=|v_main_#t~nondet5_13|, main_#t~nondet4=|v_main_#t~nondet4_13|, main_#t~nondet6=|v_main_#t~nondet6_13|, main_~x~0=v_main_~x~0_34, main_~z~0=v_main_~z~0_34, main_~y~0=v_main_~y~0_34}  AuxVars[]  AssignedVars[main_#t~nondet5, main_#t~nondet4, main_#t~nondet6, main_~x~0, main_~z~0, main_~y~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 101
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7822
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 3,0886
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6639
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9433
+    Simplify formula using some simplification technique -> relative DAG size: 0,5196
+    Transform into disjunctive normal form -> relative DAG size: 1,5729
+    Simplify formula using some simplification technique -> relative DAG size: 0,9808
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0130
+
+Stem (linearized):
+  Formula:  (and (>= |v_arrayCell_v_#valid_7[3]_1| 1) (<= |v_arrayCell_v_#valid_7[0]_1| 0) (>= |v_arrayCell_v_#valid_7[2]_1| 1) (<= |v_arrayCell_v_#valid_7[1]_1| 1) (>= |v_arrayCell_v_#memory_int_7[1, 1]_1| 0) (<= 1 |v_#StackHeapBarrier_7|) (<= v_main_~x~0_9 0) (<= |v_arrayCell_v_#length_7[1]_1| 2) (<= |v_arrayCell_v_#length_7[3]_1| 12) (<= v_main_~y~0_9 0) (>= v_main_~x~0_9 0) (>= v_main_~y~0_9 0) (>= |v_arrayCell_v_#valid_7[0]_1| 0) (>= |v_arrayCell_v_#length_7[3]_1| 12) (<= v_main_~z~0_9 0) (>= |v_arrayCell_v_#memory_int_7[1, 0]_1| 48) (>= |v_arrayCell_v_#length_7[1]_1| 2) (>= |v_arrayCell_v_#valid_7[1]_1| 1) (>= |v_arrayCell_v_#length_7[2]_1| 11) (<= |v_arrayCell_v_#memory_int_7[1, 1]_1| 0) (<= |v_arrayCell_v_#length_7[2]_1| 11) (>= v_main_~z~0_9 0) (<= |v_arrayCell_v_#valid_7[2]_1| 1) (<= |v_arrayCell_v_#valid_7[3]_1| 1) (<= |v_arrayCell_v_#memory_int_7[1, 0]_1| 48))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_7|, main_~x~0=v_main_~x~0_14, main_~z~0=v_main_~z~0_14, main_~y~0=v_main_~y~0_14, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_6|, v_rep(select (select #memory_int 1) 0)_1=|v_arrayCell_v_#memory_int_7[1, 0]_1|, v_rep(select (select #memory_int 1) 1)_1=|v_arrayCell_v_#memory_int_7[1, 1]_1|, v_rep(select #length 3)_1=|v_arrayCell_v_#length_7[3]_1|, v_rep(select #length 1)_1=|v_arrayCell_v_#length_7[1]_1|, v_rep(select #length 2)_1=|v_arrayCell_v_#length_7[2]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_7[0]_1|, v_rep(select #valid 3)_1=|v_arrayCell_v_#valid_7[3]_1|, v_rep(select #valid 1)_1=|v_arrayCell_v_#valid_7[1]_1|, v_rep(select #valid 2)_1=|v_arrayCell_v_#valid_7[2]_1|}
+  OutVars:  {#StackHeapBarrier=|v_#StackHeapBarrier_7|, main_~x~0=v_main_~x~0_9, main_~z~0=v_main_~z~0_9, main_~y~0=v_main_~y~0_9, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_5|, v_rep(select (select #memory_int 1) 0)_1=|v_arrayCell_v_#memory_int_7[1, 0]_1|, v_rep(select (select #memory_int 1) 1)_1=|v_arrayCell_v_#memory_int_7[1, 1]_1|, v_rep(select #length 3)_1=|v_arrayCell_v_#length_7[3]_1|, v_rep(select #length 1)_1=|v_arrayCell_v_#length_7[1]_1|, v_rep(select #length 2)_1=|v_arrayCell_v_#length_7[2]_1|, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_7[0]_1|, v_rep(select #valid 3)_1=|v_arrayCell_v_#valid_7[3]_1|, v_rep(select #valid 1)_1=|v_arrayCell_v_#valid_7[1]_1|, v_rep(select #valid 2)_1=|v_arrayCell_v_#valid_7[2]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_main_~y~0_12 (* v_main_~y~0_13 3)) (+ |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| (* 4 |v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|))) (<= (+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4)) (+ (* |v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 4294967296) |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|)) (<= (+ |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| (* 4 |v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|)) (+ v_main_~y~0_12 (* v_main_~y~0_13 3))) (<= |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1| 0) (<= (+ 4 1) |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|) (<= (+ v_main_~x~0_13 v_main_~x~0_12) (+ (* |v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 2) |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|)) (<= |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 4294967295) (<= 0 |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) (<= (+ (* 8 |v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) (+ (* v_main_~z~0_13 7) v_main_~z~0_12)) (<= |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 0) (<= (+ (* |v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 2) |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|) (+ v_main_~x~0_13 v_main_~x~0_12)) (<= (+ (* v_main_~z~0_13 7) v_main_~z~0_12) (+ (* 8 |v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|)) (<= 0 |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|) (<= 0 |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|) (<= (+ (* |v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 4294967296) |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|) (+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))) (<= |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| 0)) (and (<= (+ v_main_~y~0_12 (* v_main_~y~0_13 3)) (+ |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| (* 4 |v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|))) (<= (+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4)) (+ (* |v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 4294967296) |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|)) (<= 0 |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|) (<= (+ |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| (* 4 |v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|)) (+ v_main_~y~0_12 (* v_main_~y~0_13 3))) (<= |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1| 0) (<= (+ v_main_~x~0_13 v_main_~x~0_12) (+ (* |v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 2) |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|)) (<= 0 |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) (<= (+ (* 8 |v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) (+ (* v_main_~z~0_13 7) v_main_~z~0_12)) (<= (+ |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 1) 4) (<= |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 0) (<= (+ (* |v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1| 2) |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|) (+ v_main_~x~0_13 v_main_~x~0_12)) (<= (+ (* v_main_~z~0_13 7) v_main_~z~0_12) (+ (* 8 |v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|) |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|)) (<= 0 |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|) (<= 0 |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|) (<= (+ (* |v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1| 4294967296) |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|) (+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))) (<= |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1| 0)))
+  InVars:   {main_~x~0=v_main_~x~0_13, main_~z~0=v_main_~z~0_13, main_~y~0=v_main_~y~0_13, main_#t~nondet5=|v_main_#t~nondet5_6|, main_#t~nondet4=|v_main_#t~nondet4_6|, main_#t~nondet6=|v_main_#t~nondet6_6|}
+  OutVars:  {main_#t~nondet5=|v_main_#t~nondet5_4|, main_#t~nondet4=|v_main_#t~nondet4_4|, main_#t~nondet6=|v_main_#t~nondet6_4|, main_~x~0=v_main_~x~0_12, main_~z~0=v_main_~z~0_12, main_~y~0=v_main_~y~0_12}
+  AuxVars:  [|v_div_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|, |v_mod_aux(+ v_main_~y~0_12 (* v_main_~y~0_13 3))4_1|, |v_div_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|, |v_mod_aux(+ (* v_main_~z~0_13 7) v_main_~z~0_12)8_1|, |v_div_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|, |v_mod_aux(+ v_main_~x~0_13 v_main_~x~0_12)2_1|, |v_div_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|, |v_mod_aux(+ (* v_main_~y~0_12 2) v_main_~z~0_12 (* v_main_~x~0_12 4))4294967296_1|]
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;call #Ultimate.allocInit(2, 1);call write~init~int(48, 1, 0, 1);call write~init~int(0, 1, 1, 1);call #Ultimate.allocInit(11, 2);call #Ultimate.allocInit(12, 3);assume true;
+  [2] #30#return;
+  [3] call #t~ret7 := main();
+  [4] havoc ~x~0;havoc ~y~0;havoc ~z~0;~x~0 := 0;~y~0 := 0;~z~0 := 0;
+Loop (length=6):
+  [0] havoc #t~nondet4;~x~0 := ~x~0 + 2 * #t~nondet4;havoc #t~nondet4;havoc #t~nondet5;~y~0 := ~y~0 + 4 * #t~nondet5;havoc #t~nondet5;havoc #t~nondet6;~z~0 := ~z~0 + 8 * #t~nondet6;havoc #t~nondet6;
+  [1] call __VERIFIER_assert((if 4 != (4 * ~x~0 + 2 * ~y~0 + ~z~0) % 4294967296 then 1 else 0));
+  [2] ~cond := #in~cond;
+  [3] assume !(0 == ~cond);
+  [4] assume true;
+  [5] #28#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3350925 ns (3,35 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@2cd3592d
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,35 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

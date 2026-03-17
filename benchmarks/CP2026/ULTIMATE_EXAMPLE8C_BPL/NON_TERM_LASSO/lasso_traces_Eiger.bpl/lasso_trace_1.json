@@ -1,0 +1,54 @@
+{
+  "program_vars": [
+    "Main_a",
+    "Main_c",
+    "decreases",
+    "increases"
+  ],
+  "var_types": {
+    "Main_a": "Int",
+    "Main_c": "Int",
+    "decreases": "Int",
+    "increases": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_increases_12 0) (<= v_decreases_16 0) (>= v_decreases_16 0) (<= v_Main_a_6 v_Main_c_16) (>= v_Main_a_6 v_Main_c_16) (<= v_increases_12 0))",
+      "in_vars": {
+        "Main_a": "v_Main_a_6",
+        "Main_c": "v_Main_c_24",
+        "increases": "v_increases_20",
+        "decreases": "v_decreases_35"
+      },
+      "out_vars": {
+        "Main_c": "v_Main_c_16",
+        "Main_a": "v_Main_a_6",
+        "increases": "v_increases_12",
+        "decreases": "v_decreases_16"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= (+ v_increases_19 1) v_increases_18) (<= (+ v_Main_c_23 1) v_Main_c_21) (>= v_decreases_32 (+ v_decreases_34 2)) (<= v_decreases_32 (+ v_decreases_34 2)) (>= (+ v_Main_c_23 1) v_Main_c_21) (>= (+ v_increases_19 1) v_increases_18))",
+      "in_vars": {
+        "Main_c": "v_Main_c_23",
+        "increases": "v_increases_19",
+        "decreases": "v_decreases_34"
+      },
+      "out_vars": {
+        "Main_c": "v_Main_c_21",
+        "increases": "v_increases_18",
+        "decreases": "v_decreases_32"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "program_vars": [
+    "b_search_recursive_#in~a",
+    "b_search_recursive_#in~arrayEnd",
+    "b_search_recursive_#in~arrayStart",
+    "b_search_recursive_#in~l.base",
+    "b_search_recursive_#in~l.offset",
+    "b_search_recursive_#res",
+    "b_search_recursive_#t~mem0",
+    "b_search_recursive_#t~mem1",
+    "b_search_recursive_#t~ret2",
+    "b_search_recursive_#t~ret3",
+    "b_search_recursive_~#l.base",
+    "b_search_recursive_~#l.offset",
+    "b_search_recursive_~a",
+    "b_search_recursive_~arrayEnd",
+    "b_search_recursive_~arrayStart",
+    "b_search_recursive_~m~0",
+    "|v_rep(select #length b_search_recursive_#in~l.base)_1|",
+    "|v_rep(select #valid b_search_recursive_#in~l.base)_1|"
+  ],
+  "var_types": {
+    "b_search_recursive_#in~a": "Int",
+    "b_search_recursive_#in~arrayEnd": "Int",
+    "b_search_recursive_#in~arrayStart": "Int",
+    "b_search_recursive_#in~l.base": "Int",
+    "b_search_recursive_#in~l.offset": "Int",
+    "b_search_recursive_#res": "Int",
+    "b_search_recursive_#t~mem0": "Int",
+    "b_search_recursive_#t~mem1": "Int",
+    "b_search_recursive_#t~ret2": "Int",
+    "b_search_recursive_#t~ret3": "Int",
+    "b_search_recursive_~#l.base": "Int",
+    "b_search_recursive_~#l.offset": "Int",
+    "b_search_recursive_~a": "Int",
+    "b_search_recursive_~arrayEnd": "Int",
+    "b_search_recursive_~arrayStart": "Int",
+    "b_search_recursive_~m~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|))) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (+ |v_b_search_recursive_#in~arrayEnd_4| 1)) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~arrayEnd_5| 2147483647) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_5| 2147483648)) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= (+ |v_b_search_recursive_#in~arrayEnd_4| 1) |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| 0) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|)) (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4| 1) 0) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= 0 (+ |v_b_search_recursive_#in~arrayStart_5| 2147483648)) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) 1)) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= |v_b_search_recursive_#in~arrayEnd_4| |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= (+ 0 1) |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|) (<= (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|)) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| |v_b_search_recursive_#in~arrayEnd_4|)) (and (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayEnd_5|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1| 1) (<= |v_b_search_recursive_#in~l.base_4| |v_b_search_recursive_#in~l.base_5|) (<= |v_b_search_recursive_#in~a_5| |v_b_search_recursive_#in~a_4|) (<= (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 8) |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|))) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (+ |v_b_search_recursive_#in~arrayEnd_4| 1)) (<= |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1| |v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= 0 (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|)) (<= |v_b_search_recursive_#in~a_5| 2147483647) (<= |v_b_search_recursive_#in~arrayStart_4| |v_b_search_recursive_#in~arrayStart_5|) (<= |v_b_search_recursive_#in~arrayEnd_5| 2147483647) (<= |v_b_search_recursive_#in~l.offset_4| |v_b_search_recursive_#in~l.offset_5|) (<= |v_b_search_recursive_#in~l.base_5| |v_b_search_recursive_#in~l.base_4|) (<= |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1| 1) (<= (+ |v_b_search_recursive_#in~arrayEnd_4| 1) |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) (<= |v_b_search_recursive_#in~arrayStart_5| |v_b_search_recursive_#in~arrayStart_4|) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|) (<= (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|) (+ (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|) 1)) (<= |v_b_search_recursive_#in~a_4| |v_b_search_recursive_#in~a_5|) (<= 0 (+ |v_b_search_recursive_#in~a_5| 2147483648)) (<= 1 |v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|) (<= |v_b_search_recursive_#in~l.offset_5| |v_b_search_recursive_#in~l.offset_4|) (<= 0 (+ (* |v_b_search_recursive_#in~arrayEnd_4| 4) |v_b_search_recursive_#in~l.offset_4| 4)) (<= (+ |v_b_search_recursive_#in~a_5| 1) |v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|) (<= (+ |v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1| (* 2 |v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|)) (+ |v_b_search_recursive_#in~arrayEnd_5| |v_b_search_recursive_#in~arrayStart_4|))))",
+      "in_vars": {
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_5|",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_5|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_5|",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_5|",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_5|",
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_15|",
+        "b_search_recursive_#t~mem0": "|v_b_search_recursive_#t~mem0_11|",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_9",
+        "b_search_recursive_#t~mem1": "|v_b_search_recursive_#t~mem1_11|",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_11",
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_16",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_13",
+        "b_search_recursive_#t~ret3": "|v_b_search_recursive_#t~ret3_7|",
+        "b_search_recursive_#t~ret2": "|v_b_search_recursive_#t~ret2_7|",
+        "b_search_recursive_#res": "|v_b_search_recursive_#res_7|",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_13|",
+        "|v_rep(select #length b_search_recursive_#in~l.base)_1|": "|v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_5]_1|",
+        "|v_rep(select #valid b_search_recursive_#in~l.base)_1|": "|v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_5]_1|"
+      },
+      "out_vars": {
+        "b_search_recursive_~#l.base": "|v_b_search_recursive_~#l.base_14|",
+        "b_search_recursive_#in~l.base": "|v_b_search_recursive_#in~l.base_4|",
+        "b_search_recursive_#t~mem0": "|v_b_search_recursive_#t~mem0_10|",
+        "b_search_recursive_~arrayStart": "v_b_search_recursive_~arrayStart_8",
+        "b_search_recursive_#t~mem1": "|v_b_search_recursive_#t~mem1_10|",
+        "b_search_recursive_#in~a": "|v_b_search_recursive_#in~a_4|",
+        "b_search_recursive_#in~arrayStart": "|v_b_search_recursive_#in~arrayStart_4|",
+        "b_search_recursive_~arrayEnd": "v_b_search_recursive_~arrayEnd_9",
+        "b_search_recursive_#in~l.offset": "|v_b_search_recursive_#in~l.offset_4|",
+        "b_search_recursive_#in~arrayEnd": "|v_b_search_recursive_#in~arrayEnd_4|",
+        "b_search_recursive_~m~0": "v_b_search_recursive_~m~0_15",
+        "b_search_recursive_~a": "v_b_search_recursive_~a_12",
+        "b_search_recursive_#t~ret3": "|v_b_search_recursive_#t~ret3_6|",
+        "b_search_recursive_#t~ret2": "|v_b_search_recursive_#t~ret2_6|",
+        "b_search_recursive_#res": "|v_b_search_recursive_#res_6|",
+        "b_search_recursive_~#l.offset": "|v_b_search_recursive_~#l.offset_12|",
+        "|v_rep(select #length b_search_recursive_#in~l.base)_1|": "|v_arrayCell_v_#length_6[v_b_search_recursive_#in~l.base_4]_1|",
+        "|v_rep(select #valid b_search_recursive_#in~l.base)_1|": "|v_arrayCell_v_#valid_6[v_b_search_recursive_#in~l.base_4]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#memory_int_4[v_b_search_recursive_#in~l.base_5, (+ (* v_b_search_recursive_#in~arrayEnd_4 4) v_b_search_recursive_#in~l.offset_4 4)]_1|",
+        "|v_div_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|",
+        "|v_mod_aux(+ v_b_search_recursive_#in~arrayEnd_5 v_b_search_recursive_#in~arrayStart_4)2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

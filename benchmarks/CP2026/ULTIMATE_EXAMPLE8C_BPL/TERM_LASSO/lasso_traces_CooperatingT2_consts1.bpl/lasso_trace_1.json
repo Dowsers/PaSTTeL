@@ -1,0 +1,38 @@
+{
+  "program_vars": [
+    "main_v"
+  ],
+  "var_types": {
+    "main_v": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_main_v_10 300) (<= v_main_v_10 300))",
+      "in_vars": {
+        "main_v": "v_main_v_13"
+      },
+      "out_vars": {
+        "main_v": "v_main_v_10"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= (+ v_main_v_11 1) v_main_v_12) (<= (+ v_main_v_11 1) 100) (<= (+ v_main_v_11 1) v_main_v_12)) (and (>= (+ v_main_v_11 1) v_main_v_12) (<= (+ 100 1) v_main_v_11) (<= (+ v_main_v_11 1) v_main_v_12)))",
+      "in_vars": {
+        "main_v": "v_main_v_12"
+      },
+      "out_vars": {
+        "main_v": "v_main_v_11"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

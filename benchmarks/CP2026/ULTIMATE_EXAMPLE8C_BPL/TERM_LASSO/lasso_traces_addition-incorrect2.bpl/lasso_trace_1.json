@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "addition_res",
+    "addition_x",
+    "addition_y"
+  ],
+  "var_types": {
+    "addition_res": "Int",
+    "addition_x": "Int",
+    "addition_y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 0 v_addition_x_13) (<= v_addition_x_12 (+ v_addition_x_13 1)) (<= (+ v_addition_x_13 1) v_addition_x_12) (<= v_addition_y_14 (+ v_addition_y_13 1)) (<= (+ 0 1) v_addition_y_14) (<= (+ v_addition_y_13 1) v_addition_y_14))",
+      "in_vars": {
+        "addition_x": "v_addition_x_13",
+        "addition_y": "v_addition_y_14",
+        "addition_res": "v_addition_res_8"
+      },
+      "out_vars": {
+        "addition_x": "v_addition_x_12",
+        "addition_y": "v_addition_y_13",
+        "addition_res": "v_addition_res_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "program_vars": [
+    "even_n",
+    "odd_n",
+    "|v_rep(ite even_res 1 0)_1|",
+    "|v_rep(ite odd_res 1 0)_1|"
+  ],
+  "var_types": {
+    "even_n": "Int",
+    "odd_n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ v_even_n_11 1) 0) (<= v_even_n_11 (+ 2 v_even_n_10)) (<= (+ 2 v_even_n_10) v_even_n_11)) (and (<= (+ 1 1) v_even_n_11) (<= v_even_n_11 (+ 2 v_even_n_10)) (<= (+ 2 v_even_n_10) v_even_n_11)))",
+      "in_vars": {
+        "even_n": "v_even_n_11",
+        "odd_n": "v_odd_n_14",
+        "|v_rep(ite odd_res 1 0)_1|": "|v_v_rep(ite odd_res 1 0)_1_in_bool_1|",
+        "|v_rep(ite even_res 1 0)_1|": "|v_v_rep(ite even_res 1 0)_1_in_bool_1|"
+      },
+      "out_vars": {
+        "even_n": "v_even_n_10",
+        "odd_n": "v_odd_n_12",
+        "|v_rep(ite odd_res 1 0)_1|": "|v_v_rep(ite odd_res 1 0)_1_out_bool_1|",
+        "|v_rep(ite even_res 1 0)_1|": "|v_v_rep(ite even_res 1 0)_1_out_bool_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

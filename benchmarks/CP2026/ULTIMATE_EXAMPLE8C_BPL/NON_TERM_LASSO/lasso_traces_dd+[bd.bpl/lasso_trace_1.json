@@ -1,0 +1,60 @@
+{
+  "program_vars": [
+    "main_head",
+    "main_max_head",
+    "|v_rep(select main_mem (+ main_head 1))_3|",
+    "|v_rep(select main_mem 0)_3|",
+    "|v_rep(select main_mem 1)_1|",
+    "|v_rep(select main_mem main_head)_3|"
+  ],
+  "var_types": {
+    "main_head": "Int",
+    "main_max_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_head_68 0) (>= v_main_max_head_29 1) (<= 0 |v_arrayCell_v_main_mem_47[1]_1|) (>= v_main_head_68 0) (>= 1 |v_arrayCell_v_main_mem_47[0]_1|) (<= v_main_max_head_29 1) (<= 1 |v_arrayCell_v_main_mem_47[0]_1|) (>= 0 |v_arrayCell_v_main_mem_47[1]_1|))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_33",
+        "main_head": "v_main_head_72",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_49[0]_1|",
+        "|v_rep(select main_mem 1)_1|": "|v_arrayCell_v_main_mem_49[1]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_29",
+        "main_head": "v_main_head_68",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_47[0]_1|",
+        "|v_rep(select main_mem 1)_1|": "|v_arrayCell_v_main_mem_47[1]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= v_main_head_70 0) (<= v_main_head_71 0) (>= |v_arrayCell_v_main_mem_50[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= 1 v_main_max_head_32) (>= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (<= (+ |v_arrayCell_v_main_mem_51[v_main_head_71]_1| 1) 0) (>= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (<= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= v_main_head_71 0) (<= v_main_max_head_32 v_main_max_head_31) (<= |v_arrayCell_v_main_mem_50[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= v_main_max_head_32 v_main_max_head_31) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (>= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (<= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (>= v_main_head_70 0)) (and (<= v_main_head_70 0) (<= v_main_head_71 0) (>= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (<= |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= v_main_max_head_31 (+ v_main_max_head_32 1)) (<= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= v_main_head_71 0) (<= |v_arrayCell_v_main_mem_50[1]_1| 0) (<= v_main_max_head_31 (+ v_main_max_head_32 1)) (<= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= |v_arrayCell_v_main_mem_50[1]_1| 0) (>= |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (<= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (<= v_main_max_head_32 0) (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (>= v_main_head_70 0)) (and (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= v_main_head_70 0) (<= v_main_head_71 0) (>= |v_arrayCell_v_main_mem_50[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= 1 v_main_max_head_32) (>= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (<= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= v_main_head_71 0) (<= v_main_max_head_32 v_main_max_head_31) (<= |v_arrayCell_v_main_mem_50[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (<= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= v_main_max_head_32 v_main_max_head_31) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|) (>= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (<= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (>= v_main_head_70 0)) (and (<= v_main_head_70 0) (<= v_main_head_71 0) (>= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (<= (+ |v_arrayCell_v_main_mem_51[v_main_head_71]_1| 1) 0) (<= |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= v_main_max_head_31 (+ v_main_max_head_32 1)) (<= |v_arrayCell_v_main_mem_51[0]_1| |v_arrayCell_v_main_mem_51[v_main_head_71]_1|) (>= v_main_head_71 0) (<= |v_arrayCell_v_main_mem_50[1]_1| 0) (<= v_main_max_head_31 (+ v_main_max_head_32 1)) (<= |v_arrayCell_v_main_mem_50[0]_1| |v_arrayCell_v_main_mem_51[0]_1|) (>= |v_arrayCell_v_main_mem_50[1]_1| 0) (>= |v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1| 0) (>= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (<= |v_arrayCell_v_main_mem_51[v_main_head_71]_1| |v_arrayCell_v_main_mem_50[v_main_head_70]_1|) (<= v_main_max_head_32 0) (>= |v_arrayCell_v_main_mem_51[1]_1| |v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|) (>= v_main_head_70 0)))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_32",
+        "main_head": "v_main_head_71",
+        "|v_rep(select main_mem main_head)_3|": "|v_arrayCell_v_main_mem_51[v_main_head_71]_1|",
+        "|v_rep(select main_mem (+ main_head 1))_3|": "|v_arrayCell_v_main_mem_51[(+ v_main_head_71 1)]_1|",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_51[0]_1|",
+        "|v_rep(select main_mem 1)_1|": "|v_arrayCell_v_main_mem_51[1]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_31",
+        "main_head": "v_main_head_70",
+        "|v_rep(select main_mem main_head)_3|": "|v_arrayCell_v_main_mem_50[v_main_head_70]_1|",
+        "|v_rep(select main_mem 0)_3|": "|v_arrayCell_v_main_mem_50[0]_1|",
+        "|v_rep(select main_mem 1)_1|": "|v_arrayCell_v_main_mem_50[1]_1|",
+        "|v_rep(select main_mem (+ main_head 1))_3|": "|v_arrayCell_v_main_mem_50[(+ v_main_head_70 1)]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

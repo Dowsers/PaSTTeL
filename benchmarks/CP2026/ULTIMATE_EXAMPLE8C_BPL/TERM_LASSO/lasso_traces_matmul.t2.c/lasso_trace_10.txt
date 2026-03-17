@@ -1,0 +1,337 @@
+========================================
+LASSO TRACE REPORT - Iteration #10
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_~v1~0                                         : Int
+  main_#t~ret0                                       : Int
+  main_#t~ret18                                      : Int
+  main_#t~ret5                                       : Int
+  main_#t~ret19                                      : Int
+  main_#t~ret16                                      : Int
+  main_#t~ret17                                      : Int
+  main_~v2~0                                         : Int
+  main_#t~ret2                                       : Int
+  main_#t~ret15                                      : Int
+  main_#t~ret1                                       : Int
+  main_#t~ret4                                       : Int
+  main_#t~ret3                                       : Int
+  ULTIMATE.start_#t~ret20                            : Int
+  v_main_~v1~0_185                                   : Int
+  v_main_#t~ret0_148                                 : Int
+  v_main_#t~ret18_78                                 : Int
+  v_main_#t~ret5_151                                 : Int
+  v_main_#t~ret19_150                                : Int
+  v_main_#t~ret16_127                                : Int
+  v_main_#t~ret17_86                                 : Int
+  v_main_~v2~0_181                                   : Int
+  v_main_#t~ret2_148                                 : Int
+  v_main_#t~ret15_151                                : Int
+  v_main_#t~ret1_148                                 : Int
+  v_main_#t~ret4_86                                  : Int
+  v_main_#t~ret3_150                                 : Int
+  v_ULTIMATE.start_#t~ret20_69                       : Int
+  v_main_~v1~0_184                                   : Int
+  v_main_#t~ret0_147                                 : Int
+  v_main_#t~ret18_77                                 : Int
+  v_main_#t~ret5_147                                 : Int
+  v_main_#t~ret19_149                                : Int
+  v_main_#t~ret16_123                                : Int
+  v_main_#t~ret17_85                                 : Int
+  v_main_~v2~0_178                                   : Int
+  v_main_#t~ret2_147                                 : Int
+  v_main_#t~ret15_147                                : Int
+  v_main_#t~ret1_147                                 : Int
+  v_main_#t~ret4_85                                  : Int
+  v_main_#t~ret3_149                                 : Int
+  v_ULTIMATE.start_#t~ret20_68                       : Int
+  v_main_~v2~0_180                                   : Int
+  v_main_#t~ret5_152                                 : Int
+  v_main_#t~ret16_128                                : Int
+  v_main_#t~ret15_152                                : Int
+  v_main_#t~ret5_149                                 : Int
+  v_main_#t~ret16_125                                : Int
+  v_main_~v2~0_179                                   : Int
+  v_main_#t~ret15_149                                : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= 2 v_main_~v1~0_204) (= v_main_~v2~0_219 1))  InVars {}  OutVars{main_~v1~0=v_main_~v1~0_204, main_#t~ret0=|v_main_#t~ret0_165|, main_#t~ret18=|v_main_#t~ret18_101|, main_#t~ret5=|v_main_#t~ret5_207|, main_#t~ret19=|v_main_#t~ret19_167|, main_#t~ret16=|v_main_#t~ret16_177|, main_#t~ret17=|v_main_#t~ret17_109|, main_~v2~0=v_main_~v2~0_219, main_#t~ret2=|v_main_#t~ret2_165|, main_#t~ret15=|v_main_#t~ret15_207|, main_#t~ret1=|v_main_#t~ret1_165|, main_#t~ret4=|v_main_#t~ret4_109|, main_#t~ret3=|v_main_#t~ret3_167|, ULTIMATE.start_#t~ret20=|v_ULTIMATE.start_#t~ret20_77|}  AuxVars[]  AssignedVars[main_~v1~0, main_#t~ret0, main_#t~ret18, main_#t~ret5, main_#t~ret19, main_#t~ret16, main_#t~ret17, main_~v2~0, main_#t~ret2, main_#t~ret15, main_#t~ret1, main_#t~ret4, main_#t~ret3, ULTIMATE.start_#t~ret20]
+
+Loop TransFormula:
+Formula: (and (= v_main_~v2~0_220 (+ v_main_~v2~0_221 1)) (<= v_main_~v2~0_221 5))  InVars {main_~v2~0=v_main_~v2~0_221}  OutVars{main_#t~ret5=|v_main_#t~ret5_209|, main_#t~ret16=|v_main_#t~ret16_179|, main_~v2~0=v_main_~v2~0_220, main_#t~ret15=|v_main_#t~ret15_209|}  AuxVars[]  AssignedVars[main_#t~ret5, main_#t~ret16, main_~v2~0, main_#t~ret15]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 16
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8750
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~v2~0_178 1) (>= v_main_~v2~0_178 1) (<= 2 v_main_~v1~0_184) (>= 2 v_main_~v1~0_184))
+  InVars:   {main_~v1~0=v_main_~v1~0_185, main_#t~ret0=|v_main_#t~ret0_148|, main_#t~ret18=|v_main_#t~ret18_78|, main_#t~ret5=|v_main_#t~ret5_151|, main_#t~ret19=|v_main_#t~ret19_150|, main_#t~ret16=|v_main_#t~ret16_127|, main_#t~ret17=|v_main_#t~ret17_86|, main_~v2~0=v_main_~v2~0_181, main_#t~ret2=|v_main_#t~ret2_148|, main_#t~ret15=|v_main_#t~ret15_151|, main_#t~ret1=|v_main_#t~ret1_148|, main_#t~ret4=|v_main_#t~ret4_86|, main_#t~ret3=|v_main_#t~ret3_150|, ULTIMATE.start_#t~ret20=|v_ULTIMATE.start_#t~ret20_69|}
+  OutVars:  {main_~v1~0=v_main_~v1~0_184, main_#t~ret0=|v_main_#t~ret0_147|, main_#t~ret18=|v_main_#t~ret18_77|, main_#t~ret5=|v_main_#t~ret5_147|, main_#t~ret19=|v_main_#t~ret19_149|, main_#t~ret16=|v_main_#t~ret16_123|, main_#t~ret17=|v_main_#t~ret17_85|, main_~v2~0=v_main_~v2~0_178, main_#t~ret2=|v_main_#t~ret2_147|, main_#t~ret15=|v_main_#t~ret15_147|, main_#t~ret1=|v_main_#t~ret1_147|, main_#t~ret4=|v_main_#t~ret4_85|, main_#t~ret3=|v_main_#t~ret3_149|, ULTIMATE.start_#t~ret20=|v_ULTIMATE.start_#t~ret20_68|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= v_main_~v2~0_180 5) (>= v_main_~v2~0_179 (+ v_main_~v2~0_180 1)) (<= v_main_~v2~0_179 (+ v_main_~v2~0_180 1)))
+  InVars:   {main_~v2~0=v_main_~v2~0_180, main_#t~ret5=|v_main_#t~ret5_152|, main_#t~ret16=|v_main_#t~ret16_128|, main_#t~ret15=|v_main_#t~ret15_152|}
+  OutVars:  {main_#t~ret5=|v_main_#t~ret5_149|, main_#t~ret16=|v_main_#t~ret16_125|, main_~v2~0=v_main_~v2~0_179, main_#t~ret15=|v_main_#t~ret15_149|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=124):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #181#return;
+  [3] call #t~ret20 := main();
+  [4] call #t~ret0 := nondet();
+  [5] havoc ~a~0;#res := ~a~0;assume true;
+  [6] #185#return;
+  [7] assume -2147483648 <= #t~ret0 && #t~ret0 <= 2147483647;~v1~0 := #t~ret0;havoc #t~ret0;
+  [8] call #t~ret1 := nondet();
+  [9] havoc ~a~0;#res := ~a~0;assume true;
+  [10] #187#return;
+  [11] assume -2147483648 <= #t~ret1 && #t~ret1 <= 2147483647;~v2~0 := #t~ret1;havoc #t~ret1;
+  [12] call #t~ret2 := nondet();
+  [13] havoc ~a~0;#res := ~a~0;assume true;
+  [14] #189#return;
+  [15] assume -2147483648 <= #t~ret2 && #t~ret2 <= 2147483647;~v3~0 := #t~ret2;havoc #t~ret2;
+  [16] call #t~ret3 := nondet_bool();
+  [17] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [18] #191#return;
+  [19] assume 0 != #t~ret3 % 256;havoc #t~ret3;
+  [20] call #t~ret19 := nondet_bool();
+  [21] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [22] #223#return;
+  [23] assume 0 != #t~ret19 % 256;havoc #t~ret19;~v1~0 := 1;
+  [24] call #t~ret4 := nondet_bool();
+  [25] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [26] #193#return;
+  [27] assume 0 != #t~ret4 % 256;havoc #t~ret4;
+  [28] call #t~ret17 := nondet_bool();
+  [29] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [30] #219#return;
+  [31] assume !(0 != #t~ret17 % 256);havoc #t~ret17;
+  [32] call #t~ret18 := nondet_bool();
+  [33] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [34] #221#return;
+  [35] assume 0 != #t~ret18 % 256;havoc #t~ret18;
+  [36] assume !!(~v1~0 <= 5);~v2~0 := 1;
+  [37] call #t~ret5 := nondet_bool();
+  [38] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [39] #195#return;
+  [40] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [41] call #t~ret15 := nondet_bool();
+  [42] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [43] #215#return;
+  [44] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [45] call #t~ret16 := nondet_bool();
+  [46] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [47] #217#return;
+  [48] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [49] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+  [50] call #t~ret5 := nondet_bool();
+  [51] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [52] #195#return;
+  [53] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [54] call #t~ret15 := nondet_bool();
+  [55] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [56] #215#return;
+  [57] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [58] call #t~ret16 := nondet_bool();
+  [59] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [60] #217#return;
+  [61] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [62] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+  [63] call #t~ret5 := nondet_bool();
+  [64] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [65] #195#return;
+  [66] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [67] call #t~ret15 := nondet_bool();
+  [68] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [69] #215#return;
+  [70] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [71] call #t~ret16 := nondet_bool();
+  [72] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [73] #217#return;
+  [74] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [75] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+  [76] call #t~ret5 := nondet_bool();
+  [77] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [78] #195#return;
+  [79] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [80] call #t~ret15 := nondet_bool();
+  [81] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [82] #215#return;
+  [83] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [84] call #t~ret16 := nondet_bool();
+  [85] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [86] #217#return;
+  [87] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [88] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+  [89] call #t~ret5 := nondet_bool();
+  [90] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [91] #195#return;
+  [92] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [93] call #t~ret15 := nondet_bool();
+  [94] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [95] #215#return;
+  [96] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [97] call #t~ret16 := nondet_bool();
+  [98] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [99] #217#return;
+  [100] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [101] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+  [102] call #t~ret5 := nondet_bool();
+  [103] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [104] #195#return;
+  [105] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [106] call #t~ret15 := nondet_bool();
+  [107] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [108] #215#return;
+  [109] assume 0 != #t~ret15 % 256;havoc #t~ret15;
+  [110] assume !!(6 <= ~v2~0);~v1~0 := 1 + ~v1~0;
+  [111] call #t~ret4 := nondet_bool();
+  [112] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [113] #193#return;
+  [114] assume 0 != #t~ret4 % 256;havoc #t~ret4;
+  [115] call #t~ret17 := nondet_bool();
+  [116] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [117] #219#return;
+  [118] assume !(0 != #t~ret17 % 256);havoc #t~ret17;
+  [119] call #t~ret18 := nondet_bool();
+  [120] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [121] #221#return;
+  [122] assume 0 != #t~ret18 % 256;havoc #t~ret18;
+  [123] assume !!(~v1~0 <= 5);~v2~0 := 1;
+Loop (length=13):
+  [0] call #t~ret5 := nondet_bool();
+  [1] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [2] #195#return;
+  [3] assume 0 != #t~ret5 % 256;havoc #t~ret5;
+  [4] call #t~ret15 := nondet_bool();
+  [5] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [6] #215#return;
+  [7] assume !(0 != #t~ret15 % 256);havoc #t~ret15;
+  [8] call #t~ret16 := nondet_bool();
+  [9] havoc ~a~1;#res := (if 0 == ~a~1 % 256 then 0 else 1);assume true;
+  [10] #217#return;
+  [11] assume 0 != #t~ret16 % 256;havoc #t~ret16;
+  [12] assume !!(~v2~0 <= 5);~v2~0 := 1 + ~v2~0;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   214443 ns (0,21 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 34949983 ns (34,95 ms)
+       Variables (stem/loop): 2/2  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 34,95 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(main_~v2~0) = -2*main_~v2~0 + 11
+  Variables:
+    main_~v2~0
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 31605140 ns (31,61 ms)
+       Variables (stem/loop): 2/2  Disjuncts (stem/loop): 1/1
+  Total nontermination analysis time: 31,61 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 16
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8750
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+  [Lasso 2] Initial max DAG size: 16
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8750
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,21 ms
+Total LassoRanker time: 66,56 ms
+  Termination analysis:     34,95 ms
+  Nontermination analysis:   31,61 ms

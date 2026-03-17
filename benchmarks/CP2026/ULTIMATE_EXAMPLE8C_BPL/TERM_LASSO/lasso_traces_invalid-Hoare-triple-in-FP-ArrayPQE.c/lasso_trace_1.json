@@ -1,0 +1,133 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "main_#t~mem6.base",
+    "main_#t~mem6.offset",
+    "main_#t~ret5.base",
+    "main_#t~ret5.offset",
+    "main_~#s~0.base",
+    "main_~#s~0.offset",
+    "main_~ptr~0",
+    "sll_create_#in~data",
+    "sll_create_#in~len",
+    "sll_create_#t~post2",
+    "sll_create_#t~ret1.base",
+    "sll_create_#t~ret1.offset",
+    "sll_create_~head~0.base",
+    "sll_create_~head~0.offset",
+    "sll_create_~len",
+    "sll_create_~new_head~0.base",
+    "sll_create_~new_head~0.offset",
+    "|v_rep(select #length sll_create_~head~0.base)_1|",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select #valid sll_create_~head~0.base)_1|",
+    "|v_rep(select old_#valid_ 0)_1|"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "main_#t~mem6.base": "Int",
+    "main_#t~mem6.offset": "Int",
+    "main_#t~ret5.base": "Int",
+    "main_#t~ret5.offset": "Int",
+    "main_~#s~0.base": "Int",
+    "main_~#s~0.offset": "Int",
+    "main_~ptr~0": "Int",
+    "sll_create_#in~data": "Int",
+    "sll_create_#in~len": "Int",
+    "sll_create_#t~post2": "Int",
+    "sll_create_#t~ret1.base": "Int",
+    "sll_create_#t~ret1.offset": "Int",
+    "sll_create_~head~0.base": "Int",
+    "sll_create_~head~0.offset": "Int",
+    "sll_create_~len": "Int",
+    "sll_create_~new_head~0.base": "Int",
+    "sll_create_~new_head~0.offset": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 8 |v_arrayCell_v_#length_43[v_main_~#s~0.base_26]_1|) (>= |v_arrayCell_v_#valid_52[0]_1| 0) (<= |v_arrayCell_v_old_#valid__7[v_main_~#s~0.base_26]_1| 1) (<= 2 |v_sll_create_#in~len_7|) (<= |v_arrayCell_v_#valid_53[0]_1| 0) (<= |v_arrayCell_v_#valid_53[v_main_~#s~0.base_26]_1| 0) (<= |v_arrayCell_v_#valid_52[0]_1| 0) (>= 8 |v_arrayCell_v_#length_43[v_main_~#s~0.base_26]_1|) (>= |v_sll_create_#in~data_6| 0) (>= 2 v_sll_create_~len_14) (<= 1 |v_#StackHeapBarrier_14|) (>= |v_arrayCell_v_old_#valid__7[v_main_~#s~0.base_26]_1| 1) (<= |v_arrayCell_v_old_#valid__7[0]_1| 0) (>= 2 |v_sll_create_#in~len_7|) (>= |v_arrayCell_v_old_#valid__7[0]_1| 0) (<= |v_sll_create_#in~data_6| 0) (<= (+ |v_#StackHeapBarrier_14| 1) |v_main_~#s~0.base_26|) (<= 2 v_sll_create_~len_14) (>= |v_arrayCell_v_#valid_53[v_main_~#s~0.base_26]_1| 0) (>= |v_arrayCell_v_#valid_53[0]_1| 0))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_14|",
+        "sll_create_#in~data": "|v_sll_create_#in~data_7|",
+        "main_~#s~0.offset": "|v_main_~#s~0.offset_22|",
+        "main_#t~mem6.base": "|v_main_#t~mem6.base_12|",
+        "main_#t~mem6.offset": "|v_main_#t~mem6.offset_12|",
+        "sll_create_#in~len": "|v_sll_create_#in~len_8|",
+        "main_#t~ret5.base": "|v_main_#t~ret5.base_9|",
+        "sll_create_~head~0.base": "v_sll_create_~head~0.base_14",
+        "main_~#s~0.base": "|v_main_~#s~0.base_27|",
+        "main_~ptr~0": "v_main_~ptr~0_10",
+        "main_#t~ret5.offset": "|v_main_#t~ret5.offset_9|",
+        "sll_create_~head~0.offset": "v_sll_create_~head~0.offset_14",
+        "sll_create_~len": "v_sll_create_~len_17",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_53[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_v_rep(select old_#valid_ 0)_1_1|"
+      },
+      "out_vars": {
+        "sll_create_#in~data": "|v_sll_create_#in~data_6|",
+        "main_~#s~0.offset": "|v_main_~#s~0.offset_21|",
+        "main_#t~mem6.base": "|v_main_#t~mem6.base_11|",
+        "main_#t~mem6.offset": "|v_main_#t~mem6.offset_11|",
+        "sll_create_#in~len": "|v_sll_create_#in~len_7|",
+        "main_#t~ret5.base": "|v_main_#t~ret5.base_8|",
+        "sll_create_~head~0.base": "v_sll_create_~head~0.base_12",
+        "main_~#s~0.base": "|v_main_~#s~0.base_24|",
+        "main_~ptr~0": "v_main_~ptr~0_9",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_14|",
+        "main_#t~ret5.offset": "|v_main_#t~ret5.offset_8|",
+        "sll_create_~head~0.offset": "v_sll_create_~head~0.offset_12",
+        "sll_create_~len": "v_sll_create_~len_14",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_52[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_arrayCell_v_old_#valid__7[0]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#length_43[v_main_~#s~0.base_26]_1|",
+        "|v_arrayCell_v_#valid_53[v_main_~#s~0.base_26]_1|",
+        "|v_arrayCell_v_old_#valid__7[v_main_~#s~0.base_26]_1|",
+        "|v_main_~#s~0.base_26|"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_arrayCell_v_#valid_59[v_sll_create_~head~0.base_13]_1| 1) (>= |v_arrayCell_v_#valid_59[0]_1| |v_arrayCell_v_#valid_60[0]_1|) (<= |v_arrayCell_v_#length_50[v_sll_create_~head~0.base_13]_1| 0) (<= 1 v_sll_create_~len_16) (<= v_sll_create_~head~0.offset_13 0) (>= v_sll_create_~head~0.offset_13 0) (<= (+ v_sll_create_~len_15 1) v_sll_create_~len_16) (<= |v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_13]_1| 0) (>= |v_arrayCell_v_#valid_59[v_sll_create_~head~0.base_13]_1| 1) (<= (+ v_sll_create_~head~0.base_13 1) |v_#StackHeapBarrier_17|) (>= |v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_13]_1| 0) (<= |v_arrayCell_v_#valid_59[0]_1| |v_arrayCell_v_#valid_60[0]_1|) (>= (+ v_sll_create_~len_15 1) v_sll_create_~len_16) (<= (+ v_sll_create_~head~0.base_13 1) 0) (>= |v_arrayCell_v_#length_50[v_sll_create_~head~0.base_13]_1| 0)) (and (<= |v_arrayCell_v_#valid_59[v_sll_create_~head~0.base_13]_1| 1) (>= |v_arrayCell_v_#valid_59[0]_1| |v_arrayCell_v_#valid_60[0]_1|) (<= |v_arrayCell_v_#length_50[v_sll_create_~head~0.base_13]_1| 0) (<= 1 v_sll_create_~len_16) (<= v_sll_create_~head~0.offset_13 0) (>= v_sll_create_~head~0.offset_13 0) (<= (+ v_sll_create_~len_15 1) v_sll_create_~len_16) (<= |v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_13]_1| 0) (>= |v_arrayCell_v_#valid_59[v_sll_create_~head~0.base_13]_1| 1) (<= (+ v_sll_create_~head~0.base_13 1) |v_#StackHeapBarrier_17|) (>= |v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_13]_1| 0) (<= (+ 0 1) v_sll_create_~head~0.base_13) (<= |v_arrayCell_v_#valid_59[0]_1| |v_arrayCell_v_#valid_60[0]_1|) (>= (+ v_sll_create_~len_15 1) v_sll_create_~len_16) (>= |v_arrayCell_v_#length_50[v_sll_create_~head~0.base_13]_1| 0)))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_17|",
+        "sll_create_~len": "v_sll_create_~len_16",
+        "sll_create_~new_head~0.offset": "v_sll_create_~new_head~0.offset_4",
+        "sll_create_~head~0.base": "v_sll_create_~head~0.base_15",
+        "sll_create_#t~ret1.base": "|v_sll_create_#t~ret1.base_8|",
+        "sll_create_#t~ret1.offset": "|v_sll_create_#t~ret1.offset_8|",
+        "sll_create_#t~post2": "|v_sll_create_#t~post2_4|",
+        "sll_create_~new_head~0.base": "v_sll_create_~new_head~0.base_4",
+        "sll_create_~head~0.offset": "v_sll_create_~head~0.offset_15",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_60[0]_1|",
+        "|v_rep(select #valid sll_create_~head~0.base)_1|": "|v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_15]_1|",
+        "|v_rep(select #length sll_create_~head~0.base)_1|": "|v_arrayCell_v_#length_51[v_sll_create_~head~0.base_15]_1|"
+      },
+      "out_vars": {
+        "sll_create_~new_head~0.offset": "v_sll_create_~new_head~0.offset_3",
+        "sll_create_~head~0.base": "v_sll_create_~head~0.base_13",
+        "sll_create_#t~ret1.base": "|v_sll_create_#t~ret1.base_6|",
+        "sll_create_#t~ret1.offset": "|v_sll_create_#t~ret1.offset_6|",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_17|",
+        "sll_create_#t~post2": "|v_sll_create_#t~post2_3|",
+        "sll_create_~new_head~0.base": "v_sll_create_~new_head~0.base_3",
+        "sll_create_~len": "v_sll_create_~len_15",
+        "sll_create_~head~0.offset": "v_sll_create_~head~0.offset_13",
+        "|v_rep(select #valid sll_create_~head~0.base)_1|": "|v_arrayCell_v_#valid_59[v_sll_create_~head~0.base_13]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_59[0]_1|",
+        "|v_rep(select #length sll_create_~head~0.base)_1|": "|v_arrayCell_v_#length_50[v_sll_create_~head~0.base_13]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#valid_60[v_sll_create_~head~0.base_13]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

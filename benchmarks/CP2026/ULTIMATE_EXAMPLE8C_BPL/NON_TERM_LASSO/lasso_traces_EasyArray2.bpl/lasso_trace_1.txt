@@ -1,0 +1,117 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_arr                                           : (Array Int Int)
+  main_i                                             : Int
+  v_main_i_16                                        : Int
+  v_arrayCell_v_main_arr_14[0]_1                     : Int
+  v_main_i_14                                        : Int
+  v_arrayCell_v_main_arr_13[0]_1                     : Int
+  v_main_i_15                                        : Int
+  v_arrayCell_v_main_arr_16[v_main_i_15]_1           : Int
+  v_arrayCell_v_main_arr_16[0]_1                     : Int
+  v_arrayCell_v_main_arr_15[v_main_i_15]_1           : Int
+  v_arrayCell_v_main_arr_15[0]_1                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_main_i_21 0) (= v_main_arr_25 (store v_main_arr_26 0 0)))  InVars {main_arr=v_main_arr_26}  OutVars{main_arr=v_main_arr_25, main_i=v_main_i_21}  AuxVars[]  AssignedVars[main_arr, main_i]
+
+Loop TransFormula:
+Formula: (and (<= v_main_i_22 9) (or (= v_main_arr_27 v_main_arr_28) (= v_main_arr_27 (store v_main_arr_28 v_main_i_22 (+ (* (- 1) v_main_i_22) 10)))))  InVars {main_arr=v_main_arr_28, main_i=v_main_i_22}  OutVars{main_arr=v_main_arr_27, main_i=v_main_i_22}  AuxVars[]  AssignedVars[main_arr]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 28
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,2143
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,1765
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8649
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_main_i_14 0) (>= |v_arrayCell_v_main_arr_13[0]_1| 0) (>= v_main_i_14 0) (<= |v_arrayCell_v_main_arr_13[0]_1| 0))
+  InVars:   {main_i=v_main_i_16, v_rep(select main_arr 0)_1=|v_arrayCell_v_main_arr_14[0]_1|}
+  OutVars:  {main_i=v_main_i_14, v_rep(select main_arr 0)_1=|v_arrayCell_v_main_arr_13[0]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_15[0]_1|) (>= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| |v_arrayCell_v_main_arr_15[0]_1|)) (and (<= |v_arrayCell_v_main_arr_15[0]_1| 10) (<= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| 10) (>= |v_arrayCell_v_main_arr_15[v_main_i_15]_1| 10) (>= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (<= v_main_i_15 0) (<= |v_arrayCell_v_main_arr_16[v_main_i_15]_1| |v_arrayCell_v_main_arr_16[0]_1|) (>= |v_arrayCell_v_main_arr_15[0]_1| 10) (>= v_main_i_15 0)))
+  InVars:   {main_i=v_main_i_15, v_rep(select main_arr main_i)_1=|v_arrayCell_v_main_arr_16[v_main_i_15]_1|, v_rep(select main_arr 0)_1=|v_arrayCell_v_main_arr_16[0]_1|}
+  OutVars:  {main_i=v_main_i_15, v_rep(select main_arr main_i)_1=|v_arrayCell_v_main_arr_15[v_main_i_15]_1|, v_rep(select main_arr 0)_1=|v_arrayCell_v_main_arr_15[0]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] arr := arr[0 := 0];i := 0;
+Loop (length=1):
+  [0] assume i < 10;BeginParallelComposition{ParallelCodeBlock0: goto;ParallelCodeBlock1: arr := arr[i := 10 - i];}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3096353 ns (3,10 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@7c986635
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,10 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

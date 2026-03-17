@@ -1,0 +1,402 @@
+========================================
+LASSO TRACE REPORT - Iteration #5
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  coolantControl_~otime~0                            : Int
+  ~tempIn~0                                          : Int
+  old(~tempIn~0)                                     : Int
+  main_#t~nondet3                                    : Int
+  ~temp~0                                            : Int
+  old(~temp~0)                                       : Int
+  coolantControl_#t~ret2                             : Int
+  ~tempDisplay~0                                     : Int
+  old(~tempDisplay~0)                                : Int
+  ~warnLight~0                                       : Int
+  old(~warnLight~0)                                  : Int
+  main_~try~0                                        : Int
+  ~chainBroken~0                                     : Int
+  old(~chainBroken~0)                                : Int
+  coolantControl_#t~nondet1                          : Int
+  coolantControl_~time~0                             : Int
+  ~error~0                                           : Int
+  old(~error~0)                                      : Int
+  main_#res                                          : Int
+  ~limit~0                                           : Int
+  old(~limit~0)                                      : Int
+  main_#t~post4                                      : Int
+  ULTIMATE.start_#t~ret5                             : Int
+  ~init~0                                            : Int
+  old(~init~0)                                       : Int
+  ~warnLED~0                                         : Int
+  old(~warnLED~0)                                    : Int
+  v_coolantControl_~otime~0_119                      : Int
+  v_~tempIn~0_320                                    : Int
+  v_old(~tempIn~0)_157                               : Int
+  v_main_#t~nondet3_84                               : Int
+  v_~temp~0_348                                      : Int
+  v_old(~temp~0)_157                                 : Int
+  v_coolantControl_#t~ret2_117                       : Int
+  v_~tempDisplay~0_505                               : Int
+  v_old(~tempDisplay~0)_304                          : Int
+  v_~warnLight~0_211                                 : Int
+  v_old(~warnLight~0)_146                            : Int
+  v_main_~try~0_113                                  : Int
+  v_~chainBroken~0_293                               : Int
+  v_old(~chainBroken~0)_157                          : Int
+  v_coolantControl_#t~nondet1_74                     : Int
+  v_coolantControl_~time~0_108                       : Int
+  v_~error~0_424                                     : Int
+  v_old(~error~0)_235                                : Int
+  v_main_#res_53                                     : Int
+  v_~limit~0_260                                     : Int
+  v_old(~limit~0)_146                                : Int
+  v_main_#t~post4_62                                 : Int
+  v_ULTIMATE.start_#t~ret5_45                        : Int
+  v_~init~0_224                                      : Int
+  v_old(~init~0)_146                                 : Int
+  v_~warnLED~0_505                                   : Int
+  v_old(~warnLED~0)_304                              : Int
+  v_coolantControl_~otime~0_117                      : Int
+  v_~tempIn~0_316                                    : Int
+  v_old(~tempIn~0)_155                               : Int
+  v_main_#t~nondet3_83                               : Int
+  v_~temp~0_343                                      : Int
+  v_old(~temp~0)_155                                 : Int
+  v_coolantControl_#t~ret2_113                       : Int
+  v_~tempDisplay~0_492                               : Int
+  v_old(~tempDisplay~0)_296                          : Int
+  v_~warnLight~0_209                                 : Int
+  v_old(~warnLight~0)_144                            : Int
+  v_main_~try~0_112                                  : Int
+  v_~chainBroken~0_289                               : Int
+  v_old(~chainBroken~0)_155                          : Int
+  v_coolantControl_#t~nondet1_72                     : Int
+  v_coolantControl_~time~0_105                       : Int
+  v_~error~0_415                                     : Int
+  v_old(~error~0)_230                                : Int
+  v_main_#res_52                                     : Int
+  v_~limit~0_257                                     : Int
+  v_old(~limit~0)_144                                : Int
+  v_main_#t~post4_61                                 : Int
+  v_ULTIMATE.start_#t~ret5_44                        : Int
+  v_~init~0_222                                      : Int
+  v_old(~init~0)_144                                 : Int
+  v_~warnLED~0_492                                   : Int
+  v_old(~warnLED~0)_296                              : Int
+  v_~chainBroken~0_292                               : Int
+  v_~limit~0_259                                     : Int
+  v_coolantControl_#t~ret2_116                       : Int
+  v_coolantControl_~time~0_107                       : Int
+  v_~error~0_425                                     : Int
+  v_~tempIn~0_321                                    : Int
+  v_~temp~0_349                                      : Int
+  v_~warnLED~0_506                                   : Int
+  v_coolantControl_#t~nondet1_75                     : Int
+  v_~tempDisplay~0_506                               : Int
+  v_~error~0_422                                     : Int
+  v_~tempIn~0_319                                    : Int
+  v_~chainBroken~0_291                               : Int
+  v_~temp~0_347                                      : Int
+  v_coolantControl_#t~ret2_115                       : Int
+  v_~warnLED~0_503                                   : Int
+  v_coolantControl_#t~nondet1_73                     : Int
+  v_coolantControl_~time~0_106                       : Int
+  v_~tempDisplay~0_503                               : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 0 (+ v_~limit~0_310 272)) (= 2 v_coolantControl_~time~0_134) (= (+ 273 v_~tempDisplay~0_637) v_~tempIn~0_389) (or (and (= v_~chainBroken~0_354 0) (<= v_~temp~0_425 v_~limit~0_310)) (and (= v_~chainBroken~0_354 1) (<= (+ v_~limit~0_310 1) v_~temp~0_425))) (= |v_old(~tempDisplay~0)_385| 0) (= |v_old(~warnLED~0)_385| 0) (= |v_coolantControl_#t~ret2_148| v_~tempDisplay~0_637) (= |v_old(~tempIn~0)_190| 0) (<= v_~limit~0_310 9) (= |v_old(~temp~0)_190| 0) (= v_~error~0_527 1) (= v_~warnLED~0_637 1) (<= 0 (+ v_~tempIn~0_389 272)) (= 3 v_~init~0_266) (= v_~warnLight~0_250 0) (<= v_~tempIn~0_389 89) (= |v_old(~error~0)_292| 0) (<= (+ 184 v_~temp~0_425) 0) (<= 0 (+ 545 v_~temp~0_425)) (= |v_old(~chainBroken~0)_190| 0))  InVars {}  OutVars{coolantControl_~otime~0=v_coolantControl_~otime~0_149, ~tempIn~0=v_~tempIn~0_389, old(~tempIn~0)=|v_old(~tempIn~0)_190|, main_#t~nondet3=|v_main_#t~nondet3_103|, ~temp~0=v_~temp~0_425, old(~temp~0)=|v_old(~temp~0)_190|, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_148|, ~tempDisplay~0=v_~tempDisplay~0_637, old(~tempDisplay~0)=|v_old(~tempDisplay~0)_385|, ~warnLight~0=v_~warnLight~0_250, old(~warnLight~0)=|v_old(~warnLight~0)_176|, main_~try~0=v_main_~try~0_135, ~chainBroken~0=v_~chainBroken~0_354, old(~chainBroken~0)=|v_old(~chainBroken~0)_190|, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_97|, coolantControl_~time~0=v_coolantControl_~time~0_134, ~error~0=v_~error~0_527, old(~error~0)=|v_old(~error~0)_292|, main_#res=|v_main_#res_66|, ~limit~0=v_~limit~0_310, old(~limit~0)=|v_old(~limit~0)_176|, main_#t~post4=|v_main_#t~post4_75|, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_52|, ~init~0=v_~init~0_266, old(~init~0)=|v_old(~init~0)_176|, ~warnLED~0=v_~warnLED~0_637, old(~warnLED~0)=|v_old(~warnLED~0)_385|}  AuxVars[]  AssignedVars[coolantControl_~otime~0, ~tempIn~0, old(~tempIn~0), main_#t~nondet3, ~temp~0, old(~temp~0), coolantControl_#t~ret2, ~tempDisplay~0, old(~tempDisplay~0), ~warnLight~0, old(~warnLight~0), main_~try~0, ~chainBroken~0, old(~chainBroken~0), coolantControl_#t~nondet1, coolantControl_~time~0, ~error~0, old(~error~0), main_#res, ~limit~0, old(~limit~0), main_#t~post4, ULTIMATE.start_#t~ret5, ~init~0, old(~init~0), ~warnLED~0, old(~warnLED~0)]
+
+Loop TransFormula:
+Formula: (and (= |v_coolantControl_#t~ret2_150| v_~tempDisplay~0_648) (<= 0 (+ v_~tempIn~0_392 272)) (<= v_~tempIn~0_392 89) (<= 0 (+ |v_coolantControl_#t~ret2_151| 2147483648)) (<= (+ 1 v_~temp~0_429) 0) (= v_~warnLED~0_648 1) (= (+ v_coolantControl_~time~0_136 1) v_coolantControl_~time~0_135) (or (and (<= v_~temp~0_429 v_~limit~0_312) (= v_~chainBroken~0_357 v_~chainBroken~0_356)) (and (= v_~chainBroken~0_356 1) (<= (+ v_~limit~0_312 1) v_~temp~0_429))) (= v_~error~0_534 1) (= |v_coolantControl_#t~ret2_151| v_~temp~0_429) (= v_~tempIn~0_392 (+ 273 v_~tempDisplay~0_648)))  InVars {~chainBroken~0=v_~chainBroken~0_357, ~limit~0=v_~limit~0_312, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_151|, coolantControl_~time~0=v_coolantControl_~time~0_136}  OutVars{~error~0=v_~error~0_534, ~tempIn~0=v_~tempIn~0_392, ~chainBroken~0=v_~chainBroken~0_356, ~temp~0=v_~temp~0_429, ~limit~0=v_~limit~0_312, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_150|, ~warnLED~0=v_~warnLED~0_648, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_98|, coolantControl_~time~0=v_coolantControl_~time~0_135, ~tempDisplay~0=v_~tempDisplay~0_648}  AuxVars[]  AssignedVars[~error~0, ~tempIn~0, ~chainBroken~0, ~temp~0, coolantControl_#t~ret2, ~warnLED~0, coolantControl_#t~nondet1, coolantControl_~time~0, ~tempDisplay~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 143
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6853
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9046
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,7706
+    Simplify formula using some simplification technique -> relative DAG size: 0,9793
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (or (and (<= |v_old(~tempDisplay~0)_296| 0) (<= 0 |v_old(~warnLED~0)_296|) (<= (+ 273 v_~tempDisplay~0_492) v_~tempIn~0_316) (<= v_~init~0_222 3) (<= v_coolantControl_~time~0_105 2) (<= |v_old(~temp~0)_155| 0) (<= 0 |v_old(~temp~0)_155|) (<= v_~chainBroken~0_289 1) (<= v_~tempDisplay~0_492 |v_coolantControl_#t~ret2_113|) (<= |v_coolantControl_#t~ret2_113| v_~tempDisplay~0_492) (<= v_~error~0_415 1) (<= |v_old(~chainBroken~0)_155| 0) (<= v_~tempIn~0_316 89) (<= v_~warnLED~0_492 1) (<= 0 |v_old(~chainBroken~0)_155|) (<= |v_old(~warnLED~0)_296| 0) (<= 1 v_~warnLED~0_492) (<= 0 |v_old(~tempDisplay~0)_296|) (<= 2 v_coolantControl_~time~0_105) (<= 0 |v_old(~error~0)_230|) (<= v_~tempIn~0_316 (+ 273 v_~tempDisplay~0_492)) (<= 3 v_~init~0_222) (<= (+ v_~limit~0_257 1) v_~temp~0_343) (<= (+ 184 v_~temp~0_343) 0) (<= 0 (+ v_~limit~0_257 272)) (<= 1 v_~error~0_415) (<= 0 |v_old(~tempIn~0)_155|) (<= 0 (+ v_~tempIn~0_316 272)) (<= |v_old(~tempIn~0)_155| 0) (<= 1 v_~chainBroken~0_289) (<= v_~warnLight~0_209 0) (<= 0 v_~warnLight~0_209) (<= |v_old(~error~0)_230| 0)) (and (<= |v_old(~tempDisplay~0)_296| 0) (<= 0 |v_old(~warnLED~0)_296|) (<= v_~limit~0_257 9) (<= (+ 273 v_~tempDisplay~0_492) v_~tempIn~0_316) (<= v_~init~0_222 3) (<= v_coolantControl_~time~0_105 2) (<= 0 (+ 545 v_~temp~0_343)) (<= |v_old(~temp~0)_155| 0) (<= 0 |v_old(~temp~0)_155|) (<= v_~tempDisplay~0_492 |v_coolantControl_#t~ret2_113|) (<= |v_coolantControl_#t~ret2_113| v_~tempDisplay~0_492) (<= v_~error~0_415 1) (<= |v_old(~chainBroken~0)_155| 0) (<= v_~tempIn~0_316 89) (<= v_~warnLED~0_492 1) (<= 0 |v_old(~chainBroken~0)_155|) (<= |v_old(~warnLED~0)_296| 0) (<= 1 v_~warnLED~0_492) (<= 0 |v_old(~tempDisplay~0)_296|) (<= 2 v_coolantControl_~time~0_105) (<= 0 |v_old(~error~0)_230|) (<= v_~tempIn~0_316 (+ 273 v_~tempDisplay~0_492)) (<= v_~temp~0_343 v_~limit~0_257) (<= 3 v_~init~0_222) (<= v_~chainBroken~0_289 0) (<= (+ 184 v_~temp~0_343) 0) (<= 0 (+ v_~limit~0_257 272)) (<= 1 v_~error~0_415) (<= 0 |v_old(~tempIn~0)_155|) (<= 0 (+ v_~tempIn~0_316 272)) (<= 0 v_~chainBroken~0_289) (<= |v_old(~tempIn~0)_155| 0) (<= v_~warnLight~0_209 0) (<= 0 v_~warnLight~0_209) (<= |v_old(~error~0)_230| 0)))
+  InVars:   {coolantControl_~otime~0=v_coolantControl_~otime~0_119, ~tempIn~0=v_~tempIn~0_320, old(~tempIn~0)=|v_old(~tempIn~0)_157|, main_#t~nondet3=|v_main_#t~nondet3_84|, ~temp~0=v_~temp~0_348, old(~temp~0)=|v_old(~temp~0)_157|, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_117|, ~tempDisplay~0=v_~tempDisplay~0_505, old(~tempDisplay~0)=|v_old(~tempDisplay~0)_304|, ~warnLight~0=v_~warnLight~0_211, old(~warnLight~0)=|v_old(~warnLight~0)_146|, main_~try~0=v_main_~try~0_113, ~chainBroken~0=v_~chainBroken~0_293, old(~chainBroken~0)=|v_old(~chainBroken~0)_157|, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_74|, coolantControl_~time~0=v_coolantControl_~time~0_108, ~error~0=v_~error~0_424, old(~error~0)=|v_old(~error~0)_235|, main_#res=|v_main_#res_53|, ~limit~0=v_~limit~0_260, old(~limit~0)=|v_old(~limit~0)_146|, main_#t~post4=|v_main_#t~post4_62|, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_45|, ~init~0=v_~init~0_224, old(~init~0)=|v_old(~init~0)_146|, ~warnLED~0=v_~warnLED~0_505, old(~warnLED~0)=|v_old(~warnLED~0)_304|}
+  OutVars:  {coolantControl_~otime~0=v_coolantControl_~otime~0_117, ~tempIn~0=v_~tempIn~0_316, old(~tempIn~0)=|v_old(~tempIn~0)_155|, main_#t~nondet3=|v_main_#t~nondet3_83|, ~temp~0=v_~temp~0_343, old(~temp~0)=|v_old(~temp~0)_155|, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_113|, ~tempDisplay~0=v_~tempDisplay~0_492, old(~tempDisplay~0)=|v_old(~tempDisplay~0)_296|, ~warnLight~0=v_~warnLight~0_209, old(~warnLight~0)=|v_old(~warnLight~0)_144|, main_~try~0=v_main_~try~0_112, ~chainBroken~0=v_~chainBroken~0_289, old(~chainBroken~0)=|v_old(~chainBroken~0)_155|, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_72|, coolantControl_~time~0=v_coolantControl_~time~0_105, ~error~0=v_~error~0_415, old(~error~0)=|v_old(~error~0)_230|, main_#res=|v_main_#res_52|, ~limit~0=v_~limit~0_257, old(~limit~0)=|v_old(~limit~0)_144|, main_#t~post4=|v_main_#t~post4_61|, ULTIMATE.start_#t~ret5=|v_ULTIMATE.start_#t~ret5_44|, ~init~0=v_~init~0_222, old(~init~0)=|v_old(~init~0)_144|, ~warnLED~0=v_~warnLED~0_492, old(~warnLED~0)=|v_old(~warnLED~0)_296|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_~chainBroken~0_291 1) (<= (+ 1 v_~temp~0_347) 0) (<= (+ v_~limit~0_259 1) v_~temp~0_347) (>= |v_coolantControl_#t~ret2_115| v_~tempDisplay~0_503) (>= v_~error~0_422 1) (<= (+ |v_coolantControl_#t~ret2_115| 273) v_~tempIn~0_319) (<= |v_coolantControl_#t~ret2_115| v_~tempDisplay~0_503) (>= v_~warnLED~0_503 1) (<= |v_coolantControl_#t~ret2_116| v_~temp~0_347) (>= |v_coolantControl_#t~ret2_116| v_~temp~0_347) (<= v_~error~0_422 1) (<= (+ v_coolantControl_~time~0_107 1) v_coolantControl_~time~0_106) (<= v_~tempIn~0_319 89) (>= (+ v_coolantControl_~time~0_107 1) v_coolantControl_~time~0_106) (<= 0 (+ |v_coolantControl_#t~ret2_116| 2147483648)) (<= 0 (+ v_~tempIn~0_319 272)) (>= v_~chainBroken~0_291 1) (>= (+ |v_coolantControl_#t~ret2_115| 273) v_~tempIn~0_319) (<= v_~warnLED~0_503 1)) (and (<= (+ 1 v_~temp~0_347) 0) (<= v_~chainBroken~0_292 v_~chainBroken~0_291) (>= |v_coolantControl_#t~ret2_115| v_~tempDisplay~0_503) (>= v_~error~0_422 1) (<= (+ |v_coolantControl_#t~ret2_115| 273) v_~tempIn~0_319) (>= v_~chainBroken~0_292 v_~chainBroken~0_291) (<= |v_coolantControl_#t~ret2_115| v_~tempDisplay~0_503) (>= v_~warnLED~0_503 1) (<= |v_coolantControl_#t~ret2_116| v_~temp~0_347) (>= |v_coolantControl_#t~ret2_116| v_~temp~0_347) (<= v_~error~0_422 1) (<= (+ v_coolantControl_~time~0_107 1) v_coolantControl_~time~0_106) (<= v_~tempIn~0_319 89) (>= (+ v_coolantControl_~time~0_107 1) v_coolantControl_~time~0_106) (<= 0 (+ |v_coolantControl_#t~ret2_116| 2147483648)) (<= 0 (+ v_~tempIn~0_319 272)) (<= v_~temp~0_347 v_~limit~0_259) (>= (+ |v_coolantControl_#t~ret2_115| 273) v_~tempIn~0_319) (<= v_~warnLED~0_503 1)))
+  InVars:   {~chainBroken~0=v_~chainBroken~0_292, ~limit~0=v_~limit~0_259, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_116|, coolantControl_~time~0=v_coolantControl_~time~0_107, ~error~0=v_~error~0_425, ~tempIn~0=v_~tempIn~0_321, ~temp~0=v_~temp~0_349, ~warnLED~0=v_~warnLED~0_506, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_75|, ~tempDisplay~0=v_~tempDisplay~0_506}
+  OutVars:  {~error~0=v_~error~0_422, ~tempIn~0=v_~tempIn~0_319, ~chainBroken~0=v_~chainBroken~0_291, ~temp~0=v_~temp~0_347, ~limit~0=v_~limit~0_259, coolantControl_#t~ret2=|v_coolantControl_#t~ret2_115|, ~warnLED~0=v_~warnLED~0_503, coolantControl_#t~nondet1=|v_coolantControl_#t~nondet1_73|, coolantControl_~time~0=v_coolantControl_~time~0_106, ~tempDisplay~0=v_~tempDisplay~0_503}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=29):
+  [0] call ULTIMATE.init();
+  [1] ~error~0 := 0;~tempDisplay~0 := 0;~warnLED~0 := 0;~tempIn~0 := 0;~chainBroken~0 := 0;~warnLight~0 := 0;~temp~0 := 0;~limit~0 := 0;~init~0 := 0;assume true;
+  [2] #61#return;
+  [3] call #t~ret5 := main();
+  [4] ~init~0 := 0;~tempDisplay~0 := 0;~warnLED~0 := 1;~tempIn~0 := 0;~error~0 := 0;~chainBroken~0 := 0;~warnLight~0 := 0;~temp~0 := 0;~limit~0 := 8;~init~0 := 1;~try~0 := 0;
+  [5] havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;~limit~0 := #t~nondet3;havoc #t~nondet3;
+  [6] assume ~limit~0 < 10 && ~limit~0 > -273;~error~0 := 0;
+  [7] call display(0, ~error~0);
+  [8] ~tempdiff := #in~tempdiff;~warning := #in~warning;~tempDisplay~0 := ~tempdiff;~warnLED~0 := ~warning;assume true;
+  [9] #65#return;
+  [10] ~init~0 := 3;
+  [11] call coolantControl();
+  [12] havoc ~otime~0;~time~0 := 0;
+  [13] ~otime~0 := ~time~0;~time~0 := 1 + ~otime~0;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~tempIn~0 := #t~nondet1;havoc #t~nondet1;assume 0 != (if ~tempIn~0 > -273 && ~tempIn~0 < 90 then 1 else 0);
+  [14] call #t~ret2 := vinToCels(~tempIn~0);
+  [15] ~kelvin := #in~kelvin;
+  [16] assume !(~temp~0 < 0);
+  [17] #res := ~kelvin - 273;assume true;
+  [18] #57#return;
+  [19] assume -2147483648 <= #t~ret2 && #t~ret2 <= 2147483647;~temp~0 := #t~ret2;havoc #t~ret2;BeginParallelComposition{ParallelCodeBlock0: assume ~temp~0 > ~limit~0;~chainBroken~0 := 1;ParallelCodeBlock1: assume !(~temp~0 > ~limit~0);}EndParallelComposition
+  [20] ~otime~0 := ~time~0;~time~0 := 1 + ~otime~0;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~tempIn~0 := #t~nondet1;havoc #t~nondet1;assume 0 != (if ~tempIn~0 > -273 && ~tempIn~0 < 90 then 1 else 0);
+  [21] call #t~ret2 := vinToCels(~tempIn~0);
+  [22] ~kelvin := #in~kelvin;
+  [23] assume ~temp~0 < 0;~error~0 := 1;
+  [24] call display(~kelvin - 273, ~error~0);
+  [25] ~tempdiff := #in~tempdiff;~warning := #in~warning;~tempDisplay~0 := ~tempdiff;~warnLED~0 := ~warning;assume true;
+  [26] #59#return;
+  [27] #res := ~kelvin - 273;assume true;
+  [28] #57#return;
+Loop (length=10):
+  [0] assume -2147483648 <= #t~ret2 && #t~ret2 <= 2147483647;~temp~0 := #t~ret2;havoc #t~ret2;BeginParallelComposition{ParallelCodeBlock0: assume ~temp~0 > ~limit~0;~chainBroken~0 := 1;ParallelCodeBlock1: assume !(~temp~0 > ~limit~0);}EndParallelComposition
+  [1] ~otime~0 := ~time~0;~time~0 := 1 + ~otime~0;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~tempIn~0 := #t~nondet1;havoc #t~nondet1;assume 0 != (if ~tempIn~0 > -273 && ~tempIn~0 < 90 then 1 else 0);
+  [2] call #t~ret2 := vinToCels(~tempIn~0);
+  [3] ~kelvin := #in~kelvin;
+  [4] assume ~temp~0 < 0;~error~0 := 1;
+  [5] call display(~kelvin - 273, ~error~0);
+  [6] ~tempdiff := #in~tempdiff;~warning := #in~warning;~tempDisplay~0 := ~tempdiff;~warnLED~0 := ~warning;assume true;
+  [7] #59#return;
+  [8] #res := ~kelvin - 273;assume true;
+  [9] #57#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   560211 ns (0,56 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    coolantControl_~otime~0                  = 0
+    ~tempIn~0                                = 0
+    old(~tempIn~0)                           = 0
+    main_#t~nondet3                          = 0
+    ~temp~0                                  = 0
+    old(~temp~0)                             = 0
+    coolantControl_#t~ret2                   = 0
+    ~tempDisplay~0                           = 0
+    old(~tempDisplay~0)                      = 0
+    ~warnLight~0                             = 0
+    old(~warnLight~0)                        = 0
+    main_~try~0                              = 0
+    ~chainBroken~0                           = 0
+    old(~chainBroken~0)                      = 0
+    coolantControl_#t~nondet1                = 0
+    coolantControl_~time~0                   = 0
+    ~error~0                                 = 0
+    old(~error~0)                            = 0
+    main_#res                                = 0
+    ~limit~0                                 = 0
+    old(~limit~0)                            = 0
+    main_#t~post4                            = 0
+    ULTIMATE.start_#t~ret5                   = 0
+    ~init~0                                  = 0
+    old(~init~0)                             = 0
+    ~warnLED~0                               = 0
+    old(~warnLED~0)                          = 0
+  State at honda:
+    coolantControl_~otime~0                  = 0
+    ~tempIn~0                                = 1
+    old(~tempIn~0)                           = 0
+    main_#t~nondet3                          = 0
+    ~temp~0                                  = -272
+    old(~temp~0)                             = 0
+    coolantControl_#t~ret2                   = -272
+    ~tempDisplay~0                           = -272
+    old(~tempDisplay~0)                      = 0
+    ~warnLight~0                             = 0
+    old(~warnLight~0)                        = 0
+    main_~try~0                              = 0
+    ~chainBroken~0                           = 0
+    old(~chainBroken~0)                      = 0
+    coolantControl_#t~nondet1                = 0
+    coolantControl_~time~0                   = 2
+    ~error~0                                 = 1
+    old(~error~0)                            = 0
+    main_#res                                = 0
+    ~limit~0                                 = -272
+    old(~limit~0)                            = 0
+    main_#t~post4                            = 0
+    ULTIMATE.start_#t~ret5                   = 0
+    ~init~0                                  = 3
+    old(~init~0)                             = 0
+    ~warnLED~0                               = 1
+    old(~warnLED~0)                          = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    coolantControl_~otime~0                  = 0
+    ~tempIn~0                                = 0
+    old(~tempIn~0)                           = 0
+    main_#t~nondet3                          = 0
+    ~temp~0                                  = 0
+    old(~temp~0)                             = 0
+    coolantControl_#t~ret2                   = 0
+    ~tempDisplay~0                           = 0
+    old(~tempDisplay~0)                      = 0
+    ~warnLight~0                             = 0
+    old(~warnLight~0)                        = 0
+    main_~try~0                              = 0
+    ~chainBroken~0                           = -2
+    old(~chainBroken~0)                      = 0
+    coolantControl_#t~nondet1                = 0
+    coolantControl_~time~0                   = 0
+    ~error~0                                 = 0
+    old(~error~0)                            = 0
+    main_#res                                = 0
+    ~limit~0                                 = 0
+    old(~limit~0)                            = 0
+    main_#t~post4                            = 0
+    ULTIMATE.start_#t~ret5                   = 0
+    ~init~0                                  = 0
+    old(~init~0)                             = 0
+    ~warnLED~0                               = 0
+    old(~warnLED~0)                          = 0
+  GEV[1] (lambda=1):
+    coolantControl_~otime~0                  = 0
+    ~tempIn~0                                = 0
+    old(~tempIn~0)                           = 0
+    main_#t~nondet3                          = 0
+    ~temp~0                                  = 0
+    old(~temp~0)                             = 0
+    coolantControl_#t~ret2                   = 0
+    ~tempDisplay~0                           = 0
+    old(~tempDisplay~0)                      = 0
+    ~warnLight~0                             = 0
+    old(~warnLight~0)                        = 0
+    main_~try~0                              = 0
+    ~chainBroken~0                           = 1
+    old(~chainBroken~0)                      = 0
+    coolantControl_#t~nondet1                = 0
+    coolantControl_~time~0                   = 1
+    ~error~0                                 = 0
+    old(~error~0)                            = 0
+    main_#res                                = 0
+    ~limit~0                                 = 0
+    old(~limit~0)                            = 0
+    main_#t~post4                            = 0
+    ULTIMATE.start_#t~ret5                   = 0
+    ~init~0                                  = 0
+    old(~init~0)                             = 0
+    ~warnLED~0                               = 0
+    old(~warnLED~0)                          = 0
+  GEV[2] (lambda=1):
+    coolantControl_~otime~0                  = 0
+    ~tempIn~0                                = 0
+    old(~tempIn~0)                           = 0
+    main_#t~nondet3                          = 0
+    ~temp~0                                  = 0
+    old(~temp~0)                             = 0
+    coolantControl_#t~ret2                   = 0
+    ~tempDisplay~0                           = 0
+    old(~tempDisplay~0)                      = 0
+    ~warnLight~0                             = 0
+    old(~warnLight~0)                        = 0
+    main_~try~0                              = 0
+    ~chainBroken~0                           = 1
+    old(~chainBroken~0)                      = 0
+    coolantControl_#t~nondet1                = 0
+    coolantControl_~time~0                   = 0
+    ~error~0                                 = 0
+    old(~error~0)                            = 0
+    main_#res                                = 0
+    ~limit~0                                 = 0
+    old(~limit~0)                            = 0
+    main_#t~post4                            = 0
+    ULTIMATE.start_#t~ret5                   = 0
+    ~init~0                                  = 0
+    old(~init~0)                             = 0
+    ~warnLED~0                               = 0
+    old(~warnLED~0)                          = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 64985379 ns (64,99 ms)
+       Variables (stem/loop): 17/12  Disjuncts (stem/loop): 2/2
+  Total nontermination analysis time: 64,99 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 145
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,6897
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9061
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,7748
+    Simplify formula using some simplification technique -> relative DAG size: 0,9797
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,56 ms
+Total LassoRanker time: 64,99 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   64,99 ms

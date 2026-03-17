@@ -1,0 +1,183 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  binary_search_#in~low                              : Int
+  binary_search_#in~sorted_list.offset               : Int
+  binary_search_#in~high                             : Int
+  binary_search_#in~sorted_list.base                 : Int
+  binary_search_#in~element                          : Int
+  binary_search_~element                             : Int
+  binary_search_~high                                : Int
+  binary_search_~sorted_list.base                    : Int
+  binary_search_~low                                 : Int
+  binary_search_~sorted_list.offset                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  binary_search_~middle~0                            : Int
+  binary_search_#t~mem0                              : Int
+  v_binary_search_#in~low_2                          : Int
+  v_binary_search_#in~sorted_list.offset_2           : Int
+  v_binary_search_#in~high_2                         : Int
+  v_binary_search_#in~sorted_list.base_2             : Int
+  v_binary_search_#in~element_2                      : Int
+  v_binary_search_~element_8                         : Int
+  v_binary_search_~high_7                            : Int
+  v_binary_search_~sorted_list.base_10               : Int
+  v_binary_search_~low_8                             : Int
+  v_binary_search_~sorted_list.offset_8              : Int
+  v_binary_search_~element_6                         : Int
+  v_binary_search_~high_5                            : Int
+  v_binary_search_~sorted_list.base_8                : Int
+  v_binary_search_~low_5                             : Int
+  v_binary_search_~sorted_list.offset_6              : Int
+  v_binary_search_~element_7                         : Int
+  v_binary_search_~high_6                            : Int
+  v_binary_search_~sorted_list.base_9                : Int
+  v_binary_search_~sorted_list.offset_7              : Int
+  v_binary_search_~low_7                             : Int
+  v_binary_search_~middle~0_12                       : Int
+  v_binary_search_#t~mem0_8                          : Int
+  v_arrayCell_v_#length_5[v_binary_search_~sorted_list.base_9]_1 : Int
+  v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1 : Int
+  v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1 : Int
+  v_binary_search_~middle~0_10                       : Int
+  v_binary_search_~low_6                             : Int
+  v_binary_search_#t~mem0_6                          : Int
+  v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_6 4) (* (div (+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6) 2) 4) v_binary_search_~sorted_list.offset_7)]_1 : Int
+  v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1 : Int
+  v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= |v_binary_search_#in~high_5| 2147483647) (= |v_binary_search_#in~element_5| v_binary_search_~element_14) (= |v_binary_search_#in~sorted_list.offset_5| v_binary_search_~sorted_list.offset_14) (<= |v_binary_search_#in~element_5| 2147483647) (= v_binary_search_~high_13 |v_binary_search_#in~high_5|) (= v_binary_search_~low_16 |v_binary_search_#in~low_5|) (<= 0 (+ |v_binary_search_#in~high_5| 2147483648)) (<= 0 (+ |v_binary_search_#in~low_5| 2147483648)) (= v_binary_search_~sorted_list.base_16 |v_binary_search_#in~sorted_list.base_5|) (<= |v_binary_search_#in~low_5| 2147483647) (<= 0 (+ |v_binary_search_#in~element_5| 2147483648)))  InVars {binary_search_#in~low=|v_binary_search_#in~low_5|, binary_search_#in~sorted_list.offset=|v_binary_search_#in~sorted_list.offset_5|, binary_search_#in~high=|v_binary_search_#in~high_5|, binary_search_#in~sorted_list.base=|v_binary_search_#in~sorted_list.base_5|, binary_search_#in~element=|v_binary_search_#in~element_5|}  OutVars{binary_search_~element=v_binary_search_~element_14, binary_search_~high=v_binary_search_~high_13, binary_search_#in~low=|v_binary_search_#in~low_5|, binary_search_#in~sorted_list.offset=|v_binary_search_#in~sorted_list.offset_5|, binary_search_#in~high=|v_binary_search_#in~high_5|, binary_search_#in~sorted_list.base=|v_binary_search_#in~sorted_list.base_5|, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_16, binary_search_#in~element=|v_binary_search_#in~element_5|, binary_search_~low=v_binary_search_~low_16, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_14}  AuxVars[]  AssignedVars[binary_search_~element, binary_search_~high, binary_search_~sorted_list.base, binary_search_~low, binary_search_~sorted_list.offset]
+
+Loop TransFormula:
+Formula: (let ((.cse3 (div (+ v_binary_search_~high_14 (* v_binary_search_~low_18 (- 1))) 2))) (let ((.cse1 (* v_binary_search_~low_18 4)) (.cse2 (* .cse3 4))) (let ((.cse0 (+ .cse1 .cse2 v_binary_search_~sorted_list.offset_15))) (and (<= (+ (select (select |v_#memory_int_6| v_binary_search_~sorted_list.base_17) .cse0) 1) v_binary_search_~element_15) (= (select |v_#valid_8| v_binary_search_~sorted_list.base_17) 1) (<= v_binary_search_~low_18 v_binary_search_~high_14) (<= (+ .cse1 .cse2 4 v_binary_search_~sorted_list.offset_15) (select |v_#length_8| v_binary_search_~sorted_list.base_17)) (= v_binary_search_~low_17 (+ v_binary_search_~low_18 .cse3 1)) (<= 0 .cse0)))))  InVars {binary_search_~element=v_binary_search_~element_15, binary_search_~high=v_binary_search_~high_14, #valid=|v_#valid_8|, #memory_int=|v_#memory_int_6|, #length=|v_#length_8|, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_17, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_15, binary_search_~low=v_binary_search_~low_18}  OutVars{binary_search_~element=v_binary_search_~element_15, binary_search_~high=v_binary_search_~high_14, binary_search_~middle~0=v_binary_search_~middle~0_18, #valid=|v_#valid_8|, #memory_int=|v_#memory_int_6|, #length=|v_#length_8|, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_17, binary_search_~low=v_binary_search_~low_17, binary_search_#t~mem0=|v_binary_search_#t~mem0_14|, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_15}  AuxVars[]  AssignedVars[binary_search_~middle~0, binary_search_~low, binary_search_#t~mem0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 118
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0254
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,6281
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2183
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9708
+    Simplify formula using some simplification technique -> relative DAG size: 0,6352
+    Transform into disjunctive normal form -> relative DAG size: 1,5203
+    Simplify formula using some simplification technique -> relative DAG size: 0,9867
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0090
+
+Stem (linearized):
+  Formula:  (and (<= |v_binary_search_#in~element_2| v_binary_search_~element_6) (<= |v_binary_search_#in~sorted_list.offset_2| v_binary_search_~sorted_list.offset_6) (<= |v_binary_search_#in~element_2| 2147483647) (>= |v_binary_search_#in~high_2| v_binary_search_~high_5) (>= v_binary_search_~sorted_list.base_8 |v_binary_search_#in~sorted_list.base_2|) (<= 0 (+ |v_binary_search_#in~low_2| 2147483648)) (>= |v_binary_search_#in~element_2| v_binary_search_~element_6) (<= |v_binary_search_#in~high_2| v_binary_search_~high_5) (<= v_binary_search_~sorted_list.base_8 |v_binary_search_#in~sorted_list.base_2|) (>= |v_binary_search_#in~low_2| v_binary_search_~low_5) (<= |v_binary_search_#in~low_2| v_binary_search_~low_5) (<= |v_binary_search_#in~low_2| 2147483647) (>= |v_binary_search_#in~sorted_list.offset_2| v_binary_search_~sorted_list.offset_6) (<= 0 (+ |v_binary_search_#in~high_2| 2147483648)) (<= |v_binary_search_#in~high_2| 2147483647) (<= 0 (+ |v_binary_search_#in~element_2| 2147483648)))
+  InVars:   {binary_search_#in~low=|v_binary_search_#in~low_2|, binary_search_#in~sorted_list.offset=|v_binary_search_#in~sorted_list.offset_2|, binary_search_#in~high=|v_binary_search_#in~high_2|, binary_search_#in~sorted_list.base=|v_binary_search_#in~sorted_list.base_2|, binary_search_#in~element=|v_binary_search_#in~element_2|, binary_search_~element=v_binary_search_~element_8, binary_search_~high=v_binary_search_~high_7, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_10, binary_search_~low=v_binary_search_~low_8, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_8}
+  OutVars:  {binary_search_~element=v_binary_search_~element_6, binary_search_~high=v_binary_search_~high_5, binary_search_#in~low=|v_binary_search_#in~low_2|, binary_search_#in~sorted_list.offset=|v_binary_search_#in~sorted_list.offset_2|, binary_search_#in~high=|v_binary_search_#in~high_2|, binary_search_#in~sorted_list.base=|v_binary_search_#in~sorted_list.base_2|, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_8, binary_search_#in~element=|v_binary_search_#in~element_2|, binary_search_~low=v_binary_search_~low_5, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_6}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_binary_search_~low_6 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1| 2)) v_binary_search_~high_6) (<= 1 |v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1|) (<= (+ (* v_binary_search_~low_7 4) 4 v_binary_search_~sorted_list.offset_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 4)) |v_arrayCell_v_#length_5[v_binary_search_~sorted_list.base_9]_1|) (<= |v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1| 1) (<= v_binary_search_~low_6 (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| v_binary_search_~low_7 1)) (<= (+ |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1| 1) v_binary_search_~element_7) (<= 0 (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 4))) (<= v_binary_search_~high_6 (+ v_binary_search_~low_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 2) 1)) (<= v_binary_search_~high_6 (+ v_binary_search_~low_6 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1| 2) 1)) (<= (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| v_binary_search_~low_7 1) v_binary_search_~low_6) (<= (+ v_binary_search_~low_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 2)) v_binary_search_~high_6) (<= (+ (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| v_binary_search_~low_7) 1) (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1| v_binary_search_~low_6))) (and (<= (+ v_binary_search_~low_6 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1| 2)) v_binary_search_~high_6) (<= 1 |v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1|) (<= |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1| |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_6 4) (* (div (+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6) 2) 4) v_binary_search_~sorted_list.offset_7)]_1|) (<= (+ (* v_binary_search_~low_7 4) 4 v_binary_search_~sorted_list.offset_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 4)) |v_arrayCell_v_#length_5[v_binary_search_~sorted_list.base_9]_1|) (<= |v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1| 1) (<= v_binary_search_~low_6 (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| v_binary_search_~low_7 1)) (<= (+ |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1| 1) v_binary_search_~element_7) (<= 0 (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 4))) (<= v_binary_search_~high_6 (+ v_binary_search_~low_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 2) 1)) (<= |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_6 4) (* (div (+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6) 2) 4) v_binary_search_~sorted_list.offset_7)]_1| |v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1|) (<= v_binary_search_~high_6 (+ v_binary_search_~low_6 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1| 2) 1)) (<= (+ |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| v_binary_search_~low_7 1) v_binary_search_~low_6) (<= (+ v_binary_search_~low_7 (* |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1| 2)) v_binary_search_~high_6) (<= v_binary_search_~low_7 v_binary_search_~high_6)))
+  InVars:   {binary_search_~element=v_binary_search_~element_7, binary_search_~high=v_binary_search_~high_6, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_9, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_7, binary_search_~low=v_binary_search_~low_7, binary_search_~middle~0=v_binary_search_~middle~0_12, binary_search_#t~mem0=|v_binary_search_#t~mem0_8|, v_rep(select #length binary_search_~sorted_list.base)_1=|v_arrayCell_v_#length_5[v_binary_search_~sorted_list.base_9]_1|, v_rep(select #valid binary_search_~sorted_list.base)_1=|v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1|, v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) binary_search_~sorted_list.offset (* (div (+ binary_search_~high (* (- 1) binary_search_~low)) 2) 4)))_1=|v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_7 4) v_binary_search_~sorted_list.offset_7 (* 4 (div (+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6) 2)))]_1|}
+  OutVars:  {binary_search_~element=v_binary_search_~element_7, binary_search_~high=v_binary_search_~high_6, binary_search_~middle~0=v_binary_search_~middle~0_10, binary_search_~sorted_list.base=v_binary_search_~sorted_list.base_9, binary_search_~low=v_binary_search_~low_6, binary_search_#t~mem0=|v_binary_search_#t~mem0_6|, binary_search_~sorted_list.offset=v_binary_search_~sorted_list.offset_7, v_rep(select #length binary_search_~sorted_list.base)_1=|v_arrayCell_v_#length_5[v_binary_search_~sorted_list.base_9]_1|, v_rep(select #valid binary_search_~sorted_list.base)_1=|v_arrayCell_v_#valid_5[v_binary_search_~sorted_list.base_9]_1|, v_rep(select (select #memory_int binary_search_~sorted_list.base) (+ (* 4 binary_search_~low) binary_search_~sorted_list.offset (* (div (+ binary_search_~high (* (- 1) binary_search_~low)) 2) 4)))_1=|v_arrayCell_v_#memory_int_3[v_binary_search_~sorted_list.base_9, (+ (* v_binary_search_~low_6 4) (* (div (+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6) 2) 4) v_binary_search_~sorted_list.offset_7)]_1|}
+  AuxVars:  [|v_div_aux(+ (* (- 1) v_binary_search_~low_6) v_binary_search_~high_6)2_1|, |v_div_aux(+ (* (- 1) v_binary_search_~low_7) v_binary_search_~high_6)2_1|]
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] ~sorted_list.base, ~sorted_list.offset := #in~sorted_list.base, #in~sorted_list.offset;assume -2147483648 <= #in~low && #in~low <= 2147483647;~low := #in~low;assume -2147483648 <= #in~high && #in~high <= 2147483647;~high := #in~high;assume -2147483648 <= #in~element && #in~element <= 2147483647;~element := #in~element;
+Loop (length=4):
+  [0] assume ~low <= ~high;~middle~0 := ~low + (if ~high - ~low < 0 && 0 != (~high - ~low) % 2 then 1 + (~high - ~low) / 2 else (~high - ~low) / 2);
+  [1] SUMMARY for call #t~mem0 := read~int(~sorted_list.base, ~sorted_list.offset + 4 * ~middle~0, 4); srcloc: L5
+  [2] assume ~element > #t~mem0;havoc #t~mem0;~low := 1 + ~middle~0;
+  [3] havoc ~middle~0;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2310124 ns (2,31 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 133204602 ns (133,20 ms)
+       Variables (stem/loop): 10/11  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 133,20 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(v_rep(select #length binary_search_~sorted_list.base)_2, binary_search_~low, binary_search_~sorted_list.offset) = 1*v_rep(select #length binary_search_~sorted_list.base)_2 - 4*binary_search_~low - 1*binary_search_~sorted_list.offset
+  Variables:
+    v_rep(select #length binary_search_~sorted_list.base)_2
+    binary_search_~low
+    binary_search_~sorted_list.offset
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 118
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0254
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,6281
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2183
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9708
+    Simplify formula using some simplification technique -> relative DAG size: 0,6352
+    Transform into disjunctive normal form -> relative DAG size: 1,5203
+    Simplify formula using some simplification technique -> relative DAG size: 0,9867
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0090
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,31 ms
+Total LassoRanker time: 133,20 ms
+  Termination analysis:     133,20 ms
+  Nontermination analysis:   0,00 ms

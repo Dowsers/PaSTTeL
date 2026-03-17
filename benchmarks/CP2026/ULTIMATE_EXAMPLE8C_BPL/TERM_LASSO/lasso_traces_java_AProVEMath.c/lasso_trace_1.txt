@@ -1,0 +1,175 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  power_#in~base                                     : Int
+  power_#in~exponent                                 : Int
+  power_~exponent                                    : Int
+  power_~base                                        : Int
+  power_~result~0                                    : Int
+  v_power_#in~base_2                                 : Int
+  v_power_#in~exponent_2                             : Int
+  v_power_~exponent_35                               : Int
+  v_power_~base_32                                   : Int
+  v_power_~result~0_16                               : Int
+  v_power_~exponent_32                               : Int
+  v_power_~base_29                                   : Int
+  v_power_~result~0_13                               : Int
+  v_power_~exponent_34                               : Int
+  v_power_~base_31                                   : Int
+  v_power_~result~0_15                               : Int
+  v_power_~exponent_33                               : Int
+  v_power_~base_30                                   : Int
+  v_power_~result~0_14                               : Int
+  v_div_auxv_power_~exponent_342_1                   : Int
+  v_mod_auxv_power_~exponent_342_1                   : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_power_#in~base_5| v_power_~base_39) (not (= v_power_~base_39 2)) (<= 0 (+ |v_power_#in~exponent_5| 2147483648)) (<= |v_power_#in~base_5| 2147483647) (not (= v_power_~exponent_42 0)) (= |v_power_#in~exponent_5| v_power_~exponent_42) (<= |v_power_#in~exponent_5| 2147483647) (<= 0 (+ |v_power_#in~base_5| 2147483648)) (not (= v_power_~exponent_42 1)) (= v_power_~result~0_23 1))  InVars {power_#in~base=|v_power_#in~base_5|, power_#in~exponent=|v_power_#in~exponent_5|}  OutVars{power_~exponent=v_power_~exponent_42, power_#in~base=|v_power_#in~base_5|, power_#in~exponent=|v_power_#in~exponent_5|, power_~base=v_power_~base_39, power_~result~0=v_power_~result~0_23}  AuxVars[]  AssignedVars[power_~exponent, power_~base, power_~result~0]
+
+Loop TransFormula: N/A (loop feasibility: UNKNOWN)
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 74
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,9459
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4722
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9528
+    Simplify formula using some simplification technique -> relative DAG size: 0,6436
+    Transform into disjunctive normal form -> relative DAG size: 3,6000
+    Simplify formula using some simplification technique -> relative DAG size: 0,4744
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0811
+
+Stem (linearized):
+  Formula:  (or (and (<= |v_power_#in~base_2| 2147483647) (<= (+ 2 1) v_power_~base_29) (<= v_power_~result~0_13 1) (<= |v_power_#in~exponent_2| 2147483647) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= (+ 1 1) v_power_~exponent_32) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= v_power_~result~0_13 1) (<= |v_power_#in~exponent_2| 2147483647) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= (+ 1 1) v_power_~exponent_32) (<= 0 (+ |v_power_#in~base_2| 2147483648)) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= (+ v_power_~base_29 1) 2) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= 0 (+ |v_power_#in~exponent_2| 2147483648)) (<= (+ v_power_~exponent_32 1) 0) (<= v_power_~result~0_13 1) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= 0 (+ |v_power_#in~base_2| 2147483648)) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= (+ v_power_~base_29 1) 2) (<= |v_power_#in~exponent_2| v_power_~exponent_32)) (and (<= |v_power_#in~base_2| 2147483647) (<= (+ 2 1) v_power_~base_29) (<= 0 (+ |v_power_#in~exponent_2| 2147483648)) (<= (+ v_power_~exponent_32 1) 0) (<= v_power_~result~0_13 1) (<= v_power_~base_29 |v_power_#in~base_2|) (<= 1 v_power_~result~0_13) (<= |v_power_#in~base_2| v_power_~base_29) (<= v_power_~exponent_32 |v_power_#in~exponent_2|) (<= |v_power_#in~exponent_2| v_power_~exponent_32)))
+  InVars:   {power_#in~base=|v_power_#in~base_2|, power_#in~exponent=|v_power_#in~exponent_2|, power_~exponent=v_power_~exponent_35, power_~base=v_power_~base_32, power_~result~0=v_power_~result~0_16}
+  OutVars:  {power_~exponent=v_power_~exponent_32, power_#in~base=|v_power_#in~base_2|, power_#in~exponent=|v_power_#in~exponent_2|, power_~base=v_power_~base_29, power_~result~0=v_power_~result~0_13}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_power_~exponent_33 v_div_auxv_power_~exponent_342_1) (<= v_power_~base_30 (* v_power_~base_31 v_power_~base_31)) (<= v_power_~result~0_15 v_power_~result~0_14) (<= (* v_power_~base_31 v_power_~base_31) v_power_~base_30) (<= v_power_~exponent_34 (+ (* v_div_auxv_power_~exponent_342_1 2) v_mod_auxv_power_~exponent_342_1)) (<= 1 v_power_~exponent_34) (<= v_div_auxv_power_~exponent_342_1 v_power_~exponent_33) (<= (+ v_mod_auxv_power_~exponent_342_1 1) 1) (<= (* v_div_auxv_power_~exponent_342_1 2) v_power_~exponent_34) (<= v_power_~result~0_14 v_power_~result~0_15)) (and (<= 1 v_mod_auxv_power_~exponent_342_1) (<= v_power_~exponent_34 (+ (* v_div_auxv_power_~exponent_342_1 2) 1)) (<= v_power_~exponent_33 v_div_auxv_power_~exponent_342_1) (<= (+ (* v_div_auxv_power_~exponent_342_1 2) v_mod_auxv_power_~exponent_342_1) v_power_~exponent_34) (<= v_power_~base_30 (* v_power_~base_31 v_power_~base_31)) (<= (* v_power_~base_31 v_power_~result~0_15) v_power_~result~0_14) (<= v_power_~result~0_14 (* v_power_~base_31 v_power_~result~0_15)) (<= (* v_power_~base_31 v_power_~base_31) v_power_~base_30) (<= 1 v_power_~exponent_34) (<= v_div_auxv_power_~exponent_342_1 v_power_~exponent_33)))
+  InVars:   {power_~exponent=v_power_~exponent_34, power_~base=v_power_~base_31, power_~result~0=v_power_~result~0_15}
+  OutVars:  {power_~exponent=v_power_~exponent_33, power_~base=v_power_~base_30, power_~result~0=v_power_~result~0_14}
+  AuxVars:  [v_div_auxv_power_~exponent_342_1, v_mod_auxv_power_~exponent_342_1]
+
+--- RAW TRACE ---
+Stem (length=4):
+  [0] assume -2147483648 <= #in~base && #in~base <= 2147483647;~base := #in~base;assume -2147483648 <= #in~exponent && #in~exponent <= 2147483647;~exponent := #in~exponent;
+  [1] assume !(0 == ~exponent);
+  [2] assume !(1 == ~exponent);
+  [3] assume !(2 == ~base);~result~0 := 1;
+Loop (length=1):
+  [0] assume ~exponent > 0;BeginParallelComposition{ParallelCodeBlock0: assume 1 == (if ~exponent < 0 && 0 != ~exponent % 2 then ~exponent % 2 - 2 else ~exponent % 2);~result~0 := ~result~0 * ~base;ParallelCodeBlock1: assume !(1 == (if ~exponent < 0 && 0 != ~exponent % 2 then ~exponent % 2 - 2 else ~exponent % 2));}EndParallelComposition~base := ~base * ~base;~exponent := (if ~exponent < 0 && 0 != ~exponent % 2 then 1 + ~exponent / 2 else ~exponent / 2);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    UNKNOWN
+Concat feasibility:  UNKNOWN
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2538802 ns (2,54 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 99833446 ns (99,83 ms)
+       Variables (stem/loop): 5/6  Disjuncts (stem/loop): 4/2
+       Supporting invariants: 4  Motzkin applications: 28
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 99,83 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(power_~exponent) = 1*power_~exponent
+  Variables:
+    power_~exponent
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: unsat    Time: 41531852 ns (41,53 ms)
+       Variables (stem/loop): 5/6  Disjuncts (stem/loop): 4/2
+  Total nontermination analysis time: 41,53 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 74
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,9459
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4722
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9528
+    Simplify formula using some simplification technique -> relative DAG size: 0,6436
+    Transform into disjunctive normal form -> relative DAG size: 3,6000
+    Simplify formula using some simplification technique -> relative DAG size: 0,4744
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0811
+  [Lasso 2] Initial max DAG size: 74
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,9459
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4722
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9528
+    Simplify formula using some simplification technique -> relative DAG size: 0,6436
+    Transform into disjunctive normal form -> relative DAG size: 3,6000
+    Simplify formula using some simplification technique -> relative DAG size: 0,4744
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0811
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,54 ms
+Total LassoRanker time: 141,37 ms
+  Termination analysis:     99,83 ms
+  Nontermination analysis:   41,53 ms

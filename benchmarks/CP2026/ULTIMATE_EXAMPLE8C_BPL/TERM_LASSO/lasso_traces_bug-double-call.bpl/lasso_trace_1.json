@@ -1,0 +1,42 @@
+{
+  "program_vars": [
+    "foo_e",
+    "foo_local"
+  ],
+  "var_types": {
+    "foo_e": "Int",
+    "foo_local": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_foo_e_5 0) (<= v_foo_e_5 0) (>= v_foo_local_7 0) (<= v_foo_local_7 0))",
+      "in_vars": {
+        "foo_e": "v_foo_e_6",
+        "foo_local": "v_foo_local_10"
+      },
+      "out_vars": {
+        "foo_e": "v_foo_e_5",
+        "foo_local": "v_foo_local_7"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_foo_local_8 (+ v_foo_local_9 1)) (<= v_foo_local_9 4) (>= v_foo_local_8 (+ v_foo_local_9 1)))",
+      "in_vars": {
+        "foo_local": "v_foo_local_9"
+      },
+      "out_vars": {
+        "foo_local": "v_foo_local_8"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

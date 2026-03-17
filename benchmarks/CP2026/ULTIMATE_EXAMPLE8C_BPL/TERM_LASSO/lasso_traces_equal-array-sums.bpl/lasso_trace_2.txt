@@ -1,0 +1,169 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  thread2Thread1of1ForFork1_j                        : Int
+  thread1Thread1of1ForFork0_thidvar0                 : Int
+  y                                                  : Int
+  thread1Thread1of1ForFork0_i                        : Int
+  x                                                  : Int
+  thread2Thread1of1ForFork1_thidvar0                 : Int
+  thread2Thread1of1ForFork1_thidvar1                 : Int
+  A                                                  : (Array Int Int)
+  n                                                  : Int
+  v_thread2Thread1of1ForFork1_j_19                   : Int
+  v_thread1Thread1of1ForFork0_thidvar0_12            : Int
+  v_y_15                                             : Int
+  v_thread1Thread1of1ForFork0_i_34                   : Int
+  v_x_21                                             : Int
+  v_thread2Thread1of1ForFork1_thidvar0_6             : Int
+  v_thread2Thread1of1ForFork1_thidvar1_6             : Int
+  v_thread2Thread1of1ForFork1_j_15                   : Int
+  v_thread1Thread1of1ForFork0_thidvar0_11            : Int
+  v_y_12                                             : Int
+  v_thread1Thread1of1ForFork0_i_33                   : Int
+  v_x_20                                             : Int
+  v_thread2Thread1of1ForFork1_thidvar0_5             : Int
+  v_thread2Thread1of1ForFork1_thidvar1_5             : Int
+  v_thread2Thread1of1ForFork1_j_18                   : Int
+  v_n_9                                              : Int
+  v_y_14                                             : Int
+  v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_18]_1 : Int
+  v_thread2Thread1of1ForFork1_j_17                   : Int
+  v_y_13                                             : Int
+  v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_17]_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_y_23 0) (= v_x_25 0) (= 2 v_thread2Thread1of1ForFork1_thidvar0_10) (= v_thread2Thread1of1ForFork1_j_29 0) (= 2 v_thread2Thread1of1ForFork1_thidvar1_10) (= v_thread1Thread1of1ForFork0_thidvar0_16 1))  InVars {}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_29, thread1Thread1of1ForFork0_thidvar0=v_thread1Thread1of1ForFork0_thidvar0_16, y=v_y_23, thread1Thread1of1ForFork0_i=v_thread1Thread1of1ForFork0_i_38, x=v_x_25, thread2Thread1of1ForFork1_thidvar0=v_thread2Thread1of1ForFork1_thidvar0_10, thread2Thread1of1ForFork1_thidvar1=v_thread2Thread1of1ForFork1_thidvar1_10}  AuxVars[]  AssignedVars[thread2Thread1of1ForFork1_j, thread1Thread1of1ForFork0_thidvar0, y, thread1Thread1of1ForFork0_i, x, thread2Thread1of1ForFork1_thidvar0, thread2Thread1of1ForFork1_thidvar1]
+
+Loop TransFormula:
+Formula: (let ((.cse0 (+ v_thread2Thread1of1ForFork1_j_32 1))) (and (<= .cse0 v_n_12) (= v_thread2Thread1of1ForFork1_j_31 .cse0) (= v_y_24 (+ (select v_A_10 v_thread2Thread1of1ForFork1_j_32) v_y_25))))  InVars {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_32, A=v_A_10, n=v_n_12, y=v_y_25}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_31, A=v_A_10, n=v_n_12, y=v_y_24}  AuxVars[]  AssignedVars[thread2Thread1of1ForFork1_j, y]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 37
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,9459
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0286
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8873
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_x_20 0) (>= 2 v_thread2Thread1of1ForFork1_thidvar0_5) (<= v_y_12 0) (<= v_thread2Thread1of1ForFork1_j_15 0) (>= v_y_12 0) (>= 2 v_thread2Thread1of1ForFork1_thidvar1_5) (<= 2 v_thread2Thread1of1ForFork1_thidvar0_5) (>= v_thread1Thread1of1ForFork0_thidvar0_11 1) (<= v_thread1Thread1of1ForFork0_thidvar0_11 1) (>= v_thread2Thread1of1ForFork1_j_15 0) (<= v_x_20 0) (<= 2 v_thread2Thread1of1ForFork1_thidvar1_5))
+  InVars:   {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_19, thread1Thread1of1ForFork0_thidvar0=v_thread1Thread1of1ForFork0_thidvar0_12, y=v_y_15, thread1Thread1of1ForFork0_i=v_thread1Thread1of1ForFork0_i_34, x=v_x_21, thread2Thread1of1ForFork1_thidvar0=v_thread2Thread1of1ForFork1_thidvar0_6, thread2Thread1of1ForFork1_thidvar1=v_thread2Thread1of1ForFork1_thidvar1_6}
+  OutVars:  {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_15, thread1Thread1of1ForFork0_thidvar0=v_thread1Thread1of1ForFork0_thidvar0_11, y=v_y_12, thread1Thread1of1ForFork0_i=v_thread1Thread1of1ForFork0_i_33, x=v_x_20, thread2Thread1of1ForFork1_thidvar0=v_thread2Thread1of1ForFork1_thidvar0_5, thread2Thread1of1ForFork1_thidvar1=v_thread2Thread1of1ForFork1_thidvar1_5}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (>= v_thread2Thread1of1ForFork1_j_17 (+ v_thread2Thread1of1ForFork1_j_18 1)) (<= v_thread2Thread1of1ForFork1_j_17 (+ v_thread2Thread1of1ForFork1_j_18 1)) (>= v_y_13 (+ v_y_14 |v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_18]_1|)) (<= (+ v_thread2Thread1of1ForFork1_j_18 1) v_n_9) (<= v_y_13 (+ v_y_14 |v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_18]_1|)))
+  InVars:   {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_18, n=v_n_9, y=v_y_14, v_rep(select A thread2Thread1of1ForFork1_j)_1=|v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_18]_1|}
+  OutVars:  {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_17, n=v_n_9, y=v_y_13, v_rep(select A thread2Thread1of1ForFork1_j)_1=|v_arrayCell_v_A_7[v_thread2Thread1of1ForFork1_j_17]_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] [42] $Ultimate##0-->L19: Formula: (= v_x_3 0)  InVars {}  OutVars{x=v_x_3}  AuxVars[]  AssignedVars[x]
+  [1] [45] L19-->L21: Formula: (= v_y_3 0)  InVars {}  OutVars{y=v_y_3}  AuxVars[]  AssignedVars[y]
+  [2] [64] L21-->$Ultimate##0: Formula: (= v_thread1Thread1of1ForFork0_thidvar0_2 1)  InVars {}  OutVars{thread1Thread1of1ForFork0_thidvar0=v_thread1Thread1of1ForFork0_thidvar0_2, thread1Thread1of1ForFork0_i=v_thread1Thread1of1ForFork0_i_14}  AuxVars[]  AssignedVars[thread1Thread1of1ForFork0_thidvar0, thread1Thread1of1ForFork0_i]
+  [3] [67] L21-1-->$Ultimate##0: Formula: (and (= 2 v_thread2Thread1of1ForFork1_thidvar1_2) (= 2 v_thread2Thread1of1ForFork1_thidvar0_2))  InVars {}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_14, thread2Thread1of1ForFork1_thidvar0=v_thread2Thread1of1ForFork1_thidvar0_2, thread2Thread1of1ForFork1_thidvar1=v_thread2Thread1of1ForFork1_thidvar1_2}  AuxVars[]  AssignedVars[thread2Thread1of1ForFork1_j, thread2Thread1of1ForFork1_thidvar0, thread2Thread1of1ForFork1_thidvar1]
+  [4] [56] $Ultimate##0-->L47-1: Formula: (= v_thread2Thread1of1ForFork1_j_1 0)  InVars {}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_1}  AuxVars[]  AssignedVars[thread2Thread1of1ForFork1_j]
+Loop (length=3):
+  [0] [58] L47-1-->L48: Formula: (< v_thread2Thread1of1ForFork1_j_5 v_n_4)  InVars {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_5, n=v_n_4}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_5, n=v_n_4}  AuxVars[]  AssignedVars[]
+  [1] [60] L48-->L49: Formula: (= (+ (select v_A_2 v_thread2Thread1of1ForFork1_j_7) v_y_2) v_y_1)  InVars {A=v_A_2, thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_7, y=v_y_2}  OutVars{A=v_A_2, thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_7, y=v_y_1}  AuxVars[]  AssignedVars[y]
+  [2] [61] L49-->L47-1: Formula: (= v_thread2Thread1of1ForFork1_j_10 (+ v_thread2Thread1of1ForFork1_j_9 1))  InVars {thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_9}  OutVars{thread2Thread1of1ForFork1_j=v_thread2Thread1of1ForFork1_j_10}  AuxVars[]  AssignedVars[thread2Thread1of1ForFork1_j]
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   603859 ns (0,60 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: sat      Time: 40608563 ns (40,61 ms)
+       Variables (stem/loop): 6/6  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  Total termination analysis time: 40,61 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: affine
+  Ranking function:      f(thread2Thread1of1ForFork1_j, n) = -1*thread2Thread1of1ForFork1_j + 1*n
+  Variables:
+    thread2Thread1of1ForFork1_j
+    n
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 37
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,9459
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,0286
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8873
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  0,60 ms
+Total LassoRanker time: 40,61 ms
+  Termination analysis:     40,61 ms
+  Nontermination analysis:   0,00 ms

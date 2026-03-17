@@ -1,0 +1,136 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  ULTIMATE.start_#t~ret3                             : Int
+  main_#t~nondet1                                    : Int
+  main_~x~0                                          : Int
+  main_~y~0                                          : Int
+  v_ULTIMATE.start_#t~ret3_6                         : Int
+  v_main_#t~nondet1_6                                : Int
+  v_main_~x~0_21                                     : Int
+  v_main_~y~0_14                                     : Int
+  v_ULTIMATE.start_#t~ret3_5                         : Int
+  v_main_#t~nondet1_5                                : Int
+  v_main_~x~0_18                                     : Int
+  v_main_~y~0_12                                     : Int
+  v_div_auxv_main_~y~0_124294967296_1                : Int
+  v_mod_auxv_main_~y~0_124294967296_1                : Int
+  v_main_~x~0_20                                     : Int
+  v_main_~y~0_13                                     : Int
+  v_main_#t~post2_8                                  : Int
+  v_main_~x~0_19                                     : Int
+  v_main_#t~post2_7                                  : Int
+  v_div_auxv_main_~y~0_134294967296_1                : Int
+  v_mod_auxv_main_~y~0_134294967296_1                : Int
+  v_div_auxv_main_~x~0_204294967296_1                : Int
+  v_mod_auxv_main_~x~0_204294967296_1                : Int
+  v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 : Int
+  v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 : Int
+  v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 1 (mod v_main_~y~0_24 4294967296)) (= v_main_~x~0_32 1))  InVars {}  OutVars{ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_12|, main_#t~nondet1=|v_main_#t~nondet1_15|, main_~x~0=v_main_~x~0_32, main_~y~0=v_main_~y~0_24}  AuxVars[]  AssignedVars[ULTIMATE.start_#t~ret3, main_#t~nondet1, main_~x~0, main_~y~0]
+
+Loop TransFormula: N/A (loop feasibility: UNKNOWN)
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 69
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 3,3913
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,3761
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9627
+    Simplify formula using some simplification technique -> relative DAG size: 0,4355
+    Transform into disjunctive normal form -> relative DAG size: 1,5111
+    Simplify formula using some simplification technique -> relative DAG size: 0,9706
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~y~0_12 (+ v_mod_auxv_main_~y~0_124294967296_1 (* v_div_auxv_main_~y~0_124294967296_1 4294967296))) (<= 1 v_main_~x~0_18) (<= v_mod_auxv_main_~y~0_124294967296_1 4294967295) (<= (+ v_mod_auxv_main_~y~0_124294967296_1 (* v_div_auxv_main_~y~0_124294967296_1 4294967296)) v_main_~y~0_12) (<= v_main_~x~0_18 1) (<= 1 v_mod_auxv_main_~y~0_124294967296_1))
+  InVars:   {ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_6|, main_#t~nondet1=|v_main_#t~nondet1_6|, main_~x~0=v_main_~x~0_21, main_~y~0=v_main_~y~0_14}
+  OutVars:  {ULTIMATE.start_#t~ret3=|v_ULTIMATE.start_#t~ret3_5|, main_#t~nondet1=|v_main_#t~nondet1_5|, main_~x~0=v_main_~x~0_18, main_~y~0=v_main_~y~0_12}
+  AuxVars:  [v_div_auxv_main_~y~0_124294967296_1, v_mod_auxv_main_~y~0_124294967296_1]
+
+Loop (linearized):
+  Formula:  (or (and (<= v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 (+ (* v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 4294967296) v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1)) (<= (* v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 v_mod_auxv_main_~x~0_204294967296_1) v_mod_auxv_main_~y~0_134294967296_1) (<= (+ v_mod_auxv_main_~y~0_134294967296_1 (* 4294967296 v_div_auxv_main_~y~0_134294967296_1)) v_main_~y~0_13) (<= (+ v_mod_auxv_main_~x~0_204294967296_1 (* v_div_auxv_main_~x~0_204294967296_1 4294967296)) v_main_~x~0_20) (<= v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 4294967295) (<= (+ v_mod_auxv_main_~y~0_134294967296_1 1) (+ (* v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 v_mod_auxv_main_~x~0_204294967296_1) v_mod_auxv_main_~x~0_204294967296_1)) (<= v_main_~x~0_20 (+ v_mod_auxv_main_~x~0_204294967296_1 (* v_div_auxv_main_~x~0_204294967296_1 4294967296))) (<= (* v_main_~x~0_20 v_main_~x~0_20) v_main_~x~0_19) (<= v_main_~x~0_19 (* v_main_~x~0_20 v_main_~x~0_20)) (<= (+ v_mod_auxv_main_~x~0_204294967296_1 1) v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1) (<= |v_main_#t~post2_7| |v_main_#t~post2_8|) (<= v_main_~y~0_13 (+ v_mod_auxv_main_~y~0_134294967296_1 (* 4294967296 v_div_auxv_main_~y~0_134294967296_1))) (<= (+ (* v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 4294967296) v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1) v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1) (<= (+ v_mod_auxv_main_~x~0_204294967296_1 1) v_mod_auxv_main_~y~0_134294967296_1) (<= v_mod_auxv_main_~y~0_134294967296_1 4294967295) (<= |v_main_#t~post2_8| |v_main_#t~post2_7|)) (and (<= v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 (+ (* v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 4294967296) v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1)) (<= (* v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 v_mod_auxv_main_~x~0_204294967296_1) v_mod_auxv_main_~y~0_134294967296_1) (<= (+ v_mod_auxv_main_~y~0_134294967296_1 (* 4294967296 v_div_auxv_main_~y~0_134294967296_1)) v_main_~y~0_13) (<= (+ v_main_~x~0_20 1) v_main_~x~0_19) (<= (+ v_mod_auxv_main_~x~0_204294967296_1 (* v_div_auxv_main_~x~0_204294967296_1 4294967296)) v_main_~x~0_20) (<= (+ v_mod_auxv_main_~y~0_134294967296_1 1) (+ (* v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1 v_mod_auxv_main_~x~0_204294967296_1) v_mod_auxv_main_~x~0_204294967296_1)) (<= v_main_~x~0_20 (+ v_mod_auxv_main_~x~0_204294967296_1 (* v_div_auxv_main_~x~0_204294967296_1 4294967296))) (<= v_main_~y~0_13 (+ v_mod_auxv_main_~y~0_134294967296_1 (* 4294967296 v_div_auxv_main_~y~0_134294967296_1))) (<= v_main_~x~0_19 (+ v_main_~x~0_20 1)) (<= (+ (* v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 4294967296) v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1) v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1) (<= 0 v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1) (<= v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1 v_mod_auxv_main_~x~0_204294967296_1) (<= (+ v_mod_auxv_main_~x~0_204294967296_1 1) v_mod_auxv_main_~y~0_134294967296_1) (<= v_mod_auxv_main_~y~0_134294967296_1 4294967295)))
+  InVars:   {main_~x~0=v_main_~x~0_20, main_~y~0=v_main_~y~0_13, main_#t~post2=|v_main_#t~post2_8|}
+  OutVars:  {main_~x~0=v_main_~x~0_19, main_~y~0=v_main_~y~0_13, main_#t~post2=|v_main_#t~post2_7|}
+  AuxVars:  [v_div_auxv_main_~y~0_134294967296_1, v_mod_auxv_main_~y~0_134294967296_1, v_div_auxv_main_~x~0_204294967296_1, v_mod_auxv_main_~x~0_204294967296_1, v_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_1, v_div_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1, v_mod_auxv_div_auxv_mod_auxv_main_~y~0_134294967296_1v_mod_auxv_main_~x~0_204294967296_1_14294967296_1]
+
+--- RAW TRACE ---
+Stem (length=5):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #33#return;
+  [3] call #t~ret3 := main();
+  [4] ~x~0 := 1;havoc #t~nondet1;~y~0 := #t~nondet1;havoc #t~nondet1;assume 0 != (if ~y~0 % 4294967296 > 0 then 1 else 0);
+Loop (length=2):
+  [0] assume ~x~0 % 4294967296 < ~y~0 % 4294967296;
+  [1] assume 0 != ~x~0 % 4294967296;BeginParallelComposition{ParallelCodeBlock0: assume ~x~0 % 4294967296 < ~y~0 % 4294967296 / (~x~0 % 4294967296) % 4294967296;~x~0 := ~x~0 * ~x~0;ParallelCodeBlock1: assume !(~x~0 % 4294967296 < ~y~0 % 4294967296 / (~x~0 % 4294967296) % 4294967296);#t~post2 := ~x~0;~x~0 := 1 + #t~post2;havoc #t~post2;}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    UNKNOWN
+Concat feasibility:  UNKNOWN
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3310689 ns (3,31 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@1c1a47d4
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,31 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

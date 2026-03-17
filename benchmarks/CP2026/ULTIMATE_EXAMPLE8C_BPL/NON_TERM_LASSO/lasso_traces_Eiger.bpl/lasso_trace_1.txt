@@ -1,0 +1,176 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  Main_a                                             : Int
+  Main_c                                             : Int
+  increases                                          : Int
+  decreases                                          : Int
+  v_Main_a_6                                         : Int
+  v_Main_c_24                                        : Int
+  v_increases_20                                     : Int
+  v_decreases_35                                     : Int
+  v_Main_c_16                                        : Int
+  v_increases_12                                     : Int
+  v_decreases_16                                     : Int
+  v_Main_c_23                                        : Int
+  v_increases_19                                     : Int
+  v_decreases_34                                     : Int
+  v_Main_c_21                                        : Int
+  v_increases_18                                     : Int
+  v_decreases_32                                     : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_Main_a_9 v_Main_c_42) (= v_increases_38 0) (= v_decreases_75 0))  InVars {Main_a=v_Main_a_9}  OutVars{Main_c=v_Main_c_42, Main_a=v_Main_a_9, increases=v_increases_38, decreases=v_decreases_75}  AuxVars[]  AssignedVars[Main_c, increases, decreases]
+
+Loop TransFormula:
+Formula: (and (= v_Main_c_47 (+ v_Main_c_49 1)) (= (+ v_increases_45 1) v_increases_44) (= v_decreases_91 (+ v_decreases_93 2)))  InVars {Main_c=v_Main_c_49, increases=v_increases_45, decreases=v_decreases_93}  OutVars{Main_c=v_Main_c_47, increases=v_increases_44, decreases=v_decreases_91}  AuxVars[]  AssignedVars[Main_c, increases, decreases]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,1538
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8929
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= v_increases_12 0) (<= v_decreases_16 0) (>= v_decreases_16 0) (<= v_Main_a_6 v_Main_c_16) (>= v_Main_a_6 v_Main_c_16) (<= v_increases_12 0))
+  InVars:   {Main_a=v_Main_a_6, Main_c=v_Main_c_24, increases=v_increases_20, decreases=v_decreases_35}
+  OutVars:  {Main_c=v_Main_c_16, Main_a=v_Main_a_6, increases=v_increases_12, decreases=v_decreases_16}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= (+ v_increases_19 1) v_increases_18) (<= (+ v_Main_c_23 1) v_Main_c_21) (>= v_decreases_32 (+ v_decreases_34 2)) (<= v_decreases_32 (+ v_decreases_34 2)) (>= (+ v_Main_c_23 1) v_Main_c_21) (>= (+ v_increases_19 1) v_increases_18))
+  InVars:   {Main_c=v_Main_c_23, increases=v_increases_19, decreases=v_decreases_34}
+  OutVars:  {Main_c=v_Main_c_21, increases=v_increases_18, decreases=v_decreases_32}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] decreases := 0;increases := 0;c := a;
+Loop (length=10):
+  [0] call c := increaseByTwo(c);
+  [1] increases := increases + 1;res := x + 3;
+  [2] call res := decreaseByOne(res);
+  [3] decreases := decreases + 1;res := x - 1;assume true;
+  [4] #18#return;
+  [5] assume true;
+  [6] #20#return;
+  [7] call c := decreaseByOne(c);
+  [8] decreases := decreases + 1;res := x - 1;assume true;
+  [9] #22#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2586726 ns (2,59 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    Main_a                                   = 0
+    Main_c                                   = 0
+    increases                                = 0
+    decreases                                = 0
+  State at honda:
+    Main_a                                   = 0
+    Main_c                                   = 0
+    increases                                = 0
+    decreases                                = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    Main_a                                   = 0
+    Main_c                                   = 0
+    increases                                = 1
+    decreases                                = 0
+  GEV[1] (lambda=1):
+    Main_a                                   = 0
+    Main_c                                   = 0
+    increases                                = 0
+    decreases                                = 2
+  GEV[2] (lambda=1):
+    Main_a                                   = 0
+    Main_c                                   = 1
+    increases                                = 0
+    decreases                                = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 40012019 ns (40,01 ms)
+       Variables (stem/loop): 4/6  Disjuncts (stem/loop): 1/1
+  Total nontermination analysis time: 40,01 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 26
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,1538
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8929
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,59 ms
+Total LassoRanker time: 40,01 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   40,01 ms

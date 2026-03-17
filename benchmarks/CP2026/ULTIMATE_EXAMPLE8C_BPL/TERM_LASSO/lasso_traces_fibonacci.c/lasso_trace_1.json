@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "fibonacci_#in~n",
+    "fibonacci_#res",
+    "fibonacci_#t~ret0",
+    "fibonacci_#t~ret1",
+    "fibonacci_~n"
+  ],
+  "var_types": {
+    "fibonacci_#in~n": "Int",
+    "fibonacci_#res": "Int",
+    "fibonacci_#t~ret0": "Int",
+    "fibonacci_#t~ret1": "Int",
+    "fibonacci_~n": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(>= 0.0 0.0)",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= |v_fibonacci_#in~n_5| 2147483647) (<= |v_fibonacci_#in~n_5| (+ |v_fibonacci_#in~n_4| 1)) (<= (+ |v_fibonacci_#in~n_4| 1) |v_fibonacci_#in~n_5|) (<= (+ 0 1) |v_fibonacci_#in~n_4|))",
+      "in_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_5|",
+        "fibonacci_~n": "v_fibonacci_~n_13",
+        "fibonacci_#res": "|v_fibonacci_#res_8|",
+        "fibonacci_#t~ret0": "|v_fibonacci_#t~ret0_8|",
+        "fibonacci_#t~ret1": "|v_fibonacci_#t~ret1_7|"
+      },
+      "out_vars": {
+        "fibonacci_#in~n": "|v_fibonacci_#in~n_4|",
+        "fibonacci_~n": "v_fibonacci_~n_12",
+        "fibonacci_#res": "|v_fibonacci_#res_7|",
+        "fibonacci_#t~ret0": "|v_fibonacci_#t~ret0_7|",
+        "fibonacci_#t~ret1": "|v_fibonacci_#t~ret1_6|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

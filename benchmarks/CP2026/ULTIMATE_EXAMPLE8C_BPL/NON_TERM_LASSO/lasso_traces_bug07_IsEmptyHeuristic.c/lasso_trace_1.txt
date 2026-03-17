@@ -1,0 +1,245 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_~result~0                                     : Int
+  old(~counter~0)                                    : Int
+  ~counter~0                                         : Int
+  applyHanoi_#in~to                                  : Int
+  applyHanoi_#in~n                                   : Int
+  applyHanoi_#in~from                                : Int
+  applyHanoi_#in~via                                 : Int
+  applyHanoi_~via                                    : Int
+  applyHanoi_~from                                   : Int
+  applyHanoi_~n                                      : Int
+  applyHanoi_#t~post0                                : Int
+  applyHanoi_~to                                     : Int
+  v_main_~result~0_8                                 : Int
+  v_old(~counter~0)_15                               : Int
+  v_~counter~0_38                                    : Int
+  v_applyHanoi_#in~to_9                              : Int
+  v_applyHanoi_#in~n_10                              : Int
+  v_applyHanoi_#in~from_9                            : Int
+  v_applyHanoi_#in~via_9                             : Int
+  v_main_~result~0_7                                 : Int
+  v_old(~counter~0)_10                               : Int
+  v_~counter~0_29                                    : Int
+  v_applyHanoi_#in~to_5                              : Int
+  v_applyHanoi_#in~n_5                               : Int
+  v_applyHanoi_#in~from_5                            : Int
+  v_applyHanoi_#in~via_5                             : Int
+  v_~counter~0_37                                    : Int
+  v_applyHanoi_#in~n_9                               : Int
+  v_applyHanoi_~via_6                                : Int
+  v_old(~counter~0)_16                               : Int
+  v_applyHanoi_~from_6                               : Int
+  v_applyHanoi_#in~to_10                             : Int
+  v_applyHanoi_~n_9                                  : Int
+  v_applyHanoi_#t~post0_7                            : Int
+  v_applyHanoi_~to_6                                 : Int
+  v_applyHanoi_#in~from_10                           : Int
+  v_applyHanoi_#in~via_10                            : Int
+  v_applyHanoi_~via_5                                : Int
+  v_old(~counter~0)_14                               : Int
+  v_~counter~0_35                                    : Int
+  v_applyHanoi_~from_5                               : Int
+  v_applyHanoi_#in~to_8                              : Int
+  v_applyHanoi_~n_8                                  : Int
+  v_applyHanoi_#t~post0_6                            : Int
+  v_applyHanoi_~to_5                                 : Int
+  v_applyHanoi_#in~n_8                               : Int
+  v_applyHanoi_#in~from_8                            : Int
+  v_applyHanoi_#in~via_8                             : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_~counter~0_97 0) (= |v_applyHanoi_#in~via_30| 0) (= |v_applyHanoi_#in~to_30| 0) (= |v_applyHanoi_#in~from_30| 0) (= |v_old(~counter~0)_56| 0))  InVars {}  OutVars{main_~result~0=v_main_~result~0_21, old(~counter~0)=|v_old(~counter~0)_56|, ~counter~0=v_~counter~0_97, applyHanoi_#in~to=|v_applyHanoi_#in~to_30|, applyHanoi_#in~n=|v_applyHanoi_#in~n_31|, applyHanoi_#in~from=|v_applyHanoi_#in~from_30|, applyHanoi_#in~via=|v_applyHanoi_#in~via_30|}  AuxVars[]  AssignedVars[main_~result~0, old(~counter~0), ~counter~0, applyHanoi_#in~to, applyHanoi_#in~n, applyHanoi_#in~from, applyHanoi_#in~via]
+
+Loop TransFormula:
+Formula: (and (= |v_applyHanoi_#in~from_33| 0) (= (+ |v_applyHanoi_#in~n_34| 1) |v_applyHanoi_#in~n_35|) (= (+ v_~counter~0_105 1) |v_old(~counter~0)_60|) (= |v_applyHanoi_#in~to_33| 0) (= |v_applyHanoi_#in~via_33| 0) (not (= |v_applyHanoi_#in~n_35| 0)) (= v_~counter~0_103 |v_old(~counter~0)_60|))  InVars {~counter~0=v_~counter~0_105, applyHanoi_#in~n=|v_applyHanoi_#in~n_35|}  OutVars{applyHanoi_~via=v_applyHanoi_~via_18, old(~counter~0)=|v_old(~counter~0)_60|, ~counter~0=v_~counter~0_103, applyHanoi_~from=v_applyHanoi_~from_18, applyHanoi_#in~to=|v_applyHanoi_#in~to_33|, applyHanoi_~n=v_applyHanoi_~n_19, applyHanoi_#t~post0=|v_applyHanoi_#t~post0_20|, applyHanoi_~to=v_applyHanoi_~to_18, applyHanoi_#in~n=|v_applyHanoi_#in~n_34|, applyHanoi_#in~from=|v_applyHanoi_#in~from_33|, applyHanoi_#in~via=|v_applyHanoi_#in~via_33|}  AuxVars[]  AssignedVars[applyHanoi_~via, old(~counter~0), ~counter~0, applyHanoi_~from, applyHanoi_#in~to, applyHanoi_~n, applyHanoi_#t~post0, applyHanoi_~to, applyHanoi_#in~n, applyHanoi_#in~from, applyHanoi_#in~via]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 43
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2093
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8842
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,5238
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0313
+
+Stem (linearized):
+  Formula:  (and (<= |v_old(~counter~0)_10| 0) (<= |v_applyHanoi_#in~to_5| 0) (>= |v_applyHanoi_#in~from_5| 0) (<= |v_applyHanoi_#in~via_5| 0) (>= |v_applyHanoi_#in~to_5| 0) (>= v_~counter~0_29 0) (<= v_~counter~0_29 0) (>= |v_applyHanoi_#in~via_5| 0) (>= |v_old(~counter~0)_10| 0) (<= |v_applyHanoi_#in~from_5| 0))
+  InVars:   {main_~result~0=v_main_~result~0_8, old(~counter~0)=|v_old(~counter~0)_15|, ~counter~0=v_~counter~0_38, applyHanoi_#in~to=|v_applyHanoi_#in~to_9|, applyHanoi_#in~n=|v_applyHanoi_#in~n_10|, applyHanoi_#in~from=|v_applyHanoi_#in~from_9|, applyHanoi_#in~via=|v_applyHanoi_#in~via_9|}
+  OutVars:  {main_~result~0=v_main_~result~0_7, old(~counter~0)=|v_old(~counter~0)_10|, ~counter~0=v_~counter~0_29, applyHanoi_#in~to=|v_applyHanoi_#in~to_5|, applyHanoi_#in~n=|v_applyHanoi_#in~n_5|, applyHanoi_#in~from=|v_applyHanoi_#in~from_5|, applyHanoi_#in~via=|v_applyHanoi_#in~via_5|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (>= |v_applyHanoi_#in~from_8| 0) (>= (+ v_~counter~0_37 1) |v_old(~counter~0)_14|) (<= |v_applyHanoi_#in~to_8| 0) (<= |v_applyHanoi_#in~from_8| 0) (>= |v_applyHanoi_#in~via_8| 0) (>= (+ |v_applyHanoi_#in~n_8| 1) |v_applyHanoi_#in~n_9|) (<= |v_applyHanoi_#in~via_8| 0) (<= (+ v_~counter~0_37 1) |v_old(~counter~0)_14|) (<= (+ 0 1) |v_applyHanoi_#in~n_9|) (>= |v_applyHanoi_#in~to_8| 0) (<= (+ |v_applyHanoi_#in~n_8| 1) |v_applyHanoi_#in~n_9|) (>= |v_old(~counter~0)_14| v_~counter~0_35) (<= |v_old(~counter~0)_14| v_~counter~0_35)) (and (>= |v_applyHanoi_#in~from_8| 0) (>= (+ v_~counter~0_37 1) |v_old(~counter~0)_14|) (<= |v_applyHanoi_#in~to_8| 0) (<= |v_applyHanoi_#in~from_8| 0) (>= |v_applyHanoi_#in~via_8| 0) (>= (+ |v_applyHanoi_#in~n_8| 1) |v_applyHanoi_#in~n_9|) (<= |v_applyHanoi_#in~via_8| 0) (<= (+ v_~counter~0_37 1) |v_old(~counter~0)_14|) (>= |v_applyHanoi_#in~to_8| 0) (<= (+ |v_applyHanoi_#in~n_8| 1) |v_applyHanoi_#in~n_9|) (<= (+ |v_applyHanoi_#in~n_9| 1) 0) (>= |v_old(~counter~0)_14| v_~counter~0_35) (<= |v_old(~counter~0)_14| v_~counter~0_35)))
+  InVars:   {~counter~0=v_~counter~0_37, applyHanoi_#in~n=|v_applyHanoi_#in~n_9|, applyHanoi_~via=v_applyHanoi_~via_6, old(~counter~0)=|v_old(~counter~0)_16|, applyHanoi_~from=v_applyHanoi_~from_6, applyHanoi_#in~to=|v_applyHanoi_#in~to_10|, applyHanoi_~n=v_applyHanoi_~n_9, applyHanoi_#t~post0=|v_applyHanoi_#t~post0_7|, applyHanoi_~to=v_applyHanoi_~to_6, applyHanoi_#in~from=|v_applyHanoi_#in~from_10|, applyHanoi_#in~via=|v_applyHanoi_#in~via_10|}
+  OutVars:  {applyHanoi_~via=v_applyHanoi_~via_5, old(~counter~0)=|v_old(~counter~0)_14|, ~counter~0=v_~counter~0_35, applyHanoi_~from=v_applyHanoi_~from_5, applyHanoi_#in~to=|v_applyHanoi_#in~to_8|, applyHanoi_~n=v_applyHanoi_~n_8, applyHanoi_#t~post0=|v_applyHanoi_#t~post0_6|, applyHanoi_~to=v_applyHanoi_~to_5, applyHanoi_#in~n=|v_applyHanoi_#in~n_8|, applyHanoi_#in~from=|v_applyHanoi_#in~from_8|, applyHanoi_#in~via=|v_applyHanoi_#in~via_8|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=6):
+  [0] call ULTIMATE.init();
+  [1] ~counter~0 := 0;assume true;
+  [2] #28#return;
+  [3] call main();
+  [4] havoc ~n~0;
+  [5] call applyHanoi(~n~0, 0, 0, 0);
+Loop (length=3):
+  [0] ~n := #in~n;~from := #in~from;~to := #in~to;~via := #in~via;
+  [1] assume !(0 == ~n);#t~post0 := ~counter~0;~counter~0 := 1 + #t~post0;havoc #t~post0;
+  [2] call applyHanoi(~n - 1, 0, 0, 0);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   1799627 ns (1,80 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    main_~result~0                           = 0
+    applyHanoi_~via                          = 0
+    old(~counter~0)                          = 0
+    ~counter~0                               = 0
+    applyHanoi_~from                         = 0
+    applyHanoi_#in~to                        = 0
+    applyHanoi_~n                            = 0
+    applyHanoi_#t~post0                      = 0
+    applyHanoi_~to                           = 0
+    applyHanoi_#in~n                         = 0
+    applyHanoi_#in~from                      = 0
+    applyHanoi_#in~via                       = 0
+  State at honda:
+    main_~result~0                           = 0
+    applyHanoi_~via                          = 0
+    old(~counter~0)                          = 0
+    ~counter~0                               = 0
+    applyHanoi_~from                         = 0
+    applyHanoi_#in~to                        = 0
+    applyHanoi_~n                            = 0
+    applyHanoi_#t~post0                      = 0
+    applyHanoi_~to                           = 0
+    applyHanoi_#in~n                         = -1
+    applyHanoi_#in~from                      = 0
+    applyHanoi_#in~via                       = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    main_~result~0                           = 0
+    applyHanoi_~via                          = 0
+    old(~counter~0)                          = 1
+    ~counter~0                               = 1
+    applyHanoi_~from                         = 0
+    applyHanoi_#in~to                        = 0
+    applyHanoi_~n                            = 0
+    applyHanoi_#t~post0                      = 0
+    applyHanoi_~to                           = 0
+    applyHanoi_#in~n                         = -1
+    applyHanoi_#in~from                      = 0
+    applyHanoi_#in~via                       = 0
+  GEV[1] (lambda=1):
+    main_~result~0                           = 0
+    applyHanoi_~via                          = 0
+    old(~counter~0)                          = 0
+    ~counter~0                               = 0
+    applyHanoi_~from                         = 0
+    applyHanoi_#in~to                        = 0
+    applyHanoi_~n                            = 0
+    applyHanoi_#t~post0                      = 0
+    applyHanoi_~to                           = 0
+    applyHanoi_#in~n                         = 0
+    applyHanoi_#in~from                      = 0
+    applyHanoi_#in~via                       = 0
+  GEV[2] (lambda=1):
+    main_~result~0                           = 0
+    applyHanoi_~via                          = 0
+    old(~counter~0)                          = 0
+    ~counter~0                               = 0
+    applyHanoi_~from                         = 0
+    applyHanoi_#in~to                        = 0
+    applyHanoi_~n                            = 0
+    applyHanoi_#t~post0                      = 0
+    applyHanoi_~to                           = 0
+    applyHanoi_#in~n                         = 0
+    applyHanoi_#in~from                      = 0
+    applyHanoi_#in~via                       = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 54370557 ns (54,37 ms)
+       Variables (stem/loop): 5/8  Disjuncts (stem/loop): 1/2
+  Total nontermination analysis time: 54,37 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 43
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 2,2093
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,8842
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,5238
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0313
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  1,80 ms
+Total LassoRanker time: 54,37 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   54,37 ms

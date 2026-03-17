@@ -1,0 +1,41 @@
+{
+  "program_vars": [
+    "proc_a"
+  ],
+  "var_types": {
+    "proc_a": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_mod_auxv_proc_a_102_1 0) (<= v_proc_a_10 (+ v_mod_auxv_proc_a_102_1 (* 2 v_div_auxv_proc_a_102_1))) (<= 0 v_mod_auxv_proc_a_102_1) (<= (+ v_mod_auxv_proc_a_102_1 (* 2 v_div_auxv_proc_a_102_1)) v_proc_a_10))",
+      "in_vars": {
+        "proc_a": "v_proc_a_10"
+      },
+      "out_vars": {
+        "proc_a": "v_proc_a_10"
+      },
+      "aux_vars": [
+        "v_div_auxv_proc_a_102_1",
+        "v_mod_auxv_proc_a_102_1"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_proc_a_11 (+ 2 v_proc_a_12)) (>= v_proc_a_11 (+ 2 v_proc_a_12)))",
+      "in_vars": {
+        "proc_a": "v_proc_a_12"
+      },
+      "out_vars": {
+        "proc_a": "v_proc_a_11"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

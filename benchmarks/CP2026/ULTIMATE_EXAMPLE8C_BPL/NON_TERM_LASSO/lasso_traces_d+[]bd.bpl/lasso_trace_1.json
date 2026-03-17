@@ -1,0 +1,50 @@
+{
+  "program_vars": [
+    "main_head",
+    "main_max_head",
+    "|v_rep(select main_mem 0)_1|",
+    "|v_rep(select main_mem main_head)_1|"
+  ],
+  "var_types": {
+    "main_head": "Int",
+    "main_max_head": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= v_main_head_52 0) (<= v_main_max_head_24 0) (>= |v_arrayCell_v_main_mem_34[0]_1| 1) (>= v_main_head_52 0) (>= v_main_max_head_24 0) (<= |v_arrayCell_v_main_mem_34[0]_1| 1))",
+      "in_vars": {
+        "main_max_head": "v_main_max_head_25",
+        "main_head": "v_main_head_54",
+        "|v_rep(select main_mem 0)_1|": "|v_arrayCell_v_main_mem_35[0]_1|"
+      },
+      "out_vars": {
+        "main_max_head": "v_main_max_head_24",
+        "main_head": "v_main_head_52",
+        "|v_rep(select main_mem 0)_1|": "|v_arrayCell_v_main_mem_34[0]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= |v_arrayCell_v_main_mem_36[v_main_head_53]_1| |v_arrayCell_v_main_mem_36[0]_1|) (>= |v_arrayCell_v_main_mem_36[v_main_head_53]_1| |v_arrayCell_v_main_mem_36[0]_1|) (<= (+ 0 1) |v_arrayCell_v_main_mem_36[v_main_head_53]_1|) (<= v_main_head_53 0) (>= v_main_head_53 0)) (and (<= |v_arrayCell_v_main_mem_36[v_main_head_53]_1| |v_arrayCell_v_main_mem_36[0]_1|) (<= (+ |v_arrayCell_v_main_mem_36[v_main_head_53]_1| 1) 0) (>= |v_arrayCell_v_main_mem_36[v_main_head_53]_1| |v_arrayCell_v_main_mem_36[0]_1|) (<= v_main_head_53 0) (>= v_main_head_53 0)))",
+      "in_vars": {
+        "main_head": "v_main_head_53",
+        "|v_rep(select main_mem 0)_1|": "|v_arrayCell_v_main_mem_36[0]_1|",
+        "|v_rep(select main_mem main_head)_1|": "|v_arrayCell_v_main_mem_36[v_main_head_53]_1|"
+      },
+      "out_vars": {
+        "main_head": "v_main_head_53",
+        "|v_rep(select main_mem 0)_1|": "|v_arrayCell_v_main_mem_36[0]_1|",
+        "|v_rep(select main_mem main_head)_1|": "|v_arrayCell_v_main_mem_36[v_main_head_53]_1|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

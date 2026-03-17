@@ -1,0 +1,70 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret3",
+    "iterate_#in~bound",
+    "iterate_#t~post0",
+    "iterate_~bound",
+    "iterate_~i~0",
+    "iterate_~sum~0",
+    "main_#res",
+    "main_#t~ret2"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret3": "Int",
+    "iterate_#in~bound": "Int",
+    "iterate_#t~post0": "Int",
+    "iterate_~bound": "Int",
+    "iterate_~i~0": "Int",
+    "iterate_~sum~0": "Int",
+    "main_#res": "Int",
+    "main_#t~ret2": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_iterate_~bound_12 |v_iterate_#in~bound_7|) (<= 0 (+ |v_iterate_#in~bound_7| 2147483648)) (>= v_iterate_~i~0_14 0) (<= v_iterate_~i~0_14 0) (<= v_iterate_~sum~0_13 0) (<= |v_iterate_#in~bound_7| 2147483647) (>= v_iterate_~sum~0_13 0) (<= v_iterate_~bound_12 |v_iterate_#in~bound_7|))",
+      "in_vars": {
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_6|",
+        "main_#res": "|v_main_#res_8|",
+        "iterate_~sum~0": "v_iterate_~sum~0_16",
+        "main_#t~ret2": "|v_main_#t~ret2_13|",
+        "iterate_#in~bound": "|v_iterate_#in~bound_8|",
+        "iterate_~i~0": "v_iterate_~i~0_17",
+        "iterate_~bound": "v_iterate_~bound_14"
+      },
+      "out_vars": {
+        "ULTIMATE.start_#t~ret3": "|v_ULTIMATE.start_#t~ret3_5|",
+        "main_#res": "|v_main_#res_7|",
+        "iterate_~sum~0": "v_iterate_~sum~0_13",
+        "main_#t~ret2": "|v_main_#t~ret2_12|",
+        "iterate_#in~bound": "|v_iterate_#in~bound_7|",
+        "iterate_~i~0": "v_iterate_~i~0_14",
+        "iterate_~bound": "v_iterate_~bound_12"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_iterate_~i~0_15 (+ v_iterate_~i~0_16 1)) (<= v_iterate_~sum~0_14 (+ v_iterate_~i~0_16 v_iterate_~sum~0_15)) (>= v_iterate_~sum~0_14 (+ v_iterate_~i~0_16 v_iterate_~sum~0_15)) (>= v_iterate_~i~0_15 (+ v_iterate_~i~0_16 1)) (<= (+ v_iterate_~i~0_16 1) v_iterate_~bound_13))",
+      "in_vars": {
+        "iterate_~sum~0": "v_iterate_~sum~0_15",
+        "iterate_~i~0": "v_iterate_~i~0_16",
+        "iterate_~bound": "v_iterate_~bound_13",
+        "iterate_#t~post0": "|v_iterate_#t~post0_4|"
+      },
+      "out_vars": {
+        "iterate_#t~post0": "|v_iterate_#t~post0_3|",
+        "iterate_~sum~0": "v_iterate_~sum~0_14",
+        "iterate_~i~0": "v_iterate_~i~0_15",
+        "iterate_~bound": "v_iterate_~bound_13"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

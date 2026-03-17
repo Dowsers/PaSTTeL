@@ -1,0 +1,158 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #length                                            : (Array Int Int)
+  main_#res                                          : Int
+  main_#t~nondet0                                    : Int
+  main_#t~malloc1.offset                             : Int
+  main_~a~0.base                                     : Int
+  main_#t~malloc1.base                               : Int
+  ULTIMATE.start_#t~ret2                             : Int
+  old(#valid)                                        : (Array Int Int)
+  old(#length)                                       : (Array Int Int)
+  main_~n~0                                          : Int
+  main_~a~0.offset                                   : Int
+  v_y_14                                             : Int
+  v_main_~a~0.base_38                                : Int
+  v_main_~n~0_60                                     : Int
+  v_prenex_19                                        : Int
+  v_#StackHeapBarrier_13                             : Int
+  v_main_#res_5                                      : Int
+  v_main_#t~nondet0_13                               : Int
+  v_main_#t~malloc1.offset_11                        : Int
+  v_main_~a~0.base_16                                : Int
+  v_main_#t~malloc1.base_11                          : Int
+  v_ULTIMATE.start_#t~ret2_6                         : Int
+  v_main_~n~0_30                                     : Int
+  v_main_~a~0.offset_9                               : Int
+  v_arrayCell_v_#valid_22[0]_1                       : Int
+  v_main_#res_4                                      : Int
+  v_main_#t~nondet0_12                               : Int
+  v_main_#t~malloc1.offset_10                        : Int
+  v_main_~a~0.base_13                                : Int
+  v_main_#t~malloc1.base_10                          : Int
+  v_ULTIMATE.start_#t~ret2_5                         : Int
+  v_main_~n~0_27                                     : Int
+  v_main_~a~0.offset_8                               : Int
+  v_arrayCell_v_#valid_21[0]_1                       : Int
+  v_main_~n~0_29                                     : Int
+  v_prenex_7                                         : Int
+  v_main_~a~0.base_15                                : Int
+  v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1    : Int
+  v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1    : Int
+  v_arrayCell_v_#length_17[v_prenex_7]_1             : Int
+  v_arrayCell_v_#length_16[v_prenex_7]_1             : Int
+  v_arrayCell_v_#valid_22[v_prenex_7]_1              : Int
+  v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1     : Int
+  v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1     : Int
+  v_arrayCell_v_#valid_21[v_prenex_7]_1              : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= (select |v_#valid_55| 0) 0) (or (and (= (store |v_#valid_55| v_main_~a~0.base_48 1) |v_#valid_54|) (not (= v_main_~a~0.base_48 0)) (<= (+ v_main_~a~0.base_48 1) |v_#StackHeapBarrier_34|) (<= 1 v_main_~n~0_73) (= (store |v_#length_44| v_main_~a~0.base_48 (* v_main_~n~0_73 4)) |v_#length_43|) (= (select |v_#valid_55| v_main_~a~0.base_48) 0) (<= v_main_~n~0_73 2147483647)) (and (= |v_#length_43| (store |v_#length_44| v_prenex_25 4)) (not (= v_prenex_25 0)) (= (store |v_#valid_55| v_prenex_25 1) |v_#valid_54|) (= (select |v_#valid_55| v_prenex_25) 0) (<= (+ v_prenex_25 1) |v_#StackHeapBarrier_34|))) (<= 1 |v_#StackHeapBarrier_34|))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_34|, #valid=|v_#valid_55|, #length=|v_#length_44|}  OutVars{main_#res=|v_main_#res_17|, main_#t~nondet0=|v_main_#t~nondet0_31|, main_#t~malloc1.offset=|v_main_#t~malloc1.offset_29|, main_~a~0.base=v_main_~a~0.base_47, #StackHeapBarrier=|v_#StackHeapBarrier_34|, main_#t~malloc1.base=|v_main_#t~malloc1.base_29|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_12|, #valid=|v_#valid_54|, old(#valid)=|v_old(#valid)_28|, #length=|v_#length_43|, old(#length)=|v_old(#length)_28|, main_~n~0=v_main_~n~0_72, main_~a~0.offset=v_main_~a~0.offset_21}  AuxVars[v_prenex_25, v_main_~a~0.base_48, v_main_~n~0_73]  AssignedVars[main_#t~malloc1.base, ULTIMATE.start_#t~ret2, main_#res, main_#t~nondet0, main_#t~malloc1.offset, #valid, old(#valid), main_~a~0.base, #length, old(#length), main_~n~0, main_~a~0.offset]
+
+Loop TransFormula:
+Formula: true  InVars {}  OutVars{}  AuxVars[]  AssignedVars[]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 73
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 2,4110
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,9318
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9706
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 13,4606
+    Simplify formula using some simplification technique -> relative DAG size: 0,2823
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0016
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0573
+
+Stem (linearized):
+  Formula:  (or (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= (+ 0 1) v_prenex_7) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= (+ v_prenex_7 1) |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ v_prenex_7 1) v_main_~a~0.base_15)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= (+ v_main_~a~0.base_15 1) 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ v_prenex_7 1) 0)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= (+ v_prenex_7 1) |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ 0 1) v_main_~a~0.base_15)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= (+ v_main_~a~0.base_15 1) |v_#StackHeapBarrier_13|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= (+ 0 1) v_prenex_7) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 0) (<= v_main_~n~0_29 2147483647) (<= 0 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= (+ v_prenex_7 1) |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= (+ v_main_~a~0.base_15 1) 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= v_main_~a~0.base_15 v_prenex_7) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| (* v_main_~n~0_29 4)) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= v_prenex_7 v_main_~a~0.base_15) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) 0)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= v_main_~a~0.base_15 v_prenex_7) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| (* v_main_~n~0_29 4)) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= v_prenex_7 v_main_~a~0.base_15) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= (+ v_prenex_7 1) |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= v_main_~a~0.base_15 v_prenex_7) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| 4) (<= (+ v_main_~a~0.base_15 1) |v_#StackHeapBarrier_13|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 4 |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= v_prenex_7 v_main_~a~0.base_15) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= (+ v_main_~a~0.base_15 1) |v_#StackHeapBarrier_13|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= (+ v_main_~a~0.base_15 1) v_prenex_7) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) 0) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= (+ v_main_~a~0.base_15 1) |v_#StackHeapBarrier_13|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) 0) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= (+ 0 1) v_prenex_7) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= (+ v_main_~a~0.base_15 1) 0) (<= (+ v_prenex_7 1) |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ 0 1) v_main_~a~0.base_15) (<= (+ v_prenex_7 1) 0)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= v_main_~n~0_29 2147483647) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= (+ v_main_~a~0.base_15 1) 0) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ v_prenex_7 1) v_main_~a~0.base_15)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= (+ 0 1) v_prenex_7) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= (+ v_main_~a~0.base_15 1) 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= v_main_~a~0.base_15 v_prenex_7) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| 4) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= (+ v_main_~a~0.base_15 1) 0) (<= 4 |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= v_prenex_7 v_main_~a~0.base_15) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0)) (and (<= 1 |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| 0) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| (* v_main_~n~0_29 4)) (<= 1 v_main_~n~0_29) (<= (* v_main_~n~0_29 4) |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 0) (<= v_main_~n~0_29 2147483647) (<= 0 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| 1) (<= |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= 1 |v_#StackHeapBarrier_13|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= (+ v_prenex_7 1) v_main_~a~0.base_15) (<= (+ v_prenex_7 1) 0)) (and (<= |v_arrayCell_v_#length_17[v_prenex_7]_1| |v_arrayCell_v_#length_16[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_21[v_prenex_7]_1| |v_arrayCell_v_#valid_22[v_prenex_7]_1|) (<= (+ 0 1) v_prenex_7) (<= 4 |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|) (<= |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1| 1) (<= (+ v_main_~a~0.base_15 1) |v_#StackHeapBarrier_13|) (<= |v_arrayCell_v_#valid_21[0]_1| 0) (<= 0 |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_22[0]_1|) (<= |v_arrayCell_v_#valid_22[0]_1| 0) (<= |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1| 4) (<= 1 |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|) (<= 0 |v_arrayCell_v_#valid_21[0]_1|) (<= |v_arrayCell_v_#valid_22[v_prenex_7]_1| |v_arrayCell_v_#valid_21[v_prenex_7]_1|) (<= |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1| 0) (<= (+ v_prenex_7 1) v_main_~a~0.base_15) (<= |v_arrayCell_v_#length_16[v_prenex_7]_1| |v_arrayCell_v_#length_17[v_prenex_7]_1|)))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_13|, main_#res=|v_main_#res_5|, main_#t~nondet0=|v_main_#t~nondet0_13|, main_#t~malloc1.offset=|v_main_#t~malloc1.offset_11|, main_~a~0.base=v_main_~a~0.base_16, main_#t~malloc1.base=|v_main_#t~malloc1.base_11|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_6|, main_~n~0=v_main_~n~0_30, main_~a~0.offset=v_main_~a~0.offset_9, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_22[0]_1|}
+  OutVars:  {main_#res=|v_main_#res_4|, main_#t~nondet0=|v_main_#t~nondet0_12|, main_#t~malloc1.offset=|v_main_#t~malloc1.offset_10|, main_~a~0.base=v_main_~a~0.base_13, #StackHeapBarrier=|v_#StackHeapBarrier_13|, main_#t~malloc1.base=|v_main_#t~malloc1.base_10|, ULTIMATE.start_#t~ret2=|v_ULTIMATE.start_#t~ret2_5|, main_~n~0=v_main_~n~0_27, main_~a~0.offset=v_main_~a~0.offset_8, v_rep(select #valid 0)_1=|v_arrayCell_v_#valid_21[0]_1|}
+  AuxVars:  [v_main_~n~0_29, v_prenex_7, v_main_~a~0.base_15, |v_arrayCell_v_#length_17[v_main_~a~0.base_15]_1|, |v_arrayCell_v_#length_16[v_main_~a~0.base_15]_1|, |v_arrayCell_v_#length_17[v_prenex_7]_1|, |v_arrayCell_v_#length_16[v_prenex_7]_1|, |v_arrayCell_v_#valid_22[v_prenex_7]_1|, |v_arrayCell_v_#valid_22[v_main_~a~0.base_15]_1|, |v_arrayCell_v_#valid_21[v_main_~a~0.base_15]_1|, |v_arrayCell_v_#valid_21[v_prenex_7]_1|]
+
+Loop (linearized):
+  Formula:  (>= 0.0 0.0)
+  InVars:   {}
+  OutVars:  {}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=6):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;assume true;
+  [2] #22#return;
+  [3] call #t~ret2 := main();
+  [4] havoc #t~nondet0;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;~n~0 := #t~nondet0;havoc #t~nondet0;BeginParallelComposition{ParallelCodeBlock0: assume ~n~0 < 1;~n~0 := 1;ParallelCodeBlock1: assume !(~n~0 < 1);}EndParallelCompositioncall #t~malloc1.base, #t~malloc1.offset := #Ultimate.allocOnHeap(4 * ~n~0 % 18446744073709551616);~a~0.base, ~a~0.offset := #t~malloc1.base, #t~malloc1.offset;havoc #t~malloc1.base, #t~malloc1.offset;
+  [5] call bubblesort();
+Loop (length=1):
+  [0] assume true;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   3466155 ns (3,47 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@23531e7b
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  3,47 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

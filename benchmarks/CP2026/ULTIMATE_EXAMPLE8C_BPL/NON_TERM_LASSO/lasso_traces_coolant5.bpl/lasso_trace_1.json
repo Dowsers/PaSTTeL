@@ -1,0 +1,82 @@
+{
+  "program_vars": [
+    "chainBroken",
+    "error",
+    "init",
+    "limit",
+    "temp",
+    "tempDisplay",
+    "tempIn",
+    "time",
+    "warnLED",
+    "warnLight"
+  ],
+  "var_types": {
+    "chainBroken": "Int",
+    "error": "Int",
+    "init": "Int",
+    "limit": "Int",
+    "temp": "Int",
+    "tempDisplay": "Int",
+    "tempIn": "Int",
+    "time": "Int",
+    "warnLED": "Int",
+    "warnLight": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(or (and (<= v_tempDisplay_39 0) (<= v_warnLED_39 1) (>= v_warnLight_7 0) (>= v_error_28 1) (<= v_error_28 1) (>= v_tempIn_14 0) (>= v_chainBroken_12 0) (>= v_warnLED_39 1) (<= (+ (+ v_limit_17 272) 1) 0) (>= v_time_11 0) (<= v_tempIn_14 0) (<= v_warnLight_7 0) (<= v_temp_13 0) (>= v_tempDisplay_39 0) (>= v_init_29 1) (<= v_time_11 0) (<= v_init_29 1) (<= v_chainBroken_12 0) (>= v_temp_13 0)) (and (<= v_tempDisplay_39 0) (<= v_warnLED_39 1) (>= v_warnLight_7 0) (>= v_error_28 1) (<= v_error_28 1) (>= v_tempIn_14 0) (>= v_chainBroken_12 0) (>= v_warnLED_39 1) (>= v_time_11 0) (<= v_tempIn_14 0) (<= v_warnLight_7 0) (<= (+ 9 1) v_limit_17) (<= v_temp_13 0) (>= v_tempDisplay_39 0) (>= v_init_29 1) (<= v_time_11 0) (<= v_init_29 1) (<= v_chainBroken_12 0) (>= v_temp_13 0)))",
+      "in_vars": {
+        "limit": "v_limit_20",
+        "time": "v_time_12",
+        "tempDisplay": "v_tempDisplay_47",
+        "tempIn": "v_tempIn_15",
+        "init": "v_init_35",
+        "error": "v_error_32",
+        "warnLight": "v_warnLight_8",
+        "warnLED": "v_warnLED_47",
+        "temp": "v_temp_14",
+        "chainBroken": "v_chainBroken_13"
+      },
+      "out_vars": {
+        "limit": "v_limit_17",
+        "time": "v_time_11",
+        "tempDisplay": "v_tempDisplay_39",
+        "tempIn": "v_tempIn_14",
+        "init": "v_init_29",
+        "error": "v_error_28",
+        "warnLight": "v_warnLight_7",
+        "warnLED": "v_warnLED_39",
+        "temp": "v_temp_13",
+        "chainBroken": "v_chainBroken_12"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (>= v_warnLED_45 1) (>= v_error_31 1) (<= v_warnLED_45 1) (>= v_tempDisplay_45 0) (<= v_init_34 v_init_33) (>= v_init_34 v_init_33) (<= (+ 9 1) v_limit_19) (<= v_tempDisplay_45 0) (<= v_error_31 1)) (and (>= v_warnLED_45 1) (>= v_error_31 1) (<= v_warnLED_45 1) (>= v_tempDisplay_45 0) (<= (+ (+ v_limit_19 272) 1) 0) (<= v_init_34 v_init_33) (>= v_init_34 v_init_33) (<= v_tempDisplay_45 0) (<= v_error_31 1)))",
+      "in_vars": {
+        "init": "v_init_34",
+        "limit": "v_limit_21",
+        "tempDisplay": "v_tempDisplay_48",
+        "error": "v_error_33",
+        "warnLED": "v_warnLED_48"
+      },
+      "out_vars": {
+        "limit": "v_limit_19",
+        "tempDisplay": "v_tempDisplay_45",
+        "init": "v_init_33",
+        "error": "v_error_31",
+        "warnLED": "v_warnLED_45"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

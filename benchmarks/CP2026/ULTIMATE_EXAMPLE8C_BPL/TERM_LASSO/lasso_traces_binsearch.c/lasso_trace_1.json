@@ -1,0 +1,92 @@
+{
+  "program_vars": [
+    "binsearch_#in~v",
+    "binsearch_#t~mem0",
+    "binsearch_#t~mem1",
+    "binsearch_~l~0",
+    "binsearch_~r~0",
+    "binsearch_~v",
+    "binsearch_~x~0",
+    "|v_rep(select #length ~#a~0.base)_1|",
+    "|v_rep(select #valid ~#a~0.base)_1|",
+    "|v_rep(select (select #memory_int ~#a~0.base) (+ (* 8 binsearch_~x~0) ~#a~0.offset))_1|",
+    "~#a~0.base",
+    "~#a~0.offset",
+    "~N~0"
+  ],
+  "var_types": {
+    "binsearch_#in~v": "Int",
+    "binsearch_#t~mem0": "Int",
+    "binsearch_#t~mem1": "Int",
+    "binsearch_~l~0": "Int",
+    "binsearch_~r~0": "Int",
+    "binsearch_~v": "Int",
+    "binsearch_~x~0": "Int",
+    "~#a~0.base": "Int",
+    "~#a~0.offset": "Int",
+    "~N~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_binsearch_~r~0_9 v_~N~0_2) (>= v_binsearch_~l~0_9 1) (<= |v_binsearch_#in~v_2| v_binsearch_~v_8) (<= v_binsearch_~l~0_9 1) (<= |v_binsearch_#in~v_2| 2147483647) (<= 0 (+ |v_binsearch_#in~v_2| 2147483648)) (<= v_binsearch_~r~0_9 v_~N~0_2) (>= |v_binsearch_#in~v_2| v_binsearch_~v_8))",
+      "in_vars": {
+        "~N~0": "v_~N~0_2",
+        "binsearch_#in~v": "|v_binsearch_#in~v_2|",
+        "binsearch_~v": "v_binsearch_~v_10",
+        "binsearch_~r~0": "v_binsearch_~r~0_12",
+        "binsearch_~x~0": "v_binsearch_~x~0_19",
+        "binsearch_~l~0": "v_binsearch_~l~0_12"
+      },
+      "out_vars": {
+        "binsearch_~v": "v_binsearch_~v_8",
+        "binsearch_~r~0": "v_binsearch_~r~0_9",
+        "binsearch_~x~0": "v_binsearch_~x~0_17",
+        "~N~0": "v_~N~0_2",
+        "binsearch_~l~0": "v_binsearch_~l~0_9",
+        "binsearch_#in~v": "|v_binsearch_#in~v_2|"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= (+ |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1| 1) v_binsearch_~v_9) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 (+ v_binsearch_~x~0_18 1)) (<= v_binsearch_~r~0_10 v_binsearch_~r~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| v_binsearch_~x~0_18) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= v_binsearch_~r~0_11 v_binsearch_~r~0_10) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= (+ v_binsearch_~x~0_18 1) v_binsearch_~l~0_10) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 0) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= 0 |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= v_binsearch_~x~0_18 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (and (<= (+ v_binsearch_~r~0_10 1) v_binsearch_~x~0_18) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 v_binsearch_~l~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| v_binsearch_~x~0_18) (<= (+ v_binsearch_~v_9 1) |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1|) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_11 v_binsearch_~l~0_10) (<= v_binsearch_~x~0_18 (+ v_binsearch_~r~0_10 1)) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 0) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= 0 |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= v_binsearch_~x~0_18 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (and (<= (+ v_binsearch_~r~0_10 1) v_binsearch_~x~0_18) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 v_binsearch_~l~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= (+ v_binsearch_~v_9 1) |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1|) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= (+ 0 1) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= (+ |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) v_binsearch_~x~0_18) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_11 v_binsearch_~l~0_10) (<= v_binsearch_~x~0_18 (+ |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1)) (<= v_binsearch_~x~0_18 (+ v_binsearch_~r~0_10 1)) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11 1) 0)) (and (<= (+ |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1| 1) v_binsearch_~v_9) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 (+ v_binsearch_~x~0_18 1)) (<= v_binsearch_~r~0_10 v_binsearch_~r~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= (+ 0 1) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= v_binsearch_~r~0_11 v_binsearch_~r~0_10) (<= (+ |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) v_binsearch_~x~0_18) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= (+ v_binsearch_~x~0_18 1) v_binsearch_~l~0_10) (<= v_binsearch_~x~0_18 (+ |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1)) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11 1) 0)) (and (<= (+ v_binsearch_~r~0_10 1) v_binsearch_~x~0_18) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 v_binsearch_~l~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| v_binsearch_~x~0_18) (<= (+ v_binsearch_~v_9 1) |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1|) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_11 v_binsearch_~l~0_10) (<= v_binsearch_~x~0_18 (+ v_binsearch_~r~0_10 1)) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= 0 |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) (<= 0 (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= v_binsearch_~x~0_18 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (and (<= (+ |v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1| 1) v_binsearch_~v_9) (<= v_binsearch_~l~0_11 v_binsearch_~r~0_11) (<= (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11| 4) |v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|) (<= v_binsearch_~l~0_10 (+ v_binsearch_~x~0_18 1)) (<= v_binsearch_~r~0_10 v_binsearch_~r~0_11) (<= (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11) (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)) (<= |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| v_binsearch_~x~0_18) (<= 0 (+ (* v_binsearch_~x~0_18 8) |v_~#a~0.offset_11|)) (<= v_binsearch_~r~0_11 v_binsearch_~r~0_10) (<= |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1| 1) (<= 1 |v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|) (<= (+ v_binsearch_~x~0_18 1) v_binsearch_~l~0_10) (<= (+ (* 2 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= 0 |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|) (<= |v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1| 1) (<= 0 (+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)) (<= v_binsearch_~x~0_18 |v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|)))",
+      "in_vars": {
+        "binsearch_~v": "v_binsearch_~v_9",
+        "binsearch_~r~0": "v_binsearch_~r~0_11",
+        "~#a~0.base": "|v_~#a~0.base_14|",
+        "~#a~0.offset": "|v_~#a~0.offset_11|",
+        "binsearch_~l~0": "v_binsearch_~l~0_11",
+        "binsearch_~x~0": "v_binsearch_~x~0_20",
+        "binsearch_#t~mem0": "|v_binsearch_#t~mem0_11|",
+        "binsearch_#t~mem1": "|v_binsearch_#t~mem1_8|",
+        "|v_rep(select (select #memory_int ~#a~0.base) (+ (* 8 binsearch_~x~0) ~#a~0.offset))_1|": "|v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ v_~#a~0.offset_11 (* v_binsearch_~x~0_20 8))]_1|",
+        "|v_rep(select #valid ~#a~0.base)_1|": "|v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|",
+        "|v_rep(select #length ~#a~0.base)_1|": "|v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|"
+      },
+      "out_vars": {
+        "binsearch_~v": "v_binsearch_~v_9",
+        "binsearch_~r~0": "v_binsearch_~r~0_10",
+        "~#a~0.base": "|v_~#a~0.base_14|",
+        "~#a~0.offset": "|v_~#a~0.offset_11|",
+        "binsearch_~x~0": "v_binsearch_~x~0_18",
+        "binsearch_~l~0": "v_binsearch_~l~0_10",
+        "binsearch_#t~mem0": "|v_binsearch_#t~mem0_10|",
+        "binsearch_#t~mem1": "|v_binsearch_#t~mem1_6|",
+        "|v_rep(select (select #memory_int ~#a~0.base) (+ (* 8 binsearch_~x~0) ~#a~0.offset))_1|": "|v_arrayCell_v_#memory_int_8[v_~#a~0.base_14, (+ (* v_binsearch_~x~0_18 8) v_~#a~0.offset_11)]_1|",
+        "|v_rep(select #valid ~#a~0.base)_1|": "|v_arrayCell_v_#valid_11[v_~#a~0.base_14]_1|",
+        "|v_rep(select #length ~#a~0.base)_1|": "|v_arrayCell_v_#length_11[v_~#a~0.base_14]_1|"
+      },
+      "aux_vars": [
+        "|v_div_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|",
+        "|v_mod_aux(+ v_binsearch_~l~0_11 v_binsearch_~r~0_11)2_1|"
+      ],
+      "assigned_vars": []
+    }
+  ]
+}

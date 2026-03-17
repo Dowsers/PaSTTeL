@@ -1,0 +1,63 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "main_#t~post1",
+    "main_~i~0",
+    "main_~j~0",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select old_#valid_ 0)_1|"
+  ],
+  "var_types": {
+    "main_#t~post1": "Int",
+    "main_~i~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_arrayCell_v_old_#valid__3[v_main_#t~malloc0.base_11]_1| 0) (<= 1 |v_arrayCell_v_#valid_19[v_main_#t~malloc0.base_11]_1|) (<= |v_arrayCell_v_#valid_20[0]_1| 0) (<= |v_arrayCell_v_#valid_19[v_main_#t~malloc0.base_11]_1| 1) (<= 0 |v_arrayCell_v_#valid_19[0]_1|) (<= |v_arrayCell_v_old_#valid__3[0]_1| 0) (<= |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1| |v_arrayCell_v_#length_10[v_main_#t~malloc0.base_11]_1|) (<= 1 |v_#StackHeapBarrier_10|) (<= (+ |v_#StackHeapBarrier_10| 1) |v_main_#t~malloc0.base_11|) (<= 0 |v_arrayCell_v_#valid_20[0]_1|) (<= 0 |v_arrayCell_v_old_#valid__3[0]_1|) (<= |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1| 18446744073709551615) (<= |v_arrayCell_v_#length_10[v_main_#t~malloc0.base_11]_1| |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|) (<= 0 |v_arrayCell_v_old_#valid__3[v_main_#t~malloc0.base_11]_1|) (<= (+ (* 18446744073709551616 |v_div_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|) |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|) (* v_main_~fac~0_7 v_main_~length~0_7)) (<= 0 |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|) (<= 0 v_main_~i~0_8) (<= (* v_main_~fac~0_7 v_main_~length~0_7) (+ (* 18446744073709551616 |v_div_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|) |v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|)) (<= |v_arrayCell_v_#valid_19[0]_1| 0) (<= v_main_~i~0_8 0))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "main_~j~0": "v_main_~j~0_5",
+        "main_~i~0": "v_main_~i~0_11",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_20[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_v_rep(select old_#valid_ 0)_1_1|"
+      },
+      "out_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_10|",
+        "main_~j~0": "v_main_~j~0_4",
+        "main_~i~0": "v_main_~i~0_8",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_19[0]_1|",
+        "|v_rep(select old_#valid_ 0)_1|": "|v_arrayCell_v_old_#valid__3[0]_1|"
+      },
+      "aux_vars": [
+        "v_main_~fac~0_7",
+        "v_main_~length~0_7",
+        "|v_arrayCell_v_#length_10[v_main_#t~malloc0.base_11]_1|",
+        "|v_arrayCell_v_#valid_19[v_main_#t~malloc0.base_11]_1|",
+        "|v_arrayCell_v_old_#valid__3[v_main_#t~malloc0.base_11]_1|",
+        "|v_div_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|",
+        "|v_main_#t~malloc0.base_11|",
+        "|v_mod_aux(* v_main_~fac~0_7 v_main_~length~0_7)18446744073709551616_1|"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (>= v_main_~i~0_9 (+ v_main_~i~0_10 1)) (<= v_main_~i~0_9 (+ v_main_~i~0_10 1)) (<= v_main_~i~0_10 0))",
+      "in_vars": {
+        "main_~i~0": "v_main_~i~0_10",
+        "main_#t~post1": "|v_main_#t~post1_4|"
+      },
+      "out_vars": {
+        "main_#t~post1": "|v_main_#t~post1_3|",
+        "main_~i~0": "v_main_~i~0_9"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

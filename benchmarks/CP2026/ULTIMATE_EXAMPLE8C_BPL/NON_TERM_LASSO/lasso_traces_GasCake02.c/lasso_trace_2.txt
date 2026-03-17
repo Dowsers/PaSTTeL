@@ -1,0 +1,416 @@
+========================================
+LASSO TRACE REPORT - Iteration #2
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  #StackHeapBarrier                                  : Int
+  #valid                                             : (Array Int Int)
+  #memory_int                                        : (Array Int (Array Int Int))
+  #length                                            : (Array Int Int)
+  ~#signalDelay_u8~0.offset                          : Int
+  old(~#signalDelay_u8~0.offset)                     : Int
+  ~#comparisonDelay_u8~0.offset                      : Int
+  old(~#comparisonDelay_u8~0.offset)                 : Int
+  ~#plausiSignalDelay_u8~0.base                      : Int
+  old(~#plausiSignalDelay_u8~0.base)                 : Int
+  old(~signal_u8~0)                                  : Int
+  ~signal_u8~0                                       : Int
+  old(~signalDeb_u8~0)                               : Int
+  ~signalDeb_u8~0                                    : Int
+  ~#plausiSignalDelay_u8~0.offset                    : Int
+  old(~#plausiSignalDelay_u8~0.offset)               : Int
+  old(~plausiSignalDeb_u8~0)                         : Int
+  ~plausiSignalDeb_u8~0                              : Int
+  old(~plausiSignal_u8~0)                            : Int
+  ~plausiSignal_u8~0                                 : Int
+  old(~comparisonDeb_u8~0)                           : Int
+  ~comparisonDeb_u8~0                                : Int
+  ~#signalDelay_u8~0.base                            : Int
+  old(~#signalDelay_u8~0.base)                       : Int
+  old(#memory_int)                                   : (Array Int (Array Int Int))
+  ~#comparisonDelay_u8~0.base                        : Int
+  old(~#comparisonDelay_u8~0.base)                   : Int
+  PDebounceValidation_#t~ret10                       : Int
+  PDebounceValidation_~comparison_u8~0               : Int
+  PDebounceValidation_#t~ret3                        : Int
+  PDebounceValidation_#t~ret4                        : Int
+  PDebounceValidation_#t~ret5                        : Int
+  PDebounceValidation_#t~ret6                        : Int
+  PDebounceValidation_#t~ret7                        : Int
+  PDebounceValidation_#t~ret8                        : Int
+  PDebounceValidation_#t~ret9                        : Int
+  v_#StackHeapBarrier_19                             : Int
+  v_~#signalDelay_u8~0.offset_47                     : Int
+  v_old(~#signalDelay_u8~0.offset)_22                : Int
+  v_~#comparisonDelay_u8~0.offset_47                 : Int
+  v_old(~#comparisonDelay_u8~0.offset)_22            : Int
+  v_~#plausiSignalDelay_u8~0.base_47                 : Int
+  v_old(~#plausiSignalDelay_u8~0.base)_22            : Int
+  v_old(~signal_u8~0)_46                             : Int
+  v_~signal_u8~0_97                                  : Int
+  v_old(~signalDeb_u8~0)_46                          : Int
+  v_~signalDeb_u8~0_91                               : Int
+  v_~#plausiSignalDelay_u8~0.offset_47               : Int
+  v_old(~#plausiSignalDelay_u8~0.offset)_22          : Int
+  v_old(~plausiSignalDeb_u8~0)_46                    : Int
+  v_~plausiSignalDeb_u8~0_90                         : Int
+  v_old(~plausiSignal_u8~0)_46                       : Int
+  v_~plausiSignal_u8~0_97                            : Int
+  v_old(~comparisonDeb_u8~0)_46                      : Int
+  v_~comparisonDeb_u8~0_97                           : Int
+  v_~#signalDelay_u8~0.base_47                       : Int
+  v_old(~#signalDelay_u8~0.base)_22                  : Int
+  v_~#comparisonDelay_u8~0.base_47                   : Int
+  v_old(~#comparisonDelay_u8~0.base)_22              : Int
+  v_arrayCell_v_#valid_35[0]_1                       : Int
+  v_arrayCell_v_#valid_35[3]_1                       : Int
+  v_arrayCell_v_#valid_35[1]_1                       : Int
+  v_arrayCell_v_#valid_35[2]_1                       : Int
+  v_arrayCell_v_#memory_int_115[1, 0]_1              : Int
+  v_arrayCell_v_#memory_int_115[2, 0]_1              : Int
+  v_arrayCell_v_#memory_int_115[3, 0]_1              : Int
+  v_arrayCell_v_#length_35[3]_1                      : Int
+  v_arrayCell_v_#length_35[1]_1                      : Int
+  v_arrayCell_v_#length_35[2]_1                      : Int
+  v_v_rep(select (select old(#memory_int) 1) 0)_2_1  : Int
+  v_v_rep(select (select old(#memory_int) 2) 0)_2_1  : Int
+  v_v_rep(select (select old(#memory_int) 3) 0)_2_1  : Int
+  v_~#signalDelay_u8~0.offset_44                     : Int
+  v_old(~#signalDelay_u8~0.offset)_21                : Int
+  v_~#comparisonDelay_u8~0.offset_44                 : Int
+  v_old(~#comparisonDelay_u8~0.offset)_21            : Int
+  v_~#plausiSignalDelay_u8~0.base_44                 : Int
+  v_old(~#plausiSignalDelay_u8~0.base)_21            : Int
+  v_old(~signal_u8~0)_44                             : Int
+  v_~signal_u8~0_92                                  : Int
+  v_old(~signalDeb_u8~0)_44                          : Int
+  v_~signalDeb_u8~0_86                               : Int
+  v_~#plausiSignalDelay_u8~0.offset_44               : Int
+  v_old(~#plausiSignalDelay_u8~0.offset)_21          : Int
+  v_old(~plausiSignalDeb_u8~0)_44                    : Int
+  v_~plausiSignalDeb_u8~0_85                         : Int
+  v_old(~plausiSignal_u8~0)_44                       : Int
+  v_~plausiSignal_u8~0_92                            : Int
+  v_old(~comparisonDeb_u8~0)_44                      : Int
+  v_~comparisonDeb_u8~0_91                           : Int
+  v_~#signalDelay_u8~0.base_44                       : Int
+  v_old(~#signalDelay_u8~0.base)_21                  : Int
+  v_~#comparisonDelay_u8~0.base_44                   : Int
+  v_old(~#comparisonDelay_u8~0.base)_21              : Int
+  v_arrayCell_v_#memory_int_114[1, 0]_1              : Int
+  v_arrayCell_v_#memory_int_114[2, 0]_1              : Int
+  v_arrayCell_v_#memory_int_114[3, 0]_1              : Int
+  v_arrayCell_v_old(#memory_int)_68[1, 0]_1          : Int
+  v_arrayCell_v_old(#memory_int)_68[2, 0]_1          : Int
+  v_arrayCell_v_old(#memory_int)_68[3, 0]_1          : Int
+  v_~#signalDelay_u8~0.offset_46                     : Int
+  v_~comparisonDeb_u8~0_96                           : Int
+  v_~#comparisonDelay_u8~0.offset_46                 : Int
+  v_~#plausiSignalDelay_u8~0.base_46                 : Int
+  v_~#signalDelay_u8~0.base_46                       : Int
+  v_~#comparisonDelay_u8~0.base_46                   : Int
+  v_~signalDeb_u8~0_90                               : Int
+  v_~#plausiSignalDelay_u8~0.offset_46               : Int
+  v_~plausiSignalDeb_u8~0_89                         : Int
+  v_~plausiSignal_u8~0_98                            : Int
+  v_PDebounceValidation_#t~ret10_21                  : Int
+  v_PDebounceValidation_~comparison_u8~0_28          : Int
+  v_PDebounceValidation_#t~ret3_31                   : Int
+  v_PDebounceValidation_#t~ret4_29                   : Int
+  v_PDebounceValidation_#t~ret5_20                   : Int
+  v_PDebounceValidation_#t~ret6_36                   : Int
+  v_PDebounceValidation_#t~ret7_22                   : Int
+  v_PDebounceValidation_#t~ret8_21                   : Int
+  v_PDebounceValidation_#t~ret9_21                   : Int
+  v_~signal_u8~0_98                                  : Int
+  v_arrayCell_v_#valid_42[v_~#comparisonDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#valid_42[v_~#signalDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#valid_42[v_~#plausiSignalDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#valid_42[0]_1                       : Int
+  v_arrayCell_v_#valid_42[3]_1                       : Int
+  v_arrayCell_v_#valid_42[1]_1                       : Int
+  v_arrayCell_v_#valid_42[2]_1                       : Int
+  v_arrayCell_v_#length_42[v_~#comparisonDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#length_42[v_~#signalDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1 : Int
+  v_arrayCell_v_#length_42[3]_1                      : Int
+  v_arrayCell_v_#length_42[1]_1                      : Int
+  v_arrayCell_v_#length_42[2]_1                      : Int
+  v_arrayCell_v_#memory_int_134[1, 0]_1              : Int
+  v_arrayCell_v_#memory_int_134[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_#memory_int_134[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_#memory_int_134[2, 0]_1              : Int
+  v_arrayCell_v_#memory_int_134[3, 0]_1              : Int
+  v_arrayCell_v_#memory_int_134[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_~plausiSignal_u8~0_95                            : Int
+  v_PDebounceValidation_#t~ret10_19                  : Int
+  v_PDebounceValidation_~comparison_u8~0_27          : Int
+  v_PDebounceValidation_#t~ret3_29                   : Int
+  v_PDebounceValidation_#t~ret4_27                   : Int
+  v_~comparisonDeb_u8~0_95                           : Int
+  v_PDebounceValidation_#t~ret5_18                   : Int
+  v_PDebounceValidation_#t~ret6_33                   : Int
+  v_PDebounceValidation_#t~ret7_20                   : Int
+  v_PDebounceValidation_#t~ret8_19                   : Int
+  v_PDebounceValidation_#t~ret9_19                   : Int
+  v_~signal_u8~0_95                                  : Int
+  v_~signalDeb_u8~0_89                               : Int
+  v_~plausiSignalDeb_u8~0_88                         : Int
+  v_arrayCell_v_#memory_int_131[1, 0]_1              : Int
+  v_arrayCell_v_#memory_int_131[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_#memory_int_131[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_#memory_int_131[2, 0]_1              : Int
+  v_arrayCell_v_#memory_int_131[3, 0]_1              : Int
+  v_arrayCell_v_#memory_int_131[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray12_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray13_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray5_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray6_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray9_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray2_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray16_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray15_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray8_1[2, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray7_1[3, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray10_1[1, 0]_1 : Int
+  v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1 : Int
+  v_div_auxv_~signal_u8~0_95256_1                    : Int
+  v_mod_auxv_~signal_u8~0_95256_1                    : Int
+  v_div_auxv_~signalDeb_u8~0_90256_1                 : Int
+  v_mod_auxv_~signalDeb_u8~0_90256_1                 : Int
+  v_div_auxv_~plausiSignalDeb_u8~0_88256_1           : Int
+  v_mod_auxv_~plausiSignalDeb_u8~0_88256_1           : Int
+  v_div_auxv_~signalDeb_u8~0_89256_1                 : Int
+  v_mod_auxv_~signalDeb_u8~0_89256_1                 : Int
+  v_div_auxv_~plausiSignal_u8~0_95256_1              : Int
+  v_mod_auxv_~plausiSignal_u8~0_95256_1              : Int
+  v_div_auxv_~plausiSignalDeb_u8~0_89256_1           : Int
+  v_mod_auxv_~plausiSignalDeb_u8~0_89256_1           : Int
+  v_div_auxv_~comparisonDeb_u8~0_96256_1             : Int
+  v_mod_auxv_~comparisonDeb_u8~0_96256_1             : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= |v_old(~comparisonDeb_u8~0)_78| 1) (= |v_old(#memory_int)_120| |v_#memory_int_204|) (= |v_~#plausiSignalDelay_u8~0.offset_72| 0) (<= 1 |v_#StackHeapBarrier_31|) (= (select (select |v_#memory_int_205| 2) 0) 0) (= |v_old(#memory_int)_120| |v_#memory_int_205|) (= 2 |v_~#plausiSignalDelay_u8~0.base_72|) (= (select |v_#valid_68| 2) 1) (= (select |v_#length_68| 1) 1) (= (select (select |v_#memory_int_205| 1) 0) 0) (= v_~signalDeb_u8~0_141 0) (= v_~signal_u8~0_148 0) (= (select |v_#valid_68| 1) 1) (= 0 v_~plausiSignalDeb_u8~0_140) (= v_~comparisonDeb_u8~0_149 1) (= (select (select |v_#memory_int_205| 3) 0) 0) (= |v_old(~plausiSignal_u8~0)_78| 0) (= (select |v_#length_68| 2) 1) (= (select |v_#valid_68| 3) 1) (= |v_old(~signalDeb_u8~0)_78| 0) (= |v_~#comparisonDelay_u8~0.base_72| 3) (= |v_old(~plausiSignalDeb_u8~0)_78| 0) (= v_~plausiSignal_u8~0_148 0) (= |v_~#comparisonDelay_u8~0.offset_72| 0) (= |v_old(~signal_u8~0)_78| 0) (= (select |v_#length_68| 3) 1) (= 0 (select |v_#valid_68| 0)) (= |v_~#signalDelay_u8~0.offset_72| 0) (= |v_~#signalDelay_u8~0.base_72| 1))  InVars {#StackHeapBarrier=|v_#StackHeapBarrier_31|, #valid=|v_#valid_68|, #memory_int=|v_#memory_int_205|, #length=|v_#length_68|}  OutVars{~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_72|, old(~#signalDelay_u8~0.offset)=|v_old(~#signalDelay_u8~0.offset)_37|, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_72|, old(~#comparisonDelay_u8~0.offset)=|v_old(~#comparisonDelay_u8~0.offset)_37|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_72|, old(~#plausiSignalDelay_u8~0.base)=|v_old(~#plausiSignalDelay_u8~0.base)_37|, old(~signal_u8~0)=|v_old(~signal_u8~0)_78|, ~signal_u8~0=v_~signal_u8~0_148, #length=|v_#length_68|, old(~signalDeb_u8~0)=|v_old(~signalDeb_u8~0)_78|, ~signalDeb_u8~0=v_~signalDeb_u8~0_141, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_72|, old(~#plausiSignalDelay_u8~0.offset)=|v_old(~#plausiSignalDelay_u8~0.offset)_37|, old(~plausiSignalDeb_u8~0)=|v_old(~plausiSignalDeb_u8~0)_78|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_140, old(~plausiSignal_u8~0)=|v_old(~plausiSignal_u8~0)_78|, ~plausiSignal_u8~0=v_~plausiSignal_u8~0_148, old(~comparisonDeb_u8~0)=|v_old(~comparisonDeb_u8~0)_78|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_149, #StackHeapBarrier=|v_#StackHeapBarrier_31|, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_72|, old(~#signalDelay_u8~0.base)=|v_old(~#signalDelay_u8~0.base)_37|, #valid=|v_#valid_68|, old(#memory_int)=|v_old(#memory_int)_120|, #memory_int=|v_#memory_int_204|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_72|, old(~#comparisonDelay_u8~0.base)=|v_old(~#comparisonDelay_u8~0.base)_37|}  AuxVars[]  AssignedVars[old(~plausiSignal_u8~0), ~plausiSignal_u8~0, ~#signalDelay_u8~0.offset, old(~#signalDelay_u8~0.offset), old(~comparisonDeb_u8~0), ~comparisonDeb_u8~0, ~#comparisonDelay_u8~0.offset, old(~#comparisonDelay_u8~0.offset), ~#plausiSignalDelay_u8~0.base, old(~#plausiSignalDelay_u8~0.base), old(~signal_u8~0), ~signal_u8~0, ~#signalDelay_u8~0.base, old(~#signalDelay_u8~0.base), old(#memory_int), #memory_int, ~#comparisonDelay_u8~0.base, old(~#comparisonDelay_u8~0.base), old(~signalDeb_u8~0), ~signalDeb_u8~0, ~#plausiSignalDelay_u8~0.offset, old(~#plausiSignalDelay_u8~0.offset), old(~plausiSignalDeb_u8~0), ~plausiSignalDeb_u8~0]
+
+Loop TransFormula:
+Formula: (and (= (select |v_#valid_75| |v_~#comparisonDelay_u8~0.base_74|) 1) (<= (+ |v_~#signalDelay_u8~0.offset_74| 1) (select |v_#length_75| |v_~#signalDelay_u8~0.base_74|)) (<= (+ |v_~#comparisonDelay_u8~0.offset_74| 1) (select |v_#length_75| |v_~#comparisonDelay_u8~0.base_74|)) (<= (+ |v_~#plausiSignalDelay_u8~0.offset_74| 1) (select |v_#length_75| |v_~#plausiSignalDelay_u8~0.base_74|)) (= (select |v_#valid_75| |v_~#signalDelay_u8~0.base_74|) 1) (= (mod v_~signal_u8~0_151 256) (mod v_~signalDeb_u8~0_145 256)) (or (not (= |v_~#comparisonDelay_u8~0.base_74| 0)) (not (= |v_~#comparisonDelay_u8~0.offset_74| 0))) (<= 0 |v_~#plausiSignalDelay_u8~0.offset_74|) (= (mod v_~plausiSignal_u8~0_151 256) (mod v_~plausiSignalDeb_u8~0_144 256)) (= 1 (mod v_~comparisonDeb_u8~0_154 256)) (or (not (= |v_~#plausiSignalDelay_u8~0.base_74| 0)) (not (= |v_~#plausiSignalDelay_u8~0.offset_74| 0))) (= v_~plausiSignalDeb_u8~0_144 v_~plausiSignalDeb_u8~0_143) (= v_~signalDeb_u8~0_145 v_~signalDeb_u8~0_144) (= v_~comparisonDeb_u8~0_154 v_~comparisonDeb_u8~0_153) (= (let ((.cse0 (let ((.cse1 (store |v_#memory_int_224| |v_~#signalDelay_u8~0.base_74| (store (select |v_#memory_int_224| |v_~#signalDelay_u8~0.base_74|) |v_~#signalDelay_u8~0.offset_74| 0)))) (store .cse1 |v_~#plausiSignalDelay_u8~0.base_74| (store (select .cse1 |v_~#plausiSignalDelay_u8~0.base_74|) |v_~#plausiSignalDelay_u8~0.offset_74| 0))))) (store .cse0 |v_~#comparisonDelay_u8~0.base_74| (store (select .cse0 |v_~#comparisonDelay_u8~0.base_74|) |v_~#comparisonDelay_u8~0.offset_74| 0))) |v_#memory_int_221|) (or (not (= |v_~#signalDelay_u8~0.base_74| 0)) (not (= |v_~#signalDelay_u8~0.offset_74| 0))) (= v_PDebounceValidation_~comparison_u8~0_42 1) (= (mod v_~signalDeb_u8~0_144 256) (mod v_~plausiSignalDeb_u8~0_143 256)) (<= 0 |v_~#signalDelay_u8~0.offset_74|) (= (select |v_#valid_75| |v_~#plausiSignalDelay_u8~0.base_74|) 1) (<= 0 |v_~#comparisonDelay_u8~0.offset_74|))  InVars {~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_74|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_154, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_74|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_74|, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_74|, #valid=|v_#valid_75|, #memory_int=|v_#memory_int_224|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_74|, #length=|v_#length_75|, ~signalDeb_u8~0=v_~signalDeb_u8~0_145, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_74|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_144}  OutVars{~plausiSignal_u8~0=v_~plausiSignal_u8~0_151, ~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_74|, PDebounceValidation_#t~ret10=|v_PDebounceValidation_#t~ret10_29|, PDebounceValidation_~comparison_u8~0=v_PDebounceValidation_~comparison_u8~0_42, PDebounceValidation_#t~ret3=|v_PDebounceValidation_#t~ret3_39|, PDebounceValidation_#t~ret4=|v_PDebounceValidation_#t~ret4_36|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_153, PDebounceValidation_#t~ret5=|v_PDebounceValidation_#t~ret5_25|, PDebounceValidation_#t~ret6=|v_PDebounceValidation_#t~ret6_45|, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_74|, PDebounceValidation_#t~ret7=|v_PDebounceValidation_#t~ret7_27|, PDebounceValidation_#t~ret8=|v_PDebounceValidation_#t~ret8_29|, PDebounceValidation_#t~ret9=|v_PDebounceValidation_#t~ret9_29|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_74|, ~signal_u8~0=v_~signal_u8~0_151, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_74|, #valid=|v_#valid_75|, #memory_int=|v_#memory_int_221|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_74|, #length=|v_#length_75|, ~signalDeb_u8~0=v_~signalDeb_u8~0_144, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_74|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_143}  AuxVars[]  AssignedVars[~plausiSignal_u8~0, PDebounceValidation_#t~ret10, PDebounceValidation_~comparison_u8~0, PDebounceValidation_#t~ret3, PDebounceValidation_#t~ret4, ~comparisonDeb_u8~0, PDebounceValidation_#t~ret5, PDebounceValidation_#t~ret6, PDebounceValidation_#t~ret7, PDebounceValidation_#t~ret8, PDebounceValidation_#t~ret9, ~signal_u8~0, #memory_int, ~signalDeb_u8~0, ~plausiSignalDeb_u8~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 284
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 0,7746
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 2,1773
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,7683
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9079
+    Simplify formula using some simplification technique -> relative DAG size: 0,6684
+    Transform into disjunctive normal form -> relative DAG size: 1,0000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0000
+
+Stem (linearized):
+  Formula:  (and (>= |v_~#comparisonDelay_u8~0.offset_44| 0) (<= |v_arrayCell_v_old(#memory_int)_68[1, 0]_1| 0) (>= v_~comparisonDeb_u8~0_91 1) (>= |v_~#comparisonDelay_u8~0.base_44| 3) (>= |v_arrayCell_v_#valid_35[2]_1| 1) (>= 2 |v_~#plausiSignalDelay_u8~0.base_44|) (<= |v_~#comparisonDelay_u8~0.base_44| 3) (<= |v_arrayCell_v_#memory_int_114[3, 0]_1| 0) (<= |v_arrayCell_v_#valid_35[3]_1| 1) (>= |v_~#signalDelay_u8~0.base_44| 1) (<= |v_arrayCell_v_#memory_int_115[3, 0]_1| 0) (>= |v_arrayCell_v_old(#memory_int)_68[2, 0]_1| 0) (>= |v_arrayCell_v_old(#memory_int)_68[1, 0]_1| 0) (<= |v_~#signalDelay_u8~0.offset_44| 0) (>= |v_arrayCell_v_#memory_int_115[3, 0]_1| 0) (>= |v_old(~plausiSignal_u8~0)_44| 0) (<= v_~comparisonDeb_u8~0_91 1) (>= |v_~#signalDelay_u8~0.offset_44| 0) (<= 2 |v_~#plausiSignalDelay_u8~0.base_44|) (>= |v_old(~plausiSignalDeb_u8~0)_44| 0) (>= v_~signalDeb_u8~0_86 0) (<= |v_old(~comparisonDeb_u8~0)_44| 1) (<= |v_arrayCell_v_#valid_35[2]_1| 1) (<= |v_arrayCell_v_#memory_int_114[2, 0]_1| 0) (<= v_~signalDeb_u8~0_86 0) (<= |v_arrayCell_v_old(#memory_int)_68[2, 0]_1| 0) (>= v_~signal_u8~0_92 0) (<= |v_old(~plausiSignalDeb_u8~0)_44| 0) (<= |v_arrayCell_v_#length_35[1]_1| 1) (>= |v_arrayCell_v_#length_35[2]_1| 1) (<= |v_arrayCell_v_#valid_35[1]_1| 1) (>= |v_arrayCell_v_#memory_int_114[2, 0]_1| 0) (<= |v_old(~signal_u8~0)_44| 0) (>= |v_arrayCell_v_#valid_35[0]_1| 0) (>= |v_arrayCell_v_old(#memory_int)_68[3, 0]_1| 0) (>= |v_arrayCell_v_#valid_35[3]_1| 1) (>= |v_old(~comparisonDeb_u8~0)_44| 1) (>= |v_arrayCell_v_#memory_int_114[1, 0]_1| 0) (>= |v_arrayCell_v_#length_35[1]_1| 1) (>= |v_old(~signal_u8~0)_44| 0) (>= |v_arrayCell_v_#length_35[3]_1| 1) (<= |v_arrayCell_v_#length_35[2]_1| 1) (<= |v_~#signalDelay_u8~0.base_44| 1) (>= |v_arrayCell_v_#valid_35[1]_1| 1) (>= v_~plausiSignalDeb_u8~0_85 0) (>= |v_arrayCell_v_#memory_int_115[2, 0]_1| 0) (>= |v_arrayCell_v_#memory_int_114[3, 0]_1| 0) (<= |v_arrayCell_v_#memory_int_114[1, 0]_1| 0) (>= |v_~#plausiSignalDelay_u8~0.offset_44| 0) (<= |v_~#plausiSignalDelay_u8~0.offset_44| 0) (>= |v_arrayCell_v_#memory_int_115[1, 0]_1| 0) (<= |v_old(~plausiSignal_u8~0)_44| 0) (<= |v_~#comparisonDelay_u8~0.offset_44| 0) (<= |v_arrayCell_v_#valid_35[0]_1| 0) (>= v_~plausiSignal_u8~0_92 0) (<= |v_arrayCell_v_#memory_int_115[1, 0]_1| 0) (<= |v_old(~signalDeb_u8~0)_44| 0) (<= |v_arrayCell_v_#memory_int_115[2, 0]_1| 0) (<= |v_arrayCell_v_#length_35[3]_1| 1) (<= |v_arrayCell_v_old(#memory_int)_68[3, 0]_1| 0) (<= v_~plausiSignal_u8~0_92 0) (<= 1 |v_#StackHeapBarrier_19|) (>= |v_old(~signalDeb_u8~0)_44| 0) (<= v_~signal_u8~0_92 0) (<= v_~plausiSignalDeb_u8~0_85 0))
+  InVars:   {#StackHeapBarrier=|v_#StackHeapBarrier_19|, ~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_47|, old(~#signalDelay_u8~0.offset)=|v_old(~#signalDelay_u8~0.offset)_22|, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_47|, old(~#comparisonDelay_u8~0.offset)=|v_old(~#comparisonDelay_u8~0.offset)_22|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_47|, old(~#plausiSignalDelay_u8~0.base)=|v_old(~#plausiSignalDelay_u8~0.base)_22|, old(~signal_u8~0)=|v_old(~signal_u8~0)_46|, ~signal_u8~0=v_~signal_u8~0_97, old(~signalDeb_u8~0)=|v_old(~signalDeb_u8~0)_46|, ~signalDeb_u8~0=v_~signalDeb_u8~0_91, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_47|, old(~#plausiSignalDelay_u8~0.offset)=|v_old(~#plausiSignalDelay_u8~0.offset)_22|, old(~plausiSignalDeb_u8~0)=|v_old(~plausiSignalDeb_u8~0)_46|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_90, old(~plausiSignal_u8~0)=|v_old(~plausiSignal_u8~0)_46|, ~plausiSignal_u8~0=v_~plausiSignal_u8~0_97, old(~comparisonDeb_u8~0)=|v_old(~comparisonDeb_u8~0)_46|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_97, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_47|, old(~#signalDelay_u8~0.base)=|v_old(~#signalDelay_u8~0.base)_22|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_47|, old(~#comparisonDelay_u8~0.base)=|v_old(~#comparisonDelay_u8~0.base)_22|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_35[0]_1|, v_rep(select #valid 3)_2=|v_arrayCell_v_#valid_35[3]_1|, v_rep(select #valid 1)_2=|v_arrayCell_v_#valid_35[1]_1|, v_rep(select #valid 2)_2=|v_arrayCell_v_#valid_35[2]_1|, v_rep(select (select #memory_int 1) 0)_2=|v_arrayCell_v_#memory_int_115[1, 0]_1|, v_rep(select (select #memory_int 2) 0)_2=|v_arrayCell_v_#memory_int_115[2, 0]_1|, v_rep(select (select #memory_int 3) 0)_2=|v_arrayCell_v_#memory_int_115[3, 0]_1|, v_rep(select #length 3)_2=|v_arrayCell_v_#length_35[3]_1|, v_rep(select #length 1)_2=|v_arrayCell_v_#length_35[1]_1|, v_rep(select #length 2)_2=|v_arrayCell_v_#length_35[2]_1|, v_rep(select (select old(#memory_int) 1) 0)_2=|v_v_rep(select (select old(#memory_int) 1) 0)_2_1|, v_rep(select (select old(#memory_int) 2) 0)_2=|v_v_rep(select (select old(#memory_int) 2) 0)_2_1|, v_rep(select (select old(#memory_int) 3) 0)_2=|v_v_rep(select (select old(#memory_int) 3) 0)_2_1|}
+  OutVars:  {~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_44|, old(~#signalDelay_u8~0.offset)=|v_old(~#signalDelay_u8~0.offset)_21|, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_44|, old(~#comparisonDelay_u8~0.offset)=|v_old(~#comparisonDelay_u8~0.offset)_21|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_44|, old(~#plausiSignalDelay_u8~0.base)=|v_old(~#plausiSignalDelay_u8~0.base)_21|, old(~signal_u8~0)=|v_old(~signal_u8~0)_44|, ~signal_u8~0=v_~signal_u8~0_92, old(~signalDeb_u8~0)=|v_old(~signalDeb_u8~0)_44|, ~signalDeb_u8~0=v_~signalDeb_u8~0_86, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_44|, old(~#plausiSignalDelay_u8~0.offset)=|v_old(~#plausiSignalDelay_u8~0.offset)_21|, old(~plausiSignalDeb_u8~0)=|v_old(~plausiSignalDeb_u8~0)_44|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_85, old(~plausiSignal_u8~0)=|v_old(~plausiSignal_u8~0)_44|, ~plausiSignal_u8~0=v_~plausiSignal_u8~0_92, old(~comparisonDeb_u8~0)=|v_old(~comparisonDeb_u8~0)_44|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_91, #StackHeapBarrier=|v_#StackHeapBarrier_19|, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_44|, old(~#signalDelay_u8~0.base)=|v_old(~#signalDelay_u8~0.base)_21|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_44|, old(~#comparisonDelay_u8~0.base)=|v_old(~#comparisonDelay_u8~0.base)_21|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_35[0]_1|, v_rep(select #valid 3)_2=|v_arrayCell_v_#valid_35[3]_1|, v_rep(select #valid 1)_2=|v_arrayCell_v_#valid_35[1]_1|, v_rep(select #valid 2)_2=|v_arrayCell_v_#valid_35[2]_1|, v_rep(select (select #memory_int 1) 0)_2=|v_arrayCell_v_#memory_int_114[1, 0]_1|, v_rep(select (select #memory_int 2) 0)_2=|v_arrayCell_v_#memory_int_114[2, 0]_1|, v_rep(select (select #memory_int 3) 0)_2=|v_arrayCell_v_#memory_int_114[3, 0]_1|, v_rep(select (select old(#memory_int) 1) 0)_2=|v_arrayCell_v_old(#memory_int)_68[1, 0]_1|, v_rep(select (select old(#memory_int) 2) 0)_2=|v_arrayCell_v_old(#memory_int)_68[2, 0]_1|, v_rep(select (select old(#memory_int) 3) 0)_2=|v_arrayCell_v_old(#memory_int)_68[3, 0]_1|, v_rep(select #length 3)_2=|v_arrayCell_v_#length_35[3]_1|, v_rep(select #length 1)_2=|v_arrayCell_v_#length_35[1]_1|, v_rep(select #length 2)_2=|v_arrayCell_v_#length_35[2]_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (and (<= |v_~#plausiSignalDelay_u8~0.base_46| 2) (<= |v_~#comparisonDelay_u8~0.offset_46| 0) (<= 0 |v_arrayCell_v_#memory_int_131[3, 0]_1|) (<= v_~plausiSignalDeb_u8~0_88 (+ (* 256 v_div_auxv_~plausiSignalDeb_u8~0_88256_1) v_mod_auxv_~plausiSignalDeb_u8~0_88256_1)) (<= |v_arrayCell_v_#memory_int_134[1, 0]_1| |v_arrayCell_v_#memory_int_134[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|) (<= 0 |v_arrayCell_v_#memory_int_131[2, 0]_1|) (<= 1 |v_arrayCell_v_#length_42[3]_1|) (<= 0 |v_arrayCell_v_#memory_int_131[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|) (<= 0 v_mod_auxv_~plausiSignalDeb_u8~0_88256_1) (<= 3 |v_~#comparisonDelay_u8~0.base_46|) (<= 1 |v_arrayCell_v_#valid_42[3]_1|) (<= 0 |v_~#signalDelay_u8~0.offset_46|) (<= |v_arrayCell_v_#memory_int_131[1, 0]_1| 0) (<= v_mod_auxv_~plausiSignalDeb_u8~0_88256_1 255) (<= |v_~#comparisonDelay_u8~0.base_46| 3) (<= v_~plausiSignalDeb_u8~0_89 v_~plausiSignalDeb_u8~0_88) (<= |v_arrayCell_v_#memory_int_131[2, 0]_1| 0) (<= v_mod_auxv_~plausiSignal_u8~0_95256_1 v_mod_auxv_~plausiSignalDeb_u8~0_89256_1) (<= v_~plausiSignalDeb_u8~0_88 v_~plausiSignalDeb_u8~0_89) (<= |v_arrayCell_v_#memory_int_131[3, 0]_1| 0) (<= |v_arrayCell_v_#valid_42[v_~#signalDelay_u8~0.base_46]_1| 1) (<= (+ (* 256 v_div_auxv_~plausiSignalDeb_u8~0_89256_1) v_mod_auxv_~plausiSignalDeb_u8~0_89256_1) v_~plausiSignalDeb_u8~0_89) (<= |v_arrayCell_v_#length_42[1]_1| |v_arrayCell_v_#length_42[v_~#signalDelay_u8~0.base_46]_1|) (<= |v_arrayCell_v_#length_42[3]_1| |v_arrayCell_v_#length_42[v_~#comparisonDelay_u8~0.base_46]_1|) (<= |v_arrayCell_v_#valid_42[3]_1| 1) (<= |v_arrayCell_v_#valid_42[v_~#plausiSignalDelay_u8~0.base_46]_1| 1) (<= 0 |v_arrayCell_v_#memory_int_131[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|) (<= 0 |v_arrayCell_v_#memory_int_131[1, 0]_1|) (<= 0 |v_~#comparisonDelay_u8~0.offset_46|) (<= v_~signalDeb_u8~0_90 (+ v_mod_auxv_~signalDeb_u8~0_90256_1 (* 256 v_div_auxv_~signalDeb_u8~0_90256_1))) (<= |v_arrayCell_v_#memory_int_134[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1| |v_arrayCell_v_#memory_int_134[1, 0]_1|) (<= v_mod_auxv_~plausiSignalDeb_u8~0_89256_1 255) (<= (+ (* 256 v_div_auxv_~signalDeb_u8~0_89256_1) v_mod_auxv_~signalDeb_u8~0_89256_1) v_~signalDeb_u8~0_89) (<= (+ v_mod_auxv_~signal_u8~0_95256_1 (* v_div_auxv_~signal_u8~0_95256_1 256)) v_~signal_u8~0_95) (<= 1 |v_arrayCell_v_#valid_42[v_~#signalDelay_u8~0.base_46]_1|) (<= |v_arrayCell_v_#memory_int_134[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1| |v_arrayCell_v_#memory_int_134[3, 0]_1|) (<= (+ v_mod_auxv_~plausiSignal_u8~0_95256_1 (* v_div_auxv_~plausiSignal_u8~0_95256_1 256)) v_~plausiSignal_u8~0_95) (<= v_mod_auxv_~signal_u8~0_95256_1 255) (<= v_mod_auxv_~comparisonDeb_u8~0_96256_1 1) (<= v_mod_auxv_~signalDeb_u8~0_90256_1 v_mod_auxv_~signal_u8~0_95256_1) (<= (+ v_mod_auxv_~comparisonDeb_u8~0_96256_1 (* v_div_auxv_~comparisonDeb_u8~0_96256_1 256)) v_~comparisonDeb_u8~0_96) (<= |v_~#signalDelay_u8~0.offset_46| 0) (<= |v_~#plausiSignalDelay_u8~0.offset_46| 0) (<= |v_~#signalDelay_u8~0.base_46| 1) (<= |v_arrayCell_v_#length_42[v_~#comparisonDelay_u8~0.base_46]_1| |v_arrayCell_v_#length_42[3]_1|) (<= |v_arrayCell_v_#memory_int_134[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1| |v_arrayCell_v_#memory_int_134[2, 0]_1|) (<= 1 |v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1|) (<= v_~plausiSignal_u8~0_95 (+ v_mod_auxv_~plausiSignal_u8~0_95256_1 (* v_div_auxv_~plausiSignal_u8~0_95256_1 256))) (<= 0 v_mod_auxv_~plausiSignalDeb_u8~0_89256_1) (<= 1 v_PDebounceValidation_~comparison_u8~0_27) (<= |v_arrayCell_v_#length_42[v_~#signalDelay_u8~0.base_46]_1| |v_arrayCell_v_#length_42[1]_1|) (<= v_~comparisonDeb_u8~0_96 v_~comparisonDeb_u8~0_95) (<= 1 |v_arrayCell_v_#valid_42[1]_1|) (<= |v_arrayCell_v_#valid_42[2]_1| 1) (<= (+ (* 256 v_div_auxv_~plausiSignalDeb_u8~0_88256_1) v_mod_auxv_~plausiSignalDeb_u8~0_88256_1) v_~plausiSignalDeb_u8~0_88) (<= v_mod_auxv_~signal_u8~0_95256_1 v_mod_auxv_~signalDeb_u8~0_90256_1) (<= v_mod_auxv_~plausiSignalDeb_u8~0_89256_1 v_mod_auxv_~plausiSignal_u8~0_95256_1) (<= 1 |v_~#signalDelay_u8~0.base_46|) (<= 1 |v_arrayCell_v_#valid_42[v_~#comparisonDelay_u8~0.base_46]_1|) (<= v_~signalDeb_u8~0_89 (+ (* 256 v_div_auxv_~signalDeb_u8~0_89256_1) v_mod_auxv_~signalDeb_u8~0_89256_1)) (<= v_~comparisonDeb_u8~0_95 v_~comparisonDeb_u8~0_96) (<= 0 v_mod_auxv_~signal_u8~0_95256_1) (<= 0 |v_~#plausiSignalDelay_u8~0.offset_46|) (<= v_~signal_u8~0_95 (+ v_mod_auxv_~signal_u8~0_95256_1 (* v_div_auxv_~signal_u8~0_95256_1 256))) (<= v_PDebounceValidation_~comparison_u8~0_27 1) (<= |v_arrayCell_v_#valid_42[1]_1| 1) (<= v_~signalDeb_u8~0_90 v_~signalDeb_u8~0_89) (<= 1 |v_arrayCell_v_#valid_42[v_~#plausiSignalDelay_u8~0.base_46]_1|) (<= |v_arrayCell_v_#memory_int_131[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1| 0) (<= 1 |v_arrayCell_v_#length_42[1]_1|) (<= v_~signalDeb_u8~0_89 v_~signalDeb_u8~0_90) (<= 1 v_mod_auxv_~comparisonDeb_u8~0_96256_1) (<= 0 |v_arrayCell_v_#memory_int_131[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|) (<= (+ v_mod_auxv_~signalDeb_u8~0_90256_1 (* 256 v_div_auxv_~signalDeb_u8~0_90256_1)) v_~signalDeb_u8~0_90) (<= v_~comparisonDeb_u8~0_96 (+ v_mod_auxv_~comparisonDeb_u8~0_96256_1 (* v_div_auxv_~comparisonDeb_u8~0_96256_1 256))) (<= |v_arrayCell_v_#memory_int_134[3, 0]_1| |v_arrayCell_v_#memory_int_134[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|) (<= v_mod_auxv_~signalDeb_u8~0_89256_1 v_mod_auxv_~plausiSignalDeb_u8~0_88256_1) (<= |v_arrayCell_v_#valid_42[v_~#comparisonDelay_u8~0.base_46]_1| 1) (<= |v_arrayCell_v_#memory_int_134[2, 0]_1| |v_arrayCell_v_#memory_int_134[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|) (<= v_mod_auxv_~plausiSignalDeb_u8~0_88256_1 v_mod_auxv_~signalDeb_u8~0_89256_1) (<= |v_arrayCell_v_#memory_int_131[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1| 0) (<= |v_arrayCell_v_#memory_int_131[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1| 0) (<= |v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1| |v_arrayCell_v_#length_42[2]_1|) (<= |v_arrayCell_v_#length_42[2]_1| |v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1|) (<= v_~plausiSignalDeb_u8~0_89 (+ (* 256 v_div_auxv_~plausiSignalDeb_u8~0_89256_1) v_mod_auxv_~plausiSignalDeb_u8~0_89256_1)) (<= 2 |v_~#plausiSignalDelay_u8~0.base_46|) (<= 1 |v_arrayCell_v_#valid_42[2]_1|))
+  InVars:   {~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_46|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_96, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_46|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_46|, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_46|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_46|, ~signalDeb_u8~0=v_~signalDeb_u8~0_90, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_46|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_89, ~plausiSignal_u8~0=v_~plausiSignal_u8~0_98, PDebounceValidation_#t~ret10=|v_PDebounceValidation_#t~ret10_21|, PDebounceValidation_~comparison_u8~0=v_PDebounceValidation_~comparison_u8~0_28, PDebounceValidation_#t~ret3=|v_PDebounceValidation_#t~ret3_31|, PDebounceValidation_#t~ret4=|v_PDebounceValidation_#t~ret4_29|, PDebounceValidation_#t~ret5=|v_PDebounceValidation_#t~ret5_20|, PDebounceValidation_#t~ret6=|v_PDebounceValidation_#t~ret6_36|, PDebounceValidation_#t~ret7=|v_PDebounceValidation_#t~ret7_22|, PDebounceValidation_#t~ret8=|v_PDebounceValidation_#t~ret8_21|, PDebounceValidation_#t~ret9=|v_PDebounceValidation_#t~ret9_21|, ~signal_u8~0=v_~signal_u8~0_98, v_rep(select #valid ~#comparisonDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#comparisonDelay_u8~0.base_46]_1|, v_rep(select #valid ~#signalDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#signalDelay_u8~0.base_46]_1|, v_rep(select #valid ~#plausiSignalDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#plausiSignalDelay_u8~0.base_46]_1|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_42[0]_1|, v_rep(select #valid 3)_2=|v_arrayCell_v_#valid_42[3]_1|, v_rep(select #valid 1)_2=|v_arrayCell_v_#valid_42[1]_1|, v_rep(select #valid 2)_2=|v_arrayCell_v_#valid_42[2]_1|, v_rep(select #length ~#comparisonDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#comparisonDelay_u8~0.base_46]_1|, v_rep(select #length ~#signalDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#signalDelay_u8~0.base_46]_1|, v_rep(select #length ~#plausiSignalDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1|, v_rep(select #length 3)_2=|v_arrayCell_v_#length_42[3]_1|, v_rep(select #length 1)_2=|v_arrayCell_v_#length_42[1]_1|, v_rep(select #length 2)_2=|v_arrayCell_v_#length_42[2]_1|, v_rep(select (select #memory_int 1) 0)_2=|v_arrayCell_v_#memory_int_134[1, 0]_1|, v_rep(select (select #memory_int ~#signalDelay_u8~0.base) ~#signalDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_134[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, v_rep(select (select #memory_int ~#comparisonDelay_u8~0.base) ~#comparisonDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_134[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, v_rep(select (select #memory_int 2) 0)_2=|v_arrayCell_v_#memory_int_134[2, 0]_1|, v_rep(select (select #memory_int 3) 0)_2=|v_arrayCell_v_#memory_int_134[3, 0]_1|, v_rep(select (select #memory_int ~#plausiSignalDelay_u8~0.base) ~#plausiSignalDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_134[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|}
+  OutVars:  {~plausiSignal_u8~0=v_~plausiSignal_u8~0_95, ~#signalDelay_u8~0.offset=|v_~#signalDelay_u8~0.offset_46|, PDebounceValidation_#t~ret10=|v_PDebounceValidation_#t~ret10_19|, PDebounceValidation_~comparison_u8~0=v_PDebounceValidation_~comparison_u8~0_27, PDebounceValidation_#t~ret3=|v_PDebounceValidation_#t~ret3_29|, PDebounceValidation_#t~ret4=|v_PDebounceValidation_#t~ret4_27|, ~comparisonDeb_u8~0=v_~comparisonDeb_u8~0_95, PDebounceValidation_#t~ret5=|v_PDebounceValidation_#t~ret5_18|, PDebounceValidation_#t~ret6=|v_PDebounceValidation_#t~ret6_33|, ~#comparisonDelay_u8~0.offset=|v_~#comparisonDelay_u8~0.offset_46|, PDebounceValidation_#t~ret7=|v_PDebounceValidation_#t~ret7_20|, PDebounceValidation_#t~ret8=|v_PDebounceValidation_#t~ret8_19|, PDebounceValidation_#t~ret9=|v_PDebounceValidation_#t~ret9_19|, ~#plausiSignalDelay_u8~0.base=|v_~#plausiSignalDelay_u8~0.base_46|, ~signal_u8~0=v_~signal_u8~0_95, ~#signalDelay_u8~0.base=|v_~#signalDelay_u8~0.base_46|, ~#comparisonDelay_u8~0.base=|v_~#comparisonDelay_u8~0.base_46|, ~signalDeb_u8~0=v_~signalDeb_u8~0_89, ~#plausiSignalDelay_u8~0.offset=|v_~#plausiSignalDelay_u8~0.offset_46|, ~plausiSignalDeb_u8~0=v_~plausiSignalDeb_u8~0_88, v_rep(select #valid ~#comparisonDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#comparisonDelay_u8~0.base_46]_1|, v_rep(select #valid ~#signalDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#signalDelay_u8~0.base_46]_1|, v_rep(select #valid ~#plausiSignalDelay_u8~0.base)_1=|v_arrayCell_v_#valid_42[v_~#plausiSignalDelay_u8~0.base_46]_1|, v_rep(select #valid 0)_2=|v_arrayCell_v_#valid_42[0]_1|, v_rep(select #valid 3)_2=|v_arrayCell_v_#valid_42[3]_1|, v_rep(select #valid 1)_2=|v_arrayCell_v_#valid_42[1]_1|, v_rep(select #valid 2)_2=|v_arrayCell_v_#valid_42[2]_1|, v_rep(select #length ~#comparisonDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#comparisonDelay_u8~0.base_46]_1|, v_rep(select #length ~#signalDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#signalDelay_u8~0.base_46]_1|, v_rep(select #length ~#plausiSignalDelay_u8~0.base)_1=|v_arrayCell_v_#length_42[v_~#plausiSignalDelay_u8~0.base_46]_1|, v_rep(select #length 3)_2=|v_arrayCell_v_#length_42[3]_1|, v_rep(select #length 1)_2=|v_arrayCell_v_#length_42[1]_1|, v_rep(select #length 2)_2=|v_arrayCell_v_#length_42[2]_1|, v_rep(select (select #memory_int 1) 0)_2=|v_arrayCell_v_#memory_int_131[1, 0]_1|, v_rep(select (select #memory_int ~#signalDelay_u8~0.base) ~#signalDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_131[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, v_rep(select (select #memory_int ~#comparisonDelay_u8~0.base) ~#comparisonDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_131[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, v_rep(select (select #memory_int 2) 0)_2=|v_arrayCell_v_#memory_int_131[2, 0]_1|, v_rep(select (select #memory_int 3) 0)_2=|v_arrayCell_v_#memory_int_131[3, 0]_1|, v_rep(select (select #memory_int ~#plausiSignalDelay_u8~0.base) ~#plausiSignalDelay_u8~0.offset)_1=|v_arrayCell_v_#memory_int_131[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|}
+  AuxVars:  [|v_arrayCell_v_v_#memory_int_134auxArray13_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray13_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray13_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#signalDelay_u8~0.base_46, v_~#signalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray3_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray12_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray13_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray5_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray6_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray14_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray4_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray9_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray2_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray16_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray15_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray8_1[2, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray7_1[3, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray1_1[v_~#plausiSignalDelay_u8~0.base_46, v_~#plausiSignalDelay_u8~0.offset_46]_1|, |v_arrayCell_v_v_#memory_int_134auxArray10_1[1, 0]_1|, |v_arrayCell_v_v_#memory_int_134auxArray11_1[v_~#comparisonDelay_u8~0.base_46, v_~#comparisonDelay_u8~0.offset_46]_1|, v_div_auxv_~signal_u8~0_95256_1, v_mod_auxv_~signal_u8~0_95256_1, v_div_auxv_~signalDeb_u8~0_90256_1, v_mod_auxv_~signalDeb_u8~0_90256_1, v_div_auxv_~plausiSignalDeb_u8~0_88256_1, v_mod_auxv_~plausiSignalDeb_u8~0_88256_1, v_div_auxv_~signalDeb_u8~0_89256_1, v_mod_auxv_~signalDeb_u8~0_89256_1, v_div_auxv_~plausiSignal_u8~0_95256_1, v_mod_auxv_~plausiSignal_u8~0_95256_1, v_div_auxv_~plausiSignalDeb_u8~0_89256_1, v_mod_auxv_~plausiSignalDeb_u8~0_89256_1, v_div_auxv_~comparisonDeb_u8~0_96256_1, v_mod_auxv_~comparisonDeb_u8~0_96256_1]
+
+--- RAW TRACE ---
+Stem (length=6):
+  [0] call ULTIMATE.init();
+  [1] assume 0 == #valid[0];assume 0 < #StackHeapBarrier;~signal_u8~0 := 0;~plausiSignal_u8~0 := 0;~signalDeb_u8~0 := 0;~plausiSignalDeb_u8~0 := 0;call #Ultimate.allocInit(1, 1);~#signalDelay_u8~0.base, ~#signalDelay_u8~0.offset := 1, 0;call write~init~int(0, ~#signalDelay_u8~0.base, ~#signalDelay_u8~0.offset, 1);call #Ultimate.allocInit(1, 2);~#plausiSignalDelay_u8~0.base, ~#plausiSignalDelay_u8~0.offset := 2, 0;call write~init~int(0, ~#plausiSignalDelay_u8~0.base, ~#plausiSignalDelay_u8~0.offset, 1);call #Ultimate.allocInit(1, 3);~#comparisonDelay_u8~0.base, ~#comparisonDelay_u8~0.offset := 3, 0;call write~init~int(0, ~#comparisonDelay_u8~0.base, ~#comparisonDelay_u8~0.offset, 1);~comparisonDeb_u8~0 := 1;assume true;
+  [2] #120#return;
+  [3] call main();
+  [4] call PDebounceValidation();
+  [5] ~comparison_u8~0 := 0;
+Loop (length=37):
+  [0] call #t~ret3 := tclRange_b(0, 1);
+  [1] ~min := #in~min;~max := #in~max;havoc ~result~0;
+  [2] assume (if ~result~0 % 256 % 4294967296 <= 2147483647 then ~result~0 % 256 % 4294967296 else ~result~0 % 256 % 4294967296 - 4294967296) >= (if ~min % 256 % 4294967296 <= 2147483647 then ~min % 256 % 4294967296 else ~min % 256 % 4294967296 - 4294967296) && (if ~result~0 % 256 % 4294967296 <= 2147483647 then ~result~0 % 256 % 4294967296 else ~result~0 % 256 % 4294967296 - 4294967296) <= (if ~max % 256 % 4294967296 <= 2147483647 then ~max % 256 % 4294967296 else ~max % 256 % 4294967296 - 4294967296);#res := ~result~0;
+  [3] assume true;
+  [4] #110#return;
+  [5] assume 0 != #t~ret3;havoc #t~ret3;call #t~ret4 := tclRange_u8(0, 255);BeginParallelComposition{ParallelCodeBlock0: assume !(0 == (if #t~ret4 % 256 % 4294967296 <= 2147483647 then #t~ret4 % 256 % 4294967296 else #t~ret4 % 256 % 4294967296 - 4294967296));havoc #t~ret4;ParallelCodeBlock1: assume 0 == (if #t~ret4 % 256 % 4294967296 <= 2147483647 then #t~ret4 % 256 % 4294967296 else #t~ret4 % 256 % 4294967296 - 4294967296);havoc #t~ret4;call #t~ret5 := tclRange_u8(0, 255);~signal_u8~0 := #t~ret5;havoc #t~ret5;call #t~ret6 := tclRange_u8(0, 255);BeginParallelComposition{ParallelCodeBlock0: assume 0 == (if #t~ret6 % 256 % 4294967296 <= 2147483647 then #t~ret6 % 256 % 4294967296 else #t~ret6 % 256 % 4294967296 - 4294967296);havoc #t~ret6;call #t~ret7 := tclRange_u8(0, 255);~plausiSignal_u8~0 := #t~ret7;havoc #t~ret7;ParallelCodeBlock1: assume !(0 == (if #t~ret6 % 256 % 4294967296 <= 2147483647 then #t~ret6 % 256 % 4294967296 else #t~ret6 % 256 % 4294967296 - 4294967296));havoc #t~ret6;~plausiSignal_u8~0 := ~signal_u8~0;}EndParallelComposition}EndParallelComposition
+  [6] call #t~ret8 := debounce_u8(~signal_u8~0, 10, ~signalDeb_u8~0, ~#signalDelay_u8~0.base, ~#signalDelay_u8~0.offset);
+  [7] ~_signal_u8 := #in~_signal_u8;~_debounceThresh_u8 := #in~_debounceThresh_u8;~_lastOutput_u8 := #in~_lastOutput_u8;~_delay_u8.base, ~_delay_u8.offset := #in~_delay_u8.base, #in~_delay_u8.offset;~output_u8~0 := ~_lastOutput_u8;
+  [8] assume ~_delay_u8.base != 0 || ~_delay_u8.offset != 0;
+  [9] assume !((if ~_signal_u8 % 256 % 4294967296 <= 2147483647 then ~_signal_u8 % 256 % 4294967296 else ~_signal_u8 % 256 % 4294967296 - 4294967296) != (if ~_lastOutput_u8 % 256 % 4294967296 <= 2147483647 then ~_lastOutput_u8 % 256 % 4294967296 else ~_lastOutput_u8 % 256 % 4294967296 - 4294967296));
+  [10] SUMMARY for call write~int(0, ~_delay_u8.base, ~_delay_u8.offset, 1); srcloc: L103
+  [11] #res := ~output_u8~0;
+  [12] assume true;
+  [13] #112#return;
+  [14] ~signalDeb_u8~0 := #t~ret8;havoc #t~ret8;
+  [15] call #t~ret9 := debounce_u8(~plausiSignal_u8~0, 10, ~plausiSignalDeb_u8~0, ~#plausiSignalDelay_u8~0.base, ~#plausiSignalDelay_u8~0.offset);
+  [16] ~_signal_u8 := #in~_signal_u8;~_debounceThresh_u8 := #in~_debounceThresh_u8;~_lastOutput_u8 := #in~_lastOutput_u8;~_delay_u8.base, ~_delay_u8.offset := #in~_delay_u8.base, #in~_delay_u8.offset;~output_u8~0 := ~_lastOutput_u8;
+  [17] assume ~_delay_u8.base != 0 || ~_delay_u8.offset != 0;
+  [18] assume !((if ~_signal_u8 % 256 % 4294967296 <= 2147483647 then ~_signal_u8 % 256 % 4294967296 else ~_signal_u8 % 256 % 4294967296 - 4294967296) != (if ~_lastOutput_u8 % 256 % 4294967296 <= 2147483647 then ~_lastOutput_u8 % 256 % 4294967296 else ~_lastOutput_u8 % 256 % 4294967296 - 4294967296));
+  [19] SUMMARY for call write~int(0, ~_delay_u8.base, ~_delay_u8.offset, 1); srcloc: L103
+  [20] #res := ~output_u8~0;
+  [21] assume true;
+  [22] #114#return;
+  [23] ~plausiSignalDeb_u8~0 := #t~ret9;havoc #t~ret9;~comparison_u8~0 := (if (if ~signalDeb_u8~0 % 256 % 4294967296 <= 2147483647 then ~signalDeb_u8~0 % 256 % 4294967296 else ~signalDeb_u8~0 % 256 % 4294967296 - 4294967296) == (if ~plausiSignalDeb_u8~0 % 256 % 4294967296 <= 2147483647 then ~plausiSignalDeb_u8~0 % 256 % 4294967296 else ~plausiSignalDeb_u8~0 % 256 % 4294967296 - 4294967296) then 1 else 0);
+  [24] call #t~ret10 := debounce_u8(~comparison_u8~0, 10, ~comparisonDeb_u8~0, ~#comparisonDelay_u8~0.base, ~#comparisonDelay_u8~0.offset);
+  [25] ~_signal_u8 := #in~_signal_u8;~_debounceThresh_u8 := #in~_debounceThresh_u8;~_lastOutput_u8 := #in~_lastOutput_u8;~_delay_u8.base, ~_delay_u8.offset := #in~_delay_u8.base, #in~_delay_u8.offset;~output_u8~0 := ~_lastOutput_u8;
+  [26] assume ~_delay_u8.base != 0 || ~_delay_u8.offset != 0;
+  [27] assume !((if ~_signal_u8 % 256 % 4294967296 <= 2147483647 then ~_signal_u8 % 256 % 4294967296 else ~_signal_u8 % 256 % 4294967296 - 4294967296) != (if ~_lastOutput_u8 % 256 % 4294967296 <= 2147483647 then ~_lastOutput_u8 % 256 % 4294967296 else ~_lastOutput_u8 % 256 % 4294967296 - 4294967296));
+  [28] SUMMARY for call write~int(0, ~_delay_u8.base, ~_delay_u8.offset, 1); srcloc: L103
+  [29] #res := ~output_u8~0;
+  [30] assume true;
+  [31] #116#return;
+  [32] ~comparisonDeb_u8~0 := #t~ret10;havoc #t~ret10;
+  [33] call TclAssert((if (if ~comparisonDeb_u8~0 % 256 % 4294967296 <= 2147483647 then ~comparisonDeb_u8~0 % 256 % 4294967296 else ~comparisonDeb_u8~0 % 256 % 4294967296 - 4294967296) > 0 then 1 else 0));
+  [34] ~condition := #in~condition;
+  [35] assume 0 != ~condition % 256;assume true;
+  [36] #118#return;
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- FIXPOINT CHECK ---
+  Result: YES
+  Time:   4063363 ns (4,06 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: InfiniteFixpointRepetitionWithExecution
+  de.uni_freiburg.informatik.ultimate.lassoranker.nontermination.InfiniteFixpointRepetitionWithExecution@2191e5e4
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  4,06 ms
+Total LassoRanker time: 0,00 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   0,00 ms

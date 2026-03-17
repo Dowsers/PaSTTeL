@@ -1,0 +1,93 @@
+{
+  "program_vars": [
+    "#StackHeapBarrier",
+    "ULTIMATE.start_#t~ret7",
+    "bubblesort_#in~a.base",
+    "bubblesort_#in~a.offset",
+    "bubblesort_#in~i",
+    "bubblesort_#t~post5",
+    "bubblesort_~a.base",
+    "bubblesort_~a.offset",
+    "bubblesort_~i",
+    "bubblesort_~j~0",
+    "main_#res",
+    "main_#t~nondet6",
+    "|v_rep(select #length bubblesort_#in~a.base)_1|",
+    "|v_rep(select #valid 0)_1|",
+    "|v_rep(select #valid bubblesort_#in~a.base)_1|"
+  ],
+  "var_types": {
+    "#StackHeapBarrier": "Int",
+    "ULTIMATE.start_#t~ret7": "Int",
+    "bubblesort_#in~a.base": "Int",
+    "bubblesort_#in~a.offset": "Int",
+    "bubblesort_#in~i": "Int",
+    "bubblesort_#t~post5": "Int",
+    "bubblesort_~a.base": "Int",
+    "bubblesort_~a.offset": "Int",
+    "bubblesort_~i": "Int",
+    "bubblesort_~j~0": "Int",
+    "main_#res": "Int",
+    "main_#t~nondet6": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= |v_bubblesort_#in~i_7| 2147483646) (<= |v_bubblesort_#in~a.offset_7| 0) (>= |v_arrayCell_v_#valid_45[v_bubblesort_#in~a.base_7]_1| 1) (<= |v_arrayCell_v_#valid_45[0]_1| 0) (<= v_bubblesort_~a.offset_24 0) (<= |v_arrayCell_v_#valid_45[v_bubblesort_#in~a.base_7]_1| 1) (>= v_bubblesort_~i_25 |v_bubblesort_#in~i_7|) (>= |v_arrayCell_v_#valid_46[v_bubblesort_#in~a.base_7]_1| 0) (<= (+ |v_#StackHeapBarrier_13| 1) |v_bubblesort_#in~a.base_7|) (<= (+ (* |v_bubblesort_#in~i_7| 4) 4) |v_arrayCell_v_#length_34[v_bubblesort_#in~a.base_7]_1|) (>= |v_arrayCell_v_#valid_46[0]_1| 0) (>= (+ (* |v_bubblesort_#in~i_7| 4) 4) |v_arrayCell_v_#length_34[v_bubblesort_#in~a.base_7]_1|) (>= |v_bubblesort_#in~a.base_7| v_bubblesort_~a.base_30) (<= 0 |v_bubblesort_#in~i_7|) (<= |v_arrayCell_v_#valid_46[v_bubblesort_#in~a.base_7]_1| 0) (>= |v_arrayCell_v_#valid_45[0]_1| 0) (>= v_bubblesort_~a.offset_24 0) (<= |v_arrayCell_v_#valid_46[0]_1| 0) (>= |v_bubblesort_#in~a.offset_7| 0) (<= |v_bubblesort_#in~a.base_7| v_bubblesort_~a.base_30) (<= 1 |v_#StackHeapBarrier_13|) (<= v_bubblesort_~i_25 |v_bubblesort_#in~i_7|))",
+      "in_vars": {
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_13|",
+        "bubblesort_~a.base": "v_bubblesort_~a.base_31",
+        "main_#res": "|v_main_#res_5|",
+        "main_#t~nondet6": "|v_main_#t~nondet6_13|",
+        "ULTIMATE.start_#t~ret7": "|v_ULTIMATE.start_#t~ret7_6|",
+        "bubblesort_~i": "v_bubblesort_~i_28",
+        "bubblesort_~a.offset": "v_bubblesort_~a.offset_25",
+        "bubblesort_#in~a.offset": "|v_bubblesort_#in~a.offset_8|",
+        "bubblesort_#in~i": "|v_bubblesort_#in~i_8|",
+        "bubblesort_#in~a.base": "|v_bubblesort_#in~a.base_8|",
+        "|v_rep(select #valid bubblesort_#in~a.base)_1|": "|v_arrayCell_v_#valid_46[v_bubblesort_#in~a.base_8]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_46[0]_1|",
+        "|v_rep(select #length bubblesort_#in~a.base)_1|": "|v_arrayCell_v_#length_35[v_bubblesort_#in~a.base_8]_1|"
+      },
+      "out_vars": {
+        "bubblesort_~a.base": "v_bubblesort_~a.base_30",
+        "main_#res": "|v_main_#res_4|",
+        "main_#t~nondet6": "|v_main_#t~nondet6_12|",
+        "ULTIMATE.start_#t~ret7": "|v_ULTIMATE.start_#t~ret7_5|",
+        "#StackHeapBarrier": "|v_#StackHeapBarrier_13|",
+        "bubblesort_~i": "v_bubblesort_~i_25",
+        "bubblesort_~a.offset": "v_bubblesort_~a.offset_24",
+        "bubblesort_#in~a.offset": "|v_bubblesort_#in~a.offset_7|",
+        "bubblesort_#in~i": "|v_bubblesort_#in~i_7|",
+        "bubblesort_#in~a.base": "|v_bubblesort_#in~a.base_7|",
+        "|v_rep(select #valid bubblesort_#in~a.base)_1|": "|v_arrayCell_v_#valid_45[v_bubblesort_#in~a.base_7]_1|",
+        "|v_rep(select #valid 0)_1|": "|v_arrayCell_v_#valid_45[0]_1|",
+        "|v_rep(select #length bubblesort_#in~a.base)_1|": "|v_arrayCell_v_#length_34[v_bubblesort_#in~a.base_7]_1|"
+      },
+      "aux_vars": [
+        "|v_arrayCell_v_#valid_46[v_bubblesort_#in~a.base_7]_1|"
+      ],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_bubblesort_~i_27 0) (>= (+ v_bubblesort_~i_26 1) 0) (<= (+ v_bubblesort_~i_26 1) 0) (>= v_bubblesort_~i_27 0))",
+      "in_vars": {
+        "bubblesort_~i": "v_bubblesort_~i_27",
+        "bubblesort_#t~post5": "|v_bubblesort_#t~post5_4|",
+        "bubblesort_~j~0": "v_bubblesort_~j~0_17"
+      },
+      "out_vars": {
+        "bubblesort_#t~post5": "|v_bubblesort_#t~post5_3|",
+        "bubblesort_~i": "v_bubblesort_~i_26",
+        "bubblesort_~j~0": "v_bubblesort_~j~0_15"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}

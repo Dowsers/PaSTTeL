@@ -1,0 +1,58 @@
+{
+  "program_vars": [
+    "Process0Thread1of1ForFork0_thidvar0",
+    "Process1Thread1of1ForFork1_thidvar0",
+    "critical",
+    "n0",
+    "n1"
+  ],
+  "var_types": {
+    "Process0Thread1of1ForFork0_thidvar0": "Int",
+    "Process1Thread1of1ForFork1_thidvar0": "Int",
+    "critical": "Int",
+    "n0": "Int",
+    "n1": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (>= v_n0_33 0) (>= v_Process0Thread1of1ForFork0_thidvar0_11 0) (>= v_n1_26 1) (>= v_Process1Thread1of1ForFork1_thidvar0_7 1) (<= v_n0_33 0) (>= v_critical_42 0) (<= v_Process0Thread1of1ForFork0_thidvar0_11 0) (<= v_n1_26 1) (<= v_critical_42 0) (<= v_Process1Thread1of1ForFork1_thidvar0_7 1))",
+      "in_vars": {
+        "critical": "v_critical_46",
+        "Process0Thread1of1ForFork0_thidvar0": "v_Process0Thread1of1ForFork0_thidvar0_12",
+        "Process1Thread1of1ForFork1_thidvar0": "v_Process1Thread1of1ForFork1_thidvar0_8",
+        "n0": "v_n0_35",
+        "n1": "v_n1_31"
+      },
+      "out_vars": {
+        "critical": "v_critical_42",
+        "Process0Thread1of1ForFork0_thidvar0": "v_Process0Thread1of1ForFork0_thidvar0_11",
+        "Process1Thread1of1ForFork1_thidvar0": "v_Process1Thread1of1ForFork1_thidvar0_7",
+        "n0": "v_n0_33",
+        "n1": "v_n1_26"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(or (and (<= v_critical_45 0) (<= v_critical_43 0) (<= (+ v_n0_34 1) v_n1_28) (>= v_critical_43 0) (>= (+ v_n0_34 1) v_n1_28) (>= v_critical_45 0) (<= (+ v_n1_30 1) v_n0_34)) (and (<= v_critical_45 0) (<= v_critical_43 0) (<= (+ v_n0_34 1) v_n1_28) (>= v_critical_43 0) (>= (+ v_n0_34 1) v_n1_28) (>= v_critical_45 0) (<= v_n0_34 0) (>= v_n0_34 0)))",
+      "in_vars": {
+        "critical": "v_critical_45",
+        "n0": "v_n0_34",
+        "n1": "v_n1_30"
+      },
+      "out_vars": {
+        "critical": "v_critical_43",
+        "n0": "v_n0_34",
+        "n1": "v_n1_28"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ]
+}
