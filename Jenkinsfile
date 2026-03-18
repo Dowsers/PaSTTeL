@@ -10,7 +10,7 @@ pipeline {
           branches: [[name: '*/main']],
           userRemoteConfigs: [[
             url: 'https://github.com/Dowsers/PaSTTeL.git',
-            credentialsId: 'github-pat'
+            credentialsId: 'ID_DOWSERS_GITHUB'
           ]],
           extensions: [
             [$class: 'CleanBeforeCheckout'],
