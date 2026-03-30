@@ -24,6 +24,18 @@ struct AnalysisReport {
     double total_time_ms = 0.0;
     double terminating_time_ms = 0.0;
     double nonterminating_time_ms = 0.0;
+
+    bool isTerminating() const {
+        return winner.status == AnalysisResult::TERMINATING;
+    }
+
+    bool isNonTerminating() const {
+        return winner.status == AnalysisResult::NON_TERMINATING;
+    }
+
+    std::string getProofDetails() const {
+        return winner.proof_details;
+    }
 };
 
 /**

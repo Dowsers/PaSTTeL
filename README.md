@@ -1,5 +1,5 @@
 # PaSTTeL
-Parallel SMT-based framework for Termination and non-Termination of Lasso-shaped programs
+Parallel analysiS framework for Termination and non-Termination of Lasso programs
 
 # Build
 make -j$(nproc)
