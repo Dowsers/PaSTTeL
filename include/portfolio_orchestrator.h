@@ -33,8 +33,8 @@ struct AnalysisReport {
         return winner.status == AnalysisResult::NON_TERMINATING;
     }
 
-    std::string getProofDetails() const {
-        return winner.proof_details;
+    std::map<std::string, int64_t> getProofDetails() const {
+        return winner.rf_witness;
     }
 };
 

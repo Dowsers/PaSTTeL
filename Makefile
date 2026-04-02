@@ -21,6 +21,8 @@ LDFLAGS := -pthread
 #   $(CVC5_DIR)/include/cvc5/cvc5.h
 #   $(CVC5_DIR)/lib/libcvc5.a
 
+PASTTEL ?= $(HOME)/.local
+
 Z3_CFLAGS := -I$(PASTTEL)/include
 Z3_LIBS   := -L$(PASTTEL)/lib -lz3
 
@@ -104,9 +106,15 @@ MAIN_OBJ := $(MAIN_SRC:.cpp=.o)
 # Règles principales
 # ========================
 
-.PHONY: all clean test
+.PHONY: all lib clean test
 
 all: $(TESTS) $(MAIN)
+
+lib: $(BIN_DIR)/libpasttel.a
+
+$(BIN_DIR)/libpasttel.a: $(COMMON_OBJS) | $(BIN_DIR)
+	ar rcs $@ $^
+
 # Compilation des exécutables de test
 $(BIN_DIR)/%: $(COMMON_OBJS) $(TEST_DIR)/%.o | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
