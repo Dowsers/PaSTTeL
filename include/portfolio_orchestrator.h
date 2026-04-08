@@ -33,8 +33,11 @@ struct AnalysisReport {
         return winner.status == AnalysisResult::NON_TERMINATING;
     }
 
-    std::map<std::string, int64_t> getProofDetails() const {
+    std::map<std::string, int64_t> getRankFunctionDetails() const {
         return winner.rf_witness;
+    }
+    std::string printNTArgument() const {
+        return winner.proof_details;
     }
 };
 
@@ -65,6 +68,10 @@ public:
      * @return AnalysisReport with all results and the overall verdict
      */
     AnalysisReport join(int timelimit_seconds = 0);
+
+    int getTechniqueCount() const {
+        return techniques_.size();
+    }
 
 private:
     int max_threads_;
