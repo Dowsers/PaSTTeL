@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "rewrite_handler.h"
+
 /**
  * RewriteLet - Inline (expand) let bindings in SMT-LIB2 formulas.
  *
@@ -14,27 +16,27 @@
  * Handles nested lets recursively. Uses parallel binding semantics
  * (all bindings see the original body, not previously substituted ones).
  *
- * Stateless: all methods are static.
  */
-class RewriteLet {
+class RewriteLet : public RewriteTermHandler {
 public:
+
+    bool canHandle(const std::string& op) const override;
+
     /**
      * Recursively inline all (let ...) subexpressions in the formula.
      * Returns the rewritten formula without any let bindings.
      */
-    static std::string rewrite(const std::string& formula);
+    std::string rewrite(const std::string& formula) override;
+
+    std::string getName() const override;
 
 private:
-    /**
-     * Recursively process an S-expression, expanding let bindings.
-     */
-    static std::string rewriteExpr(const std::string& expr);
 
     /**
      * Substitute all occurrences of old_var with new_val in expr,
      * respecting word boundaries (space, parentheses, newlines).
      */
-    static std::string substituteInExpr(
+    std::string substituteInExpr(
         const std::string& expr,
         const std::string& old_var,
         const std::string& new_val);

@@ -29,4 +29,14 @@ inline std::string formatNumber(double value) {
     return oss.str();
 }
 
+
+
+struct FunctionAbstraction {
+    std::string fresh_var;      // Variable fraiche (ex: "uf__keccak256__0")
+    std::string original_call;  // Terme original SMT-LIB (ex: "(keccak256 v_x_1)")
+    std::string function_name;  // Nom de l'operateur (ex: "keccak256")
+    std::string sort;           // Type de retour (ex: "Int")
+};
+
+
 #endif // UTILES_H

@@ -179,7 +179,7 @@ LinearInequality SMTParser::parseInequality(const std::string& expr) {
         throw std::runtime_error(
             "SMTParser::parseInequality: unrewritten operator '" + op +
             "' in: " + expr +
-            "\nEnsure RewriteEquality / RewriteDivision / ArrayHandler are applied first.");
+            "\nEnsure RewriteEquality / RewriteDivisionMod / ArrayHandler are applied first.");
     }
 
     AffineTerm lhs = parseArithExpr(tokens[1]);

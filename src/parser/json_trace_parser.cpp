@@ -6,18 +6,348 @@
 #include <regex>
 
 #include "parser/json_trace_parser.h"
-#include "parser/transition_builder.h"
-#include "parser/smt_parser.h"
 #include "linearization/formula_linearizer.h"
 #include "linearization/uf_handler.h"
 #include "linearization/array_handler.h"
 #include "rewriting/rewrite_let.h"
-#include "rewriting/rewrite_division.h"
+#include "rewriting/rewrite_division_modulo.h"
 #include "rewriting/rewrite_equality.h"
 #include "rewriting/rewrite_booleans.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;
+
+void JsonTraceParser::removeArrayVarsFromProgramVars(
+                    std::vector<std::string>& program_vars,
+                    const std::map<std::string, std::string>& var_sorts) {
+    auto it = program_vars.begin();
+    while (it != program_vars.end()) {
+        auto sort_it = var_sorts.find(*it);
+        if (sort_it != var_sorts.end() &&
+            sort_it->second.find("Array") != std::string::npos) {
+            if (VERBOSITY == VerbosityLevel::VERBOSE)
+                std::cout << "  Filtered Array var from program_vars: "
+                            << *it << " (" << sort_it->second << ")" << std::endl;
+            it = program_vars.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+bool checkDivModOp(const std::string formula) {
+    if (formula.find("(div ") != std::string::npos ||
+            formula.find("(mod ") != std::string::npos){
+        if (VERBOSITY == VerbosityLevel::VERBOSE)
+            std::cout << "Detected div/mod operations in formulas" << std::endl;
+        return true;
+    }
+    return false;
+}
+
+bool checkArrayVars(const std::map<std::string, std::string>& var_sorts) {
+    for (const auto& [var_name, var_sort] : var_sorts) {
+        if (var_sort.find("Array") != std::string::npos){
+            if (VERBOSITY == VerbosityLevel::VERBOSE)
+                std::cout << "Detected Array vars in formulas" << std::endl;
+            return true;
+        }
+    }
+    return false;
+}
+
+std::set<std::string> extractBoolVars(const std::map<std::string, std::string>& var_sorts) {
+    std::set<std::string> bool_vars;
+    for (const auto& [var_name, var_sort] : var_sorts) {
+        if (var_sort == "Bool")
+            bool_vars.insert(var_name);
+    }
+    if (VERBOSITY == VerbosityLevel::VERBOSE)
+        std::cout << "Detected booleans in program variables: "<< bool_vars.size() << std::endl;
+    return bool_vars;
+}
+
+
+void setLoopVariables(LassoProgram& lasso){
+    lasso.loop_vars.clear();
+    for (const auto& var : lasso.program_vars) {
+        bool in_loop_in  = lasso.loop.var_to_ssa_in.count(var) > 0;
+        bool in_loop_out = lasso.loop.var_to_ssa_out.count(var) > 0;
+        if (in_loop_in && in_loop_out) {
+            lasso.loop_vars.push_back(var);
+        }
+    }
+}
+
+// void removeUnusedVariables(LassoProgram& lasso){
+//     std::set<std::string> used_vars;
+//     for (const auto& poly : lasso.stem.polyhedra) {
+//         for (const auto& ineq : poly) {
+//             for (const auto& [var, _] : ineq.coefficients)
+//                 used_vars.insert(var);
+//             for (const auto& [var, _] : ineq.constant.coefficients)
+//                 used_vars.insert(var);
+//         }
+//     }
+//     for (const auto& poly : lasso.loop.polyhedra) {
+//         for (const auto& ineq : poly) {
+//             for (const auto& [var, _] : ineq.coefficients)
+//                 used_vars.insert(var);
+//             for (const auto& [var, _] : ineq.constant.coefficients)
+//                 used_vars.insert(var);
+//         }
+//     }
+
+//     // Filter var_to_ssa_in and var_to_ssa_out to keep only used variables
+//     auto filterVars = [&](std::map<std::string, std::string>& var_map, std::set<std::string>& used_vars) {
+//         std::map<std::string, std::string> filtered;
+//         for (const auto& [var_prog, ssa] : var_map) {
+//             if (used_vars.count(ssa) > 0) {
+//                 filtered[var_prog] = ssa;
+//             }
+//         }
+//         var_map = std::move(filtered);
+//     };
+
+//     filterVars(lasso.stem.var_to_ssa_in, used_vars);
+//     filterVars(lasso.stem.var_to_ssa_out, used_vars);
+//     filterVars(lasso.loop.var_to_ssa_in, used_vars);
+//     filterVars(lasso.loop.var_to_ssa_out, used_vars);
+
+//     // Update program_vars to keep only those that are still mapped
+//     // std::set<std::string> mapped_program_vars;
+//     // for (const auto& [var_prog, ssa] : lasso.stem.var_to_ssa_in)
+//     //     mapped_program_vars.insert(var_prog);
+//     // for (const auto& [var_prog, ssa] : lasso.stem.var_to_ssa_out)
+//     //     mapped_program_vars.insert(var_prog);
+//     // for (const auto& [var_prog, ssa] : lasso.loop.var_to_ssa_in)
+//     //     mapped_program_vars.insert(var_prog);
+//     // for (const auto& [var_prog, ssa] : lasso.loop.var_to_ssa_out)
+//     //     mapped_program_vars.insert(var_prog);
+
+//     // lasso.program_vars.clear();
+//     // for (const auto& var : mapped_program
+// }
+
+void connectStemToLoop(LassoProgram& lasso) {
+    if (lasso.stem.isTrue() || lasso.loop.isTrue()) {
+        if (VERBOSITY != VerbosityLevel::QUIET) {
+            std::cout << "\n=== No STEM or no LOOP to connect ===" << std::endl;
+            std::cout << "STEM isTrue: " << lasso.stem.isTrue() << ", LOOP isTrue: " << lasso.loop.isTrue() << std::endl;
+        }
+        return;
+    }
+
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "\n=== Connecting STEM to LOOP ===" << std::endl;
+    }
+
+    std::map<std::string, std::string> substitution;
+    for (const auto& [var_prog, ssa_out_stem] : lasso.stem.var_to_ssa_out) {
+        auto it = lasso.loop.var_to_ssa_in.find(var_prog);
+        if (it != lasso.loop.var_to_ssa_in.end()) {
+            std::string ssa_in_loop = it->second;
+            if (ssa_in_loop != ssa_out_stem) {
+                substitution[ssa_in_loop] = ssa_out_stem;
+            }
+        }
+    }
+
+    // Apply substitution to LOOP constraints
+    if (!substitution.empty()) {
+        // Substitue un nom de variable SSA selon la table.
+        // Pour les identifiants quotés SMT-LIB2 |...[idx]...|, seul l'index
+        // interne peut être substitué ; le nom complet reste entre pipes.
+        auto substituteVar = [&](const std::string& var_ssa) -> std::string {
+            // Identifiant quoté |...| : substituer l'index interne si besoin
+            if (var_ssa.size() >= 2 && var_ssa.front() == '|' && var_ssa.back() == '|') {
+                // Cherche [idx] à l'intérieur des pipes
+                size_t bracket = var_ssa.find('[');
+                if (bracket != std::string::npos) {
+                    size_t close = var_ssa.find(']', bracket);
+                    std::string idx = var_ssa.substr(bracket + 1, close - bracket - 1);
+                    auto it_idx = substitution.find(idx);
+                    if (it_idx != substitution.end()) {
+                        return var_ssa.substr(0, bracket + 1)
+                            + it_idx->second
+                            + var_ssa.substr(close);
+                    }
+                }
+                return var_ssa;
+            }
+            // Variable scalaire ou notation arr[idx] sans pipes
+            size_t bracket = var_ssa.find('[');
+            if (bracket != std::string::npos) {
+                std::string arr = var_ssa.substr(0, bracket);
+                std::string idx = var_ssa.substr(bracket + 1, var_ssa.find(']') - bracket - 1);
+                auto it_arr = substitution.find(arr);
+                auto it_idx = substitution.find(idx);
+                if (it_arr != substitution.end()) arr = it_arr->second;
+                if (it_idx != substitution.end()) idx = it_idx->second;
+                return arr + "[" + idx + "]";
+            }
+            auto it = substitution.find(var_ssa);
+            return (it != substitution.end()) ? it->second : var_ssa;
+        };
+
+        for (auto& poly : lasso.loop.polyhedra) {
+            for (auto& ineq : poly) {
+                // Substitute in coefficients
+                std::map<std::string, AffineTerm> new_coeffs;
+                for (const auto& [var_ssa, coef] : ineq.coefficients)
+                    new_coeffs[substituteVar(var_ssa)] = coef;
+                ineq.coefficients = new_coeffs;
+
+                // Substitute in constant.coefficients
+                std::map<std::string, double> new_const_coeffs;
+                for (const auto& [var_ssa, val] : ineq.constant.coefficients)
+                    new_const_coeffs[substituteVar(var_ssa)] = val;
+                ineq.constant.coefficients = new_const_coeffs;
+            }
+        }
+
+        // Update var_to_ssa_in of loop (uses substituteVar to handle quoted identifiers)
+        for (auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
+            ssa_in = substituteVar(ssa_in);
+        }
+
+        // Update var_to_ssa_out of loop (uses substituteVar to handle quoted identifiers)
+        for (auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
+            ssa_out = substituteVar(ssa_out);
+        }
+    }
+}
+
+
+void storeAbstractFunctionsToLasso(LassoProgram& lasso,
+        const std::vector<UltimateTransitionLine>& stem_lines,
+        const std::vector<UltimateTransitionLine>& loop_lines) {
+
+    // Build the full substitution map from all transition compositions.
+    // When transitions [T1, T2] are composed, T2.in_vars are substituted
+    // by T1.out_vars. We need to apply these same substitutions to the
+    // original_call in each function abstraction.
+    std::map<std::string, std::string> composition_subst;
+
+    // Collect substitutions from loop transitions composition
+    if (loop_lines.size() > 1) {
+        for (size_t i = 0; i + 1 < loop_lines.size(); ++i) {
+            const auto& prev_out = loop_lines[i].out_vars;
+            const auto& next_in  = loop_lines[i + 1].in_vars;
+            for (const auto& [var_prog, ssa_in_next] : next_in) {
+                auto it = prev_out.find(var_prog);
+                if (it != prev_out.end() && it->second != ssa_in_next) {
+                    composition_subst[ssa_in_next] = it->second;
+                }
+            }
+        }
+    }
+
+    // Collect substitutions from stem transitions composition
+    if (stem_lines.size() > 1) {
+        for (size_t i = 0; i + 1 < stem_lines.size(); ++i) {
+            const auto& prev_out = stem_lines[i].out_vars;
+            const auto& next_in  = stem_lines[i + 1].in_vars;
+            for (const auto& [var_prog, ssa_in_next] : next_in) {
+                auto it = prev_out.find(var_prog);
+                if (it != prev_out.end() && it->second != ssa_in_next) {
+                    composition_subst[ssa_in_next] = it->second;
+                }
+            }
+        }
+    }
+
+    // Collect substitutions from stem→loop connection (step 7)
+    if (!stem_lines.empty() && !loop_lines.empty()) {
+        for (const auto& [var_prog, ssa_out_stem] : lasso.stem.var_to_ssa_out) {
+            // Find the original loop first in_var before step 7 substitution
+            // loop_lines[0].in_vars has the original SSA names
+            auto it = loop_lines[0].in_vars.find(var_prog);
+            if (it != loop_lines[0].in_vars.end() && it->second != ssa_out_stem) {
+                composition_subst[it->second] = ssa_out_stem;
+            }
+        }
+    }
+
+    // Apply substitutions to each abstraction's original_call
+    if (!composition_subst.empty()) {
+        for (auto& abs : lasso.function_abstractions) {
+            for (const auto& [old_var, new_var] : composition_subst) {
+                // Replace whole-word occurrences of old_var by new_var
+                // in the original_call S-expression
+                size_t pos = 0;
+                while ((pos = abs.original_call.find(old_var, pos)) != std::string::npos) {
+                    // Check word boundary: char before must be space or '('
+                    // and char after must be space or ')'
+                    bool start_ok = (pos == 0) ||
+                        abs.original_call[pos - 1] == ' ' ||
+                        abs.original_call[pos - 1] == '(';
+                    size_t end_pos = pos + old_var.size();
+                    bool end_ok = (end_pos == abs.original_call.size()) ||
+                        abs.original_call[end_pos] == ' ' ||
+                        abs.original_call[end_pos] == ')';
+
+                    if (start_ok && end_ok) {
+                        abs.original_call.replace(pos, old_var.size(), new_var);
+                        pos += new_var.size();
+                    } else {
+                        pos += old_var.size();
+                    }
+                }
+            }
+        }
+    }
+
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "\nFunction abstractions (post-composition): "
+                << lasso.function_abstractions.size() << std::endl;
+        for (const auto& abs : lasso.function_abstractions) {
+            std::cout << "  " << abs.fresh_var << " = " << abs.original_call
+                    << " (" << abs.sort << ")" << std::endl;
+        }
+    }
+}
+
+void addFreeAuxVariables(LassoProgram& lasso,
+                const std::vector<UltimateTransitionLine>& stem_lines,
+                const std::vector<UltimateTransitionLine>& loop_lines) {
+    std::set<std::string> already_declared;
+    for (const auto& abs : lasso.function_abstractions) {
+        already_declared.insert(abs.fresh_var);
+    }
+    auto registerFreeVars = [&](const std::vector<UltimateTransitionLine>& lines) {
+        for (const auto& line : lines) {
+            for (const auto& fv : line.free_vars) {
+                if (already_declared.insert(fv).second) {
+                    FunctionAbstraction abs;
+                    abs.fresh_var = fv;
+                    abs.sort = "Int";
+                    abs.original_call = "";
+                    lasso.function_abstractions.push_back(abs);
+                    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                        std::cout << "  Free aux var declared: " << fv << " (Int)" << std::endl;
+                    }
+                }
+            }
+        }
+    };
+    registerFreeVars(stem_lines);
+    registerFreeVars(loop_lines);
+}
+
+
+void initializeOptionsForAnalysis(LassoProgram& lasso) {
+    // Si le programme contient des variables de type Int, activer integer_mode for GNTA
+    for (const auto& [var_name, var_sort] : lasso.var_sorts) {
+        if (var_sort == "Int") {
+            lasso.integer_mode = true;
+            break;
+        }
+    }
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "Integer mode: " << (lasso.integer_mode ? "ON" : "OFF") << std::endl;
+    }
+}
 
 // ============================================================================
 // MAIN PARSING FUNCTION
@@ -60,7 +390,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         std::cout << "Program variables: " << lasso.program_vars.size() << std::endl;
     }
 
-    // 3b. Extract constants (if present)
+    // 4. Extract constants (if present)
     if (j.contains("constants") && j["constants"].is_object()) {
         for (auto it = j["constants"].begin(); it != j["constants"].end(); ++it) {
             DeclaredConstant constant;
@@ -91,7 +421,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 3b2. Extract array variables (if present)
+    // 5. Extract array variables (if present)
     // Format: "array_vars": {"balance": "(Array Int Int)", "addr": "Int"}
     // Variables with Array sorts are tracked in var_sorts for correct declaration
     bool has_arrays = false;
@@ -117,7 +447,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 3b3. Extract var_types (if present)
+    // 6. Extract var_types (if present)
     // Format: "var_types": {"x": "Int", "flag": "Bool", "arr": "(Array Int Int)"}
     // Populates var_sorts for all typed variables; merges with array_vars
     std::set<std::string> bool_vars;
@@ -145,39 +475,14 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
             }
         }
     }
+    if (VERBOSITY == VerbosityLevel::VERBOSE)
+        std::cout << "Detected booleans in program variables: "<< bool_vars.size() << std::endl;
 
-    // 3b3b. Filter Array vars from program_vars (no linear coefficient possible).
-    // Bool vars are KEPT — their 0/1 bounds are injected by rewriteWithBounds.
-    {
-        auto it = lasso.program_vars.begin();
-        while (it != lasso.program_vars.end()) {
-            auto sort_it = lasso.var_sorts.find(*it);
-            if (sort_it != lasso.var_sorts.end() &&
-                sort_it->second.find("Array") != std::string::npos) {
-                if (VERBOSITY == VerbosityLevel::VERBOSE)
-                    std::cout << "  Filtered Array var from program_vars: "
-                              << *it << " (" << sort_it->second << ")" << std::endl;
-                it = lasso.program_vars.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
+    // 7. Filter Array vars from program_vars (no linear coefficient possible).
+    // Bool vars are KEPT — their 0/1 bounds are injected by rewrite.
+    JsonTraceParser::removeArrayVarsFromProgramVars(lasso.program_vars, lasso.var_sorts);
 
-    // 3b4. Compute integer_mode from var_sorts
-    // integer_mode = true if ANY variable has genuine "Int" type (not Bool rewritten to Int)
-    // This ensures geometric nontermination declares all coefficients as Int for soundness.
-    for (const auto& [var_name, var_sort] : lasso.var_sorts) {
-        if (var_sort == "Int") {
-            lasso.integer_mode = true;
-            break;
-        }
-    }
-    if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "Integer mode: " << (lasso.integer_mode ? "ON" : "OFF") << std::endl;
-    }
-
-    // 3c. Extract uninterpreted functions (if present)
+    // 8. Extract uninterpreted functions (if present)
     if (j.contains("functions") && j["functions"].is_array()) {
         for (const auto& func_json : j["functions"]) {
             UninterpretedFunction func;
@@ -197,7 +502,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 3d. Extract axioms (if present)
+    // 9. Extract axioms (if present)
     if (j.contains("axioms") && j["axioms"].is_array()) {
         for (const auto& axiom_json : j["axioms"]) {
             Axiom axiom;
@@ -225,7 +530,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 3e. Check for div/mod operations in formulas
+    // 10. Check for div/mod operations in formulas
     // These are non-linear and need to be abstracted by FormulaLinearizer
     bool has_divmod = false;
     auto checkDivMod = [](const nlohmann::json& transitions) -> bool {
@@ -245,23 +550,24 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     if (j.contains("stem")) has_divmod = has_divmod || checkDivMod(j["stem"]);
     if (j.contains("loop")) has_divmod = has_divmod || checkDivMod(j["loop"]);
 
-    if (has_divmod && VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "Detected div/mod operations in formulas" << std::endl;
-    }
-
-    // 3f. Create RewriteDivision for div/mod rewriting
+    // 11. Create RewriteDivisionMod for div/mod rewriting
     // This replaces (div x y) and (mod x y) with auxiliary variables
     // and conjoins equivalent linear constraints directly into the formula.
-    std::unique_ptr<RewriteDivision> div_rewriter;
-    if (has_divmod) {
-        div_rewriter = std::make_unique<RewriteDivision>();
+    FormulaRewriter * rewriter = new FormulaRewriter();
+    rewriter->addHandler(new RewriteEquality());
+    rewriter->addHandler(new RewriteLet());
 
-        if (VERBOSITY == VerbosityLevel::VERBOSE) {
-            std::cout << "RewriteDivision: will rewrite div/mod with linear constraints" << std::endl;
-        }
+    if (has_divmod) {
+        rewriter->addHandler(new RewriteDivisionMod());
+    }
+    if (!bool_vars.empty()) {
+        rewriter->addHandler(new RewriteBooleans(bool_vars));
+    }
+    if (has_divmod) {
+        rewriter->addHandler(new RewriteDivisionMod());
     }
 
-    // 3h. Create FormulaLinearizer with appropriate handlers
+    // 12. Create FormulaLinearizer with appropriate handlers
     // The linearizer replaces non-linear terms with fresh variables
     // so that the formulas become linear for Motzkin transformation.
     std::unique_ptr<FormulaLinearizer> linearizer;
@@ -316,7 +622,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     std::vector<UltimateTransitionLine> stem_lines;
     if (j.contains("stem") && j["stem"].is_array()) {
         for (const auto& trans_json : j["stem"]) {
-            stem_lines.push_back(parseTransition(trans_json, linearizer.get(), div_rewriter.get(), bool_vars));
+            stem_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter));
         }
     }
 
@@ -328,7 +634,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     std::vector<UltimateTransitionLine> loop_lines;
     if (j.contains("loop") && j["loop"].is_array()) {
         for (const auto& trans_json : j["loop"]) {
-            loop_lines.push_back(parseTransition(trans_json, linearizer.get(), div_rewriter.get(), bool_vars));
+            loop_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter));
         }
     }
 
@@ -336,118 +642,30 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         std::cout << "Loop transitions: " << loop_lines.size() << std::endl;
     }
 
-    // 6. Build transitions using TransitionBuilder (composition logic)
+    // 6. Build transitions using LinearTransition (composition logic)
     if (!stem_lines.empty()) {
-        lasso.stem = TransitionBuilder::buildFromLines(stem_lines);
+        lasso.stem = LinearTransition::buildFromLines(stem_lines);
         if (VERBOSITY == VerbosityLevel::VERBOSE) {
             std::cout << "STEM built with " << lasso.stem.var_to_ssa_in.size() << " input vars" << std::endl;
         }
     }
 
     if (!loop_lines.empty()) {
-        lasso.loop = TransitionBuilder::buildFromLines(loop_lines);
+        lasso.loop = LinearTransition::buildFromLines(loop_lines);
         if (VERBOSITY == VerbosityLevel::VERBOSE) {
             std::cout << "LOOP built with " << lasso.loop.var_to_ssa_out.size() << " output vars" << std::endl;
         }
     }
 
-    // 7. Connect STEM->LOOP (same logic as text parser lines 59-130)
-    if (!stem_lines.empty() && !loop_lines.empty()) {
-        if (VERBOSITY == VerbosityLevel::VERBOSE) {
-            std::cout << "\n=== Connecting STEM to LOOP ===" << std::endl;
-        }
-
-        std::map<std::string, std::string> substitution;
-        for (const auto& [var_prog, ssa_out_stem] : lasso.stem.var_to_ssa_out) {
-            auto it = lasso.loop.var_to_ssa_in.find(var_prog);
-            if (it != lasso.loop.var_to_ssa_in.end()) {
-                std::string ssa_in_loop = it->second;
-                if (ssa_in_loop != ssa_out_stem) {
-                    substitution[ssa_in_loop] = ssa_out_stem;
-                }
-            }
-        }
-
-        // Apply substitution to LOOP constraints
-        if (!substitution.empty()) {
-            // Substitue un nom de variable SSA selon la table.
-            // Pour les identifiants quotés SMT-LIB2 |...[idx]...|, seul l'index
-            // interne peut être substitué ; le nom complet reste entre pipes.
-            auto substituteVar = [&](const std::string& var_ssa) -> std::string {
-                // Identifiant quoté |...| : substituer l'index interne si besoin
-                if (var_ssa.size() >= 2 && var_ssa.front() == '|' && var_ssa.back() == '|') {
-                    // Cherche [idx] à l'intérieur des pipes
-                    size_t bracket = var_ssa.find('[');
-                    if (bracket != std::string::npos) {
-                        size_t close = var_ssa.find(']', bracket);
-                        std::string idx = var_ssa.substr(bracket + 1, close - bracket - 1);
-                        auto it_idx = substitution.find(idx);
-                        if (it_idx != substitution.end()) {
-                            return var_ssa.substr(0, bracket + 1)
-                                 + it_idx->second
-                                 + var_ssa.substr(close);
-                        }
-                    }
-                    return var_ssa;
-                }
-                // Variable scalaire ou notation arr[idx] sans pipes
-                size_t bracket = var_ssa.find('[');
-                if (bracket != std::string::npos) {
-                    std::string arr = var_ssa.substr(0, bracket);
-                    std::string idx = var_ssa.substr(bracket + 1, var_ssa.find(']') - bracket - 1);
-                    auto it_arr = substitution.find(arr);
-                    auto it_idx = substitution.find(idx);
-                    if (it_arr != substitution.end()) arr = it_arr->second;
-                    if (it_idx != substitution.end()) idx = it_idx->second;
-                    return arr + "[" + idx + "]";
-                }
-                auto it = substitution.find(var_ssa);
-                return (it != substitution.end()) ? it->second : var_ssa;
-            };
-
-            for (auto& poly : lasso.loop.polyhedra) {
-                for (auto& ineq : poly) {
-                    // Substitute in coefficients
-                    std::map<std::string, AffineTerm> new_coeffs;
-                    for (const auto& [var_ssa, coef] : ineq.coefficients)
-                        new_coeffs[substituteVar(var_ssa)] = coef;
-                    ineq.coefficients = new_coeffs;
-
-                    // Substitute in constant.coefficients
-                    std::map<std::string, double> new_const_coeffs;
-                    for (const auto& [var_ssa, val] : ineq.constant.coefficients)
-                        new_const_coeffs[substituteVar(var_ssa)] = val;
-                    ineq.constant.coefficients = new_const_coeffs;
-                }
-            }
-
-            // Update var_to_ssa_in of loop (uses substituteVar to handle quoted identifiers)
-            for (auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-                ssa_in = substituteVar(ssa_in);
-            }
-
-            // Update var_to_ssa_out of loop (uses substituteVar to handle quoted identifiers)
-            for (auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-                ssa_out = substituteVar(ssa_out);
-            }
-        }
-    }
+    // 7. Connect STEM->LOOP
+    connectStemToLoop(lasso);
 
     // 7b0. Calculer loop_vars AVANT ensureMapping :
     //      intersection loop.var_to_ssa_in ∩ loop.var_to_ssa_out depuis le JSON original.
     //      Matching Ultimate: template variables = loop.getOutVars() ∩ loop.getInVars().
     //      Après ensureMapping, tous les program_vars sont dans les deux maps (via fresh vars),
     //      donc l'intersection ne peut pas être faite après.
-    {
-        lasso.loop_vars.clear();
-        for (const auto& var : lasso.program_vars) {
-            bool in_loop_in  = lasso.loop.var_to_ssa_in.count(var) > 0;
-            bool in_loop_out = lasso.loop.var_to_ssa_out.count(var) > 0;
-            if (in_loop_in && in_loop_out) {
-                lasso.loop_vars.push_back(var);
-            }
-        }
-    }
+    setLoopVariables(lasso);
 
     // 7b. Ensure all program_vars have SSA mappings in both stem and loop
     //     If a program variable is missing from in_vars or out_vars of the loop
@@ -456,13 +674,13 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     {
         static int fresh_counter = 0;
         auto ensureMapping = [&](std::map<std::string, std::string>& mapping,
-                                 const std::string& prog_var, const std::string& prefix) {
+                                const std::string& prog_var, const std::string& prefix) {
             if (mapping.find(prog_var) == mapping.end()) {
                 std::string fresh = "v_" + prog_var + "_fresh_" + prefix + "_" + std::to_string(fresh_counter++);
                 mapping[prog_var] = fresh;
                 if (VERBOSITY == VerbosityLevel::VERBOSE) {
                     std::cout << "  Generated fresh SSA var: " << fresh
-                              << " for " << prog_var << " (" << prefix << ")" << std::endl;
+                            << " for " << prog_var << " (" << prefix << ")" << std::endl;
                 }
             }
         };
@@ -477,147 +695,26 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
         }
     }
 
-    // 7c. (supprimé) : Les variables non modifiées dans le loop (in == out) gardent
-    //     le même nom SSA. Le Motzkin gère correctement ce cas : le coefficient de
-    //     f(x') - f(x) pour une variable constante est zéro, ce qui est correct.
-
-    // 8a. Store RewriteDivision auxiliary variables FIRST
+    // 8a. Store RewriteDivisionMod auxiliary variables FIRST
     // These must be declared before linearizer abstractions because the linearizer's
     // original_call may reference div_aux/mod_aux vars (e.g., "(= nlmul__0 (* div_aux_0 y))").
-    if (div_rewriter && !div_rewriter->getAuxVars().empty()) {
-        for (const auto& abs : div_rewriter->getAuxVars()) {
-            lasso.function_abstractions.push_back(abs);
-        }
 
-        if (VERBOSITY == VerbosityLevel::VERBOSE) {
-            std::cout << "\nRewriteDivision auxiliary variables: "
-                      << div_rewriter->getAuxVars().size() << std::endl;
-            for (const auto& abs : div_rewriter->getAuxVars()) {
-                std::cout << "  " << abs.fresh_var << " (" << abs.sort << ")" << std::endl;
-            }
-        }
-    }
+    if (rewriter)
+        rewriter->storeAuxVarsToLasso(lasso);
 
     // 8b. Store linearizer function abstractions with composition substitutions applied
-    if (linearizer && !linearizer->getAbstractions().empty()) {
-        auto lin_abstractions = linearizer->getAbstractions();
-        for (auto& abs : lin_abstractions) {
-            lasso.function_abstractions.push_back(abs);
-        }
+    if(linearizer)
+        linearizer->storeAbstractionsToLasso(lasso);
 
-        // Build the full substitution map from all transition compositions.
-        // When transitions [T1, T2] are composed, T2.in_vars are substituted
-        // by T1.out_vars. We need to apply these same substitutions to the
-        // original_call in each function abstraction.
-        std::map<std::string, std::string> composition_subst;
+    storeAbstractFunctionsToLasso(lasso, stem_lines, loop_lines);
 
-        // Collect substitutions from loop transitions composition
-        if (loop_lines.size() > 1) {
-            for (size_t i = 0; i + 1 < loop_lines.size(); ++i) {
-                const auto& prev_out = loop_lines[i].out_vars;
-                const auto& next_in  = loop_lines[i + 1].in_vars;
-                for (const auto& [var_prog, ssa_in_next] : next_in) {
-                    auto it = prev_out.find(var_prog);
-                    if (it != prev_out.end() && it->second != ssa_in_next) {
-                        composition_subst[ssa_in_next] = it->second;
-                    }
-                }
-            }
-        }
-
-        // Collect substitutions from stem transitions composition
-        if (stem_lines.size() > 1) {
-            for (size_t i = 0; i + 1 < stem_lines.size(); ++i) {
-                const auto& prev_out = stem_lines[i].out_vars;
-                const auto& next_in  = stem_lines[i + 1].in_vars;
-                for (const auto& [var_prog, ssa_in_next] : next_in) {
-                    auto it = prev_out.find(var_prog);
-                    if (it != prev_out.end() && it->second != ssa_in_next) {
-                        composition_subst[ssa_in_next] = it->second;
-                    }
-                }
-            }
-        }
-
-        // Collect substitutions from stem→loop connection (step 7)
-        if (!stem_lines.empty() && !loop_lines.empty()) {
-            for (const auto& [var_prog, ssa_out_stem] : lasso.stem.var_to_ssa_out) {
-                // Find the original loop first in_var before step 7 substitution
-                // loop_lines[0].in_vars has the original SSA names
-                auto it = loop_lines[0].in_vars.find(var_prog);
-                if (it != loop_lines[0].in_vars.end() && it->second != ssa_out_stem) {
-                    composition_subst[it->second] = ssa_out_stem;
-                }
-            }
-        }
-
-        // Apply substitutions to each abstraction's original_call
-        if (!composition_subst.empty()) {
-            for (auto& abs : lasso.function_abstractions) {
-                for (const auto& [old_var, new_var] : composition_subst) {
-                    // Replace whole-word occurrences of old_var by new_var
-                    // in the original_call S-expression
-                    size_t pos = 0;
-                    while ((pos = abs.original_call.find(old_var, pos)) != std::string::npos) {
-                        // Check word boundary: char before must be space or '('
-                        // and char after must be space or ')'
-                        bool start_ok = (pos == 0) ||
-                            abs.original_call[pos - 1] == ' ' ||
-                            abs.original_call[pos - 1] == '(';
-                        size_t end_pos = pos + old_var.size();
-                        bool end_ok = (end_pos == abs.original_call.size()) ||
-                            abs.original_call[end_pos] == ' ' ||
-                            abs.original_call[end_pos] == ')';
-
-                        if (start_ok && end_ok) {
-                            abs.original_call.replace(pos, old_var.size(), new_var);
-                            pos += new_var.size();
-                        } else {
-                            pos += old_var.size();
-                        }
-                    }
-                }
-            }
-        }
-
-        if (VERBOSITY == VerbosityLevel::VERBOSE) {
-            std::cout << "\nFunction abstractions (post-composition): "
-                      << lasso.function_abstractions.size() << std::endl;
-            for (const auto& abs : lasso.function_abstractions) {
-                std::cout << "  " << abs.fresh_var << " = " << abs.original_call
-                          << " (" << abs.sort << ")" << std::endl;
-            }
-        }
-    }
-
-    // 8c. Register free_vars from all transitions as function_abstractions (Int, no assertion).
+    // 8c. Register free_vars (auxiliary variables) from all transitions as function_abstractions (Int, no assertion).
     // These are SSA variables present in the formula but not in in_vars/out_vars —
     // typically Ultimate's precomputed div_aux/mod_aux variables from PREPROCESSED traces.
     // They must be declared in the solver but carry no ranking-function coefficient.
-    {
-        std::set<std::string> already_declared;
-        for (const auto& abs : lasso.function_abstractions) {
-            already_declared.insert(abs.fresh_var);
-        }
-        auto registerFreeVars = [&](const std::vector<UltimateTransitionLine>& lines) {
-            for (const auto& line : lines) {
-                for (const auto& fv : line.free_vars) {
-                    if (already_declared.insert(fv).second) {
-                        FunctionAbstraction abs;
-                        abs.fresh_var = fv;
-                        abs.sort = "Int";
-                        abs.original_call = "";
-                        lasso.function_abstractions.push_back(abs);
-                        if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                            std::cout << "  Free aux var declared: " << fv << " (Int)" << std::endl;
-                        }
-                    }
-                }
-            }
-        };
-        registerFreeVars(stem_lines);
-        registerFreeVars(loop_lines);
-    }
+    addFreeAuxVariables(lasso, stem_lines, loop_lines);
+
+    initializeOptionsForAnalysis(lasso);
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
@@ -629,6 +726,180 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     return lasso;
 }
 
+
+// ============================================================================
+// MAIN PARSING SINGLE STRING SMT TRANSITION
+// ============================================================================
+
+void JsonTraceParser::convertLassoStringToLassoProgram(
+    const std::string& stem_formula,
+    const std::string& loop_formula,
+    LassoProgram& lasso) {
+
+    std::vector<UltimateTransitionLine> stem_lines;
+    stem_lines.push_back(convertSMTFormula2ToLinearInequalities(stem_formula, lasso));
+    stem_lines[0].in_vars = lasso.stem.var_to_ssa_in;
+    stem_lines[0].out_vars = lasso.stem.var_to_ssa_out;
+    std::vector<UltimateTransitionLine> loop_lines;
+    loop_lines.push_back(convertSMTFormula2ToLinearInequalities(loop_formula, lasso));
+    loop_lines[0].in_vars = lasso.loop.var_to_ssa_in;
+    loop_lines[0].out_vars = lasso.loop.var_to_ssa_out;
+
+    lasso.stem = LinearTransition::buildFromLines(stem_lines);
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "STEM built with " << lasso.stem.var_to_ssa_in.size() << " input vars" << std::endl;
+    }
+    
+    lasso.loop = LinearTransition::buildFromLines(loop_lines);
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "LOOP built with " << lasso.loop.var_to_ssa_out.size() << " output vars" << std::endl;
+    }
+
+    connectStemToLoop(lasso);
+
+    setLoopVariables(lasso);
+
+    if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        std::cout << "\n=== After connecting STEM to LOOP ===" << std::endl;
+        std::cout << "STEM input vars: " << lasso.stem.var_to_ssa_in.size() << std::endl;
+        std::cout << "STEM output vars: " << lasso.stem.var_to_ssa_out.size() << std::endl;
+        std::cout << "LOOP input vars: " << lasso.loop.var_to_ssa_in.size() << std::endl;
+        std::cout << "LOOP output vars: " << lasso.loop.var_to_ssa_out.size() << std::endl;
+        std::cout << "Loop vars (in ∩ out) (size " << lasso.loop_vars.size() << "): ";
+        for (const auto& v : lasso.loop_vars) std::cout << v << " ";
+        std::cout << std::endl;
+    }
+
+    {
+        static int fresh_counter = 0;
+        auto ensureMapping = [&](std::map<std::string, std::string>& mapping,
+                                const std::string& prog_var, const std::string& prefix) {
+            if (mapping.find(prog_var) == mapping.end()) {
+                std::string fresh = "v_" + prog_var + "_fresh_" + prefix + "_" + std::to_string(fresh_counter++);
+                mapping[prog_var] = fresh;
+                if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                    std::cout << "  Generated fresh SSA var: " << fresh
+                            << " for " << prog_var << " (" << prefix << ")" << std::endl;
+                }
+            }
+        };
+
+        for (const auto& var : lasso.program_vars) {
+            ensureMapping(lasso.loop.var_to_ssa_in, var, "loop_in");
+            ensureMapping(lasso.loop.var_to_ssa_out, var, "loop_out");
+            if (!lasso.stem.polyhedra.empty()) {
+                ensureMapping(lasso.stem.var_to_ssa_in, var, "stem_in");
+                ensureMapping(lasso.stem.var_to_ssa_out, var, "stem_out");
+            }
+        }
+    }
+
+    storeAbstractFunctionsToLasso(lasso, stem_lines, loop_lines);
+
+    addFreeAuxVariables(lasso, stem_lines, loop_lines);
+
+    initializeOptionsForAnalysis(lasso);
+}
+
+UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
+    const std::string& formula,
+    LassoProgram& lasso) {
+    std::vector<LinearInequality> inequalities;
+    std::unique_ptr<FormulaLinearizer> linearizer = NULL;
+    FormulaRewriter * rewriter = NULL;
+    
+    std::set<std::string> bool_vars = extractBoolVars(lasso.var_sorts);
+    bool has_arrays = checkArrayVars(lasso.var_sorts);
+    bool has_divmod = checkDivModOp(formula);
+    bool has_let = formula.find("(let ") != std::string::npos;
+    bool has_equality = formula.find("(= ") != std::string::npos;
+
+    JsonTraceParser::removeArrayVarsFromProgramVars(lasso.program_vars, lasso.var_sorts);
+    
+    bool needs_rewriter = !bool_vars.empty() || has_divmod || has_let || has_equality;
+    bool needs_linearizer = !lasso.functions.empty() || has_arrays;
+
+    if (needs_linearizer){
+        linearizer = std::make_unique<FormulaLinearizer>();
+        // Add ArrayHandler for array select operations
+        if (has_arrays) {
+            auto array_handler = std::make_unique<ArrayHandler>();
+            linearizer->addHandler(std::move(array_handler));
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaLinearizer: ArrayHandler added for select linearization" << std::endl;
+            }
+        }
+    }
+    if (needs_rewriter) {
+        rewriter = new FormulaRewriter();
+
+        // Add EqualityHandler for equality rewriting
+        if (has_equality) {
+            rewriter->addHandler(new RewriteEquality());
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaRewriter: RewriteEqualityHandler added for equality linearization" << std::endl;
+            }
+        }
+        // Add LetHandler for let inlining
+        if (has_let) {
+            rewriter->addHandler(new RewriteLet());
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaRewriter: RewriteLetHandler added for let inlining" << std::endl;
+            }
+        }
+        // Add BooleanHandler for boolean variable rewriting
+        if (!bool_vars.empty()) {
+            rewriter->addHandler(new RewriteBooleans(bool_vars));
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaRewriter: RewriteBooleans added for boolean variable linearization" << std::endl;
+            }
+        }
+        // Add DivisionHandler for div/mod rewriting
+        if (has_divmod) {
+            rewriter->addHandler(new RewriteDivisionMod());
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaRewriter: RewriteDivisionMod added for div/mod linearization" << std::endl;
+            }
+        }
+    }
+
+
+    UltimateTransitionLine trans;
+
+    trans.formula = formula;
+    // trans.free_vars = lasso.aux_vars;
+
+    if (!trans.formula.empty() && trans.formula != "true") {
+        try {
+            std::string formula_to_parse = trans.formula;
+            if(rewriter)
+                formula_to_parse = rewriter->rewrite(formula_to_parse);
+            if (linearizer) {
+                LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
+                if (lin_result.was_modified) {
+                    formula_to_parse = lin_result.linearized_formula;
+                }
+            }
+            trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
+        } catch (const std::exception& e) {
+            std::cerr << "Warning: Failed to parse formula: " << trans.formula << std::endl;
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+    }
+    
+    if(rewriter)
+        rewriter->storeAuxVarsToLasso(lasso);
+    if (linearizer)
+        linearizer->storeAbstractionsToLasso(lasso);
+
+    return trans;
+}
+
 // ============================================================================
 // PARSE SINGLE TRANSITION
 // ============================================================================
@@ -636,8 +907,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 UltimateTransitionLine JsonTraceParser::parseTransition(
     const nlohmann::json& trans_json,
     FormulaLinearizer* linearizer,
-    RewriteDivision* div_rewriter,
-    const std::set<std::string>& bool_program_vars) {
+    FormulaRewriter* rewriter) {
     UltimateTransitionLine trans;
 
     // Extract source label
@@ -670,47 +940,52 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
     }
 
     // Parse formula to DNF
-    // Pipeline: RewriteBooleans -> RewriteDivision -> RewriteEquality -> Linearizer -> DNF
+    // Pipeline: RewriteBooleans -> RewriteDivisionMod -> RewriteEquality -> Linearizer -> DNF
     if (!trans.formula.empty() && trans.formula != "true") {
         try {
             std::string formula_to_parse = trans.formula;
 
-            // Step 0: RewriteLet (inline let bindings before any other rewriting)
-            formula_to_parse = RewriteLet::rewrite(formula_to_parse);
+            if(rewriter)
+                formula_to_parse = rewriter->rewrite(formula_to_parse);
 
-            // Step 1: RewriteBooleans (bare bool var -> integer comparison)
-            if (!bool_program_vars.empty()) {
-                // Build SSA var set from in_vars/out_vars for boolean program vars
-                std::set<std::string> bool_ssa_vars;
-                for (const auto& [prog_var, ssa_var] : trans.in_vars) {
-                    if (bool_program_vars.count(prog_var)) {
-                        bool_ssa_vars.insert(ssa_var);
-                    }
-                }
-                for (const auto& [prog_var, ssa_var] : trans.out_vars) {
-                    if (bool_program_vars.count(prog_var)) {
-                        bool_ssa_vars.insert(ssa_var);
-                    }
-                }
+            // // Step 0: RewriteLet (inline let bindings before any other rewriting)
+            // RewriteLet let_rewriter = RewriteLet();
+            // formula_to_parse = let_rewriter.rewrite(formula_to_parse);
 
-                if (!bool_ssa_vars.empty()) {
-                    RewriteBooleans bool_rewriter(bool_ssa_vars);
-                    formula_to_parse = bool_rewriter.rewriteWithBounds(formula_to_parse);
+            // // Step 1: RewriteBooleans (bare bool var -> integer comparison)
+            // if (!bool_program_vars.empty()) {
+            //     // Build SSA var set from in_vars/out_vars for boolean program vars
+            //     std::set<std::string> bool_ssa_vars;
+            //     for (const auto& [prog_var, ssa_var] : trans.in_vars) {
+            //         if (bool_program_vars.count(prog_var)) {
+            //             bool_ssa_vars.insert(ssa_var);
+            //         }
+            //     }
+            //     for (const auto& [prog_var, ssa_var] : trans.out_vars) {
+            //         if (bool_program_vars.count(prog_var)) {
+            //             bool_ssa_vars.insert(ssa_var);
+            //         }
+            //     }
 
-                    if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                        std::cout << "  [RewriteBooleans] Rewrote " << bool_ssa_vars.size()
-                                  << " boolean SSA var(s)" << std::endl;
-                    }
-                }
-            }
+            //     if (!bool_ssa_vars.empty()) {
+            //         RewriteBooleans bool_rewriter(bool_ssa_vars);
+            //         formula_to_parse = bool_rewriter.rewrite(formula_to_parse);
 
-            // Step 2: RewriteDivision (replace div/mod with linear constraints)
-            if (div_rewriter) {
-                formula_to_parse = div_rewriter->rewrite(formula_to_parse);
-            }
+            //         if (VERBOSITY == VerbosityLevel::VERBOSE) {
+            //             std::cout << "  [RewriteBooleans] Rewrote " << bool_ssa_vars.size()
+            //                       << " boolean SSA var(s)" << std::endl;
+            //         }
+            //     }
+            // }
+
+            // Step 2: RewriteDivisionMod (replace div/mod with linear constraints)
+            // if (rewriter) {
+            //     formula_to_parse = rewriter->rewrite(formula_to_parse);
+            // }
 
             // Step 3: RewriteEquality (= a b) -> (and (<= a b) (>= a b))
-            formula_to_parse = RewriteEquality::rewrite(formula_to_parse);
+            // RewriteEquality equality_rewriter = RewriteEquality();
+            // formula_to_parse = equality_rewriter.rewrite(formula_to_parse);
 
             // Step 3: FormulaLinearizer (abstract UF, arrays, non-linear mul)
             if (linearizer) {

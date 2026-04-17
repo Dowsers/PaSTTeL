@@ -2,21 +2,27 @@
 #include <iostream>
 #include <cctype>
 
-#include "rewriting/rewrite_division.h"
+#include "rewriting/rewrite_division_modulo.h"
 #include "utiles.h"
-
-extern VerbosityLevel VERBOSITY;
 
 // ============================================================================
 // CONSTRUCTOR / RESET
 // ============================================================================
 
-RewriteDivision::RewriteDivision()
+RewriteDivisionMod::RewriteDivisionMod()
     : m_counter(0)
 {
 }
 
-void RewriteDivision::reset() {
+bool RewriteDivisionMod::canHandle(const std::string& op) const {
+    return op == "div" || op == "mod";
+}
+
+std::string RewriteDivisionMod::getName() const {
+    return "RewriteDivisionMod";
+}
+
+void RewriteDivisionMod::reset() {
     m_counter = 0;
     m_aux_vars.clear();
     m_aux_constraints.clear();
@@ -28,7 +34,7 @@ void RewriteDivision::reset() {
 // PUBLIC API
 // ============================================================================
 
-std::string RewriteDivision::rewrite(const std::string& formula) {
+std::string RewriteDivisionMod::rewrite(const std::string& formula) {
     if (formula.empty() || formula == "true") {
         return formula;
     }
@@ -58,14 +64,14 @@ std::string RewriteDivision::rewrite(const std::string& formula) {
     result << ")";
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "  [RewriteDivision] Replaced " << m_aux_constraints.size()
+        std::cout << "  [RewriteDivisionMod] Replaced " << m_aux_constraints.size()
                   << " div/mod operation(s) with linear constraints" << std::endl;
     }
 
     return result.str();
 }
 
-const std::vector<FunctionAbstraction>& RewriteDivision::getAuxVars() const {
+std::vector<FunctionAbstraction> RewriteDivisionMod::getAuxVars() const {
     return m_aux_vars;
 }
 
@@ -73,7 +79,7 @@ const std::vector<FunctionAbstraction>& RewriteDivision::getAuxVars() const {
 // RECURSIVE REWRITING
 // ============================================================================
 
-std::string RewriteDivision::rewriteExpr(const std::string& expr) {
+std::string RewriteDivisionMod::rewriteExpr(const std::string& expr) {
     std::string trimmed = expr;
     {
         size_t s = trimmed.find_first_not_of(" \t\n\r");
@@ -123,7 +129,7 @@ std::string RewriteDivision::rewriteExpr(const std::string& expr) {
 // DIV REWRITING
 // ============================================================================
 
-std::string RewriteDivision::getOrCreateDivVar(
+std::string RewriteDivisionMod::getOrCreateDivVar(
     const std::string& dividend, const std::string& divisor) {
 
     // Check cache
@@ -184,7 +190,7 @@ std::string RewriteDivision::getOrCreateDivVar(
     m_div_cache[key] = q;
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "    [RewriteDivision] " << key << " -> " << q << std::endl;
+        std::cout << "    [RewriteDivisionMod] " << key << " -> " << q << std::endl;
     }
 
     return q;
@@ -194,7 +200,7 @@ std::string RewriteDivision::getOrCreateDivVar(
 // MOD REWRITING
 // ============================================================================
 
-std::string RewriteDivision::getOrCreateModVar(
+std::string RewriteDivisionMod::getOrCreateModVar(
     const std::string& dividend, const std::string& divisor) {
 
     // Check cache
@@ -257,7 +263,7 @@ std::string RewriteDivision::getOrCreateModVar(
     m_mod_cache[key] = r;
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "    [RewriteDivision] " << key << " -> " << r
+        std::cout << "    [RewriteDivisionMod] " << key << " -> " << r
                   << " (quotient: " << q << ")" << std::endl;
     }
 
@@ -268,11 +274,11 @@ std::string RewriteDivision::getOrCreateModVar(
 // UTILITIES
 // ============================================================================
 
-std::string RewriteDivision::createFreshVar(const std::string& prefix) {
+std::string RewriteDivisionMod::createFreshVar(const std::string& prefix) {
     return prefix + "_" + std::to_string(m_counter++);
 }
 
-bool RewriteDivision::isPositiveIntLiteral(const std::string& s, long long& value) {
+bool RewriteDivisionMod::isPositiveIntLiteral(const std::string& s, long long& value) {
     if (s.empty()) return false;
     for (char c : s) {
         if (!std::isdigit(static_cast<unsigned char>(c))) return false;

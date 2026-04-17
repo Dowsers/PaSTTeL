@@ -74,14 +74,13 @@ COMMON_SRCS := \
 	$(SRC_DIR)/linearization/formula_linearizer.cpp \
 	$(SRC_DIR)/linearization/uf_handler.cpp \
 	$(SRC_DIR)/linearization/array_handler.cpp \
-	$(SRC_DIR)/linearization/divmod_handler.cpp \
 	$(SRC_DIR)/linearization/nonlinear_mul_handler.cpp \
+	$(SRC_DIR)/rewriting/formula_rewriter.cpp \
 	$(SRC_DIR)/rewriting/rewrite_let.cpp \
-	$(SRC_DIR)/rewriting/rewrite_division.cpp \
+	$(SRC_DIR)/rewriting/rewrite_division_modulo.cpp \
 	$(SRC_DIR)/rewriting/rewrite_equality.cpp \
 	$(SRC_DIR)/rewriting/rewrite_booleans.cpp \
-	$(SRC_DIR)/parser/sexpr_utils.cpp \
-	$(SRC_DIR)/parser/transition_builder.cpp
+	$(SRC_DIR)/parser/sexpr_utils.cpp
 
 
 COMMON_OBJS := $(COMMON_SRCS:.cpp=.o)

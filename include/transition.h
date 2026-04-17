@@ -7,8 +7,40 @@
 #include <memory>
 
 #include "linear_inequality.h"
-#include "linearization/formula_linearizer.h"
+#include "parser/smt_parser.h"
 #include "smtsolvers/SMTSolverInterface.h"
+
+/**
+ * Structure pour représenter une transition avec ses métadonnées
+ * Cette structure correspond exactement à une ligne du fichier counter.txt
+ */
+struct UltimateTransitionLine {
+    // Identifiant de la transition (ex: "L111")
+    std::string label;
+    
+    // Formule SMT brute (ex: "(= v___tmp__now_16 v_now_12)")
+    std::string formula;
+    
+    // Mapping : variable_de_programme → version_SSA pour les entrées
+    // Exemple : {"now" → "v_now_12", "count_Counter" → "v_count_Counter_19"}
+    std::map<std::string, std::string> in_vars;
+    
+    // Mapping : variable_de_programme → version_SSA pour les sorties
+    std::map<std::string, std::string> out_vars;
+    
+    // Les contraintes parsées depuis la formule SMT (structure DNF complète)
+    DNFFormula dnf;
+    
+    // Variables booléennes si présentes
+    std::map<std::string, bool> bool_vars;
+
+    // Variables SSA libres dans la formule (ni in_vars ni out_vars).
+    // Typiquement les variables auxiliaires Ultimate (div_aux, mod_aux, etc.)
+    // du mode PREPROCESSED LINEAR TRACE.  Elles doivent être déclarées dans
+    // le solver mais n'ont pas de coefficient dans la fonction de ranking.
+    std::vector<std::string> free_vars;
+};
+
 
 // Transition linéaire : ensemble de polyèdres (disjonction de conjonctions)
 class LinearTransition {
@@ -39,6 +71,16 @@ public:
      * 4. Combiner les contraintes de this et other (substitué)
      */
     LinearTransition compose(const LinearTransition& other) const;
+
+    /**
+     * Build a single LinearTransition by composing a sequence of transitions.
+     *
+     * For each consecutive pair Ti, Ti+1, the OutVars of Ti are matched
+     * to the InVars of Ti+1 to build the substitution table.
+     */
+    static LinearTransition buildFromLines(
+        const std::vector<UltimateTransitionLine>& lines
+    );
     
     bool isTrue() const;
     std::string getSSAVar(std::string prog_var, bool out_vars) const;

@@ -10,17 +10,21 @@ bool RewriteBooleans::isBoolVar(const std::string& token) const {
     return m_bool_vars.count(token) > 0;
 }
 
-std::string RewriteBooleans::rewrite(const std::string& formula) const {
-    if (m_bool_vars.empty()) return formula;
-    std::string trimmed = SExprUtils::trim(formula);
-    if (trimmed.empty() || trimmed == "true") return formula;
-    return rewriteExpr(trimmed);
+bool RewriteBooleans::canHandle(const std::string& op) const {
+    return op == "not" || isBoolVar(op) || op == "and" || op == "or" || op == "=>" || op == "xor";
 }
 
-std::string RewriteBooleans::rewriteWithBounds(const std::string& formula) const {
-    if (m_bool_vars.empty()) return formula;
+std::string RewriteBooleans::getName() const {
+    return "RewriteBooleans";
+}
 
-    std::string rewritten = rewrite(formula);
+std::string RewriteBooleans::rewrite(const std::string& formula) {
+    if (m_bool_vars.empty()) return formula;
+    
+    std::string trimmed = SExprUtils::trim(formula);
+    if (trimmed.empty() || trimmed == "true") return formula;
+
+    std::string rewritten = rewriteExpr(trimmed);
 
     // Inject 0/1 bounds for each Bool SSA var.
     // This linearizes ite(b, 1, 0), matching Ultimate's replacement semantics.

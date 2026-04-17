@@ -9,6 +9,7 @@
 
 #include "linearization/non_linear_term_handler.h"
 #include "parser/sexpr_utils.h"
+#include "lasso_program.h"
 
 /**
  * Abstraction d'un terme non-linéaire.
@@ -19,12 +20,6 @@
  *   (keccak256 v_x_1)  ->  uf__keccak256__0
  *   assertion : (= uf__keccak256__0 (keccak256 v_x_1))
  */
-struct FunctionAbstraction {
-    std::string fresh_var;      // Variable fraiche (ex: "uf__keccak256__0")
-    std::string original_call;  // Terme original SMT-LIB (ex: "(keccak256 v_x_1)")
-    std::string function_name;  // Nom de l'operateur (ex: "keccak256")
-    std::string sort;           // Type de retour (ex: "Int")
-};
 
 /**
  * Resultat de la linearisation d'une formule.
@@ -70,6 +65,8 @@ public:
      * Si un meme terme apparait plusieurs fois, la meme variable est reutilisee.
      */
     LinearizationResult linearize(const std::string& formula);
+
+    void storeAbstractionsToLasso(LassoProgram& lasso);
 
     /**
      * Retourne toutes les abstractions creees (cumulatives sur tous les appels).

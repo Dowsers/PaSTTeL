@@ -2,6 +2,9 @@
 #define __LASSO_PROGRAM_H
 
 #include "transition.h"
+#include "smtsolvers/SMTSolverInterface.h"
+#include "utiles.h"
+
 
 // Structure pour une constante déclarée
 struct DeclaredConstant {

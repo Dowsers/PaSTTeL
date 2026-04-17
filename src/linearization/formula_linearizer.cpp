@@ -77,6 +77,14 @@ LinearizationResult FormulaLinearizer::linearize(const std::string& formula) {
     return result;
 }
 
+void FormulaLinearizer::storeAbstractionsToLasso(LassoProgram& lasso) {
+    auto abstractions = getAbstractions();
+
+    for (auto& abs : abstractions) {
+        lasso.function_abstractions.push_back(abs);
+    }
+}
+
 // ============================================================================
 // PARCOURS RECURSIF DE L'EXPRESSION
 // ============================================================================

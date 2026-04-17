@@ -4,44 +4,13 @@
 #include <string>
 #include <map>
 #include <set>
-#include "lasso_program.h"
+
 #include "parser/smt_parser.h"
 #include "linearization/formula_linearizer.h"
+#include "rewriting/formula_rewriter.h"
 #include "external/nlohmann/json.hpp"
-
-// Forward declarations
-class RewriteDivision;
-
-/**
- * Structure pour représenter une transition avec ses métadonnées
- * Cette structure correspond exactement à une ligne du fichier counter.txt
- */
-struct UltimateTransitionLine {
-    // Identifiant de la transition (ex: "L111")
-    std::string label;
-    
-    // Formule SMT brute (ex: "(= v___tmp__now_16 v_now_12)")
-    std::string formula;
-    
-    // Mapping : variable_de_programme → version_SSA pour les entrées
-    // Exemple : {"now" → "v_now_12", "count_Counter" → "v_count_Counter_19"}
-    std::map<std::string, std::string> in_vars;
-    
-    // Mapping : variable_de_programme → version_SSA pour les sorties
-    std::map<std::string, std::string> out_vars;
-    
-    // Les contraintes parsées depuis la formule SMT (structure DNF complète)
-    DNFFormula dnf;
-    
-    // Variables booléennes si présentes
-    std::map<std::string, bool> bool_vars;
-
-    // Variables SSA libres dans la formule (ni in_vars ni out_vars).
-    // Typiquement les variables auxiliaires Ultimate (div_aux, mod_aux, etc.)
-    // du mode PREPROCESSED LINEAR TRACE.  Elles doivent être déclarées dans
-    // le solver mais n'ont pas de coefficient dans la fonction de ranking.
-    std::vector<std::string> free_vars;
-};
+#include "transition.h"
+#include "lasso_program.h"
 
 /**
  * JSON-based trace parser
@@ -57,6 +26,24 @@ public:
      */
     static LassoProgram parseToLasso(const std::string& filename);
 
+    static void convertLassoStringToLassoProgram(
+                const std::string& stem_formula,
+                const std::string& loop_formula,
+                LassoProgram& lasso);
+
+
+    static UltimateTransitionLine convertSMTFormula2ToLinearInequalities(
+                const std::string& formula,
+                LassoProgram& lasso);
+
+    /**
+     * Remove array variables from program_vars based on their sorts in var_sorts.
+     * @param program_vars List of program variables to filter (modified in place)
+     * @param var_sorts Mapping of variable name to its sort"
+     */
+    static void removeArrayVarsFromProgramVars(
+                    std::vector<std::string>& program_vars,
+                    const std::map<std::string, std::string>& var_sorts);
 private:
     /**
      * Parse a single transition from JSON object.
@@ -70,8 +57,7 @@ private:
     static UltimateTransitionLine parseTransition(
         const nlohmann::json& trans_json,
         FormulaLinearizer* linearizer = nullptr,
-        RewriteDivision* div_rewriter = nullptr,
-        const std::set<std::string>& bool_program_vars = {});
+        FormulaRewriter* rewriter = nullptr);
 
     /**
      * Parse variable mapping from JSON object

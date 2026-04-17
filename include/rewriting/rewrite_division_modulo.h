@@ -7,12 +7,13 @@
 
 #include "linearization/formula_linearizer.h"  // for FunctionAbstraction
 #include "parser/sexpr_utils.h"
+#include "rewriting/formula_rewriter.h"
 
 /**
- * RewriteDivision - Replace integer division and modulo by auxiliary variables
+ * RewriteDivisionMod - Replace integer division and modulo by auxiliary variables
  *                   with equivalent linear constraints.
  *
- * RewriteDivision:
+ * RewriteDivisionMod:
  *
  *   (div dividend divisor) is replaced by fresh variable q, with constraints:
  *     (or
@@ -38,22 +39,26 @@
  *
  * Uses SMTLIB2 semantics where the remainder is always non-negative.
  */
-class RewriteDivision {
+class RewriteDivisionMod : public RewriteTermHandler {
 public:
-    RewriteDivision();
+    RewriteDivisionMod();
+
+    bool canHandle(const std::string& op) const override;
 
     /**
      * Rewrite all (div ...) and (mod ...) subexpressions in the formula.
      * Returns the rewritten formula with auxiliary constraints conjoined.
      */
-    std::string rewrite(const std::string& formula);
+    std::string rewrite(const std::string& formula) override;
+
+    std::string getName() const override;
 
     /**
      * Get the auxiliary variables created during rewriting.
      * These need to be declared in the solver (as Int).
      * Stored as FunctionAbstraction with empty original_call.
      */
-    const std::vector<FunctionAbstraction>& getAuxVars() const;
+    std::vector<FunctionAbstraction> getAuxVars() const override;
 
     /**
      * Reset state (clear aux vars and caches).
@@ -100,7 +105,7 @@ private:
     /**
      * Split S-expression into top-level tokens.
      */
-    static std::vector<std::string> splitSExpr(const std::string& expr) {
+    std::vector<std::string> splitSExpr(const std::string& expr) {
         return SExprUtils::splitSExpr(expr);
     }
 
@@ -109,7 +114,7 @@ private:
      * Sets value to the parsed integer. Used to detect constant divisors
      * and avoid generating spurious disjunctions in div/mod constraints.
      */
-    static bool isPositiveIntLiteral(const std::string& s, long long& value);
+    bool isPositiveIntLiteral(const std::string& s, long long& value);
 };
 
 #endif // REWRITE_DIVISION_H
