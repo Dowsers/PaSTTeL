@@ -69,7 +69,7 @@ void MotzkinTransformation::addConstraintsToSolver(
     // Fixed indices: coefficients assignés "1.0" par registerMotzkinCoefficients
     // mais dont motzkin_coef != ONE (ANYTHING ou ZERO_AND_ONE avec termes non-constants).
     // Ces indices seront énumérés en {0,1} pour rester en LRA.
-    // Matching Ultimate: !needsMotzkinCoefficient(li) && li.mMotzkinCoefficient != ONE
+    // !needsMotzkinCoefficient(li) && li.mMotzkinCoefficient != ONE
     std::vector<size_t> fixed_indices;
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
         const auto& li = m_inequalities[i];
@@ -167,13 +167,13 @@ void MotzkinTransformation::registerMotzkinCoefficients() {
     m_motzkin_coefficients.clear();
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
         const auto& li = m_inequalities[i];
-        // Matching Ultimate needsMotzkinCoefficient():
+        // needsMotzkinCoefficient():
         // Une variable libre est créée seulement si :
         //   - motzkin_coef != ONE  (pas déjà fixé à 1)
         //   - ET tous les termes affines sont des constantes numériques
         //     (sinon λ×paramètre_template serait NLA → on énumérera {0,1})
         bool needs_variable = (li.motzkin_coef != LinearInequality::ONE)
-                              && allAffineTermsAreConstant(li);
+                                && allAffineTermsAreConstant(li);
         if (needs_variable) {
             std::ostringstream oss;
             oss << "motzkin_" << m_instance_id << "_" << i;
@@ -575,7 +575,6 @@ std::vector<std::string> MotzkinTransformation::generateAllFormulas(
     }
 
     // ── Strictness : (Σ non-strict * b_i < 0) ∨ (Σ strict coeffs > 0)
-    // Matching Ultimate doTransform: toujours incluse.
     // Quand les deux listes sont vides → (or false false) = false : correct,
     // une branche sans inégalité active ne prouve pas l'insatisfiabilité.
     {

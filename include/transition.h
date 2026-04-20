@@ -10,6 +10,25 @@
 #include "parser/smt_parser.h"
 #include "smtsolvers/SMTSolverInterface.h"
 
+// Structure pour DNF (Disjunctive Normal Form)
+struct DNFFormula {
+    std::vector<std::vector<LinearInequality>> polyhedra;
+
+    std::string toString() const {
+        std::string res = "\t\t";
+        for (size_t i = 0; i < polyhedra.size(); ++i) {
+            res += "(";
+            for (size_t j = 0; j < polyhedra[i].size(); ++j) {
+                res += polyhedra[i][j].toString();
+                if (j < polyhedra[i].size() - 1) res += " AND ";
+            }
+            res += ")";
+            if (i < polyhedra.size() - 1) res += "\n\t --- OR --- \n\t\t";
+        }
+        return res;
+    }
+};
+
 /**
  * Structure pour représenter une transition avec ses métadonnées
  * Cette structure correspond exactement à une ligne du fichier counter.txt

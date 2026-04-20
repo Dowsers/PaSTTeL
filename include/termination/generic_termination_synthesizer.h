@@ -15,7 +15,6 @@
 /**
  * @brief Synthesizer generique fonctionnant avec n'importe quel RankingTemplate
  *
- * Workflow (matching Ultimate TerminationArgumentSynthesizer) :
  * 1. template_->declareParameters(solver) + sig_.declareParameters(solver)
  * 2. buildConstraints() : construit phi1+phi2+phi3+phi4
  * 3. applyMotzkinTransformations()
@@ -104,7 +103,7 @@ private:
     /**
      * @brief Cree et declare les SIGs locaux (un par poly_loop x template_part).
      * Remplit local_sigs_. Doit etre appele avant buildPhi34Contexts/buildPhi12Contexts.
-     * Matching Ultimate: new SIG per (loopConj x templatePart).
+     * new SIG per (loopConj x templatePart).
      */
     void createLocalSIGs();
 

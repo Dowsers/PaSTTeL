@@ -554,7 +554,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     // This replaces (div x y) and (mod x y) with auxiliary variables
     // and conjoins equivalent linear constraints directly into the formula.
     FormulaRewriter * rewriter = new FormulaRewriter();
-    rewriter->addHandler(new RewriteEquality());
     rewriter->addHandler(new RewriteLet());
 
     if (has_divmod) {
@@ -563,9 +562,9 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     if (!bool_vars.empty()) {
         rewriter->addHandler(new RewriteBooleans(bool_vars));
     }
-    if (has_divmod) {
-        rewriter->addHandler(new RewriteDivisionMod());
-    }
+    // always at the end: rewrite equalities after all other transformations
+    rewriter->addHandler(new RewriteEquality());
+
 
     // 12. Create FormulaLinearizer with appropriate handlers
     // The linearizer replaces non-linear terms with fresh variables
@@ -627,7 +626,11 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     }
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "Stem transitions: " << stem_lines.size() << std::endl;
+        std::cout << "\nStem transitions: " << stem_lines.size() << std::endl;
+        for(const auto& line : stem_lines) {
+            std::cout<< "\tOriginal Formula: "<< line.formula << std::endl;
+            std::cout << "\tDNF:\n" << line.dnf.toString() << std::endl;
+        }
     }
 
     // 5. Parse LOOP transitions
@@ -639,7 +642,11 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     }
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-        std::cout << "Loop transitions: " << loop_lines.size() << std::endl;
+        std::cout << "\nLoop transitions: " << loop_lines.size() << std::endl;
+        for(const auto& line : loop_lines) {
+            std::cout<< "\tOriginal Formula: "<< line.formula << std::endl;
+            std::cout << "\tDNF:\n" << line.dnf.toString() << std::endl;
+        }
     }
 
     // 6. Build transitions using LinearTransition (composition logic)
@@ -662,7 +669,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 
     // 7b0. Calculer loop_vars AVANT ensureMapping :
     //      intersection loop.var_to_ssa_in ∩ loop.var_to_ssa_out depuis le JSON original.
-    //      Matching Ultimate: template variables = loop.getOutVars() ∩ loop.getInVars().
+    //      template variables = loop.getOutVars() ∩ loop.getInVars().
     //      Après ensureMapping, tous les program_vars sont dans les deux maps (via fresh vars),
     //      donc l'intersection ne peut pas être faite après.
     setLoopVariables(lasso);
@@ -710,7 +717,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 
     // 8c. Register free_vars (auxiliary variables) from all transitions as function_abstractions (Int, no assertion).
     // These are SSA variables present in the formula but not in in_vars/out_vars —
-    // typically Ultimate's precomputed div_aux/mod_aux variables from PREPROCESSED traces.
     // They must be declared in the solver but carry no ranking-function coefficient.
     addFreeAuxVariables(lasso, stem_lines, loop_lines);
 
@@ -808,6 +814,14 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
     std::unique_ptr<FormulaLinearizer> linearizer = NULL;
     FormulaRewriter * rewriter = NULL;
     
+    if (formula == "false") {
+        throw std::runtime_error("Formula is false. It's not a valid lasso program");
+    }
+
+    if (formula.empty()) {
+        throw std::runtime_error("Formula is empty. It's not a valid lasso program");
+    }
+
     std::set<std::string> bool_vars = extractBoolVars(lasso.var_sorts);
     bool has_arrays = checkArrayVars(lasso.var_sorts);
     bool has_divmod = checkDivModOp(formula);
@@ -833,15 +847,6 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
     }
     if (needs_rewriter) {
         rewriter = new FormulaRewriter();
-
-        // Add EqualityHandler for equality rewriting
-        if (has_equality) {
-            rewriter->addHandler(new RewriteEquality());
-
-            if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                std::cout << "FormulaRewriter: RewriteEqualityHandler added for equality linearization" << std::endl;
-            }
-        }
         // Add LetHandler for let inlining
         if (has_let) {
             rewriter->addHandler(new RewriteLet());
@@ -866,6 +871,15 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
                 std::cout << "FormulaRewriter: RewriteDivisionMod added for div/mod linearization" << std::endl;
             }
         }
+        // Add EqualityHandler for equality rewriting
+        // Always at the end: rewrite equalities after all other transformations 
+        if (has_equality) {
+            rewriter->addHandler(new RewriteEquality());
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "FormulaRewriter: RewriteEqualityHandler added for equality linearization" << std::endl;
+            }
+        }
     }
 
 
@@ -885,6 +899,9 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
                     formula_to_parse = lin_result.linearized_formula;
                 }
             }
+
+            std::cout<<"---- Formula before DNF :"<< formula_to_parse << std::endl;
+
             trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
         } catch (const std::exception& e) {
             std::cerr << "Warning: Failed to parse formula: " << trans.formula << std::endl;
@@ -918,6 +935,12 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
     // Extract formula
     if (trans_json.contains("formula")) {
         trans.formula = trans_json["formula"].get<std::string>();
+        if (trans.formula == "false") {
+            throw std::runtime_error("Formula is false. It's not a valid lasso program");
+        }
+        if (trans.formula.empty()) {
+            throw std::runtime_error("Formula is empty. It's not a valid lasso program");
+        }
     }
 
     // Parse in_vars
@@ -945,9 +968,15 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
         try {
             std::string formula_to_parse = trans.formula;
 
+            if(VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "\nOriginal formula: " << formula_to_parse << std::endl;
+            }
             if(rewriter)
                 formula_to_parse = rewriter->rewrite(formula_to_parse);
 
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "After rewriting: " << formula_to_parse << std::endl;
+            }
             // // Step 0: RewriteLet (inline let bindings before any other rewriting)
             // RewriteLet let_rewriter = RewriteLet();
             // formula_to_parse = let_rewriter.rewrite(formula_to_parse);
@@ -978,16 +1007,7 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
             //     }
             // }
 
-            // Step 2: RewriteDivisionMod (replace div/mod with linear constraints)
-            // if (rewriter) {
-            //     formula_to_parse = rewriter->rewrite(formula_to_parse);
-            // }
-
-            // Step 3: RewriteEquality (= a b) -> (and (<= a b) (>= a b))
-            // RewriteEquality equality_rewriter = RewriteEquality();
-            // formula_to_parse = equality_rewriter.rewrite(formula_to_parse);
-
-            // Step 3: FormulaLinearizer (abstract UF, arrays, non-linear mul)
+            // Step 2: FormulaLinearizer (abstract UF, arrays, non-linear mul)
             if (linearizer) {
                 LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
                 if (lin_result.was_modified) {

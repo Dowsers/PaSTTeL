@@ -50,6 +50,10 @@ std::string FormulaRewriter::rewrite(const std::string& formula) const {
 
     for(const auto& handler : m_handlers) {
         new_formula = handler->rewrite(new_formula);
+        if (VERBOSITY == VerbosityLevel::VERBOSE) {
+            std::cout << "  [FormulaRewriter] After " << handler->getName() << ": "
+                    << new_formula << std::endl;
+        }
     }
     return new_formula;
 }

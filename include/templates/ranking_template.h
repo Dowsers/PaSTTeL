@@ -86,7 +86,7 @@ public:
     virtual std::string getDescription() const = 0;
 
     // ========================================================================
-    // INTERFACE PRINCIPALE -- matching Ultimate/lassoranker
+    // INTERFACE PRINCIPALE
     // ========================================================================
 
     /**

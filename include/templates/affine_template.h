@@ -40,7 +40,7 @@ public:
     void printInfo() const override;
 
     // ========================================================================
-    // NOUVELLE INTERFACE -- matching Ultimate/lassoranker
+    // NOUVELLE INTERFACE
     // ========================================================================
 
     /**

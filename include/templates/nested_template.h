@@ -11,7 +11,7 @@
  *
  * Genere les conclusions positives (avant negation) :
  * i=0 : f0(x) - f0(x') - delta > 0            (strict)
- * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0       (strict, verifie dans Ultimate)
+ * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0       (strict)
  * bound: f_{n-1}(x) >= 0                        (non-strict)
  *
  * Les SI (phi1/phi2) et la construction des contextes Motzkin sont
@@ -44,7 +44,7 @@ public:
     int getNumComponents() const { return num_components_; }
 
     // ========================================================================
-    // NOUVELLE INTERFACE -- matching Ultimate/lassoranker
+    // NOUVELLE INTERFACE
     // ========================================================================
 
     /**

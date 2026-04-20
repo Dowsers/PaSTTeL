@@ -21,6 +21,8 @@ public:
     virtual std::vector<FunctionAbstraction> getAuxVars() const {
         return {};
     }
+
+    // TODO: add checker for soundness
 };
 
 #endif

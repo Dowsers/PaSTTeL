@@ -34,7 +34,6 @@ public:
 
     /**
      * Rewrite formula AND inject 0/1 bounds for each bool SSA var.
-     * Equivalent to Ultimate's ite(b, 1, 0) linearization:
      *   ite(b, 1, 0) = r  =>  (b -> r=1) /\ (!b -> r=0)  =>  0 <= r <= 1
      * Here r == b_ssa, so we add (and (>= b_ssa 0) (<= b_ssa 1)) to the formula.
      */

@@ -13,7 +13,6 @@
 /**
  * @brief Gestionnaire d'UN template de fonction affine : f(x) = Σ prefix_i * vars[i] + prefix_const
  *
- * Miroir de AffineFunctionGenerator.java d'Ultimate/lassoranker.
  * Chaque instance gère les variables SMT de coefficients d'une seule fonction affine.
  *
  * Utilisé par :

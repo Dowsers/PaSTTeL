@@ -2,16 +2,22 @@
 
 #include "rewriting/rewrite_booleans.h"
 #include "parser/sexpr_utils.h"
+#include <iostream>
 
 RewriteBooleans::RewriteBooleans(const std::set<std::string>& bool_ssa_vars)
     : m_bool_vars(bool_ssa_vars) {}
 
 bool RewriteBooleans::isBoolVar(const std::string& token) const {
-    return m_bool_vars.count(token) > 0;
+    for(const auto& s: m_bool_vars) {
+        if(token.find(s) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool RewriteBooleans::canHandle(const std::string& op) const {
-    return op == "not" || isBoolVar(op) || op == "and" || op == "or" || op == "=>" || op == "xor";
+    return isBoolVar(op);  //|| op == "not"  || op == "and" || op == "or" || op == "=>" || op == "xor";
 }
 
 std::string RewriteBooleans::getName() const {
@@ -22,21 +28,20 @@ std::string RewriteBooleans::rewrite(const std::string& formula) {
     if (m_bool_vars.empty()) return formula;
     
     std::string trimmed = SExprUtils::trim(formula);
+
     if (trimmed.empty() || trimmed == "true") return formula;
 
     std::string rewritten = rewriteExpr(trimmed);
 
     // Inject 0/1 bounds for each Bool SSA var.
-    // This linearizes ite(b, 1, 0), matching Ultimate's replacement semantics.
-    std::string bounds;
-    for (const auto& bv : m_bool_vars) {
-        std::string bound = "(and (>= " + bv + " 0) (<= " + bv + " 1))";
-        bounds = bounds.empty() ? bound : "(and " + bounds + " " + bound + ")";
-    }
+    // std::string bounds;
+    // for (const auto& bv : m_bool_vars) {
+    //     std::string bound = "(and (>= " + bv + " 0) (<= " + bv + " 1))";
+    //     bounds = bounds.empty() ? bound : "(and " + bounds + " " + bound + ")";
+    // }
 
-    if (bounds.empty()) return rewritten;
-    if (rewritten == "true" || rewritten.empty()) return bounds;
-    return "(and " + rewritten + " " + bounds + ")";
+    if (rewritten == "true" || rewritten.empty()) return rewritten;
+    return rewritten;
 }
 
 std::string RewriteBooleans::rewriteExpr(const std::string& expr) const {
@@ -51,10 +56,15 @@ std::string RewriteBooleans::rewriteExpr(const std::string& expr) const {
     if (trimmed.empty() || trimmed[0] != '(') return trimmed;
 
     auto tokens = SExprUtils::splitSExpr(trimmed);
+
     if (tokens.empty()) return trimmed;
 
     const std::string& op = tokens[0];
 
+    // (<bool_var>)  -->  (>= <bool_var> 1)
+    if(isBoolVar(op) && tokens.size() == 1) {
+        return "(>= " + op + " 1)";
+    }
     // (not <bool_var>)  -->  (<= <bool_var> 0)
     if (op == "not" && tokens.size() == 2) {
         std::string inner = SExprUtils::trim(tokens[1]);

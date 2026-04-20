@@ -28,7 +28,7 @@ AffineTemplate::AffineTemplate(int delta_value)
 
 void AffineTemplate::init(const LassoProgram& lasso) {
     lasso_ = lasso;
-    // Matching Ultimate: template vars = loop.getOutVars() ∩ loop.getInVars()
+    // template vars = loop.getOutVars() ∩ loop.getInVars()
     const auto& vars = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
     int n = static_cast<int>(vars.size());
     generator_ = std::make_unique<AffineFunctionGenerator>("RANKING_C", n);

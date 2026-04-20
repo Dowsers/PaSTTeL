@@ -6,11 +6,9 @@
 
 #include "linear_inequality.h"
 #include "parser/sexpr_utils.h"
+#include "transition.h"
 
-// Structure pour DNF (Disjunctive Normal Form)
-struct DNFFormula {
-    std::vector<std::vector<LinearInequality>> polyhedra;
-};
+struct DNFFormula;
 
 class SMTParser {
 public:
@@ -25,7 +23,6 @@ public:
     // Parse une formule et extrait les variables avec leur version SSA
     static void extractVariables(const std::string& smtFormula,
                                 std::vector<std::string>& vars);
-    
 private:
     
     // Parser formule atomique (=, <, >, <=, >=, store)

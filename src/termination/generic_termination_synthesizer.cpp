@@ -675,7 +675,7 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n╭─ Extraction des resultats ────────────────╮" << std::endl;
 
-    // Matching Ultimate: template vars = loop_vars (loop.out ∩ loop.in).
+    // template vars = loop_vars (loop.out ∩ loop.in).
     // Les variables hors loop ont des coefficients libres dans Z3 → on les exclut.
     const auto& eff_vars = lasso_.loop_vars.empty()
         ? lasso_.program_vars : lasso_.loop_vars;

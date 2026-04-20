@@ -12,6 +12,15 @@
 /**
  * RewriteDivisionMod - Replace integer division and modulo by auxiliary variables
  *                   with equivalent linear constraints.
+ * For (div dividend divisor), introduce fresh variable q and constraints:
+ *    divisor >= 1 & dividend IN [q*divisor, (q+1)*divisor - 1]
+ * OR
+ *    divisor <= -1 & dividend IN [(q-1)*divisor - 1, q*divisor]
+ *
+ * For (mod dividend divisor), introduce fresh variable r and constraints:
+ *    divisor >= 1 & r IN [0, divisor-1] & dividend = q*divisor + r
+ * OR
+ *    divisor <= -1 & r IN [0, (-divisor)-1] & dividend = q*divisor + r
  *
  * RewriteDivisionMod:
  *
@@ -34,10 +43,9 @@
  *            (= dividend (+ (* q divisor) r))))
  *
  * The auxiliary constraints are conjoined directly into the formula
- * (not added as separate solver assertions). This makes them available
- * to the Motzkin transformation for termination analysis.
+ * (not added as separate solver assertions).
  *
- * Uses SMTLIB2 semantics where the remainder is always non-negative.
+ * Uses SMTLIB2 semantics where the remainder is always positive.
  */
 class RewriteDivisionMod : public RewriteTermHandler {
 public:

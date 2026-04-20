@@ -19,7 +19,17 @@ DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula) {
     trimmed = trimmed.substr(start, end - start + 1);
     
     if (trimmed == "true") {
-        result.polyhedra.push_back({});
+        LinearInequality tautology;
+        tautology.constant = AffineTerm(0.0);
+        tautology.strict = false;
+        result.polyhedra.push_back({tautology});
+        return result;
+    }
+    if (trimmed == "false") {
+        LinearInequality false_ineq;
+        false_ineq.constant = AffineTerm(-1.0);
+        false_ineq.strict = false;
+        result.polyhedra.push_back({false_ineq});
         return result;
     }
     

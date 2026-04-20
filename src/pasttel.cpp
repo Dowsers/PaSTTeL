@@ -305,7 +305,13 @@ int main(int argc, char** argv) {
     LassoProgram lasso;
 
     // .json extension
-    lasso = JsonTraceParser::parseToLasso(lasso_file);
+    try{
+        lasso = JsonTraceParser::parseToLasso(lasso_file);
+    } catch (const std::exception& e) {
+        std::cerr << "Error: Failed to parse Lasso file: " << e.what() << std::endl;
+        return 1;
+    }
+
 
     if (verbose) {
         for(auto& v : lasso.program_vars)
