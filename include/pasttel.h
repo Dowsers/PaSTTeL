@@ -23,6 +23,11 @@ enum AnalysisMode {
     BOTH
 };
 
+enum LinearMode {
+    LINEAR,
+    NONLINEAR
+};
+
 enum SolverType {
     Z3,
     CVC5

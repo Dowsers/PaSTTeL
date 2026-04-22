@@ -32,7 +32,7 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
         solver->declareFunction(function.name, function.signature);
         if (verbose) {
             std::cout << "  (declare-fun " << function.name
-                      << " " << function.signature << ")" << std::endl;
+                    << " " << function.signature << ")" << std::endl;
         }
     }
 

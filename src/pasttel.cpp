@@ -23,6 +23,7 @@ SolverType SOLVER = Z3;
 NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
 int TIMELIMIT = 6000;
 bool verbose = false;
+LinearMode LINEAR_MODE = LINEAR;
 
 // Configurations par défaut pour les templates de ranking
 std::vector<TemplateConfig> configs = {
@@ -44,8 +45,9 @@ void printHelp(const char* programName) {
                 << "  -q                                 Quiet mode (silence output)\n"
                 << "  -v                                 Verbose mode (more output)\n"
                 << "  -c <int>                           Number of CPUs (default: 1)\n"
-                << "  -nla <overapproximate|underapproximate|exception>\n"
+                << "  -nla <overapproximate|underapproximate|none>\n"
                 << "                                     Non-linear arithmetic handling (default: overapproximate)\n"
+                << "  -mode <linear|nonlinear>           Set analysis mode (default: linear)\n"
                 << "  -h, --help                         Show this help message\n"
                 << "\nExamples:\n"
                 << "  " << programName << " -a terminate -s z3 -c 4 -t 300 input.json\n"
@@ -106,9 +108,23 @@ std::string setParameters(int argc, char** argv) {
             std::string val = args[++i];
             if      (val == "overapproximate")  NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
             else if (val == "underapproximate") NLA_HANDLING = NlaHandling::UNDERAPPROXIMATE;
-            else if (val == "exception")        NLA_HANDLING = NlaHandling::EXCEPTION;
+            else if (val == "none")        NLA_HANDLING = NlaHandling::EXCEPTION;
             else {
                 std::cerr << "Error: Invalid -nla mode '" << val << "'. See --help.\n";
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        else if (arg == "-mode" && i + 1 < args.size()) {
+            std::string val = args[++i];
+            if (val == "linear")
+                LINEAR_MODE = LINEAR;
+            else if (val == "nonlinear") {
+                LINEAR_MODE = NONLINEAR;
+                std::cerr<<"Unsupported mode: Non-linear\n";
+                exit(1);
+            }
+            else {
+                std::cerr << "Error: Invalid -mode '" << val << "'. See --help.\n";
                 std::exit(EXIT_FAILURE);
             }
         }
@@ -289,8 +305,8 @@ AnalysisReport runAnalysis(const LassoProgram& lasso) {
         orchestrator.addTechnique(std::make_unique<FixpointTechnique>(createSMTSolver()));
         orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
             GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::LINEAR}));
-        orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
-            GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
+        // orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
+        //     GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
     }
 
     orchestrator.solve(lasso);
