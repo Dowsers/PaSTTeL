@@ -54,10 +54,9 @@ public:
 
     /**
      * @brief Analyse le programme et retourne le verdict
-     * @param solver Le solveur SMT à utiliser
      * @return AnalysisResult::TERMINATING, NON_TERMINATING, ou UNKNOWN
      */
-    virtual AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) = 0;
+    virtual AnalysisResult analyze() = 0;
 
     /**
      * @brief Retourne le certificat de preuve du dernier appel à analyze()
@@ -83,6 +82,9 @@ public:
      * @brief Indique si la technique peut être annulée
      */
     virtual bool canBeCancelled() const { return true; }
+
+protected:
+    SMTSolverInterface* solver_;
 };
 
 #endif // ANALYSIS_TECHNIQUE_INTERFACE_H

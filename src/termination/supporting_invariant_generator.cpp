@@ -42,7 +42,7 @@ void SupportingInvariantGenerator::initializeGenerators() {
 // ============================================================================
 
 void SupportingInvariantGenerator::declareParameters(
-    std::shared_ptr<SMTSolver> solver) const
+    SMTSolverInterface* solver) const
 {
     for (const auto& gen : generators_) {
         gen->declareParameters(solver);

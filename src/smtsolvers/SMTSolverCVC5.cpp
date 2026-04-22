@@ -367,7 +367,7 @@ bool SMTSolverCVC5::variableExists(const std::string& name) const {
 // CLONAGE
 // ============================================================================
 
-std::shared_ptr<SMTSolver> SMTSolverCVC5::clone() const {
+std::shared_ptr<SMTSolverInterface> SMTSolverCVC5::clone() const {
     // Créer une nouvelle instance avec les mêmes paramètres
     auto cloned = std::make_shared<SMTSolverCVC5>(m_verbose);
 

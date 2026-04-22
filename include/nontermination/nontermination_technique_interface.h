@@ -82,7 +82,7 @@ public:
      * @param solver Le solveur SMT à utiliser
      * @return Résultat de l'analyse
      */
-    virtual NonTerminationResult analyze(std::shared_ptr<SMTSolver> solver) = 0;
+    virtual NonTerminationResult analyze() = 0;
     
     /**
      * @brief Retourne le nom de la technique (pour logging)

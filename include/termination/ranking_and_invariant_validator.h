@@ -99,7 +99,7 @@ public:
     ValidationResult validate(
         const TerminationArgument& argument,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver);
+        SMTSolverInterface* solver);
 
     /**
      * Valide un argument de termination produit par NestedTemplate
@@ -113,7 +113,7 @@ public:
     NestedValidationResult validateNested(
         const TerminationArgument& argument,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver);
+        SMTSolverInterface* solver);
 
     /**
      * Affiche les résultats de validation
@@ -133,7 +133,7 @@ private:
     std::vector<SupportingInvariant> valid_sis;
 
     void registerProgramVariablesToSolver(
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         const LassoProgram& lasso);
 
     // ========================================================================
@@ -179,7 +179,7 @@ private:
     bool checkSIInitiation(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         std::map<std::string, double>& counterexample);
     
     /**
@@ -195,7 +195,7 @@ private:
     bool checkSICompatibleWithLoop(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         std::map<std::string, double>& counterexample);
 
     /**
@@ -207,7 +207,7 @@ private:
     bool checkSIConsecution(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         std::map<std::string, double>& counterexample);
     
     /**
@@ -217,7 +217,7 @@ private:
         int si_index,
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver);
+        SMTSolverInterface* solver);
     
     // ========================================================================
     // VÉRIFICATIONS - RANKING FUNCTION
@@ -236,7 +236,7 @@ private:
         const RankingFunction& rf,
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         std::map<std::string, double>& counterexample);
     
     /**
@@ -246,7 +246,7 @@ private:
         const RankingFunction& rf,
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         double delta,
         std::map<std::string, double>& counterexample);
 };

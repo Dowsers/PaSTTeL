@@ -14,10 +14,12 @@ extern VerbosityLevel VERBOSITY;
 // CONSTRUCTEUR
 // ============================================================================
 
-GeometricTechnique::GeometricTechnique(const GeometricNonTerminationSettings& settings)
+GeometricTechnique::GeometricTechnique(SMTSolverInterface* solver,
+    const GeometricNonTerminationSettings& settings)
     : settings_(settings)
     , lasso_(nullptr)
     , initialized_(false) {
+    solver_ = solver;
 }
 
 // ============================================================================
@@ -33,6 +35,7 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     eigenvectors.clear();
     lambdas.clear();
     nus.clear();
+    lasso.declareSolverContext(solver_);
 }
 
 // ============================================================================
@@ -43,8 +46,7 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
 // Le fixpoint (GEV=0) est géré séparément par FixpointTechnique.
 // ============================================================================
 
-AnalysisResult GeometricTechnique::analyze(
-    std::shared_ptr<SMTSolver> solver) {
+AnalysisResult GeometricTechnique::analyze() {
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -68,19 +70,19 @@ AnalysisResult GeometricTechnique::analyze(
         std::cout << "    • Nilpotent components: " << (settings_.nilpotent_components ? "yes" : "no") << std::endl;
     }
 
-    solver->push();
+    solver_->push();
 
     if (verbose)
         std::cout << "\n[1/4] Declaring SMT variables..." << std::endl;
-    declareVariables(solver, settings_.num_gevs);
+    declareVariables(settings_.num_gevs);
 
     if (verbose)
         std::cout << "\n[2/4] Encoding constraints..." << std::endl;
-    encodeConstraints(solver, settings_.num_gevs);
+    encodeConstraints(settings_.num_gevs);
 
     if (verbose)
         std::cout << "\n[3/4] Checking satisfiability..." << std::endl;
-    bool sat = solver->checkSat();
+    bool sat = solver_->checkSat();
 
     if (sat) {
         if (verbose)
@@ -88,7 +90,7 @@ AnalysisResult GeometricTechnique::analyze(
 
         if (verbose)
             std::cout << "\n[4/4] Extracting GNTA..." << std::endl;
-        proof = extractGNTA(solver, settings_.num_gevs);
+        proof = extractGNTA(settings_.num_gevs);
 
         if (verbose) {
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
@@ -101,7 +103,7 @@ AnalysisResult GeometricTechnique::analyze(
         proof.description = "No geometric nontermination argument found";
     }
 
-    solver->pop();
+    solver_->pop();
 
     proof_ = proof;
     return proof_.status;
@@ -139,8 +141,7 @@ bool GeometricTechnique::isFixpoint() const {
 // ============================================================================
 // DÉCLARATION DES VARIABLES
 // ============================================================================
-void GeometricTechnique::declareVariables(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+void GeometricTechnique::declareVariables(int effective_num_gevs)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -155,16 +156,16 @@ void GeometricTechnique::declareVariables(
     // Variables d'état initial (x₀)
     for (const auto& var : lasso_->program_vars) {
         std::string init_var = "x0_" + var;
-        if (!solver->variableExists(init_var)) {
-            solver->declareVariable(init_var, sort);
+        if (!solver_->variableExists(init_var)) {
+            solver_->declareVariable(init_var, sort);
         }
     }
 
     // Variables d'état honda (x₁)
     for (const auto& var : lasso_->program_vars) {
         std::string honda_var = "x1_" + var;
-        if (!solver->variableExists(honda_var)) {
-            solver->declareVariable(honda_var, sort);
+        if (!solver_->variableExists(honda_var)) {
+            solver_->declareVariable(honda_var, sort);
         }
     }
 
@@ -172,8 +173,8 @@ void GeometricTechnique::declareVariables(
     for (int i = 0; i < effective_num_gevs; ++i) {
         for (const auto& var : lasso_->program_vars) {
             std::string gev_var = "v" + std::to_string(i) + "_" + var;
-            if (!solver->variableExists(gev_var)) {
-                solver->declareVariable(gev_var, sort);
+            if (!solver_->variableExists(gev_var)) {
+                solver_->declareVariable(gev_var, sort);
             }
         }
     }
@@ -183,8 +184,8 @@ void GeometricTechnique::declareVariables(
     if (settings_.analysis_type != GeometricNonTerminationSettings::AnalysisType::LINEAR) {
         for (int i = 0; i < effective_num_gevs; ++i) {
             std::string lambda_var = "lambda_" + std::to_string(i);
-            if (!solver->variableExists(lambda_var)) {
-                solver->declareVariable(lambda_var, sort);
+            if (!solver_->variableExists(lambda_var)) {
+                solver_->declareVariable(lambda_var, sort);
             }
         }
     }
@@ -194,8 +195,8 @@ void GeometricTechnique::declareVariables(
     // if (settings_.nilpotent_components && effective_num_gevs >= 2) {
     //     for (int i = 0; i < effective_num_gevs - 1; ++i) {
     //         std::string nu_var = "nu_" + std::to_string(i);
-    //         if (!solver->variableExists(nu_var)) {
-    //             solver->declareVariable(nu_var, sort);
+    //         if (!solver_->variableExists(nu_var)) {
+    //             solver_->declareVariable(nu_var, sort);
     //         }
     //     }
     // }
@@ -214,8 +215,7 @@ void GeometricTechnique::declareVariables(
 // ENCODAGE DES CONTRAINTES 
 // ============================================================================
 
-bool GeometricTechnique::encodeConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+bool GeometricTechnique::encodeConstraints(int effective_num_gevs)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -223,7 +223,7 @@ bool GeometricTechnique::encodeConstraints(
     if (!lasso_->hasNoStem()) {
         if (verbose)
             std::cout << "    • Adding stem constraints: Stem(x0, x1)" << std::endl;
-        addStemConstraints(solver);
+        addStemConstraints();
     } else {
         if (verbose)
             std::cout << "    • No stem - direct loop analysis" << std::endl;
@@ -233,17 +233,17 @@ bool GeometricTechnique::encodeConstraints(
     if (verbose)
         std::cout << "    • Adding combined loop constraints (branch-consistent, "
                   << lasso_->loop.polyhedra.size() << " polyhedron/polyhedra)" << std::endl;
-    addCombinedLoopConstraints(solver, effective_num_gevs);
+    addCombinedLoopConstraints(effective_num_gevs);
 
     // 3. Contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
     if (verbose)
         std::cout << "    • Adding identity variable constraints" << std::endl;
-    addIdentityVariableConstraints(solver, effective_num_gevs);
+    addIdentityVariableConstraints(effective_num_gevs);
 
     // 4. Contraintes sur eigenvalues et nilpotent
     if (verbose)
         std::cout << "    • Adding eigenvalue and nilpotent constraints" << std::endl;
-    addEigenvalueAndNilpotentConstraints(solver, effective_num_gevs);
+    addEigenvalueAndNilpotentConstraints(effective_num_gevs);
 
     return true;
 }
@@ -252,8 +252,7 @@ bool GeometricTechnique::encodeConstraints(
 // CONTRAINTES DU STEM: Stem(x₀, x₁)
 // ============================================================================
 
-void GeometricTechnique::addStemConstraints(
-    std::shared_ptr<SMTSolver> solver)
+void GeometricTechnique::addStemConstraints()
 {
     int constraint_count = 0;
 
@@ -296,8 +295,8 @@ void GeometricTechnique::addStemConstraints(
                         has_terms = true;
                     } else {
                         // Variable auxiliaire : déclarer comme variable SMT libre
-                        if (!solver->variableExists(var)) {
-                            solver->declareVariable(var, "Int");
+                        if (!solver_->variableExists(var)) {
+                            solver_->declareVariable(var, "Int");
                         }
                         lhs << " (* " << formatNumber(coef.constant) << " " << var << ")";
                         has_terms = true;
@@ -326,7 +325,7 @@ void GeometricTechnique::addStemConstraints(
     // Émettre en DNF: si un seul polyèdre, conjonction directe; sinon (or (and ...) (and ...))
     if (poly_constraints.size() == 1) {
         for (const auto& c : poly_constraints[0]) {
-            solver->addAssertion(c);
+            solver_->addAssertion(c);
             constraint_count++;
         }
     } else if (poly_constraints.size() > 1) {
@@ -340,12 +339,12 @@ void GeometricTechnique::addStemConstraints(
             dnf << ")";
         }
         dnf << ")";
-        solver->addAssertion(dnf.str());
+        solver_->addAssertion(dnf.str());
         constraint_count++;
     }
     
     for(auto & id_assertion : identity_assertions) {
-        solver->addAssertion(id_assertion);
+        solver_->addAssertion(id_assertion);
         constraint_count++;
     }
 
@@ -369,8 +368,7 @@ void GeometricTechnique::addStemConstraints(
 // où une variable inchangée croît via les eigenvectors.
 // ============================================================================
 
-void GeometricTechnique::addIdentityVariableConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+void GeometricTechnique::addIdentityVariableConstraints(int effective_num_gevs)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     int constraint_count = 0;
@@ -417,7 +415,7 @@ void GeometricTechnique::addIdentityVariableConstraints(
             }
             sum << ")";
         }
-        solver->addAssertion("(= " + sum.str() + " " + zero + ")");
+        solver_->addAssertion("(= " + sum.str() + " " + zero + ")");
         constraint_count++;
 
         if (verbose)
@@ -445,7 +443,7 @@ void GeometricTechnique::addIdentityVariableConstraints(
                     // (coef_out - coef_in = 0), donc on doit imposer v_i_x = 0
                     // explicitement. Nu=1 forcerait aussi v_{i+1}_x = 0, mais
                     // imposer v_i_x = 0 est suffisant et plus simple.
-                    solver->addAssertion("(= " + gev_var + " " + zero + ")");
+                    solver_->addAssertion("(= " + gev_var + " " + zero + ")");
                     constraint_count++;
                     if (verbose)
                         std::cout << "      GEV " << gev_idx << ": " << gev_var
@@ -462,7 +460,7 @@ void GeometricTechnique::addIdentityVariableConstraints(
                     // La contrainte ray homogène pour une identity var est :
                     //   coef_out * v_i_x + coef_in * v_i_x >= 0  (les deux coefficients s'annulent)
                     // ce qui est trivial. Il faut donc imposer explicitement v_i_x = 0.
-                    solver->addAssertion("(= " + gev_var + " " + zero + ")");
+                    solver_->addAssertion("(= " + gev_var + " " + zero + ")");
                     constraint_count++;
                     if (verbose)
                         std::cout << "      GEV " << gev_idx << ": " << gev_var
@@ -474,7 +472,7 @@ void GeometricTechnique::addIdentityVariableConstraints(
                 }
             }
 
-            solver->addAssertion("(= " + gev_var + " " + output_expr + ")");
+            solver_->addAssertion("(= " + gev_var + " " + output_expr + ")");
             constraint_count++;
 
             if (verbose)
@@ -493,8 +491,7 @@ void GeometricTechnique::addIdentityVariableConstraints(
 
 std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
     const std::vector<LinearInequality>& poly,
-    int effective_num_gevs,
-    std::shared_ptr<SMTSolver> solver)
+    int effective_num_gevs)
 {
     std::vector<std::string> result;
 
@@ -531,8 +528,8 @@ std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
                 has_terms = true;
             } else {
                 std::string iter_var = var + "__gnta_iter";
-                if (!solver->variableExists(iter_var))
-                    solver->declareVariable(iter_var, "Int");
+                if (!solver_->variableExists(iter_var))
+                    solver_->declareVariable(iter_var, "Int");
                 lhs << " (* " << coef.constant << " " << iter_var << ")";
                 has_terms = true;
             }
@@ -556,8 +553,7 @@ std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
 std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsForPoly(
     const std::vector<LinearInequality>& poly,
     int gev_idx,
-    int effective_num_gevs,
-    std::shared_ptr<SMTSolver> solver)
+    int effective_num_gevs)
 {
     const bool linear_mode = (settings_.analysis_type ==
         GeometricNonTerminationSettings::AnalysisType::LINEAR);
@@ -628,8 +624,8 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
                     has_terms = true;
                 } else {
                     std::string ray_var = var + "__gnta_ray_" + std::to_string(gev_idx);
-                    if (!solver->variableExists(ray_var))
-                        solver->declareVariable(ray_var, "Int");
+                    if (!solver_->variableExists(ray_var))
+                        solver_->declareVariable(ray_var, "Int");
                     lhs << " (* " << coef.constant << " " << ray_var << ")";
                     has_terms = true;
                 }
@@ -664,8 +660,7 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
 // Garantit que la première itération et TOUS les rays utilisent le MÊME polyèdre.
 // ============================================================================
 
-void GeometricTechnique::addCombinedLoopConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+void GeometricTechnique::addCombinedLoopConstraints(int effective_num_gevs)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -675,12 +670,12 @@ void GeometricTechnique::addCombinedLoopConstraints(
         std::vector<std::string> clause;
 
         // Première itération : Loop(x1, x1 + y0 + ... + yn) avec ce polyèdre
-        auto fi = buildFirstIterConstraintsForPoly(poly, effective_num_gevs, solver);
+        auto fi = buildFirstIterConstraintsForPoly(poly, effective_num_gevs);
         clause.insert(clause.end(), fi.begin(), fi.end());
 
         // Rays pour chaque GEV avec LE MÊME polyèdre
         for (int gev_idx = 0; gev_idx < effective_num_gevs; ++gev_idx) {
-            auto ray_branches = buildRayConstraintsForPoly(poly, gev_idx, effective_num_gevs, solver);
+            auto ray_branches = buildRayConstraintsForPoly(poly, gev_idx, effective_num_gevs);
 
             if (ray_branches.size() == 1) {
                 // Cas standard (pas d'énumération nu) : ajouter directement à la clause
@@ -710,7 +705,7 @@ void GeometricTechnique::addCombinedLoopConstraints(
     // Émettre en DNF externe
     if (per_poly_clauses.size() == 1) {
         for (const auto& c : per_poly_clauses[0])
-            solver->addAssertion(c);
+            solver_->addAssertion(c);
     } else if (per_poly_clauses.size() > 1) {
         std::ostringstream dnf;
         dnf << "(or";
@@ -720,7 +715,7 @@ void GeometricTechnique::addCombinedLoopConstraints(
             dnf << ")";
         }
         dnf << ")";
-        solver->addAssertion(dnf.str());
+        solver_->addAssertion(dnf.str());
     }
 }
 
@@ -739,8 +734,7 @@ void GeometricTechnique::addCombinedLoopConstraints(
 //   νᵢ = 0
 // ============================================================================
 
-void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+void GeometricTechnique::addEigenvalueAndNilpotentConstraints(int effective_num_gevs)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     int constraint_count = 0;
@@ -756,11 +750,11 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
             std::string lambda_var = "lambda_" + std::to_string(i);
 
             if (settings_.allow_bounded) {
-                solver->addAssertion("(>= " + lambda_var + " " + zero + ")");
+                solver_->addAssertion("(>= " + lambda_var + " " + zero + ")");
                 if (verbose)
                     std::cout << "      lambda_" << i << " >= " << zero << std::endl;
             } else {
-                solver->addAssertion("(>= " + lambda_var + " " + one + ")");
+                solver_->addAssertion("(>= " + lambda_var + " " + one + ")");
                 if (verbose)
                     std::cout << "      lambda_" << i << " >= " << one << std::endl;
             }
@@ -781,7 +775,7 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
             }
         }
         v_nonzero << ")";
-        solver->addAssertion(v_nonzero.str());
+        solver_->addAssertion(v_nonzero.str());
         constraint_count++;
 
         if (verbose)
@@ -795,12 +789,12 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
 
     //         if (settings_.nilpotent_components) {
     //             // νᵢ ∈ {0, 1}
-    //             solver->addAssertion("(or (= " + nu_var + " " + zero + ") (= " + nu_var + " " + one + "))");
+    //             solver_->addAssertion("(or (= " + nu_var + " " + zero + ") (= " + nu_var + " " + one + "))");
     //             if (verbose)
     //                 std::cout << "      nu_" << i << " in {0, 1}" << std::endl;
     //         } else {
     //             // νᵢ = 0
-    //             solver->addAssertion("(= " + nu_var + " " + zero + ")");
+    //             solver_->addAssertion("(= " + nu_var + " " + zero + ")");
     //             if (verbose)
     //                 std::cout << "      nu_" << i << " = " << zero << std::endl;
     //         }
@@ -816,8 +810,7 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(
 // EXTRACTION DU GNTA
 // ============================================================================
 
-ProofCertificate GeometricTechnique::extractGNTA(
-    std::shared_ptr<SMTSolver> solver, int effective_num_gevs)
+ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
 {
     ProofCertificate result;
     result.status = AnalysisResult::NON_TERMINATING;
@@ -834,13 +827,13 @@ ProofCertificate GeometricTechnique::extractGNTA(
     // Extraire x₀
     for (const auto& var : lasso_->program_vars) {
         std::string init_var = "x0_" + var;
-        state_init[var] = solver->getValue(init_var);
+        state_init[var] = solver_->getValue(init_var);
     }
 
     // Extraire x₁
     for (const auto& var : lasso_->program_vars) {
         std::string honda_var = "x1_" + var;
-        state_honda[var] = solver->getValue(honda_var);
+        state_honda[var] = solver_->getValue(honda_var);
     }
 
     // Extraire eigenvectors
@@ -848,7 +841,7 @@ ProofCertificate GeometricTechnique::extractGNTA(
         std::map<std::string, double> gev;
         for (const auto& var : lasso_->program_vars) {
             std::string gev_var = "v" + std::to_string(i) + "_" + var;
-            gev[var] = solver->getValue(gev_var);
+            gev[var] = solver_->getValue(gev_var);
         }
         eigenvectors.push_back(gev);
     }
@@ -862,7 +855,7 @@ ProofCertificate GeometricTechnique::extractGNTA(
             lambdas.push_back(1.0);
         } else {
             std::string lambda_var = "lambda_" + std::to_string(i);
-            lambdas.push_back(solver->getValue(lambda_var));
+            lambdas.push_back(solver_->getValue(lambda_var));
         }
     }
 
@@ -870,7 +863,7 @@ ProofCertificate GeometricTechnique::extractGNTA(
     // if (settings_.nilpotent_components && effective_num_gevs >= 2) {
     //     for (int i = 0; i < effective_num_gevs - 1; ++i) {
     //         std::string nu_var = "nu_" + std::to_string(i);
-    //         nus.push_back(solver->getValue(nu_var));
+    //         nus.push_back(solver_->getValue(nu_var));
     //     }
     // }
 

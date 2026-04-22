@@ -10,7 +10,7 @@ LassoProgram::LassoProgram() {
     // loop commence comme "true" aussi
 }
 
-void LassoProgram::declareSolverContext(std::shared_ptr<SMTSolver> solver) const {
+void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // 1. Déclarer les constantes symboliques

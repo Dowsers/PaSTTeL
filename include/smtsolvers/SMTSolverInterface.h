@@ -9,9 +9,9 @@
 
 
 // Interface pour solveur SMT
-class SMTSolver {
+class SMTSolverInterface {
 public:
-    virtual ~SMTSolver() = default;
+    virtual ~SMTSolverInterface() = default;
 
     virtual void push() = 0;
     virtual void pop() = 0;
@@ -51,7 +51,7 @@ public:
      * Utilisé pour la parallélisation (chaque thread a son propre solver)
      * @return Un nouveau solver du même type avec les mêmes paramètres
      */
-    virtual std::shared_ptr<SMTSolver> clone() const = 0;
+    virtual std::shared_ptr<SMTSolverInterface> clone() const = 0;
 
     /**
      * @brief Interrompt immédiatement toute résolution SMT en cours

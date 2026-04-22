@@ -30,7 +30,7 @@ public:
     TemplateParameters getParameters() const override;
 
     std::vector<RankingFunction> extractRankingFunctions(
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         const std::vector<std::string>& program_vars) const override;
 
     std::string getName() const override {
@@ -67,7 +67,7 @@ public:
     /**
      * @brief Declare les parametres SMT (tous coefficients + delta) dans le solveur
      */
-    void declareParameters(std::shared_ptr<SMTSolver> solver) const override;
+    void declareParameters(SMTSolverInterface* solver) const override;
 
 private:
     int num_components_;

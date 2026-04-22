@@ -25,7 +25,7 @@ public:
     /**
      * @brief Constructeur
      */
-    FixpointTechnique();
+    FixpointTechnique(SMTSolverInterface* solver);
 
     void init(const LassoProgram& lasso) override;
 
@@ -39,7 +39,7 @@ public:
      * @param solver Le solveur SMT à utiliser
      * @return Résultat contenant le point fixe si trouvé
      */
-    AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    AnalysisResult analyze() override;
     ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override {
@@ -57,23 +57,22 @@ private:
     /**
      * @brief Ajoute les contraintes du stem au solveur
      */
-    void addStemConstraints(std::shared_ptr<SMTSolver> solver);
+    void addStemConstraints();
     
     /**
      * @brief Ajoute les contraintes de la boucle au solveur
      */
-    void addLoopConstraints(std::shared_ptr<SMTSolver> solver);
+    void addLoopConstraints();
     
     /**
      * @brief Ajoute les contraintes x = x' (point fixe)
      */
-    void addFixpointConstraints(std::shared_ptr<SMTSolver> solver);
+    void addFixpointConstraints();
     
     /**
      * @brief Extrait les valeurs du point fixe depuis le modèle SAT
      */
-    std::map<std::string, double> extractFixpoint(
-        std::shared_ptr<SMTSolver> solver);
+    std::map<std::string, double> extractFixpoint();
 };
 
 #endif // FIXPOINT_TECHNIQUE_H

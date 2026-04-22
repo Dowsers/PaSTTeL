@@ -64,7 +64,7 @@ public:
     void addConstraintsToSolver(
         const std::vector<LinearInequality>& constraints,
         const std::unordered_set<std::string>& program_vars,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         const std::string& annotation = "");
 
 private:
@@ -89,7 +89,7 @@ private:
     /**
      * Génère: λ_i ≥ 0 pour chaque i
      */
-    void generatePositivityConstraints(std::shared_ptr<SMTSolver> solver);
+    void generatePositivityConstraints(SMTSolverInterface* solver);
     
     /**
      * Génère les contraintes spéciales sur certains λ_i:
@@ -97,7 +97,7 @@ private:
      * - ZERO_AND_ONE: λ_i ∈ {0, 1}
      * - ANYTHING: pas de contrainte supplémentaire (juste λ_i ≥ 0)
      */
-    void generateMotzkinCoefficientConstraints(std::shared_ptr<SMTSolver> solver);
+    void generateMotzkinCoefficientConstraints(SMTSolverInterface* solver);
     
     /**
      * Génère: Σ_i λ_i * coef_i(var) = 0 pour chaque variable de programme
@@ -106,14 +106,14 @@ private:
      * Pour que le système soit insatisfiable, la combinaison linéaire
      * des inégalités doit donner 0 pour chaque variable.
      */
-    void generateEqualityConstraints(std::shared_ptr<SMTSolver> solver);
+    void generateEqualityConstraints(SMTSolverInterface* solver);
     
     /**
      * Génère: Σ_i λ_i * b_i ≤ 0
      * 
      * La somme pondérée des constantes doit être non-positive
      */
-    void generateConstantConstraint(std::shared_ptr<SMTSolver> solver);
+    void generateConstantConstraint(SMTSolverInterface* solver);
     
     /**
      * Génère: (Σ_i λ_i * b_i < 0) ∨ (Σ_j μ_j > 0)
@@ -124,7 +124,7 @@ private:
      * - Soit la combinaison donne une constante strictement négative
      * - Soit au moins une inégalité stricte est utilisée (μ_j > 0)
      */
-    void generateStrictConstraint(std::shared_ptr<SMTSolver> solver);
+    void generateStrictConstraint(SMTSolverInterface* solver);
     
     // ========================================================================
     // UTILITAIRES SMT

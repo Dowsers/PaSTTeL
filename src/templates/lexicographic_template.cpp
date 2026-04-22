@@ -373,7 +373,7 @@ LexicographicTemplate::generateDecrement() const {
 // ============================================================================
 
 std::vector<RankingFunction> LexicographicTemplate::extractRankingFunctions(
-    std::shared_ptr<SMTSolver> solver,
+    std::shared_ptr<SMTSolverInterface> solver,
     const std::vector<std::string>& program_vars) const
 {
     std::vector<RankingFunction> components;

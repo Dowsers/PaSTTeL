@@ -27,16 +27,16 @@ static __int128 gcd128(__int128 a, __int128 b) {
 GenericTerminationSynthesizer::GenericTerminationSynthesizer(
     const LassoProgram& lasso,
     RankingTemplate* template_ptr,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     int num_si_strict,
     int num_si_nonstrict)
     : lasso_(lasso)
     , template_(template_ptr)
-    , solver_(solver)
     , num_si_strict_(num_si_strict)
     , num_si_nonstrict_(num_si_nonstrict)
     , synthesized_(false)
 {
+    solver_ = std::move(solver);
     if (!template_) {
         throw std::runtime_error("GenericTerminationSynthesizer: null template pointer");
     }
@@ -226,11 +226,11 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
 
     if (verbose) {
         std::cout << "  Creating local SIGs: "
-                  << num_loop_polys << " polys x "
-                  << num_template_parts << " template parts x "
-                  << num_si << " SI(s) = "
-                  << (num_loop_polys * num_template_parts) << " SIGs"
-                  << std::endl;
+                << num_loop_polys << " polys x "
+                << num_template_parts << " template parts x "
+                << num_si << " SI(s) = "
+                << (num_loop_polys * num_template_parts) << " SIGs"
+                << std::endl;
     }
 
     num_template_parts_ = num_template_parts;

@@ -46,7 +46,7 @@ public:
     GenericTerminationSynthesizer(
         const LassoProgram& lasso,
         RankingTemplate* template_ptr,
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         int num_si_strict = 0,
         int num_si_nonstrict = 0);
 
@@ -80,7 +80,7 @@ private:
     // Donnees
     const LassoProgram& lasso_;
     RankingTemplate* template_;
-    std::shared_ptr<SMTSolver> solver_;
+    SMTSolverInterface* solver_;
     int num_si_strict_;
     int num_si_nonstrict_;
 

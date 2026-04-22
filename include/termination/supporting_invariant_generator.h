@@ -38,7 +38,7 @@ public:
     /**
      * @brief Declare les parametres SMT des SI dans le solveur
      */
-    void declareParameters(std::shared_ptr<SMTSolver> solver) const;
+    void declareParameters(SMTSolverInterface* solver) const;
 
     // ========================================================================
     // INTERFACE PUBLIQUE POUR buildConstraints() DU SYNTHESIZER

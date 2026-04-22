@@ -81,7 +81,7 @@ public:
      * @param solver Le solveur SMT à utiliser
      * @return Résultat de l'analyse
      */
-    virtual TerminationResult analyze(std::shared_ptr<SMTSolver> solver) = 0;
+    virtual TerminationResult analyze(std::shared_ptr<SMTSolverInterface> solver) = 0;
 
     /**
      * @brief Retourne le nom de la technique (pour logging)

@@ -43,7 +43,7 @@ MotzkinTransformation::MotzkinTransformation()
 void MotzkinTransformation::addConstraintsToSolver(
     const std::vector<LinearInequality>& constraints,
     const std::unordered_set<std::string>& program_vars,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     const std::string& annotation)
 {
     // ────────────────────────────────────────────────────────────────────────
@@ -188,7 +188,7 @@ void MotzkinTransformation::registerMotzkinCoefficients() {
 // GÉNÉRATION DES CONTRAINTES
 // ============================================================================
 
-void MotzkinTransformation::generatePositivityConstraints(std::shared_ptr<SMTSolver> solver) {
+void MotzkinTransformation::generatePositivityConstraints(SMTSolverInterface* solver) {
     // Pour chaque coefficient de Motzkin: λ_i ≥ 0
     for (const auto& lambda : m_motzkin_coefficients) {
         if (lambda == "1.0") continue;  // pas de λ ≥ 0 pour les littéraux
@@ -198,7 +198,7 @@ void MotzkinTransformation::generatePositivityConstraints(std::shared_ptr<SMTSol
     }
 }
 
-void MotzkinTransformation::generateMotzkinCoefficientConstraints(std::shared_ptr<SMTSolver> solver) {
+void MotzkinTransformation::generateMotzkinCoefficientConstraints(SMTSolverInterface* solver) {
     // Contraintes spéciales selon le type de coefficient
     for (size_t i = 0; i < m_inequalities.size(); ++i) {
         const auto& ineq = m_inequalities[i];
@@ -225,7 +225,7 @@ void MotzkinTransformation::generateMotzkinCoefficientConstraints(std::shared_pt
     }
 }
 
-void MotzkinTransformation::generateEqualityConstraints(std::shared_ptr<SMTSolver> solver) {
+void MotzkinTransformation::generateEqualityConstraints(SMTSolverInterface* solver) {
     // Pour chaque variable de programme: Σ_i λ_i * coef_i(var) = 0
     // C'est la contrainte clé qui ÉLIMINE les variables de programme
     
@@ -272,7 +272,7 @@ void MotzkinTransformation::generateEqualityConstraints(std::shared_ptr<SMTSolve
     }
 }
 
-void MotzkinTransformation::generateConstantConstraint(std::shared_ptr<SMTSolver> solver) {
+void MotzkinTransformation::generateConstantConstraint(SMTSolverInterface* solver) {
     // Σ_i λ_i * b_i ≤ 0
     
     std::vector<std::string> summands;
@@ -313,7 +313,7 @@ void MotzkinTransformation::generateConstantConstraint(std::shared_ptr<SMTSolver
     solver->addAssertion(constraint.str());
 }
 
-void MotzkinTransformation::generateStrictConstraint(std::shared_ptr<SMTSolver> solver) {
+void MotzkinTransformation::generateStrictConstraint(SMTSolverInterface* solver) {
     // (Σ_i λ_i * b_i < 0) ∨ (Σ_j μ_j > 0)
     // où i parcourt les inégalités NON-STRICTES et j les STRICTES
     

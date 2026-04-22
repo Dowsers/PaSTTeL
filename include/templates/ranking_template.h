@@ -72,7 +72,7 @@ public:
      * @brief Extrait les composantes de la ranking function depuis le modele SMT
      */
     virtual std::vector<RankingFunction> extractRankingFunctions(
-        std::shared_ptr<SMTSolver> solver,
+        SMTSolverInterface* solver,
         const std::vector<std::string>& program_vars) const = 0;
 
     /**
@@ -122,7 +122,7 @@ public:
      * Implementation par defaut : utilise getParameters().
      * AffineTemplate / NestedTemplate : surchargent avec AffineFunctionGenerator.
      */
-    virtual void declareParameters(std::shared_ptr<SMTSolver> solver) const {
+    virtual void declareParameters(SMTSolverInterface* solver) const {
         auto params = getParameters();
         for (const auto& p : params.ranking_params) {
             solver->declareVariable(p, "Real");

@@ -60,7 +60,7 @@ public:
     /**
      * @brief Lance toutes les techniques de façon asynchrone (non-bloquant)
      */
-    void solve(const LassoProgram& lasso, std::shared_ptr<SMTSolver> solver);
+    void solve(const LassoProgram& lasso);
 
     /**
      * @brief Waits for the analysis to complete or the time limit to expire.
@@ -80,7 +80,6 @@ private:
 
     // State shared between solve() and join()
     std::vector<std::future<ProofCertificate>> futures_;
-    std::vector<std::shared_ptr<SMTSolver>> thread_solvers_;
     std::atomic<bool> conclusive_found_{false};
     std::mutex result_mutex_;
     ProofCertificate final_result_;
@@ -89,9 +88,6 @@ private:
     int sem_count_;
     std::mutex sem_mutex_;
     std::condition_variable sem_cv_;
-
-    std::vector<std::shared_ptr<SMTSolver>> prepareSolvers(
-        std::shared_ptr<SMTSolver> solver, size_t count) const;
 };
 
 #endif // PORTFOLIO_ORCHESTRATOR_H

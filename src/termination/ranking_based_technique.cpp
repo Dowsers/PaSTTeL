@@ -8,21 +8,25 @@
 #include "templates/lexicographic_template.h"
 #include "utiles.h"
 
+extern VerbosityLevel VERBOSITY;
+
 // ============================================================================
 // CONSTRUCTEUR
 // ============================================================================
 
 RankingBasedTechnique::RankingBasedTechnique(
+    SMTSolverInterface* solver,
     const std::string& template_name,
     const std::vector<TemplateConfig>& configs,
     int num_components_nested)
-    : template_name_(template_name)
-    , configs_(configs)
-    , num_components_nested_(num_components_nested)
-    , lasso_(nullptr)
-    , cancelled_(false)
-    , last_synthesizer_(nullptr) {
-    solver_ = nullptr; // Initialisé dans analyze()
+        : template_name_(template_name)
+        , configs_(configs)
+        , num_components_nested_(num_components_nested)
+        , lasso_(nullptr)
+        , cancelled_(false)
+        , last_synthesizer_(nullptr)
+{
+    solver_ = solver;
 }
 
 // ============================================================================
@@ -32,6 +36,7 @@ RankingBasedTechnique::RankingBasedTechnique(
 void RankingBasedTechnique::init(const LassoProgram& lasso) {
     lasso_ = &lasso;
     cancelled_.store(false);
+    lasso.declareSolverContext(solver_);
 }
 
 // ============================================================================
@@ -80,7 +85,7 @@ RankingTemplate* RankingBasedTechnique::createTemplate(
 // ANALYSE PRINCIPALE
 // ============================================================================
 
-AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver) {
+AnalysisResult RankingBasedTechnique::analyze() {
     ProofCertificate proof;
     proof.technique_name = getName();
 
@@ -90,9 +95,6 @@ AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver)
         return proof_.status;
     }
 
-    solver_ = solver;
-
-    extern VerbosityLevel VERBOSITY;
     bool verbosity = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     for (const auto& config : configs_) {
@@ -101,8 +103,8 @@ AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver)
                 std::cout << "\n[RankingBased] Technique cancelled" << std::endl;
             break;
         }
-        solver->reset();
-        bool found = tryTemplateConfiguration(template_name_, config, solver, verbosity);
+        solver_->reset();
+        bool found = tryTemplateConfiguration(template_name_, config, verbosity);
 
         if (found) {
             proof.status = AnalysisResult::TERMINATING;
@@ -137,7 +139,6 @@ AnalysisResult RankingBasedTechnique::analyze(std::shared_ptr<SMTSolver> solver)
 bool RankingBasedTechnique::tryTemplateConfiguration(
     const std::string& template_name,
     const TemplateConfig& config,
-    std::shared_ptr<SMTSolver> solver,
     int verbosity) {
 
     if (verbosity) {
@@ -152,7 +153,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
 
     // Créer le synthesizer — les SI sont gérés par SIG à l'intérieur
     auto synthesizer = std::make_unique<GenericTerminationSynthesizer>(
-        *lasso_, ranking_template, solver,
+        *lasso_, ranking_template, std::move(solver_),
         config.num_si_strict, config.num_si_nonstrict);
 
     // Lancer la synthèse
@@ -161,14 +162,14 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
     if (!synthesis_result.is_valid) {
         if (verbosity) {
             std::cout << "\nNo ranking function found with template "
-                      << template_name << config.description << std::endl;
+                    << template_name << config.description << std::endl;
         }
         return false;  // Échec
     }
 
     if (verbosity) {
         std::cout << "\nFound a ranking function with template "
-                  << template_name << config.description << std::endl;
+                << template_name << config.description << std::endl;
         
         synthesizer->printResults(synthesis_result);
     }
@@ -178,7 +179,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         auto validation_result = validator.validate(
             synthesizer->getTerminationArgument(),
             *lasso_,
-            solver
+            solver_
         );
 
         if (!validation_result.is_valid) {
@@ -194,7 +195,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         auto validation_result = validator.validateNested(
             synthesizer->getTerminationArgument(),
             *lasso_,
-            solver
+            solver_
         );
 
         if (!validation_result.is_valid) {
@@ -239,9 +240,9 @@ std::string RankingBasedTechnique::getDescription() const {
 
 void RankingBasedTechnique::printInfo() const {
     std::cout << "Technique: " << getName() << "\n"
-              << "Description: " << getDescription() << "\n"
-              << "Template: " << template_name_ << "\n"
-              << "Configurations: " << configs_.size() << std::endl;
+            << "Description: " << getDescription() << "\n"
+            << "Template: " << template_name_ << "\n"
+            << "Configurations: " << configs_.size() << std::endl;
 }
 
 // ============================================================================

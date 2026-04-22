@@ -55,7 +55,7 @@ void NestedTemplate::init(const LassoProgram& lasso) {
 // DECLARATION DES PARAMETRES SMT
 // ============================================================================
 
-void NestedTemplate::declareParameters(std::shared_ptr<SMTSolver> solver) const {
+void NestedTemplate::declareParameters(SMTSolverInterface* solver) const {
     if (!initialized_) {
         throw std::runtime_error("NestedTemplate::declareParameters() called before init()");
     }
@@ -148,7 +148,7 @@ LinearInequality NestedTemplate::getConstraintsBounded(
 // ============================================================================
 
 std::vector<RankingFunction> NestedTemplate::extractRankingFunctions(
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     const std::vector<std::string>& program_vars) const
 {
     std::vector<RankingFunction> components;

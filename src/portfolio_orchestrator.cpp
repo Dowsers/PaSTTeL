@@ -17,29 +17,13 @@ void PortfolioOrchestrator::addTechnique(
     techniques_.push_back(std::move(technique));
 }
 
-
-std::vector<std::shared_ptr<SMTSolver>> PortfolioOrchestrator::prepareSolvers(
-    std::shared_ptr<SMTSolver> solver, size_t count) const {
-
-    std::vector<std::shared_ptr<SMTSolver>> solvers;
-    solvers.reserve(count);
-    solvers.push_back(solver);
-    for (size_t i = 1; i < count; ++i) {
-        solvers.push_back(solver->clone());
-    }
-    return solvers;
-}
-
 void PortfolioOrchestrator::solve(
-    const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver) {
+    const LassoProgram& lasso) {
 
     all_results_.clear();
     futures_.clear();
     conclusive_found_.store(false);
     final_result_ = ProofCertificate{};
-
-    lasso.declareSolverContext(solver);
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -48,17 +32,20 @@ void PortfolioOrchestrator::solve(
 
     if (verbose) {
         std::cout << "\n=== Portfolio Analysis ("
-                  << n_threads << " thread(s)) ===\n";
+                << n_threads << " thread(s)) ===\n";
         for (size_t i = 0; i < n; ++i)
             std::cout << "  * " << techniques_[i]->getName() << "\n";
         std::cout << "\n";
     }
 
-    thread_solvers_ = prepareSolvers(solver, n);
+    // thread_solvers_ = prepareSolvers(solver, n);
     futures_.reserve(n);
 
+    // Limit the number of threads
+    // TODO: use a pool of threads instead
     sem_count_ = max_threads_;
 
+    // Launch each technique in its own thread
     for (size_t i = 0; i < n; ++i) {
         futures_.push_back(std::async(std::launch::async,
             [this, &lasso, i, verbose]() -> ProofCertificate {
@@ -83,6 +70,7 @@ void PortfolioOrchestrator::solve(
                     }
                 } sem_release{this};
 
+                // Check if another thread has already found a conclusive result
                 if (conclusive_found_.load()) {
                     if (verbose) {
                         std::lock_guard<std::mutex> lock(result_mutex_);
@@ -105,19 +93,20 @@ void PortfolioOrchestrator::solve(
                     return r;
                 }
 
-                auto thread_solver = thread_solvers_[i];
-                thread_solver->reset();
-                lasso.declareSolverContext(thread_solver);
+                // auto thread_solver = thread_solvers_[i];
+                // thread_solver->reset();
+                // lasso.declareSolverContext(thread_solver);
 
                 if (verbose) {
                     std::lock_guard<std::mutex> lock(result_mutex_);
                     std::cout << "[" << name << "] Starting...\n";
                 }
 
+                // Run the main analysis
                 auto start = std::chrono::high_resolution_clock::now();
                 AnalysisResult verdict;
                 try {
-                    verdict = technique->analyze(thread_solver);
+                    verdict = technique->analyze();
                 } catch (const std::exception& e) {
                     ProofCertificate r;
                     r.technique_name = name;
@@ -125,34 +114,39 @@ void PortfolioOrchestrator::solve(
                 }
                 auto end = std::chrono::high_resolution_clock::now();
 
+                // Get the proof certificate and execution time
                 auto proof = technique->getProof();
                 proof.execution_time_ms = static_cast<double>(
                     std::chrono::duration_cast<std::chrono::milliseconds>(
                         end - start).count());
 
+                // Store the result in the shared vector
                 {
                     std::lock_guard<std::mutex> lock(result_mutex_);
                     all_results_.push_back(proof);
                 }
 
+                // If its the first conclusive result, store it and cancel other techniques
                 if (proof.isConclusive() && !conclusive_found_.load()) {
                     conclusive_found_.store(true);
 
                     if (verbose) {
                         std::lock_guard<std::mutex> lock(result_mutex_);
                         std::cout << "[" << name << "] Conclusive result: "
-                                  << (verdict == AnalysisResult::TERMINATING
-                                      ? "TERMINATING" : "NON-TERMINATING")
-                                  << " (in " << proof.execution_time_ms << "ms)\n";
+                                << (verdict == AnalysisResult::TERMINATING
+                                    ? "TERMINATING" : "NON-TERMINATING")
+                                << " (in " << proof.execution_time_ms << "ms)\n";
                         std::cout << "[" << name << "] Cancelling other techniques...\n";
                     }
 
+                    // Cancel other techniques if possible
                     for (size_t j = 0; j < techniques_.size(); ++j) {
                         if (j != i && techniques_[j]->canBeCancelled()) {
                             techniques_[j]->cancel();
                         }
                     }
 
+                    // Lock final result
                     {
                         std::lock_guard<std::mutex> lock(result_mutex_);
                         final_result_ = proof;
@@ -160,7 +154,7 @@ void PortfolioOrchestrator::solve(
                 } else if (!proof.isConclusive() && verbose) {
                     std::lock_guard<std::mutex> lock(result_mutex_);
                     std::cout << "[" << name << "] No conclusive result (took "
-                              << proof.execution_time_ms << "ms)\n";
+                            << proof.execution_time_ms << "ms)\n";
                 }
 
                 return proof;
@@ -175,7 +169,7 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds) {
 
     if (timelimit_seconds > 0) {
         auto deadline = std::chrono::steady_clock::now()
-                      + std::chrono::seconds(timelimit_seconds);
+                    + std::chrono::seconds(timelimit_seconds);
 
         for (auto& f : futures_) {
             if (std::chrono::steady_clock::now() >= deadline) {

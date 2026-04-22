@@ -13,7 +13,7 @@ static void extractScalarValue(
     const std::string& var_prog,
     const std::string& ssa,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     std::map<std::string, double>& counterexample)
 {
     auto it = lasso.var_sorts.find(var_prog);
@@ -39,7 +39,7 @@ RankingAndInvariantValidator::RankingAndInvariantValidator() {
 RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validate(
     const TerminationArgument& argument,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver)
+    SMTSolverInterface* solver)
 {
     const RankingFunction& ranking_function = argument.ranking_function;
     const std::vector<SupportingInvariant>& supporting_invariants = argument.supporting_invariants;
@@ -248,7 +248,7 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
 // ============================================================================
 
 void RankingAndInvariantValidator::registerProgramVariablesToSolver(
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     const LassoProgram& lasso) {
 
     lasso.declareSolverContext(solver);
@@ -263,7 +263,7 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
     int si_index,
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver)
+    SMTSolverInterface* solver)
 {
     SIValidationResult result;
     result.si_index = si_index;
@@ -421,7 +421,7 @@ bool RankingAndInvariantValidator::checkSINonTriviality(
 bool RankingAndInvariantValidator::checkSIInitiation(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     std::map<std::string, double>& counterexample)
 {
     solver->push();
@@ -470,7 +470,7 @@ bool RankingAndInvariantValidator::checkSIInitiation(
 bool RankingAndInvariantValidator::checkSIConsecution(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     std::map<std::string, double>& counterexample)
 {
     solver->push();
@@ -532,7 +532,7 @@ bool RankingAndInvariantValidator::checkSIConsecution(
 bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     std::map<std::string, double>& counterexample)
 {
     solver->push();
@@ -610,7 +610,7 @@ bool RankingAndInvariantValidator::checkRFBounded(
     const RankingFunction& rf,
     const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     std::map<std::string, double>& counterexample)
 {
     solver->push();
@@ -671,7 +671,7 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
     const RankingFunction& rf,
     const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver,
+    SMTSolverInterface* solver,
     double delta,
     std::map<std::string, double>& counterexample)
 {
@@ -835,7 +835,7 @@ static std::string buildRFFormula(
 static void addLoopAndSIConstraints(
     const LassoProgram& lasso,
     const std::vector<SupportingInvariant>& valid_sis,
-    std::shared_ptr<SMTSolver> solver)
+    SMTSolverInterface* solver)
 {
     for (const auto& poly : lasso.loop.polyhedra) {
         for (const auto& ineq : poly) {
@@ -861,7 +861,7 @@ static void addLoopAndSIConstraints(
 RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidator::validateNested(
     const TerminationArgument& argument,
     const LassoProgram& lasso,
-    std::shared_ptr<SMTSolver> solver)
+    SMTSolverInterface* solver)
 {
     const auto& components = argument.components;
     const auto& supporting_invariants = argument.supporting_invariants;

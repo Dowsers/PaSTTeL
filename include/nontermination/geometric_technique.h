@@ -52,7 +52,8 @@ public:
      * @brief Constructeur avec paramètres par défaut
      * @param settings Paramètres de l'analyse géométrique
      */
-    GeometricTechnique(const GeometricNonTerminationSettings& settings = GeometricNonTerminationSettings());
+    GeometricTechnique(SMTSolverInterface* solver,
+                const GeometricNonTerminationSettings& settings = GeometricNonTerminationSettings());
 
     void init(const LassoProgram& lasso) override;
 
@@ -64,7 +65,7 @@ public:
      * @param solver Le solveur SMT à utiliser
      * @return GNTA trouvé, ou UNKNOWN si aucun
      */
-    AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    AnalysisResult analyze() override;
     ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override {
@@ -112,17 +113,17 @@ private:
      * @param solver Le solveur SMT
      * @param effective_num_gevs Nombre de GEVs à utiliser (> 0)
      */
-    bool encodeConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    bool encodeConstraints(int effective_num_gevs);
 
     /**
      * @brief Déclare les variables SMT: x₀, x₁, yᵢ, λᵢ, νᵢ
      */
-    void declareVariables(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    void declareVariables(int effective_num_gevs);
 
     /**
      * @brief Ajoute les contraintes du stem: Stem(x₀, x₁)
      */
-    void addStemConstraints(std::shared_ptr<SMTSolver> solver);
+    void addStemConstraints();
 
     /**
      * @brief Version branch-consistante de (première itération + rays).
@@ -133,7 +134,7 @@ private:
      * Garantit que la première itération et tous les rays utilisent le MÊME polyèdre,
      * éliminant les preuves spurieuses dues au mélange de branches DNF.
      */
-    void addCombinedLoopConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    void addCombinedLoopConstraints(int effective_num_gevs);
 
     /**
      * @brief Construit les contraintes de première itération pour UN polyèdre.
@@ -141,8 +142,7 @@ private:
      */
     std::vector<std::string> buildFirstIterConstraintsForPoly(
         const std::vector<LinearInequality>& poly,
-        int effective_num_gevs,
-        std::shared_ptr<SMTSolver> solver);
+        int effective_num_gevs);
 
     /**
      * @brief Construit les contraintes rayon pour UN polyèdre et UN GEV.
@@ -151,14 +151,13 @@ private:
     std::vector<std::vector<std::string>> buildRayConstraintsForPoly(
         const std::vector<LinearInequality>& poly,
         int gev_idx,
-        int effective_num_gevs,
-        std::shared_ptr<SMTSolver> solver);
+        int effective_num_gevs);
 
     /**
      * @brief Ajoute les contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
      * Pour chaque variable identité x: sum(v_i_x) = 0 et v_i_x = λᵢ·v_i_x + νᵢ·v_{i+1}_x
      */
-    void addIdentityVariableConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    void addIdentityVariableConstraints(int effective_num_gevs);
 
     /**
      * @brief Ajoute les contraintes sur λᵢ et νᵢ
@@ -167,12 +166,12 @@ private:
      * - Si nilpotent_components: νᵢ ∈ {0, 1}
      * - Sinon: νᵢ = 0
      */
-    void addEigenvalueAndNilpotentConstraints(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    void addEigenvalueAndNilpotentConstraints(int effective_num_gevs);
 
     /**
      * @brief Extrait le GNTA depuis le modèle SAT
      */
-    ProofCertificate extractGNTA(std::shared_ptr<SMTSolver> solver, int effective_num_gevs);
+    ProofCertificate extractGNTA(int effective_num_gevs);
 
     /**
      * @brief Vérifie si c'est un fixpoint (tous les GEVs=0 ou tous les λ=0)

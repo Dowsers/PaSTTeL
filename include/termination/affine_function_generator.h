@@ -33,7 +33,7 @@ public:
     /**
      * @brief Déclare toutes les variables de coefficients dans le solveur SMT
      */
-    void declareParameters(std::shared_ptr<SMTSolver> solver) const;
+    void declareParameters(SMTSolverInterface* solver) const;
 
     /**
      * @brief Construit la LinearInequality représentant l'expression affine
@@ -58,12 +58,12 @@ public:
      * @brief Lit les valeurs des coefficients depuis le modèle SMT (après SAT)
      * Retourne les valeurs dans le même ordre que getParamNames()
      */
-    std::vector<double> extractValues(std::shared_ptr<SMTSolver> solver) const;
+    std::vector<double> extractValues(SMTSolverInterface* solver) const;
 
     /**
      * @brief Lit les valeurs exactes comme rationnels (num, den) depuis le modele SMT
      */
-    std::vector<std::pair<int64_t, int64_t>> extractRationals(std::shared_ptr<SMTSolver> solver) const;
+    std::vector<std::pair<int64_t, int64_t>> extractRationals(SMTSolverInterface* solver) const;
 
     int getNumVars() const { return num_vars_; }
 

@@ -11,9 +11,9 @@
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
- * @brief Implémentation concrète de SMTSolver utilisant CVC5 C++ API
+ * @brief Implémentation concrète de SMTSolverInterface utilisant CVC5 C++ API
  *
- * Cette classe hérite de SMTSolver et fournit une implémentation complète
+ * Cette classe hérite de SMTSolverInterface et fournit une implémentation complète
  * utilisant directement la bibliothèque CVC5 en C++. Elle supporte :
  * - push/pop pour la gestion de contextes
  * - Déclaration de variables (Int, Real, Bool)
@@ -21,7 +21,7 @@
  * - Vérification SAT/UNSAT
  * - Extraction de modèles
  */
-class SMTSolverCVC5 : public SMTSolver {
+class SMTSolverCVC5 : public SMTSolverInterface {
 private:
     cvc5::TermManager m_tm;          // Term manager (doit être initialisé avant m_solver)
     cvc5::Solver m_solver;           // Solveur CVC5
@@ -59,7 +59,7 @@ public:
     virtual ~SMTSolverCVC5();
 
     // ========================================================================
-    // MÉTHODES VIRTUELLES HÉRITÉES DE SMTSolver
+    // MÉTHODES VIRTUELLES HÉRITÉES DE SMTSolverInterface
     // ========================================================================
 
     /**
@@ -131,7 +131,7 @@ public:
      * @brief Crée une copie indépendante du solver
      * @return Un nouveau SMTSolverCVC5 avec les mêmes paramètres
      */
-    std::shared_ptr<SMTSolver> clone() const override;
+    std::shared_ptr<SMTSolverInterface> clone() const override;
 
     // ========================================================================
     // MÉTHODES SPÉCIFIQUES À CVC5

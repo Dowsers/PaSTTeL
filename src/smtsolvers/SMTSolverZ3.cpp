@@ -565,7 +565,7 @@ bool SMTSolverZ3::variableExists(const std::string& name) const {
 // CLONAGE
 // ============================================================================
 
-std::shared_ptr<SMTSolver> SMTSolverZ3::clone() const {
+std::shared_ptr<SMTSolverInterface> SMTSolverZ3::clone() const {
     // Créer une nouvelle instance avec les mêmes paramètres
     auto cloned = std::make_shared<SMTSolverZ3>(m_verbose);
 

@@ -9,7 +9,6 @@
 #include "termination/termination_technique_interface.h"
 #include "termination/generic_termination_synthesizer.h"
 #include "templates/ranking_template.h"
-#include "smtsolvers/SMTSolverInterface.h"
 #include "analysis_technique_interface.h"
 
 /**
@@ -43,6 +42,7 @@ public:
      * @param num_components_nested Nombre de composantes pour NestedTemplate (ignoré pour AffineTemplate)
      */
     RankingBasedTechnique(
+        SMTSolverInterface* solver,
         const std::string& template_name,
         const std::vector<TemplateConfig>& configs,
         int num_components_nested = 2);
@@ -56,7 +56,7 @@ public:
     /**
      * @brief Analyse et retourne un AnalysisResult (interface PortfolioOrchestrator)
      */
-    AnalysisResult analyze(std::shared_ptr<SMTSolver> solver) override;
+    AnalysisResult analyze() override;
     ProofCertificate getProof() const override { return proof_; }
 
     std::string getName() const override;
@@ -79,9 +79,6 @@ private:
     std::string template_name_;
     std::vector<TemplateConfig> configs_;
     int num_components_nested_;
-
-    // Instance du solveur
-    std::shared_ptr<SMTSolver> solver_;
 
     // État
     const LassoProgram* lasso_;
@@ -107,7 +104,6 @@ private:
     bool tryTemplateConfiguration(
         const std::string& template_name,
         const TemplateConfig& config,
-        std::shared_ptr<SMTSolver> solver,
         int verbosity);
 };
 

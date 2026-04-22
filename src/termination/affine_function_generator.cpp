@@ -20,7 +20,7 @@ AffineFunctionGenerator::AffineFunctionGenerator(
 // ============================================================================
 
 void AffineFunctionGenerator::declareParameters(
-    std::shared_ptr<SMTSolver> solver) const
+    SMTSolverInterface* solver) const
 {
     for (const auto& name : param_names_) {
         solver->declareVariable(name, "Real");
@@ -62,7 +62,7 @@ const std::vector<std::string>& AffineFunctionGenerator::getParamNames() const {
 }
 
 std::vector<double> AffineFunctionGenerator::extractValues(
-    std::shared_ptr<SMTSolver> solver) const
+    SMTSolverInterface* solver) const
 {
     std::vector<double> values;
     for (const auto& p : param_names_) {
@@ -72,7 +72,7 @@ std::vector<double> AffineFunctionGenerator::extractValues(
 }
 
 std::vector<std::pair<int64_t, int64_t>> AffineFunctionGenerator::extractRationals(
-    std::shared_ptr<SMTSolver> solver) const
+    SMTSolverInterface* solver) const
 {
     std::vector<std::pair<int64_t, int64_t>> rationals;
     for (const auto& p : param_names_) {
