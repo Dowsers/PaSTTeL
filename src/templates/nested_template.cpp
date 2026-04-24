@@ -35,8 +35,7 @@ NestedTemplate::NestedTemplate(int num_components, int delta_value)
 
 void NestedTemplate::init(const LassoProgram& lasso) {
     lasso_ = lasso;
-    const auto& vars = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
-    int n = static_cast<int>(vars.size());
+    int n = static_cast<int>(lasso_.program_vars.size());
 
     generators_.clear();
     for (int i = 0; i < num_components_; ++i) {
@@ -153,18 +152,18 @@ std::vector<RankingFunction> NestedTemplate::extractRankingFunctions(
 {
     std::vector<RankingFunction> components;
     size_t n = program_vars.size();
-    double delta = solver->getValue(delta_param_);
+    Rational delta = solver->getRationalValue2(delta_param_);
 
     for (int i = 0; i < num_components_; ++i) {
         RankingFunction rf;
-        auto values = generators_[i]->extractValues(solver);
+        auto values = generators_[i]->extractRationals(solver);
         for (size_t j = 0; j < n && j < values.size(); ++j) {
-            rf.coefficients[program_vars[j]] = static_cast<int64_t>(std::round(values[j]));
+            rf.coefficients[program_vars[j]] = values[j];
         }
         if (values.size() > n) {
-            rf.constant = static_cast<int64_t>(std::round(values[n]));
+            rf.constant = values[n];
         }
-        rf.delta = static_cast<int64_t>(std::round(delta));
+        rf.delta = delta;
         components.push_back(rf);
     }
     return components;

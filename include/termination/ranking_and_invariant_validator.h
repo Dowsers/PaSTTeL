@@ -247,7 +247,7 @@ private:
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         SMTSolverInterface* solver,
-        double delta,
+        Rational delta,
         std::map<std::string, double>& counterexample);
 };
 

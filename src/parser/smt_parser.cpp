@@ -4,7 +4,9 @@
 
 #include "parser/smt_parser.h"
 #include "nla_handling.h"
+#include "utiles.h"
 
+extern VerbosityLevel VERBOSITY;
 
 DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula) {
     DNFFormula result;
@@ -104,8 +106,9 @@ std::vector<LinearInequality> SMTParser::parseAtomicFormula(const std::string& f
     try {
         result.push_back(parseInequality(formula));
     } catch (const NlaTermException& e) {
-        std::cout<< "[SMTParser] Non-linear term detected in formula: " << formula << std::endl;
-        std::cout<< "[SMTParser] Message: " << e.what() << std::endl;
+        if( VERBOSITY == VerbosityLevel::VERBOSE){
+            std::cout<< "[SMTParser] Message: " << e.what() << std::endl;
+        }
         switch (NLA_HANDLING) {
             case NlaHandling::OVERAPPROXIMATE:
                 result.push_back(LinearInequality());              // 0 >= 0 (tautologie)

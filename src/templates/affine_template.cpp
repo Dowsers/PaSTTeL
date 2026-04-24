@@ -28,9 +28,7 @@ AffineTemplate::AffineTemplate(int delta_value)
 
 void AffineTemplate::init(const LassoProgram& lasso) {
     lasso_ = lasso;
-    // template vars = loop.getOutVars() ∩ loop.getInVars()
-    const auto& vars = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
-    int n = static_cast<int>(vars.size());
+    int n = static_cast<int>(lasso_.program_vars.size());
     generator_ = std::make_unique<AffineFunctionGenerator>("RANKING_C", n);
     initialized_ = true;
 
@@ -122,16 +120,16 @@ std::vector<RankingFunction> AffineTemplate::extractRankingFunctions(
     const std::vector<std::string>& program_vars) const
 {
     RankingFunction rf;
-    auto values = generator_->extractValues(solver);
+    auto values = generator_->extractRationals(solver);
     size_t n = program_vars.size();
 
-    for (size_t i = 0; i < n && i < values.size(); ++i) {
-        rf.coefficients[program_vars[i]] = static_cast<int64_t>(std::round(values[i]));
-    }
-    if (values.size() > n) {
-        rf.constant = static_cast<int64_t>(std::round(values[n]));  // prefix_const
-    }
-    rf.delta = static_cast<int64_t>(std::round(solver->getValue(delta_param_)));
+    for (size_t i = 0; i < n && i < values.size(); ++i)
+        rf.coefficients[program_vars[i]] = values[i];
+
+    if (values.size() > n)
+        rf.constant = values[n];  // prefix_const
+    
+    rf.delta = solver->getRationalValue2(delta_param_);
 
     return {rf};
 }

@@ -131,7 +131,7 @@ std::string AffineTerm::toString() const {
 // Conversion en format SMT-LIB2
 std::string AffineTerm::toSMTLib2() const {
     if (isZero()) return "0";
-    if (isConstant()) return formatNumber(constant);
+    if (isConstant()) return std::to_string(constant);
 
     std::vector<std::string> terms;
 

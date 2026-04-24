@@ -129,7 +129,7 @@ private:
     /**
      * @brief Extrait les valeurs des parametres depuis le modele SAT
      */
-    std::map<std::string, double> extractParameters(
+    std::map<std::string, double> extractParametersValues(
         const RankingTemplate::TemplateParameters& params);
 
     /**
@@ -141,15 +141,7 @@ private:
     // NORMALISATION GCD
     // ========================================================================
 
-    long long computeGCD(
-        const std::vector<double>& coefficients,
-        double constant) const;
-
-    long long gcd(long long a, long long b) const;
-
-    void normalizeRankingFunction(RankingFunction& rf, long long gcd_value) const;
-
-    void normalizeSupportingInvariant(SupportingInvariant& si, long long gcd_value) const;
+    void SimplifyCoefficient(RankingFunction &assignment);
 };
 
 #endif // GENERIC_TERMINATION_SYNTHESIZER_H

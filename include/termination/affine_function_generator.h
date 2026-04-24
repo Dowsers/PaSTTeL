@@ -63,14 +63,17 @@ public:
     /**
      * @brief Lit les valeurs exactes comme rationnels (num, den) depuis le modele SMT
      */
-    std::vector<std::pair<int64_t, int64_t>> extractRationals(SMTSolverInterface* solver) const;
+    std::vector<Rational> extractRationals(SMTSolverInterface* solver) const;
 
     int getNumVars() const { return num_vars_; }
+
+    std::string getConstantName() { return constant_name; }
 
 private:
     std::string prefix_;
     int num_vars_;
     std::vector<std::string> param_names_;  // [prefix_0, ..., prefix_{n-1}, prefix_const]
+    std::string constant_name;
 };
 
 #endif // AFFINE_FUNCTION_GENERATOR_H

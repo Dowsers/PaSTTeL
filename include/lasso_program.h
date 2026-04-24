@@ -32,14 +32,13 @@ public:
     LinearTransition loop;
     std::vector<std::string> program_vars;
 
-    // Variables effectives du loop
-    std::vector<std::string> loop_vars;
-
     // Constantes symboliques (ERC20, null, true, false, etc.)
     std::vector<DeclaredConstant> constants;
 
     // Fonctions non interprétées (sum__balances, DType, etc.)
     std::vector<UninterpretedFunction> functions;
+
+    std::vector<std::string> removed_vars;
 
     // Axiomes (forall, injectivité, propriétés de fonctions, etc.)
     std::vector<Axiom> axioms;

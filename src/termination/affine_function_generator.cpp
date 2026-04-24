@@ -12,7 +12,8 @@ AffineFunctionGenerator::AffineFunctionGenerator(
     for (int i = 0; i < num_vars_; ++i) {
         param_names_.push_back(prefix_ + "_" + std::to_string(i));
     }
-    param_names_.push_back(prefix_ + "_const");
+    constant_name = prefix_ + "_const";
+    param_names_.push_back(constant_name);
 }
 
 // ============================================================================
@@ -71,12 +72,12 @@ std::vector<double> AffineFunctionGenerator::extractValues(
     return values;
 }
 
-std::vector<std::pair<int64_t, int64_t>> AffineFunctionGenerator::extractRationals(
+std::vector<Rational> AffineFunctionGenerator::extractRationals(
     SMTSolverInterface* solver) const
 {
-    std::vector<std::pair<int64_t, int64_t>> rationals;
+    std::vector<Rational> rationals;
     for (const auto& p : param_names_) {
-        rationals.push_back(solver->getRationalValue(p));
+        rationals.push_back(solver->getRationalValue2(p));
     }
     return rationals;
 }

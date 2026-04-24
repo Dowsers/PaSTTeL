@@ -29,7 +29,7 @@ struct ProofCertificate {
     std::string proof_details;
     double execution_time_ms = 0.0;
 
-    std::map<std::string, int64_t> rf_witness;        // terminaison : coefficients RF
+    std::map<std::string, Rational> rf_witness;        // terminaison : coefficients RF
     std::map<std::string, double>  nt_witness_state;  // non-terminaison : état témoin
 
     ProofCertificate() = default;

@@ -8,6 +8,8 @@
 #include "templates/lexicographic_template.h"
 #include "utiles.h"
 
+#define USE_VALIDATOR true
+
 extern VerbosityLevel VERBOSITY;
 
 // ============================================================================
@@ -111,18 +113,12 @@ AnalysisResult RankingBasedTechnique::analyze() {
             proof.description = "Termination proof found with " + template_name_ + config.description;
 
             assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
-            const auto& rf = last_synthesizer_->getTerminationArgument().ranking_function;
-            proof.rf_witness = rf.coefficients;
-            if (!proof.rf_witness.empty()) {
-                std::ostringstream proof_str;
-                size_t count = 0;
-                for (const auto& [var, coef] : proof.rf_witness) {
-                    if (coef == 0) continue;
-                    proof_str << coef << var << (count < rf.coefficients.size() - 1 ? " + " : "");
-                    count++;
-                }
-                proof.proof_details = proof_str.str();
+            const auto& rankfunctions_comp = last_synthesizer_->getTerminationArgument().ranking_functions;
+            proof.proof_details = "";
+            for(const auto& rf : rankfunctions_comp){
+                proof.proof_details += rf.toString() +"\n";
             }
+            proof.rf_witness = rankfunctions_comp[0].coefficients;
             proof_ = proof;
             return proof_.status;
         }
@@ -174,38 +170,41 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         synthesizer->printResults(synthesis_result);
     }
     // VALIDATION POST-SYNTHÈSE
-    RankingAndInvariantValidator validator;
-    if (template_name == "AffineTemplate") {
-        auto validation_result = validator.validate(
-            synthesizer->getTerminationArgument(),
-            *lasso_,
-            solver_
-        );
 
-        if (!validation_result.is_valid) {
+    if (USE_VALIDATOR){
+        RankingAndInvariantValidator validator;
+        if (template_name == "AffineTemplate") {
+            auto validation_result = validator.validate(
+                synthesizer->getTerminationArgument(),
+                *lasso_,
+                solver_
+            );
+
+            if (!validation_result.is_valid) {
+                if (verbosity)
+                    std::cout << "\nValidation failed!" << std::endl;
+                return false;
+            }
+
             if (verbosity)
-                std::cout << "\nValidation failed!" << std::endl;
-            return false;
-        }
+                validator.printValidationResult(validation_result);
 
-        if (verbosity)
-            validator.printValidationResult(validation_result);
+        } else if (template_name == "NestedTemplate") {
+            auto validation_result = validator.validateNested(
+                synthesizer->getTerminationArgument(),
+                *lasso_,
+                solver_
+            );
 
-    } else if (template_name == "NestedTemplate") {
-        auto validation_result = validator.validateNested(
-            synthesizer->getTerminationArgument(),
-            *lasso_,
-            solver_
-        );
+            if (!validation_result.is_valid) {
+                if (verbosity)
+                    std::cout << "\nNested validation failed: " << validation_result.error_message << std::endl;
+                return false;
+            }
 
-        if (!validation_result.is_valid) {
             if (verbosity)
-                std::cout << "\nNested validation failed: " << validation_result.error_message << std::endl;
-            return false;
+                validator.printNestedValidationResult(validation_result);
         }
-
-        if (verbosity)
-            validator.printNestedValidationResult(validation_result);
     }
 
     // Succès ! Sauvegarder le résultat

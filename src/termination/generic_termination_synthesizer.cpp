@@ -172,8 +172,8 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
             //                   << " parameters zeroed" << std::endl;
             // }
 
-            auto params = template_->getParameters();
-            result.parameters = extractParameters(params);
+            auto param_names = template_->getParameters();
+            result.parameters = extractParametersValues(param_names);
             if (verbose)
                 std::cout << "\n✓ SAT - Termination argument found!" << std::endl;
             extractResults();
@@ -213,8 +213,7 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
 
     // Nombre de parties du template : dec_list.size() + 1 (bounded)
     std::vector<std::string> loop_in_vars, loop_out_vars;
-    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
-    for (const auto& var : eff_vars_) {
+    for (const auto& var : lasso_.program_vars) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
@@ -260,8 +259,7 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
 
     // Variables SSA de la boucle
     std::vector<std::string> loop_in_vars, loop_out_vars;
-    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
-    for (const auto& var : eff_vars_) {
+    for (const auto& var : lasso_.program_vars) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
@@ -376,8 +374,7 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
 
     // Variables SSA
     std::vector<std::string> loop_in_vars, loop_out_vars, stem_out_vars;
-    const auto& eff_vars_ = lasso_.loop_vars.empty() ? lasso_.program_vars : lasso_.loop_vars;
-    for (const auto& var : eff_vars_) {
+    for (const auto& var : lasso_.program_vars) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
         stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
@@ -522,7 +519,7 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
 // EXTRACTION DES RESULTATS
 // ============================================================================
 
-std::map<std::string, double> GenericTerminationSynthesizer::extractParameters(
+std::map<std::string, double> GenericTerminationSynthesizer::extractParametersValues(
     const RankingTemplate::TemplateParameters& params)
 {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
@@ -568,27 +565,6 @@ std::map<std::string, double> GenericTerminationSynthesizer::extractParameters(
     return values;
 }
 
-// ========================================================================
-// CALCUL DU GCD
-// ========================================================================
-
-long long GenericTerminationSynthesizer::gcd(long long a, long long b) const {
-    a = std::abs(a);
-    b = std::abs(b);
-    while (b != 0) {
-        long long temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-
-long long GenericTerminationSynthesizer::computeGCD(
-    const std::vector<double>& /*coefficients*/,
-    double /*constant*/) const
-{
-    return 1; // Remplacé par normalizeFromRationals
-}
 
 // Normalise une liste de rationnels (num, den) en entiers simplifiés.
 // Utilise __int128 pour les calculs intermédiaires afin d'éviter les overflows
@@ -647,21 +623,52 @@ static std::vector<long long> rationalListToIntegers(
 }
 
 // ============================================================================
-// NORMALISATION (plus utilisée : la normalisation est faite dans rationalListToIntegers)
+// NORMALISATION
 // ============================================================================
 
-void GenericTerminationSynthesizer::normalizeRankingFunction(
-    RankingFunction& /*rf*/,
-    long long /*gcd_value*/) const
+void
+GenericTerminationSynthesizer::SimplifyCoefficient(RankingFunction &rf)
 {
-    // No-op : coefficients are already int64_t integers after rationalListToIntegers
-}
 
-void GenericTerminationSynthesizer::normalizeSupportingInvariant(
-    SupportingInvariant& /*si*/,
-    long long /*gcd_value*/) const
-{
-    // No-op : coefficients are already int64_t integers after rationalListToIntegers
+    std::map<std::string, Rational> assignment(rf.coefficients);
+    // std::string delta_tmp_name = "_delta_param_";
+    std::string constant_tmp_name = "_constante_value_";
+
+    assignment["_constante_value_"] = rf.constant;
+    // assignment["_delta_param_"] = rf.delta;
+
+    Rational gcd = getGcd(assignment);
+    if ((VERBOSITY == VerbosityLevel::VERBOSE)){
+        std::cout << "\t GCD value: "<< gcd.toString() <<"\n";
+    }
+
+    if (gcd.isZero())
+    {
+        rf.constant = Rational::ZERO();
+        // rf.delta = Rational::ZERO();
+        // assignment.erase(delta_tmp_name);
+        assignment.erase(constant_tmp_name);
+        // Special case: all coefficients are zero
+        for (const auto &[name, val] : assignment)
+        {
+            assert(val.isZero());
+            rf.coefficients[name] = Rational::ZERO();
+        }
+    }
+    else
+    {
+        rf.constant = assignment[constant_tmp_name].div(gcd);
+        // rf.delta = assignment[delta_tmp_name].div(gcd);
+        // assignment.erase(delta_tmp_name);
+        assignment.erase(constant_tmp_name);
+        // Divide each coefficient by GCD → must yield integer (denom == 1)
+        for (const auto &[name, val] : assignment)
+        {
+            Rational c = val.div(gcd);
+            assert(c.denominator() == 1 && "GCD division must yield integer");
+            rf.coefficients[name] = c;
+        }
+    }
 }
 
 // ============================================================================
@@ -675,68 +682,61 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n╭─ Extraction des resultats ────────────────╮" << std::endl;
 
-    // template vars = loop_vars (loop.out ∩ loop.in).
-    // Les variables hors loop ont des coefficients libres dans Z3 → on les exclut.
-    const auto& eff_vars = lasso_.loop_vars.empty()
-        ? lasso_.program_vars : lasso_.loop_vars;
-    size_t num_vars = eff_vars.size();
+    size_t num_vars = lasso_.program_vars.size();
 
-    termination_argument_.components =
-        template_->extractRankingFunctions(solver_, eff_vars);
+    termination_argument_.ranking_functions =
+        template_->extractRankingFunctions(solver_, lasso_.program_vars);
 
     if (verbose)
-        std::cout << "  ✓ Composantes extraites : " << termination_argument_.components.size() << std::endl;
+        std::cout << "  ✓ Composantes extraites : " << termination_argument_.ranking_functions.size() << std::endl;
 
     if (verbose)
         std::cout << "\n   Normalisation GCD par composante:" << std::endl;
 
-    {
-        auto params = template_->getParameters();
-        size_t num_comps = termination_argument_.components.size();
-        size_t nv = eff_vars.size();
-
-        if (!params.ranking_params.empty() && num_comps > 0) {
-            size_t params_per_comp = params.ranking_params.size() / num_comps;
-
-            for (size_t ci = 0; ci < num_comps; ++ci) {
-                auto& rf = termination_argument_.components[ci];
-                size_t base = ci * params_per_comp;
-
-                std::vector<std::pair<int64_t, int64_t>> comp_rationals;
-                for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
-                    comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
-                }
-                std::vector<long long> integers = rationalListToIntegers(comp_rationals);
-
-                for (size_t i = 0; i < nv && i < integers.size(); ++i) {
-                    rf.coefficients[eff_vars[i]] = integers[i];
-                }
-                if (nv < integers.size()) {
-                    rf.constant = integers[nv];
-                }
-
-                if (verbose)
-                    std::cout << "    f" << ci << " (normalized) -> " << rf.toString(eff_vars) << std::endl;
-            }
-        }
-
-        // Delta : valeur double exacte depuis le rationnel Z3.
-        if (!params.delta_param.empty()) {
-            auto delta_r = solver_->getRationalValue(params.delta_param);
-            double delta_val = (delta_r.second != 0)
-                ? (double)delta_r.first / (double)delta_r.second
-                : (double)delta_r.first;
-            for (auto& rf : termination_argument_.components) {
-                rf.delta = delta_val;
-            }
-            if (verbose)
-                std::cout << "    delta (normalized) = " << delta_val << std::endl;
-        }
+    auto params = template_->getParameters();
+    for(size_t num_comp = 0; num_comp < termination_argument_.ranking_functions.size(); num_comp++){
+        SimplifyCoefficient(termination_argument_.ranking_functions[num_comp]);
     }
 
-    if (!termination_argument_.components.empty()) {
-        termination_argument_.ranking_function = termination_argument_.components[0];
-    }
+    //     if (!params.ranking_params.empty() && num_comps > 0) {
+    //         size_t params_per_comp = params.ranking_params.size() / num_comps;
+
+    //         for (size_t ci = 0; ci < num_comps; ++ci) {
+    //             auto& rf = termination_argument_.components[ci];
+    //             size_t base = ci * params_per_comp;
+
+    //             std::vector<std::pair<int64_t, int64_t>> comp_rationals;
+    //             for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
+    //                 comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
+    //             }
+    //             std::vector<long long> integers = rationalListToIntegers(comp_rationals);
+
+    //             for (size_t i = 0; i < nv && i < integers.size(); ++i) {
+    //                 rf.coefficients[eff_vars[i]] = integers[i];
+    //             }
+    //             if (nv < integers.size()) {
+    //                 rf.constant = integers[nv];
+    //             }
+
+    //             if (verbose)
+    //                 std::cout << "    f" << ci << " (normalized) -> " << rf.toString(eff_vars) << std::endl;
+    //         }
+    //     }
+
+    //     // Delta : valeur double exacte depuis le rationnel Z3.
+    //     if (!params.delta_param.empty()) {
+    //         auto delta_r = solver_->getRationalValue(params.delta_param);
+    //         double delta_val = (delta_r.second != 0)
+    //             ? (double)delta_r.first / (double)delta_r.second
+    //             : (double)delta_r.first;
+    //         for (auto& rf : termination_argument_.components) {
+    //             rf.delta = delta_val;
+    //         }
+    //         if (verbose)
+    //             std::cout << "    delta (normalized) = " << delta_val << std::endl;
+    //     }
+    // }
+
 
     termination_argument_.supporting_invariants.clear();
 
@@ -784,14 +784,14 @@ void GenericTerminationSynthesizer::extractResults()
             std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
 
             for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
-                si.coefficients[eff_vars[i]] = si_integers[i];
+                si.coefficients[lasso_.program_vars[i]] = si_integers[i];
             }
             if (num_vars < si_integers.size()) {
                 si.constant = si_integers[num_vars];
             }
 
             if (verbose) {
-                std::cout << "   [part " << m << "] -> " << si.toString(eff_vars);
+                std::cout << "   [part " << m << "] -> " << si.toString(lasso_.program_vars);
                 std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
             }
             termination_argument_.supporting_invariants.push_back(si);
@@ -832,17 +832,17 @@ void GenericTerminationSynthesizer::printResults(const SynthesisResult& result) 
     std::cout << "\n  Template: " << result.template_name << std::endl;
     std::cout << "   " << result.description << std::endl;
 
-    if (synthesized_ && !termination_argument_.components.empty()) {
+    if (synthesized_ && !termination_argument_.ranking_functions.empty()) {
         std::cout << "\n  Ranking Function(s):" << std::endl;
-        bool multi = termination_argument_.components.size() > 1;
-        for (size_t ci = 0; ci < termination_argument_.components.size(); ++ci) {
-            const auto& rf = termination_argument_.components[ci];
+        bool multi = termination_argument_.ranking_functions.size() > 1;
+        for (size_t ci = 0; ci < termination_argument_.ranking_functions.size(); ++ci) {
+            const auto& rf = termination_argument_.ranking_functions[ci];
             if (multi)
                 std::cout << "  f" << ci << "(x) = ";
             else
                 std::cout << "  f(x) = ";
-            std::cout << rf.toString(lasso_.program_vars) << std::endl;
-            std::cout << "  delta" << (multi ? std::to_string(ci) : "") << " = " << rf.delta << std::endl;
+            std::cout << rf.toString() << std::endl;
+            std::cout << "  delta" << (multi ? std::to_string(ci) : "") << " = " << rf.delta.toString() << std::endl;
         }
     }
 

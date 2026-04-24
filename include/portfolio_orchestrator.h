@@ -33,7 +33,7 @@ struct AnalysisReport {
         return winner.status == AnalysisResult::NON_TERMINATING;
     }
 
-    std::map<std::string, int64_t> getRankFunctionDetails() const {
+    std::map<std::string, Rational> getRankFunctionDetails() const {
         return winner.rf_witness;
     }
     std::string printNTArgument() const {

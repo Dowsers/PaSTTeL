@@ -93,10 +93,6 @@ void PortfolioOrchestrator::solve(
                     return r;
                 }
 
-                // auto thread_solver = thread_solvers_[i];
-                // thread_solver->reset();
-                // lasso.declareSolverContext(thread_solver);
-
                 if (verbose) {
                     std::lock_guard<std::mutex> lock(result_mutex_);
                     std::cout << "[" << name << "] Starting...\n";

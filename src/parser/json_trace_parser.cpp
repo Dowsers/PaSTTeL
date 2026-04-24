@@ -67,67 +67,45 @@ std::set<std::string> extractBoolVars(const std::map<std::string, std::string>& 
     return bool_vars;
 }
 
+void removeUnusedVariables(LassoProgram& lasso) {
+    lasso.removed_vars.clear();
 
-void setLoopVariables(LassoProgram& lasso){
-    lasso.loop_vars.clear();
+    std::set<std::string> used_vars;
+
+    auto collectVars = [&](const auto& polyhedra) {
+        for (const auto& poly : polyhedra) {
+            for (const auto& ineq : poly) {
+                for (const auto& [var, _] : ineq.coefficients)
+                    used_vars.insert(var);
+
+                for (const auto& [var, _] : ineq.constant.coefficients)
+                    used_vars.insert(var);
+            }
+        }
+    };
+
+    collectVars(lasso.stem.polyhedra);
+    collectVars(lasso.loop.polyhedra);
+
+    std::vector<std::string> new_program_vars;
+    new_program_vars.reserve(lasso.program_vars.size());
+
     for (const auto& var : lasso.program_vars) {
-        bool in_loop_in  = lasso.loop.var_to_ssa_in.count(var) > 0;
-        bool in_loop_out = lasso.loop.var_to_ssa_out.count(var) > 0;
-        if (in_loop_in && in_loop_out) {
-            lasso.loop_vars.push_back(var);
+        if (used_vars.count(var)) {
+            new_program_vars.push_back(var);
+        } else {
+            lasso.removed_vars.push_back(var);
+
+            // suppression dans les maps
+            lasso.stem.var_to_ssa_in.erase(var);
+            lasso.stem.var_to_ssa_out.erase(var);
+            lasso.loop.var_to_ssa_in.erase(var);
+            lasso.loop.var_to_ssa_out.erase(var);
         }
     }
+
+    lasso.program_vars = std::move(new_program_vars);
 }
-
-// void removeUnusedVariables(LassoProgram& lasso){
-//     std::set<std::string> used_vars;
-//     for (const auto& poly : lasso.stem.polyhedra) {
-//         for (const auto& ineq : poly) {
-//             for (const auto& [var, _] : ineq.coefficients)
-//                 used_vars.insert(var);
-//             for (const auto& [var, _] : ineq.constant.coefficients)
-//                 used_vars.insert(var);
-//         }
-//     }
-//     for (const auto& poly : lasso.loop.polyhedra) {
-//         for (const auto& ineq : poly) {
-//             for (const auto& [var, _] : ineq.coefficients)
-//                 used_vars.insert(var);
-//             for (const auto& [var, _] : ineq.constant.coefficients)
-//                 used_vars.insert(var);
-//         }
-//     }
-
-//     // Filter var_to_ssa_in and var_to_ssa_out to keep only used variables
-//     auto filterVars = [&](std::map<std::string, std::string>& var_map, std::set<std::string>& used_vars) {
-//         std::map<std::string, std::string> filtered;
-//         for (const auto& [var_prog, ssa] : var_map) {
-//             if (used_vars.count(ssa) > 0) {
-//                 filtered[var_prog] = ssa;
-//             }
-//         }
-//         var_map = std::move(filtered);
-//     };
-
-//     filterVars(lasso.stem.var_to_ssa_in, used_vars);
-//     filterVars(lasso.stem.var_to_ssa_out, used_vars);
-//     filterVars(lasso.loop.var_to_ssa_in, used_vars);
-//     filterVars(lasso.loop.var_to_ssa_out, used_vars);
-
-//     // Update program_vars to keep only those that are still mapped
-//     // std::set<std::string> mapped_program_vars;
-//     // for (const auto& [var_prog, ssa] : lasso.stem.var_to_ssa_in)
-//     //     mapped_program_vars.insert(var_prog);
-//     // for (const auto& [var_prog, ssa] : lasso.stem.var_to_ssa_out)
-//     //     mapped_program_vars.insert(var_prog);
-//     // for (const auto& [var_prog, ssa] : lasso.loop.var_to_ssa_in)
-//     //     mapped_program_vars.insert(var_prog);
-//     // for (const auto& [var_prog, ssa] : lasso.loop.var_to_ssa_out)
-//     //     mapped_program_vars.insert(var_prog);
-
-//     // lasso.program_vars.clear();
-//     // for (const auto& var : mapped_program
-// }
 
 void connectStemToLoop(LassoProgram& lasso) {
     if (lasso.stem.isTrue() || lasso.loop.isTrue()) {
@@ -667,12 +645,8 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
     // 7. Connect STEM->LOOP
     connectStemToLoop(lasso);
 
-    // 7b0. Calculer loop_vars AVANT ensureMapping :
-    //      intersection loop.var_to_ssa_in ∩ loop.var_to_ssa_out depuis le JSON original.
-    //      template variables = loop.getOutVars() ∩ loop.getInVars().
-    //      Après ensureMapping, tous les program_vars sont dans les deux maps (via fresh vars),
-    //      donc l'intersection ne peut pas être faite après.
-    setLoopVariables(lasso);
+    // 7b0. Remove unused variables from program_vars list
+    // removeUnusedVariables(lasso);
 
     // 7b. Ensure all program_vars have SSA mappings in both stem and loop
     //     If a program variable is missing from in_vars or out_vars of the loop
@@ -724,8 +698,8 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
-        std::cout << "Loop vars (in ∩ out): ";
-        for (const auto& v : lasso.loop_vars) std::cout << v << " ";
+        std::cout << "Remove (unused) variables: ";
+        for (const auto& v : lasso.removed_vars) std::cout << v << " ";
         std::cout << std::endl;
     }
 
@@ -763,7 +737,7 @@ void JsonTraceParser::convertLassoStringToLassoProgram(
 
     connectStemToLoop(lasso);
 
-    setLoopVariables(lasso);
+    // removeUnusedVariables(lasso);
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== After connecting STEM to LOOP ===" << std::endl;
@@ -771,8 +745,8 @@ void JsonTraceParser::convertLassoStringToLassoProgram(
         std::cout << "STEM output vars: " << lasso.stem.var_to_ssa_out.size() << std::endl;
         std::cout << "LOOP input vars: " << lasso.loop.var_to_ssa_in.size() << std::endl;
         std::cout << "LOOP output vars: " << lasso.loop.var_to_ssa_out.size() << std::endl;
-        std::cout << "Loop vars (in ∩ out) (size " << lasso.loop_vars.size() << "): ";
-        for (const auto& v : lasso.loop_vars) std::cout << v << " ";
+        std::cout << "Removed variables from program: " << lasso.removed_vars.size() << "): ";
+        for (const auto& v : lasso.removed_vars) std::cout << v << " ";
         std::cout << std::endl;
     }
 

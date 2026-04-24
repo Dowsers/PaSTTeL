@@ -14,23 +14,10 @@
  *
  */
 struct TerminationArgument {
-    RankingFunction ranking_function;                   // première composante (rétrocompatibilité)
-    std::vector<RankingFunction> components;            // toutes les composantes (1 pour Affine, k pour Lex/Nested)
+    std::vector<RankingFunction> ranking_functions;            // toutes les composantes (1 pour Affine, k pour Lex/Nested)
     std::vector<SupportingInvariant> supporting_invariants;
 
     TerminationArgument() = default;
-
-    TerminationArgument(
-        const RankingFunction& rf,
-        const std::vector<SupportingInvariant>& sis)
-        : ranking_function(rf)
-        , supporting_invariants(sis)
-    {}
-
-    bool isValid() const {
-        return !ranking_function.coefficients.empty()
-            || ranking_function.constant != 0.0;
-    }
 };
 
 #endif // TERMINATION_ARGUMENT_H

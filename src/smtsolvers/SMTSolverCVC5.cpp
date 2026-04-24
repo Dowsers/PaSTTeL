@@ -655,7 +655,7 @@ cvc5::Term SMTSolverCVC5::buildTerm(const std::string& op, const std::vector<cvc
     if (op == "+") {
         if (args.empty()) throw std::runtime_error("+ requires at least 1 argument");
         if (args.size() == 1) return args[0];  // (+ x) = x
-        Term result = args[0];
+        cvc5::Term result = args[0];
         for (size_t i = 1; i < args.size(); ++i) {
             result = m_tm.mkTerm(Kind::ADD, {result, args[i]});
         }
@@ -671,7 +671,7 @@ cvc5::Term SMTSolverCVC5::buildTerm(const std::string& op, const std::vector<cvc
             return m_tm.mkTerm(Kind::SUB, {args[0], args[1]});
         } else {
             // (- a b c ...) = a - b - c - ...
-            Term result = args[0];
+            cvc5::Term result = args[0];
             for (size_t i = 1; i < args.size(); ++i) {
                 result = m_tm.mkTerm(Kind::SUB, {result, args[i]});
             }
@@ -682,7 +682,7 @@ cvc5::Term SMTSolverCVC5::buildTerm(const std::string& op, const std::vector<cvc
     if (op == "*") {
         if (args.empty()) throw std::runtime_error("* requires at least 1 argument");
         if (args.size() == 1) return args[0];  // (* x) = x
-        Term result = args[0];
+        cvc5::Term result = args[0];
         for (size_t i = 1; i < args.size(); ++i) {
             result = m_tm.mkTerm(Kind::MULT, {result, args[i]});
         }

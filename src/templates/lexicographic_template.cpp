@@ -373,7 +373,7 @@ LexicographicTemplate::generateDecrement() const {
 // ============================================================================
 
 std::vector<RankingFunction> LexicographicTemplate::extractRankingFunctions(
-    std::shared_ptr<SMTSolverInterface> solver,
+    SMTSolverInterface* solver,
     const std::vector<std::string>& program_vars) const
 {
     std::vector<RankingFunction> components;
@@ -382,13 +382,13 @@ std::vector<RankingFunction> LexicographicTemplate::extractRankingFunctions(
     for (int i = 0; i < num_components_; ++i) {
         RankingFunction rf;
         for (size_t j = 0; j < n && j < component_params_[i].size() - 1; ++j) {
-            rf.coefficients[program_vars[j]] = static_cast<int64_t>(std::round(solver->getValue(component_params_[i][j])));
+            rf.coefficients[program_vars[j]] = solver->getRationalValue2(component_params_[i][j]);
         }
         if (!component_params_[i].empty()) {
-            rf.constant = static_cast<int64_t>(std::round(solver->getValue(component_params_[i].back())));
+            rf.constant = solver->getRationalValue2(component_params_[i].back());
         }
         if (i < static_cast<int>(delta_params_.size())) {
-            rf.delta = static_cast<int64_t>(std::round(solver->getValue(delta_params_[i])));
+            rf.delta = solver->getRationalValue2(delta_params_[i]);
         }
         components.push_back(rf);
     }

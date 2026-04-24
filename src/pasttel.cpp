@@ -10,6 +10,7 @@
 #include "smtsolvers/SMTSolverCVC5.h"
 
 
+
 // ============================================================================
 // CONFIGURATIONS GLOBALES
 // ============================================================================
@@ -176,18 +177,18 @@ void printAnalysisReport(const AnalysisReport& report) {
     if (!report.termination_results.empty()) {
         std::cout << "--- TERMINATION TECHNIQUES ---\n";
         std::cout << std::left
-                  << std::setw(30) << "Technique"
-                  << std::setw(15) << "Result"
-                  << std::setw(12) << "Time (s)"
-                  << "Proof\n";
+                << std::setw(30) << "Technique"
+                << std::setw(15) << "Result"
+                << std::setw(12) << "Time (s)"
+                << "Proof\n";
         std::cout << std::string(80, '-') << "\n";
 
         for (const auto& result : report.termination_results) {
             bool is_terminating = (result.status == AnalysisResult::TERMINATING);
             std::cout << std::left
-                      << std::setw(30) << result.technique_name
-                      << std::setw(15) << (is_terminating ? "TERMINATING" : "UNKNOWN")
-                      << std::setw(12) << std::fixed << std::setprecision(3) << (result.execution_time_ms / 1000.0);
+                    << std::setw(30) << result.technique_name
+                    << std::setw(15) << (is_terminating ? "TERMINATING" : "UNKNOWN")
+                    << std::setw(12) << std::fixed << std::setprecision(3) << (result.execution_time_ms / 1000.0);
 
             if (is_terminating && !result.proof_details.empty()) {
                 std::string proof = result.proof_details;
@@ -275,8 +276,6 @@ void printAnalysisReport(const AnalysisReport& report) {
 }
 
 
-
-
 // ============================================================================
 // CREATION SOLVER + ANALYSE PRINCIPALE
 // ============================================================================
@@ -298,15 +297,21 @@ AnalysisReport runAnalysis(const LassoProgram& lasso) {
             "AffineTemplate", configs));
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
             "NestedTemplate", configs, NUM_COMPONENTS_NESTED));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "NestedTemplate", configs, 3));
     }
 
     // Non-termination techniques
     if (MODE == NONTERMINATION || MODE == BOTH) {
         orchestrator.addTechnique(std::make_unique<FixpointTechnique>(createSMTSolver()));
-        orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
-            GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::LINEAR}));
-        // orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
-        //     GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
+        if(LINEAR_MODE == LINEAR){
+            orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
+                GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::LINEAR}));
+        }
+        else{
+            orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
+                GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
+        }
     }
 
     orchestrator.solve(lasso);
