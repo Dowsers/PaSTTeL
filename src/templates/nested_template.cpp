@@ -157,12 +157,12 @@ std::vector<RankingFunction> NestedTemplate::extractRankingFunctions(
     for (int i = 0; i < num_components_; ++i) {
         RankingFunction rf;
         auto values = generators_[i]->extractRationals(solver);
-        for (size_t j = 0; j < n && j < values.size(); ++j) {
+        for (size_t j = 0; j < n && j < values.size(); ++j)
             rf.coefficients[program_vars[j]] = values[j];
-        }
-        if (values.size() > n) {
+
+        if (values.size() > n)
             rf.constant = values[n];
-        }
+
         rf.delta = delta;
         components.push_back(rf);
     }

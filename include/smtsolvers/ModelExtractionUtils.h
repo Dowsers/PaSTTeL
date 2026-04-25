@@ -9,6 +9,10 @@
 #include <assert.h>
 #include <stdexcept>
 
+#include <boost/multiprecision/cpp_int.hpp>
+
+using BigInt = boost::multiprecision::cpp_int;
+
 // ============================================================
 // Term hierarchy (ApplicationTerm and ConstantTerm)
 // ============================================================
@@ -19,19 +23,23 @@ enum class TermType
 };
 enum class ConstType
 {
-    Integer,  // long long in C++
-    Decimal,  // (unscaled long long + scale int) in C++
+    Integer,  // BigInt in C++
+    Decimal,  // (unscaled BigInt + scale int) in C++
     Rational_ // Rational struct in C++
 };
 
+static std::string toStringBigInt(BigInt x) { return x.convert_to<std::string>(); };
+
 struct Rational
 {
-    long long num, den; // den always > 0 after reduce()
+    BigInt num, den; // den always > 0 after reduce()
 
-    static long long gcd_ll(long long a, long long b)
+    static BigInt abs(BigInt x) { return boost::multiprecision::abs(x); };
+
+    static BigInt gcd_ll(BigInt a, BigInt b)
     {
-        a = std::abs(a);
-        b = std::abs(b);
+        a = abs(a);
+        b = abs(b);
         while (b)
         {
             a %= b;
@@ -47,52 +55,68 @@ struct Rational
             num = -num;
             den = -den;
         }
-        long long g = gcd_ll(std::abs(num), den);
+        BigInt g = gcd_ll(abs(num), den);
         num /= g;
         den /= g;
     }
 
-    Rational(long long n = 0, long long d = 1) : num(n), den(d) { reduce(); }
+    Rational(BigInt n = 0, BigInt d = 1) : num(n), den(d) { reduce(); }
 
     static Rational ZERO() { return {0, 1}; }
     static Rational ONE() { return {1, 1}; }
     static Rational MONE() { return {-1, 1}; }
 
-    Rational add(const Rational &o) const { return {num * o.den + o.num * den, den * o.den}; }
-    Rational sub(const Rational &o) const { return {num * o.den - o.num * den, den * o.den}; }
-    Rational mul(const Rational &o) const { return {num * o.num, den * o.den}; }
-    Rational div(const Rational &o) const { return {num * o.den, den * o.num}; }
-    Rational abs() const { return {std::abs(num), den}; }
+    Rational add(const Rational &o) const { return Rational(num * o.den + o.num * den, den * o.den); }
+    Rational sub(const Rational &o) const { return Rational(num * o.den - o.num * den, den * o.den); }
+    Rational mul(const Rational &o) const { return Rational(num * o.num, den * o.den); }
+    Rational div(const Rational &o) const {
+        BigInt a = num;
+        BigInt b = den;
+        BigInt c = o.num;
+        BigInt d = o.den;
+
+        BigInt g1 = gcd_ll(abs(a), abs(c));
+        BigInt g2 = gcd_ll(b, d);
+
+        a /= g1;
+        c /= g1;
+        b /= g2;
+        d /= g2;
+
+        return Rational(a * d, b * c);
+    }
+
+    Rational abs() const { return {boost::multiprecision::abs(num), den}; }
 
     // gcd(a/b, c/d) = gcd(a,c) / lcm(b,d)
     Rational gcd(const Rational &o) const
     {
-        long long g_num = gcd_ll(std::abs(num), std::abs(o.num));
-        long long lcm_den = den / gcd_ll(den, o.den) * o.den;
+        BigInt g_num = gcd_ll(abs(num), abs(o.num));
+        BigInt lcm_den = den / gcd_ll(den, o.den) * o.den;
         return {g_num, lcm_den};
     }
 
     bool isZero() const { return num == 0; }
     bool isOne() const { return num == 1 && den == 1; }
 
-    long long numerator() const { return num; }
-    long long denominator() const { return den; }
+    BigInt numerator() const { return num; }
+    BigInt denominator() const { return den; }
     bool operator==(const Rational &o) const { return num == o.num && den == o.den; }
 
     std::string toString() const
     {
         if (den == 1)
-            return std::to_string(num);
+            return toStringBigInt(num);
         else
-            return std::to_string(num) + "/" + std::to_string(den);
+            return toStringBigInt(num) + "/" + toStringBigInt(den);
     }
 
     std::string toSMTLibString() const
     {
         if (den == 1)
-            return std::to_string(num);
+            return toStringBigInt(num);
         else
-            return "(div " + std::to_string(num) + " " + std::to_string(den) + ")";
+            return "(div " + toStringBigInt(num) + " " + toStringBigInt(den) + ")";
     }
 };
 
@@ -106,14 +130,14 @@ struct Term
 
     // --- ConstantTerm ---
     ConstType constType;
-    long long intVal;      // Integer
-    long long decUnscaled; // Decimal: unscaled value
+    BigInt intVal;      // Integer
+    BigInt decUnscaled; // Decimal: unscaled value
     int decScale;          // Decimal: digits after decimal point
     Rational ratVal;       // Rational
 
     // Factories
     static std::shared_ptr<Term> makeApp(const std::string &fn,
-                                         std::vector<std::shared_ptr<Term>> ps)
+                                        std::vector<std::shared_ptr<Term>> ps)
     {
         auto t = std::make_shared<Term>();
         t->type = TermType::Application;
@@ -121,7 +145,7 @@ struct Term
         t->params = std::move(ps);
         return t;
     }
-    static std::shared_ptr<Term> makeInt(long long v)
+    static std::shared_ptr<Term> makeInt(BigInt v)
     {
         auto t = std::make_shared<Term>();
         t->type = TermType::Constant;
@@ -130,7 +154,7 @@ struct Term
         return t;
     }
     // Decimal: e.g. 0.75 → unscaled=75, scale=2
-    static std::shared_ptr<Term> makeDecimal(long long unscaled, int scale)
+    static std::shared_ptr<Term> makeDecimal(BigInt unscaled, int scale)
     {
         auto t = std::make_shared<Term>();
         t->type = TermType::Constant;
@@ -163,9 +187,9 @@ struct Term
             switch (t->constType)
             {
             case ConstType::Integer:
-                return std::to_string(t->intVal);
+                return toStringBigInt(t->intVal);
             case ConstType::Decimal:
-                return std::to_string(t->decUnscaled) + " e-" + std::to_string(t->decScale);
+                return toStringBigInt(t->decUnscaled) + " e-" + std::to_string(t->decScale);
             case ConstType::Rational_:
                 return "rational: " + t->ratVal.toString();
             }
@@ -213,12 +237,12 @@ inline Rational const2Rational(const std::shared_ptr<Term> &t)
         case ConstType::Decimal:
         {
             // Decimal → unscaledValue / 10^scale
-            long long unscaled = t->decUnscaled;
+            BigInt unscaled = t->decUnscaled;
             int scale = t->decScale;
             if (scale <= 0)
             {
                 // e.g. scale=-1 means value = unscaled * 10
-                long long factor = 1;
+                BigInt factor = 1;
                 for (int i = 0; i < -scale; ++i)
                     factor *= 10;
                 return Rational(unscaled * factor, 1);
@@ -226,7 +250,7 @@ inline Rational const2Rational(const std::shared_ptr<Term> &t)
             else
             {
                 // e.g. 0.75 → 75 / 10^2 = 75/100 → reduces to 3/4
-                long long denom = 1;
+                BigInt denom = 1;
                 for (int i = 0; i < scale; ++i)
                     denom *= 10;
                 return Rational(unscaled, denom);
@@ -246,16 +270,12 @@ inline Rational const2Rational(const std::shared_ptr<Term> &t)
 // ============================================================
 inline Rational getGcd(const std::map<std::string, Rational> &assignment)
 {
-    Rational gcd = assignment.begin()->second;
-    bool first = true;
+    Rational gcd = Rational::ONE();
+    Rational old_gcd;
     for (const auto &[name, val] : assignment){
         if(val.isZero()) continue;
-        if(first){
-            gcd = val;
-            first = false;
-        }
-        else
-            gcd = gcd.gcd(val);
+        old_gcd = gcd;
+        gcd = gcd.gcd(val);
     }
     return gcd.abs(); // always positive
 }
