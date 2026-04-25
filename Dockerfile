@@ -27,6 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         wget \
         unzip \
         ca-certificates \
+        libboost-dev\
         python3 \
         python3-pip \
     && pip3 install --break-system-packages unittest-xml-reporting \
