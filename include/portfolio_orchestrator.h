@@ -1,17 +1,15 @@
 #ifndef PORTFOLIO_ORCHESTRATOR_H
 #define PORTFOLIO_ORCHESTRATOR_H
 
-#include <future>
 #include <memory>
 #include <vector>
 #include <string>
 #include <atomic>
 #include <mutex>
-#include <condition_variable>
 
 #include "analysis_technique_interface.h"
 #include "lasso_program.h"
-#include "smtsolvers/SMTSolverInterface.h"
+#include "thread_pool.h"
 
 /**
  * @brief Summary of a complete portfolio analysis run
@@ -42,14 +40,14 @@ struct AnalysisReport {
 };
 
 /**
- * @brief Orchestrateur de techniques d'analyse en mode portfolio
+ * @brief Orchestrateur de techniques d'analyse en mode portfolio (pool de thread)
  *
  * Utilisation en deux temps :
  *   1. solve()  — lance toutes les techniques en parallèle (non-bloquant)
  *   2. join(t)  — attend jusqu'à t secondes ; retourne le premier résultat
  *                 conclusif trouvé, ou UNKNOWN si timeout ou aucun résultat.
  *
- * Avec max_threads == 1, les futures s'exécutent séquentiellement.
+ * Avec max_threads == 1, les techniques s'exécutent séquentiellement.
  */
 class PortfolioOrchestrator {
 public:
@@ -58,12 +56,12 @@ public:
     void addTechnique(std::unique_ptr<AnalysisTechniqueInterface> technique);
 
     /**
-     * @brief Lance toutes les techniques de façon asynchrone (non-bloquant)
+     * @brief Enqueue all techniques in a fresh ThreadPool. Returns immediately.
      */
     void solve(const LassoProgram& lasso);
 
     /**
-     * @brief Waits for the analysis to complete or the time limit to expire.
+     * @brief Block until all techniques finish or the time limit is reached.
      * @param timelimit_seconds Maximum wait time in seconds (0 = no limit)
      * @return AnalysisReport with all results and the overall verdict
      */
@@ -74,20 +72,28 @@ public:
     }
 
 private:
+
+    // Executed by each worker thread for technique i.
+    void runTechnique(size_t i, const LassoProgram& lasso);
+    // Cancel all techniques except for ID winner
+    void cancelTechniques(size_t winner, bool verbose);
+    // Thread-safe verbose logging.
+    void log(bool verbose, const std::string& msg) const;
+
+    // ── Configuration ──────────────────────────────────────────
     int max_threads_;
     std::vector<std::unique_ptr<AnalysisTechniqueInterface>> techniques_;
+
+    // ── Per-solve state ────────────────────────────────────────
+    std::unique_ptr<ThreadPool>  pool_;
+
+    mutable std::mutex           mutex_;        // guards all_results_, final_result_, and log output
     std::vector<ProofCertificate> all_results_;
+    ProofCertificate              final_result_;
 
-    // State shared between solve() and join()
-    std::vector<std::future<ProofCertificate>> futures_;
-    std::atomic<bool> conclusive_found_{false};
-    std::mutex result_mutex_;
-    ProofCertificate final_result_;
+    std::atomic<bool>             conclusive_found_{false};
+    std::atomic<bool> stop_early_{false};          // conclusive_found_ OU timeout
 
-    // Semaphore to limit concurrent threads to max_threads_
-    int sem_count_;
-    std::mutex sem_mutex_;
-    std::condition_variable sem_cv_;
 };
 
 #endif // PORTFOLIO_ORCHESTRATOR_H

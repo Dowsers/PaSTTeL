@@ -5,230 +5,202 @@
 #include <chrono>
 
 #include "portfolio_orchestrator.h"
+#include "thread_pool.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;
 
+// ─────────────────────────────────────────────
+//  Construction / technique registration
+// ─────────────────────────────────────────────
+
 PortfolioOrchestrator::PortfolioOrchestrator(int max_threads)
-    : max_threads_(max_threads), sem_count_(max_threads) {}
+    : max_threads_(max_threads) {}
 
 void PortfolioOrchestrator::addTechnique(
-    std::unique_ptr<AnalysisTechniqueInterface> technique) {
+    std::unique_ptr<AnalysisTechniqueInterface> technique)
+{
     techniques_.push_back(std::move(technique));
 }
 
-void PortfolioOrchestrator::solve(
-    const LassoProgram& lasso) {
+// ─────────────────────────────────────────────
+//  Core: run one technique
+// ─────────────────────────────────────────────
 
-    all_results_.clear();
-    futures_.clear();
-    conclusive_found_.store(false);
-    final_result_ = ProofCertificate{};
+void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
+{
+    auto& technique   = *techniques_[i];
+    const auto name   = technique.getName();
+    const bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    const size_t n = techniques_.size();
-    const size_t n_threads = std::min(static_cast<size_t>(max_threads_), n);
-
-    if (verbose) {
-        std::cout << "\n=== Portfolio Analysis ("
-                << n_threads << " thread(s)) ===\n";
-        for (size_t i = 0; i < n; ++i)
-            std::cout << "  * " << techniques_[i]->getName() << "\n";
-        std::cout << "\n";
+    // Early exit: conclusive result found OR time limit reached
+    if (stop_early_.load(std::memory_order_relaxed)) {
+        log(verbose, "[" + name + "] Skipped");
+        return;
     }
 
-    // thread_solvers_ = prepareSolvers(solver, n);
-    futures_.reserve(n);
+    technique.init(lasso);
 
-    // Limit the number of threads
-    // TODO: use a pool of threads instead
-    sem_count_ = max_threads_;
+    if (!technique.validateConfiguration()) {
+        log(verbose, "[" + name + "] Invalid configuration, skipping");
+        return;
+    }
 
-    // Launch each technique in its own thread
-    for (size_t i = 0; i < n; ++i) {
-        futures_.push_back(std::async(std::launch::async,
-            [this, &lasso, i, verbose]() -> ProofCertificate {
+    log(verbose, "[" + name + "] Starting...");
 
-                auto& technique = techniques_[i];
-                std::string name = technique->getName();
+    // Run the analysis and time it
+    auto start = std::chrono::high_resolution_clock::now();
+    AnalysisResult verdict;
+    try {
+        verdict = technique.analyze();
+    } catch (const std::exception& e) {
+        log(verbose, "[" + name + "] Exception: " + e.what());
+        return;
+    }
+    auto elapsed_ms = std::chrono::duration<double, std::milli>(
+        std::chrono::high_resolution_clock::now() - start).count();
 
-                // Acquire a slot (semaphore): blocks until a thread slot is available
-                {
-                    std::unique_lock<std::mutex> lock(sem_mutex_);
-                    sem_cv_.wait(lock, [this] { return sem_count_ > 0; });
-                    --sem_count_;
-                }
+    auto proof              = technique.getProof();
+    proof.technique_name    = name;
+    proof.execution_time_ms = elapsed_ms;
 
-                // Release of semaphore slot on exit
-                struct SemRelease {
-                    PortfolioOrchestrator* self;
-                    ~SemRelease() {
-                        std::lock_guard<std::mutex> lock(self->sem_mutex_);
-                        ++self->sem_count_;
-                        self->sem_cv_.notify_one();
-                    }
-                } sem_release{this};
+    // Store result (mutex only needed here and for final_result_)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        all_results_.push_back(proof);
+    }
 
-                // Check if another thread has already found a conclusive result
-                if (conclusive_found_.load()) {
-                    if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex_);
-                        std::cout << "[" << name << "] Skipped (result already found)\n";
-                    }
-                    ProofCertificate r;
-                    r.technique_name = name;
-                    return r;
-                }
+    if (proof.isConclusive()) {
+        // atomic exchange: only the first conclusive result wins
+        bool expected = false;
+        if (conclusive_found_.compare_exchange_strong(expected, true)) {
+            stop_early_.store(true);
 
-                technique->init(lasso);
+            log(verbose, "[" + name + "] Conclusive: " +
+                (verdict == AnalysisResult::TERMINATING
+                    ? "TERMINATING" : "NON-TERMINATING") +
+                " (" + std::to_string(elapsed_ms) + " ms)");
 
-                if (!technique->validateConfiguration()) {
-                    if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex_);
-                        std::cout << "[" << name << "] Invalid configuration, skipping\n";
-                    }
-                    ProofCertificate r;
-                    r.technique_name = name;
-                    return r;
-                }
+            cancelTechniques(i, verbose);
 
-                if (verbose) {
-                    std::lock_guard<std::mutex> lock(result_mutex_);
-                    std::cout << "[" << name << "] Starting...\n";
-                }
-
-                // Run the main analysis
-                auto start = std::chrono::high_resolution_clock::now();
-                AnalysisResult verdict;
-                try {
-                    verdict = technique->analyze();
-                } catch (const std::exception& e) {
-                    ProofCertificate r;
-                    r.technique_name = name;
-                    return r;
-                }
-                auto end = std::chrono::high_resolution_clock::now();
-
-                // Get the proof certificate and execution time
-                auto proof = technique->getProof();
-                proof.execution_time_ms = static_cast<double>(
-                    std::chrono::duration_cast<std::chrono::milliseconds>(
-                        end - start).count());
-
-                // Store the result in the shared vector
-                {
-                    std::lock_guard<std::mutex> lock(result_mutex_);
-                    all_results_.push_back(proof);
-                }
-
-                // If its the first conclusive result, store it and cancel other techniques
-                if (proof.isConclusive() && !conclusive_found_.load()) {
-                    conclusive_found_.store(true);
-
-                    if (verbose) {
-                        std::lock_guard<std::mutex> lock(result_mutex_);
-                        std::cout << "[" << name << "] Conclusive result: "
-                                << (verdict == AnalysisResult::TERMINATING
-                                    ? "TERMINATING" : "NON-TERMINATING")
-                                << " (in " << proof.execution_time_ms << "ms)\n";
-                        std::cout << "[" << name << "] Cancelling other techniques...\n";
-                    }
-
-                    // Cancel other techniques if possible
-                    for (size_t j = 0; j < techniques_.size(); ++j) {
-                        if (j != i && techniques_[j]->canBeCancelled()) {
-                            techniques_[j]->cancel();
-                        }
-                    }
-
-                    // Lock final result
-                    {
-                        std::lock_guard<std::mutex> lock(result_mutex_);
-                        final_result_ = proof;
-                    }
-                } else if (!proof.isConclusive() && verbose) {
-                    std::lock_guard<std::mutex> lock(result_mutex_);
-                    std::cout << "[" << name << "] No conclusive result (took "
-                            << proof.execution_time_ms << "ms)\n";
-                }
-
-                return proof;
-            }
-        ));
+            std::lock_guard<std::mutex> lock(mutex_);
+            final_result_ = proof;
+        }
+    } else {
+        log(verbose, "[" + name + "] No conclusive result (" +
+            std::to_string(elapsed_ms) + " ms)");
     }
 }
 
-AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds) {
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+
+void PortfolioOrchestrator::cancelTechniques(size_t winner, bool verbose)
+{
+    if(winner < techniques_.size())
+        log(verbose, "[" + techniques_[winner]->getName()
+            + "] Cancelling other techniques...");
+    for (size_t j = 0; j < techniques_.size(); ++j)
+        if (j != winner && techniques_[j]->canBeCancelled())
+            techniques_[j]->cancel();
+}
+
+
+// ─────────────────────────────────────────────
+//  solve(): enqueue all techniques in order
+// ─────────────────────────────────────────────
+
+void PortfolioOrchestrator::solve(const LassoProgram& lasso)
+{
+    all_results_.clear();
+    final_result_ = {};
+    conclusive_found_.store(false);
+    stop_early_.store(false);
+
+    const bool verbose  = (VERBOSITY == VerbosityLevel::VERBOSE);
+    const size_t n      = techniques_.size();
+    const size_t n_threads = std::min(static_cast<size_t>(max_threads_), n);
+
+    if (verbose) {
+        std::cout << "\n=== Portfolio Analysis (" << n_threads << " thread(s)) ===\n";
+        for (const auto& t : techniques_)
+            std::cout << "  * " << t->getName() << "\n";
+        std::cout << "\n";
+    }
+
+    // Build the pool lazily so its lifetime matches the solve/join pair.
+    // Tasks are enqueued in index order:.
+    pool_ = std::make_unique<ThreadPool>(n_threads);
+    for (size_t i = 0; i < n; ++i)
+        pool_->enqueue(std::bind(&PortfolioOrchestrator::runTechnique, this, i,
+                                std::cref(lasso)));
+}
+
+
+// ─────────────────────────────────────────────
+//  join(): wait (with optional time limit)
+// ─────────────────────────────────────────────
+
+AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
+{
+    const bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     bool timed_out = false;
 
     if (timelimit_seconds > 0) {
         auto deadline = std::chrono::steady_clock::now()
                     + std::chrono::seconds(timelimit_seconds);
-
-        for (auto& f : futures_) {
-            if (std::chrono::steady_clock::now() >= deadline) {
-                timed_out = true;
-                break;
-            }
-            f.wait_until(deadline);
-        }
-
-        if (!timed_out && std::chrono::steady_clock::now() >= deadline)
-            timed_out = true;
-
-        if (timed_out) {
-            if (verbose)
-                std::cout << "\n=== Time limit reached — cancelling remaining techniques ===\n";
-            for (auto& t : techniques_)
-                if (t->canBeCancelled()) t->cancel();
-        }
+        timed_out = !pool_->waitUntil(deadline);
     } else {
-        for (auto& f : futures_) {
-            f.get();
-        }
+        pool_->waitAll();
     }
 
-    // Collect results from futures already done (timeout path)
-    for (auto& f : futures_) {
-        if (f.valid() &&
-            f.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-            f.get();
-        }
+    // Cancel remaining techniques on timeout
+    if (timed_out) {
+        log(verbose, "\n=== Time limit reached — cancelling remaining techniques ===");
+        stop_early_.store(true);
+        cancelTechniques(techniques_.size(), verbose);
+        pool_->waitAll();
     }
+
+    pool_.reset(); // destroy the pool (joins all workers)
 
     if (!conclusive_found_.load()) {
-        if (verbose) {
-            if (timed_out)
-                std::cout << "\n=== Time limit reached — result: UNKNOWN ===\n";
-            else
-                std::cout << "\n=== All techniques completed — result: UNKNOWN ===\n";
-        }
+        log(verbose, timed_out
+            ? "\n=== Time limit reached — result: UNKNOWN ==="
+            : "\n=== All techniques completed — result: UNKNOWN ===");
         final_result_.technique_name = "None";
-        final_result_.description = timed_out
+        final_result_.description    = timed_out
             ? "Time limit reached"
             : "No proof found by any technique";
     }
 
-    // Build the report
+    // Build report
     AnalysisReport report;
     report.winner = final_result_;
 
     for (const auto& r : all_results_) {
-        if (r.status == AnalysisResult::TERMINATING)
+        if      (r.status == AnalysisResult::TERMINATING)
             report.termination_results.push_back(r);
         else if (r.status == AnalysisResult::NON_TERMINATING)
             report.nontermination_results.push_back(r);
     }
 
     if (final_result_.status == AnalysisResult::TERMINATING) {
-        report.overall_result = "TERMINATING";
-        report.terminating_time_ms = final_result_.execution_time_ms;
+        report.overall_result       = "TERMINATING";
+        report.terminating_time_ms  = final_result_.execution_time_ms;
     } else if (final_result_.status == AnalysisResult::NON_TERMINATING) {
-        report.overall_result = "NON-TERMINATING";
+        report.overall_result         = "NON-TERMINATING";
         report.nonterminating_time_ms = final_result_.execution_time_ms;
     }
 
     return report;
+}
+
+// ─────────────────────────────────────────────
+//  Helper
+// ─────────────────────────────────────────────
+
+void PortfolioOrchestrator::log(bool verbose, const std::string& msg) const
+{
+    if (!verbose) return;
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::cout << msg << "\n";
 }
