@@ -3,7 +3,7 @@
 # ========================
 
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude -ggdb
+CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude 
 LDFLAGS := -pthread
 
 # ========================

@@ -71,6 +71,8 @@ public:
         return techniques_.size();
     }
 
+    void setNumberThreads(int n) { max_threads_ = n; }
+
 private:
 
     // Executed by each worker thread for technique i.

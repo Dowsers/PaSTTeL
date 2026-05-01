@@ -9,7 +9,10 @@ Usage:
     python3 scripts/benchmark_ultimate_vs_pasttel.py \
         --input-dir /path/to/lasso_traces/ \
         --pasttel-bin ./bin/pasttel \
-        --output results.csv
+        --output results.csv \
+        --solver z3
+        --strat both
+        --cpus 2
 """
 
 import argparse
@@ -585,7 +588,7 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
                 break
         # Find which template succeeded
         for line in lines:
-            m = re.search(r'Template:\s+(\w+).*Satisfiability:\s+sat', line)
+            m = re.search(r'Ranking function type:\s+(\w+)', line)
             if m:
                 template_name = m.group(1).strip()
                 if template_name == "affine":
@@ -594,6 +597,8 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
                     algo = "Nested template"
                 elif template_name == "lexicographic":
                     algo = "Lexicographic Template"
+                elif template_name == "2-phase":
+                    algo = "2-phase Template"
                 else:
                     algo = template_name.capitalize() + " template"
                 break
@@ -748,7 +753,7 @@ def convert_to_json(parsed):
 # RUN PASTTEL
 # =============================================================================
 
-def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate"):
+def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate", solver="z3"):
     """Run the pasttel binary on a JSON file and parse results.
 
     Returns dict with:
@@ -756,7 +761,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate")
         time_ms: float
         algo: str
     """
-    cmd = [pasttel_bin, "-a", strat, "-c", str(cpus), "-s", "z3", json_path]
+    cmd = [pasttel_bin, "-a", strat, "-c", str(cpus), "-s", solver, json_path]
 
     try:
         proc = subprocess.run(
@@ -1116,8 +1121,8 @@ def main():
         help="Output CSV file (default: benchmark_results.csv)"
     )
     parser.add_argument(
-        "--cpus", type=int, default=2,
-        help="Number of CPUs for pasttel (default: 2)"
+        "--cpus", type=int, default=1,
+        help="Number of CPUs for pasttel (default: 1)"
     )
     parser.add_argument(
         "--timeout", type=int, default=60,
@@ -1136,6 +1141,10 @@ def main():
     parser.add_argument(
         "--strat", choices=["terminate", "nonterminate", "both"], default="terminate",
         help="Analysis strategy passed to pasttel: 'terminate', 'nonterminate' or 'both' (default: terminate)"
+    )
+    parser.add_argument(
+        "--solver", choices=["z3", "cvc5"], default="z3",
+        help="Use specific SMT solver: 'z3' or 'cvc5' (default: z3)"
     )
     parser.add_argument(
         "--check", choices=["loop", "lasso"], default="lasso",
@@ -1278,7 +1287,7 @@ def main():
         print(f"  Running pasttel (--strat {args.strat} -c {args.cpus})...")
         pasttel = run_pasttel(
             json_path, args.pasttel_bin, cpus=args.cpus, timeout_s=args.timeout,
-            strat=args.strat
+            strat=args.strat, solver=args.solver
         )
 
         print(f"  PaSTTeL result: {pasttel['result']}")
