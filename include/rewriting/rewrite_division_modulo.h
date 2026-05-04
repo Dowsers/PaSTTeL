@@ -101,14 +101,15 @@ private:
      * Also generates the auxiliary linear constraints.
      */
     std::string getOrCreateDivVar(const std::string& dividend,
-                                   const std::string& divisor);
+                                  const std::string& divisor,
+                                  bool isReal=false);
 
     /**
      * Get or create the remainder aux var for (mod dividend divisor).
      * Also creates the quotient var if needed, and generates constraints.
      */
     std::string getOrCreateModVar(const std::string& dividend,
-                                   const std::string& divisor);
+                                  const std::string& divisor);
 
     /**
      * Split S-expression into top-level tokens.
@@ -117,12 +118,10 @@ private:
         return SExprUtils::splitSExpr(expr);
     }
 
-    /**
-     * Returns true if s is a positive integer literal (e.g. "256", "1").
-     * Sets value to the parsed integer. Used to detect constant divisors
-     * and avoid generating spurious disjunctions in div/mod constraints.
-     */
-    bool isPositiveIntLiteral(const std::string& s, long long& value);
+    bool isIntLiteral(const std::string& s, BigInt& value);
+    bool isNumericLiteral(const std::string& s, double& value);
+
+    bool isPositiveIntLiteral(const std::string& s, BigInt& value);
 };
 
 #endif // REWRITE_DIVISION_H

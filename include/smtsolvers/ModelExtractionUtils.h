@@ -30,16 +30,17 @@ enum class ConstType
 
 static std::string toStringBigInt(BigInt x) { return x.convert_to<std::string>(); };
 
+static BigInt absBigInt(BigInt x) { return boost::multiprecision::abs(x); };
+
+
 struct Rational
 {
     BigInt num, den; // den always > 0 after reduce()
 
-    static BigInt abs(BigInt x) { return boost::multiprecision::abs(x); };
-
     static BigInt gcd_ll(BigInt a, BigInt b)
     {
-        a = abs(a);
-        b = abs(b);
+        a = absBigInt(a);
+        b = absBigInt(b);
         while (b)
         {
             a %= b;
@@ -55,7 +56,7 @@ struct Rational
             num = -num;
             den = -den;
         }
-        BigInt g = gcd_ll(abs(num), den);
+        BigInt g = gcd_ll(absBigInt(num), den);
         num /= g;
         den /= g;
     }
@@ -75,7 +76,7 @@ struct Rational
         BigInt c = o.num;
         BigInt d = o.den;
 
-        BigInt g1 = gcd_ll(abs(a), abs(c));
+        BigInt g1 = gcd_ll(absBigInt(a), absBigInt(c));
         BigInt g2 = gcd_ll(b, d);
 
         a /= g1;
@@ -86,12 +87,12 @@ struct Rational
         return Rational(a * d, b * c);
     }
 
-    Rational abs() const { return {boost::multiprecision::abs(num), den}; }
+    Rational abs() const { return {absBigInt(num), den}; }
 
     // gcd(a/b, c/d) = gcd(a,c) / lcm(b,d)
     Rational gcd(const Rational &o) const
     {
-        BigInt g_num = gcd_ll(abs(num), abs(o.num));
+        BigInt g_num = gcd_ll(absBigInt(num), absBigInt(o.num));
         BigInt lcm_den = den / gcd_ll(den, o.den) * o.den;
         return {g_num, lcm_den};
     }
@@ -238,7 +239,7 @@ inline Rational const2Rational(const std::shared_ptr<Term> &t)
         {
             // Decimal → unscaledValue / 10^scale
             BigInt unscaled = t->decUnscaled;
-            int scale = t->decScale;
+            BigInt scale = t->decScale;
             if (scale <= 0)
             {
                 // e.g. scale=-1 means value = unscaled * 10

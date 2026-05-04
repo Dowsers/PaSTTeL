@@ -37,7 +37,8 @@ void JsonTraceParser::removeArrayVarsFromProgramVars(
 
 bool checkDivModOp(const std::string formula) {
     if (formula.find("(div ") != std::string::npos ||
-            formula.find("(mod ") != std::string::npos){
+        formula.find("(/ ") != std::string::npos   ||
+        formula.find("(mod ") != std::string::npos){
         if (VERBOSITY == VerbosityLevel::VERBOSE)
             std::cout << "Detected div/mod operations in formulas" << std::endl;
         return true;
@@ -517,6 +518,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename) {
             if (trans.contains("formula") && trans["formula"].is_string()) {
                 std::string formula = trans["formula"].get<std::string>();
                 if (formula.find("(div ") != std::string::npos ||
+                    formula.find("(/ ") != std::string::npos   ||
                     formula.find("(mod ") != std::string::npos) {
                     return true;
                 }

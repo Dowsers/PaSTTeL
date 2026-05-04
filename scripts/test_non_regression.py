@@ -49,6 +49,8 @@ CASES = [
     ("examples/test_fun2Bt2_affine.json",                               "TERMINATING",     "both"),
     ("examples/test_polyrank4t2_nested3.json",                          "TERMINATING",     "both"),
     ("examples/ref_rational_and_simplification.json",                   "TERMINATING",     "both"),
+    ("examples/test_nonterminate_gnta_real.json",                       "NON-TERMINATING", "both"),
+    ("examples/test_nonterminate_fixpoint_real.json",                   "NON-TERMINATING", "both"),
 ]
 
 
