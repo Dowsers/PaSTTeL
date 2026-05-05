@@ -588,13 +588,20 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
             fixpoint_check_result = m.group(1).strip()
             break
 
-    # --- Parse fixpoint check time (always, for the dedicated column) ---
+    # --- Parse timing breakdown (always, for dedicated columns) ---
     fixpoint_time_ms = 0.0
+    termination_time_ms = 0.0
+    nontermination_time_ms = 0.0
     for line in lines:
         m = re.search(r'Fixpoint check time:\s+([\d,]+)\s*ms', line)
         if m:
             fixpoint_time_ms = float(normalize_european_float(m.group(1)))
-            break
+        m = re.search(r'Termination analysis:\s+([\d,]+)\s*ms', line)
+        if m:
+            termination_time_ms = float(normalize_european_float(m.group(1)))
+        m = re.search(r'Nontermination analysis:\s+([\d,]+)\s*ms', line)
+        if m:
+            nontermination_time_ms = float(normalize_european_float(m.group(1)))
 
     # --- Parse timing and algorithm ---
     time_ms = 0.0
@@ -661,6 +668,8 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
         "stem_size": stem_size,
         "loop_size": loop_size,
         "fixpoint_time_ms": fixpoint_time_ms,
+        "termination_time_ms": termination_time_ms,
+        "nontermination_time_ms": nontermination_time_ms,
         "variables": variables,
         "stem": stem_data,
         "loop": loop_data,
@@ -935,7 +944,18 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 
     for row in rows:
         result = row["Result Code"].strip()
-        u_time_str = row["Ultimate (ms)"].strip()
+
+        # Use the most relevant Ultimate time for the X axis
+        if result == "TERMINATING":
+            u_time_str = row.get("Termination (ms)", "-").strip()
+            col_name = "Term"
+        elif result == "NONTERMINATING":
+            u_time_str = row.get("Nontermination (ms)", "-").strip()
+            col_name = "Nonterm"
+        else:
+            u_time_str = row.get("Fixpoint (ms)", "-").strip()
+            col_name = "Fixpoint"
+
         t_time_str = row["pasttel (ms)"].strip()
         name = row["Trace Name"].strip()
         algo = row.get("Algo", "").strip()
@@ -972,50 +992,48 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 
         # --- Classify ---
         if p_status == "NOT_SUPPORTED":
-            # PaSTTeL does not handle this trace type
             purple_x.append(ux)
             purple_y.append(ty)
             purple_labels.append(
-                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms"
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms"
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: NOT SUPPORTED"
             )
 
         elif u_verdict == "TERMINATING" and t_verdict == "TERMINATING":
-            # Both agree: terminating
             green_x.append(ux)
             green_y.append(ty)
-            green_labels.append(f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms")
+            green_labels.append(
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
+            )
 
         elif u_verdict == "NONTERMINATING" and t_verdict == "NONTERMINATING":
-            # Both agree: non-terminating
             blue_x.append(ux)
             blue_y.append(ty)
-            blue_labels.append(f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms")
+            blue_labels.append(
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
+            )
 
         elif u_verdict == "TERMINATING" and t_verdict != "TERMINATING" and p_status != "TIMEOUT":
-            # Explicit contradiction: Ultimate=TERMINATING, PaSTTeL says otherwise
             red_x.append(ux)
             red_y.append(ty)
             red_labels.append(
-                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
                 f"<br>Ultimate: TERMINATING, PaSTTeL: {t_verdict}"
             )
 
         elif p_status == "TIMEOUT" or t_time_str == "-":
-            # PaSTTeL timed out (no answer within the time limit)
             orange_x.append(ux)
             orange_y.append(ty)
             orange_labels.append(
-                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms"
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms"
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: TIMEOUT (PAR-2={par2_ms:.0f}ms)"
             )
 
         else:
-            # Other disagreement (e.g. Ultimate=NONTERMINATING, PaSTTeL=TERMINATING)
             red_x.append(ux)
             red_y.append(ty)
             red_labels.append(
-                f"{name}<br>Algo: {algo}<br>U={ux:.1f}ms T={ty:.1f}ms"
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
             )
 
@@ -1231,6 +1249,11 @@ def main():
 
     results = []
 
+    def fmt_ms(val):
+        """Format a millisecond value, returning '-' if zero or negative."""
+        return f"{val:.2f}" if val > 0 else "-"
+        
+ 
     for trace_file in trace_files:
         basename = os.path.basename(trace_file)
         dirname=os.path.dirname(trace_file)
@@ -1248,8 +1271,9 @@ def main():
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": "UNKNOWN",
-                "Ultimate-Fixpoint (ms)": "-",
-                "Ultimate (ms)": "-",
+                "Fixpoint (ms)":        "-",
+                "Termination (ms)":     "-",
+                "Nontermination (ms)":  "-",
                 "pasttel (ms)": "-",
                 "Stem Size": 0,
                 "Loop Size": 0,
@@ -1268,8 +1292,9 @@ def main():
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
-                "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
-                "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
+                "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
+                "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
+                "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1282,8 +1307,9 @@ def main():
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
-                "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
-                "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
+                "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
+                "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
+                "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1296,8 +1322,9 @@ def main():
             results.append({
                 "Trace Name": trace_file,
                 "Result Code": ultimate['result'],
-                "Ultimate-Fixpoint (ms)": f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-",
-                "Ultimate (ms)": f"{ultimate['time_ms']:.2f}" if ultimate['time_ms'] >= 0 else "-",
+                "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
+                "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
+                "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1353,8 +1380,9 @@ def main():
         row = {
             "Trace Name": trace_file,
             "Result Code": result_code,
-            "Ultimate-Fixpoint (ms)": u_fixpoint_time,
-            "Ultimate (ms)": u_time,
+            "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
+            "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
+            "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
             "pasttel (ms)": t_time,
             "PaSTTeL Status": p_status,
             "Stem Size": ultimate["stem_size"],
@@ -1369,8 +1397,9 @@ def main():
         fieldnames = [
             "Trace Name",
             "Result Code",
-            "Ultimate-Fixpoint (ms)",
-            "Ultimate (ms)",
+            "Fixpoint (ms)",
+            "Termination (ms)",
+            "Nontermination (ms)",
             "pasttel (ms)",
             "PaSTTeL Status",
             "Stem Size",
@@ -1389,15 +1418,16 @@ def main():
         print(f"{'='*60}")
 
         # Print summary table
-        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'U-Fixpoint (ms)':<17} {'Ultimate (ms)':<15} {'pasttel (ms)':<17} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
-        print("-" * 160)
+        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'Fixpoint (ms)':<15} {'Termination (ms)':<18} {'Nontermination (ms)':<21} {'pasttel (ms)':<14} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
+        print("-" * 185)
         for row in results:
             print(
                 f"{row['Trace Name']:<70} "
                 f"{row['Result Code']:<15} "
-                f"{str(row['Ultimate-Fixpoint (ms)']):<17} "
-                f"{str(row['Ultimate (ms)']):<15} "
-                f"{str(row['pasttel (ms)']):<17} "
+                f"{str(row['Fixpoint (ms)']):<15} "
+                f"{str(row['Termination (ms)']):<18} "
+                f"{str(row['Nontermination (ms)']):<21} "
+                f"{str(row['pasttel (ms)']):<14} "
                 f"{str(row['Stem Size']):<6} "
                 f"{str(row['Loop Size']):<6} "
                 f"{str(row['Total Size Trace']):<7} "
