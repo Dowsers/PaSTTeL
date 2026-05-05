@@ -29,23 +29,71 @@ import sys
 # Algo NAME MAPPING
 # =============================================================================
 
-PASTTEL_ALGO_MAP = {
-    "RankingBased(AffineTemplate)": "Affine template",
-    "RankingBased(NestedTemplate)": "Nested template",
-    "RankingBased(LexicographicTemplate)": "Lexicographic Template",
-    "FixpointTechnique": "Fixpoint",
-    "Fixpoint": "Fixpoint",
-    "GeometricTechnique": "GNTA",
-    "GeometricL(3)": "GNTA",
-    "GeometricL(1)": "GNTA",
-    "Unknown": None,  # skip unknown entries
-}
-
 
 def normalize_european_float(s):
     """Convert European decimal separator (comma) to dot."""
     return s.replace(",", ".")
+    
+def _ranking_type_ultimate_to_algo(template_name):
+    """Convert a 'Ranking function type' raw string to a display name.
 
+    Handles both simple types (affine, nested) and prefixed ones
+    (2-phase, 4-nested, 2-lex, …).
+    """
+    name = template_name.strip().lower()
+
+    # Strip optional numeric prefix to find the base type
+    # e.g. "4-nested" → prefix="4", base="nested"
+    #      "2-phase"  → prefix="2", base="phase"
+    #      "2-lex"    → prefix="2", base="lex"
+    #      "affine"   → prefix=None, base="affine"
+    m = re.match(r'^(\d+)-(.+)$', name)
+    if m:
+        prefix = m.group(1)
+        base   = m.group(2)
+    else:
+        prefix = None
+        base   = name
+
+    BASE_MAP = {
+        "affine":        "Affine Template",
+        "nested":        "Nested Template",
+        "lex":           "Lexicographic Template",
+        "lexicographic": "Lexicographic Template",
+        "phase":         "Phase Template",
+    }
+
+    base_label = BASE_MAP.get(base, base.capitalize() + " Template")
+
+    if prefix:
+        return f"{prefix}-{base_label}"   # e.g. "4-Nested Template"
+    return base_label                     # e.g. "Affine Template"
+
+
+def _pasttel_algo_name(raw_name):
+    """Normalize a PaSTTeL technique name into a canonical display name.
+
+    Examples:
+        RankingBased(AffineTemplate)        -> "Affine Template"
+        RankingBased(4-NestedTemplate)      -> "4-Nested Template"
+        RankingBased(LexicographicTemplate) -> "Lexicographic Template"
+        FixpointTechnique / Fixpoint        -> "Fixpoint"
+        GeometricTechnique / GeometricL(N)  -> "GNTA"
+    """
+    # RankingBased(...): extract inner name and insert space before "Template"
+    m = re.match(r'RankingBased\((.+)\)', raw_name)
+    if m:
+        inner = m.group(1)  # e.g. "AffineTemplate" or "4-NestedTemplate"
+        # Insert a space before "Template" suffix
+        return re.sub(r'([A-Za-z\d])Template$', r'\1 Template', inner)
+
+    if raw_name in ("Fixpoint", "FixpointTechnique"):
+        return "Fixpoint"
+
+    if raw_name.startswith("Geometric"):
+        return "GNTA"
+
+    return raw_name
 
 
 def sanitize_identifier(s):
@@ -586,21 +634,13 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
             if m:
                 time_ms = float(normalize_european_float(m.group(1)))
                 break
-        # Find which template succeeded
+	# Find which template succeeded
         for line in lines:
-            m = re.search(r'Ranking function type:\s+(\w+)', line)
+            # [\w\-]+ captures both simple names ("affine") and
+            # dash-prefixed ones ("4-nested", "2-phase", "2-lex")
+            m = re.search(r'Ranking function type:\s+([\w\-]+)', line)
             if m:
-                template_name = m.group(1).strip()
-                if template_name == "affine":
-                    algo = "Affine template"
-                elif template_name == "nested":
-                    algo = "Nested template"
-                elif template_name == "lexicographic":
-                    algo = "Lexicographic Template"
-                elif template_name == "2-phase":
-                    algo = "2-phase Template"
-                else:
-                    algo = template_name.capitalize() + " template"
+                algo = _ranking_type_ultimate_to_algo(m.group(1))
                 break
 
     # --- Compute size ---
@@ -802,27 +842,21 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate",
     if m:
         time_ms = float(m.group(1)) * 1000.0  # convert s to ms
 
-    # Parse which technique succeeded
+    # Parse which technique succeeded.
+    # Output format: "RankingBased(AffineTemplate)   TERMINATING   0.042"
+    # We scan for the first non-header line that contains TERMINATING or NON-TERM.
     algo = "-"
-    # Look for technique lines with TERMINATING or NON-TERM result
-    # Format: "Fixpoint                      NON-TERM       0.002       "
-    # The technique name is the first whitespace-delimited token on lines
-    # containing TERMINATING or NON-TERM (but not header/separator lines)
     for line in output.split("\n"):
         stripped = line.strip()
-        # Skip header lines, separator lines, and OVERALL RESULT line
         if not stripped or stripped.startswith("---") or stripped.startswith("="):
             continue
         if stripped.startswith("Technique") or stripped.startswith("OVERALL"):
             continue
         if "TERMINATING" in stripped or "NON-TERM" in stripped:
-            parts = stripped.split()
-            if len(parts) >= 2:
-                raw_name = parts[0]
-                mapped = PASTTEL_ALGO_MAP.get(raw_name)
-                if mapped is not None:
-                    algo = mapped
-                    break
+            # First token is the technique name (may contain parentheses, no spaces)
+            raw_name = stripped.split()[0]
+            algo = _pasttel_algo_name(raw_name)
+            break
 
     return {"result": result, "time_ms": time_ms, "algo": algo}
 

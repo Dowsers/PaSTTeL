@@ -45,7 +45,7 @@ public:
         SMTSolverInterface* solver,
         const std::string& template_name,
         const std::vector<TemplateConfig>& configs,
-        int num_components_nested = 2);
+        int num_components_nested = 0);
 
     // ========================================================================
     // IMPLÉMENTATION DE L'INTERFACE
@@ -78,7 +78,7 @@ private:
     // Configuration
     std::string template_name_;
     std::vector<TemplateConfig> configs_;
-    int num_components_nested_;
+    int num_components_;
 
     // État
     const LassoProgram* lasso_;

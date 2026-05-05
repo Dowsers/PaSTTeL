@@ -20,10 +20,10 @@ RankingBasedTechnique::RankingBasedTechnique(
     SMTSolverInterface* solver,
     const std::string& template_name,
     const std::vector<TemplateConfig>& configs,
-    int num_components_nested)
+    int num_components)
         : template_name_(template_name)
         , configs_(configs)
-        , num_components_nested_(num_components_nested)
+        , num_components_(num_components)
         , lasso_(nullptr)
         , cancelled_(false)
         , last_synthesizer_(nullptr)
@@ -75,9 +75,9 @@ RankingTemplate* RankingBasedTechnique::createTemplate(
     if (template_name == "AffineTemplate") {
         return new AffineTemplate();
     } else if (template_name == "NestedTemplate") {
-        return new NestedTemplate(num_components_nested_);
+        return new NestedTemplate(num_components_);
     } else if (template_name == "LexicographicTemplate") {
-        return new LexicographicTemplate(num_components_nested_);
+        return new LexicographicTemplate(num_components_);
     } else {
         throw std::invalid_argument("Unknown template name: " + template_name);
     }
@@ -230,6 +230,8 @@ void RankingBasedTechnique::cancel() {
 // ============================================================================
 
 std::string RankingBasedTechnique::getName() const {
+    if(num_components_ > 0)
+        return "RankingBased(" + std::to_string(num_components_) + "-" + template_name_ + ")";
     return "RankingBased(" + template_name_ + ")";
 }
 

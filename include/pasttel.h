@@ -10,7 +10,6 @@
 #include "termination/ranking_based_technique.h"
 #include "portfolio_orchestrator.h"
 
-#define NUM_COMPONENTS_NESTED 2
 #define NUM_GEVS 3
 
 // ============================================================================

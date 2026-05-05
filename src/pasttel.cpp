@@ -177,7 +177,7 @@ void printAnalysisReport(const AnalysisReport& report) {
     if (!report.termination_results.empty()) {
         std::cout << "--- TERMINATION TECHNIQUES ---\n";
         std::cout << std::left
-                << std::setw(30) << "Technique"
+                << std::setw(35) << "Technique"
                 << std::setw(15) << "Result"
                 << std::setw(12) << "Time (s)"
                 << "Proof\n";
@@ -186,7 +186,7 @@ void printAnalysisReport(const AnalysisReport& report) {
         for (const auto& result : report.termination_results) {
             bool is_terminating = (result.status == AnalysisResult::TERMINATING);
             std::cout << std::left
-                    << std::setw(30) << result.technique_name
+                    << std::setw(35) << result.technique_name
                     << std::setw(15) << (is_terminating ? "TERMINATING" : "UNKNOWN")
                     << std::setw(12) << std::fixed << std::setprecision(3) << (result.execution_time_ms / 1000.0);
 
@@ -200,7 +200,7 @@ void printAnalysisReport(const AnalysisReport& report) {
 
                     if (!first) {
                         std::cout << "\n"
-                                << std::setw(30) << ""
+                                << std::setw(35) << ""
                                 << std::setw(15) << ""
                                 << std::setw(12) << "";
                     }
@@ -218,7 +218,7 @@ void printAnalysisReport(const AnalysisReport& report) {
     if (!report.nontermination_results.empty()) {
         std::cout << "--- NON-TERMINATION TECHNIQUES ---\n";
         std::cout << std::left
-                  << std::setw(30) << "Technique"
+                  << std::setw(35) << "Technique"
                   << std::setw(15) << "Result"
                   << std::setw(12) << "Time (s)"
                   << "Proof\n";
@@ -227,7 +227,7 @@ void printAnalysisReport(const AnalysisReport& report) {
         for (const auto& result : report.nontermination_results) {
             bool is_nonterminating = (result.status == AnalysisResult::NON_TERMINATING);
             std::cout << std::left
-                    << std::setw(30) << result.technique_name
+                    << std::setw(35) << result.technique_name
                     << std::setw(15) << (is_nonterminating ? "NON-TERM" : "UNKNOWN")
                     << std::setw(12) << std::fixed << std::setprecision(3)
                     << (result.execution_time_ms / 1000.0);
@@ -243,7 +243,7 @@ void printAnalysisReport(const AnalysisReport& report) {
 
                     if (!first) {
                         std::cout << "\n"
-                                << std::setw(30) << ""
+                                << std::setw(35) << ""
                                 << std::setw(15) << ""
                                 << std::setw(12) << "";
                     }
@@ -296,9 +296,11 @@ AnalysisReport runAnalysis(const LassoProgram& lasso) {
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
             "AffineTemplate", configs));
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "NestedTemplate", configs, NUM_COMPONENTS_NESTED));
+            "NestedTemplate", configs, 2));
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
             "NestedTemplate", configs, 3));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "NestedTemplate", configs, 4));
     }
 
     // Non-termination techniques
