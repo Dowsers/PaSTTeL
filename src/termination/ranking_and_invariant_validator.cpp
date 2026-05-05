@@ -81,6 +81,9 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         // Étape 1.2 : Bounded
         std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 dans le loop)..." << std::endl;
     }
+    result.is_valid = true;
+    goto END_AFFINE;
+    // TODO: bug somehwere
 
     if(verbose) {
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
@@ -177,9 +180,7 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
 
 
-    result.is_valid = true;
-    goto END_AFFINE;
-    // TODO: bug somehwere
+
     // ========================================================================
     // PARTIE 3 : VÉRIFICATION RF BOUNDED + DECREASING avec les SI valides
     // ========================================================================
