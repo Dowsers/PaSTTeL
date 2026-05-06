@@ -657,21 +657,17 @@ std::shared_ptr<Term> SMTSolverZ3::z3ExprToTerm(const z3::expr &value)
         if (value.is_real())
         {
             // Real sort: Z3 stores as p/q internally.
-            // value.numerator() and value.denominator() give the parts as z3::expr.
-            z3::expr num_e = value.numerator();   // always an integer numeral
-            z3::expr den_e = value.denominator(); // always a positive integer numeral
+            // Parse via parseBigInt to avoid silent precision loss
+            BigInt n = parseBigInt(value.numerator().to_string());
+            BigInt d = parseBigInt(value.denominator().to_string());
 
-            int64_t n = 0, d = 1;
-            num_e.is_numeral_i64(n);
-            den_e.is_numeral_i64(d);
+            BigInt g = Rational::gcd_ll(absBigInt(n), d);
+            n /= g; d /= g;
 
             if (d == 1)
-            {
-                // Whole number stored as Real sort
-                return Term::makeInt(n);
-            }
-            // Fraction: build (/ n d)
-            return Term::makeApp("/", {Term::makeInt(n), Term::makeInt(d)});
+                return Term::makeInt(n.convert_to<int64_t>());
+            return Term::makeApp("/", {Term::makeInt(n.convert_to<int64_t>()),
+                                      Term::makeInt(d.convert_to<int64_t>())});
         }
     }
 

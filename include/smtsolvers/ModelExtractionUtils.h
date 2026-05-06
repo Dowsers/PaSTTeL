@@ -28,9 +28,32 @@ enum class ConstType
     Rational_ // Rational struct in C++
 };
 
-static std::string toStringBigInt(BigInt x) { return x.convert_to<std::string>(); };
+inline std::string toStringBigInt(BigInt x) { return x.convert_to<std::string>(); };
 
-static BigInt absBigInt(BigInt x) { return boost::multiprecision::abs(x); };
+inline BigInt absBigInt(BigInt x) { return boost::multiprecision::abs(x); };
+
+// Parse a BigInt from a Z3 numeral string, handling:
+//   - ".0" suffix on integer-valued reals: "3.0" → 3
+//   - Z3 S-expr negation: "(- 1)" → -1
+inline BigInt parseBigInt(std::string s) {
+    // Strip whitespace
+    while (!s.empty() && (s.front() == ' ' || s.front() == '\t')) s.erase(s.begin());
+    while (!s.empty() && (s.back()  == ' ' || s.back()  == '\t')) s.pop_back();
+    // Z3 represents negative integers as "(- N)" — convert to "-N"
+    if (s.size() >= 5 && s.front() == '(' && s[1] == '-') {
+        // Extract inner number: "(- 123)" → "123"
+        std::string inner = s.substr(2, s.size() - 3);
+        while (!inner.empty() && inner.front() == ' ') inner.erase(inner.begin());
+        // Strip ".0" on inner
+        if (inner.size() >= 2 && inner.back() == '0' && inner[inner.size()-2] == '.')
+            inner.resize(inner.size() - 2);
+        return -BigInt(inner);
+    }
+    // Strip ".0" suffix
+    if (s.size() >= 2 && s.back() == '0' && s[s.size()-2] == '.')
+        s.resize(s.size() - 2);
+    return BigInt(s);
+};
 
 
 struct Rational
