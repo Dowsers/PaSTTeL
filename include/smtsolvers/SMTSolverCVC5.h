@@ -118,6 +118,12 @@ public:
     size_t getAssertionCount() const override;
 
     /**
+     * @brief Retourne la valeur exacte d'une variable réelle comme Rational (BigInt num/den).
+     * Surcharge le fallback double de l'interface de base.
+     */
+    Rational getRationalValue2(const std::string& var_name) override;
+
+    /**
      * @brief Vérifie si une variable existe
      */
     bool variableExists(const std::string& name) const override;
