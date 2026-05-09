@@ -291,18 +291,6 @@ SMTSolverInterface* createSMTSolver() {
 AnalysisReport runAnalysis(const LassoProgram& lasso) {
     PortfolioOrchestrator orchestrator(CPUS);
 
-    // Termination techniques
-    if (MODE == TERMINATION || MODE == BOTH) {
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "AffineTemplate", configs));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "NestedTemplate", configs, 2));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "NestedTemplate", configs, 3));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "NestedTemplate", configs, 4));
-    }
-
     // Non-termination techniques
     if (MODE == NONTERMINATION || MODE == BOTH) {
         orchestrator.addTechnique(std::make_unique<FixpointTechnique>(createSMTSolver()));
@@ -315,6 +303,20 @@ AnalysisReport runAnalysis(const LassoProgram& lasso) {
                 GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
         }
     }
+
+    // Termination techniques
+    if (MODE == TERMINATION || MODE == BOTH) {
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "AffineTemplate", configs));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "NestedTemplate", configs, 2));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "NestedTemplate", configs, 3));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "NestedTemplate", configs, 4));
+    }
+
+
 
     orchestrator.solve(lasso);
     return orchestrator.join(TIMELIMIT);
