@@ -53,7 +53,8 @@ AnalysisResult FixpointTechnique::analyze() {
     }
 
     // Cas trivial : loop = "true" → boucle infinie sans contrainte
-    if (lasso_->loop.isTrue()) {
+    // Only valid when using linearized polyhedra (raw_formula non-empty means real constraints exist)
+    if (lasso_->loop.raw_formula.empty() && lasso_->loop.isTrue()) {
         if (verbose)
             std::cout << "\n  Loop is 'true' → trivial fixpoint (any state loops forever)" << std::endl;
         proof.status = AnalysisResult::NON_TERMINATING;
@@ -116,23 +117,14 @@ AnalysisResult FixpointTechnique::analyze() {
 
 void FixpointTechnique::addStemConstraints()
 {
-    std::set<std::string> all_vars;
+    // Use raw formula directly when available (avoids linearization blowup).
+    if (!lasso_->stem.raw_formula.empty()) {
+        solver_->addAssertion(lasso_->stem.raw_formula);
+        if (VERBOSITY == VerbosityLevel::VERBOSE)
+            std::cout << "    Stem: raw formula asserted" << std::endl;
+        return;
+    }
 
-    // Déclarer les variables du stem
-    for (const auto& [var_prog, ssa_in] : lasso_->stem.var_to_ssa_in) {
-        all_vars.insert(ssa_in);
-        if (!solver_->variableExists(ssa_in)) {
-            solver_->declareVariable(ssa_in, "Int");
-        }
-    }
-    
-    for (const auto& [var_prog, ssa_out] : lasso_->stem.var_to_ssa_out) {
-        all_vars.insert(ssa_out);
-        if (!solver_->variableExists(ssa_out)) {
-            solver_->declareVariable(ssa_out, "Int");
-        }
-    }
-    
     int constraint_count = 0;
 
     // Collecter les contraintes par polyèdre (DNF)
@@ -204,17 +196,12 @@ void FixpointTechnique::addStemConstraints()
 
 void FixpointTechnique::addLoopConstraints()
 {
-    // Déclarer les variables de la boucle
-    for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
-        if (!solver_->variableExists(ssa_in)) {
-            solver_->declareVariable(ssa_in, "Int");
-        }
-    }
-    
-    for (const auto& [var_prog, ssa_out] : lasso_->loop.var_to_ssa_out) {
-        if (!solver_->variableExists(ssa_out)) {
-            solver_->declareVariable(ssa_out, "Int");
-        }
+    // Use raw formula directly when available (avoids linearization blowup).
+    if (!lasso_->loop.raw_formula.empty()) {
+        solver_->addAssertion(lasso_->loop.raw_formula);
+        if (VERBOSITY == VerbosityLevel::VERBOSE)
+            std::cout << "    Loop: raw formula asserted" << std::endl;
+        return;
     }
     
     int constraint_count = 0;

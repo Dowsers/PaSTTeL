@@ -74,6 +74,12 @@ public:
     virtual bool validateConfiguration() const { return true; }
 
     /**
+     * @brief Returns true if the technique needs a linearized LassoProgram.
+     * Techniques returning false can run on the raw (non-linearized) lasso.
+     */
+    virtual bool requiresLinearization() const { return true; }
+
+    /**
      * @brief Demande l'annulation de la technique (pour parallélisation)
      */
     virtual void cancel() {}

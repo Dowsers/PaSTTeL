@@ -72,6 +72,10 @@ public:
 
     std::vector<std::vector<LinearInequality>> polyhedra;  // DNF
 
+    // Formule SMT brute (avant linéarisation). Vide si non peuplée.
+    // Utilisée par les techniques ne nécessitant pas de linéarisation (ex: Fixpoint).
+    std::string raw_formula;
+
     LinearTransition();
     
     // Construction

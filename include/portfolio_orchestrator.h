@@ -58,7 +58,7 @@ public:
     /**
      * @brief Enqueue all techniques in a fresh ThreadPool. Returns immediately.
      */
-    void solve(const LassoProgram& lasso);
+    void solve(LassoProgram& lasso);
 
     /**
      * @brief Block until all techniques finish or the time limit is reached.

@@ -2,12 +2,21 @@
 
 #include "lasso_program.h"
 #include "utiles.h"
+#include "parser/json_trace_parser.h"
 
 // Constructeur par défaut
 LassoProgram::LassoProgram() {
     // stem et loop sont automatiquement initialisés par leurs constructeurs
     // stem commence comme "true" (pas de contraintes)
     // loop commence comme "true" aussi
+}
+
+void LassoProgram::linearize() {
+    if (is_linearized)
+        return;
+    JsonTraceParser::convertLassoStringToLassoProgram(stem.raw_formula, loop.raw_formula, *this);
+
+    is_linearized = true;
 }
 
 void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
@@ -55,7 +64,7 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
             if (!solver->variableExists(ssa_in)) {
                 auto sort_it = var_sorts.find(var_prog);
                 std::string sort = (sort_it != var_sorts.end()) ? sort_it->second : "Int";
-                if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
+                // if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
                 solver->declareVariable(ssa_in, sort);
             }
         }
@@ -63,7 +72,7 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
             if (!solver->variableExists(ssa_out)) {
                 auto sort_it = var_sorts.find(var_prog);
                 std::string sort = (sort_it != var_sorts.end()) ? sort_it->second : "Int";
-                if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
+                // if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
                 solver->declareVariable(ssa_out, sort);
             }
         }
@@ -96,14 +105,15 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
 
 // Vérifie s'il n'y a pas de partie stem
 bool LassoProgram::hasNoStem() const {
-    return stem.isTrue();
+    // raw_formula non-empty means there IS a stem even if polyhedra = isTrue()
+    return stem.isTrue() && stem.raw_formula.empty();
 }
 
 // Vérifie s'il n'y a pas de partie loop (aucune transition parsée)
 // polyhedra vide (0 polyèdres) = pas de disjonct = aucune transition dans le loop
 // NB: isTrue() (1 polyèdre vide) = loop formula "true" = boucle infinie sans garde
 bool LassoProgram::hasNoLoop() const {
-    return loop.polyhedra.empty();
+    return loop.polyhedra.empty() && loop.raw_formula.empty();
 }
 
 std::string LassoProgram::toString() const {

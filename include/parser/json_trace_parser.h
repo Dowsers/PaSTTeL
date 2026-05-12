@@ -24,7 +24,7 @@ public:
      * @return LassoProgram structure
      * @throws std::runtime_error if file cannot be opened or JSON is invalid
      */
-    static LassoProgram parseToLasso(const std::string& filename);
+    static LassoProgram parseToLasso(const std::string& filename, bool linearize = false);
 
     static void convertLassoStringToLassoProgram(
                 const std::string& stem_formula,
@@ -57,7 +57,8 @@ private:
     static UltimateTransitionLine parseTransition(
         const nlohmann::json& trans_json,
         FormulaLinearizer* linearizer = nullptr,
-        FormulaRewriter* rewriter = nullptr);
+        FormulaRewriter* rewriter = nullptr,
+        bool linearize = false);
 
     /**
      * Parse variable mapping from JSON object

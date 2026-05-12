@@ -38,8 +38,6 @@ public:
     // Fonctions non interprétées (sum__balances, DType, etc.)
     std::vector<UninterpretedFunction> functions;
 
-    std::vector<std::string> removed_vars;
-
     // Axiomes (forall, injectivité, propriétés de fonctions, etc.)
     std::vector<Axiom> axioms;
 
@@ -50,12 +48,17 @@ public:
     std::map<std::string, std::string> var_sorts;
 
     bool integer_mode = false;
+    bool is_linearized = false;
 
     LassoProgram();
 
     bool hasNoStem() const;
     bool hasNoLoop() const;
     std::string toString() const;
+
+    // Applies rewriting + linearization to raw_formula → populates polyhedra.
+    // No-op if already linearized.
+    void linearize();
 
     /**
      * Déclare tout le contexte du LassoProgram dans un solveur SMT :

@@ -347,6 +347,32 @@ std::string LinearTransition::toSMTLib2() const {
     }
 }
 
+// Word-boundary SSA substitution in a raw SMT formula string.
+static std::string substituteInFormula(
+    const std::string& formula,
+    const std::map<std::string, std::string>& subst)
+{
+    if (subst.empty() || formula.empty()) return formula;
+    std::string result = formula;
+    for (const auto& [from, to] : subst) {
+        size_t pos = 0;
+        while ((pos = result.find(from, pos)) != std::string::npos) {
+            bool start_ok = (pos == 0) ||
+                result[pos-1]==' ' || result[pos-1]=='(' || result[pos-1]==')';
+            size_t end = pos + from.size();
+            bool end_ok = (end == result.size()) ||
+                result[end]==' ' || result[end]=='(' || result[end]==')';
+            if (start_ok && end_ok) {
+                result.replace(pos, from.size(), to);
+                pos += to.size();
+            } else {
+                pos += from.size();
+            }
+        }
+    }
+    return result;
+}
+
 LinearTransition LinearTransition::buildFromLines(
     const std::vector<UltimateTransitionLine>& lines
 ) {
@@ -361,6 +387,11 @@ LinearTransition LinearTransition::buildFromLines(
 
     LinearTransition accumulated;
     bool first = true;
+
+    // Cumulative SSA substitution applied to raw formulas of each line,
+    // keeping raw_formula aligned with var_to_ssa_in/out after composition.
+    std::map<std::string, std::string> cumulative_raw_subst;
+    std::string accumulated_raw;
 
     for (size_t i = 0; i < lines.size(); ++i) {
         const UltimateTransitionLine& line = lines[i];
@@ -396,8 +427,27 @@ LinearTransition LinearTransition::buildFromLines(
             }
         } else if (line.formula == "true" || line.formula.empty()) {
             current_trans.addPolyhedron({});
-        } else {
-            std::cerr << "  Warning: Formula not parsed: " << line.formula << std::endl;
+        }
+        // else: linearize=false path — polyhedra intentionally skipped, raw_formula used instead
+
+        // Build substitution for this line's in_vars → previous line's out_vars,
+        // then extend cumulative_raw_subst before applying to the raw formula.
+        if (i > 0) {
+            const auto& prev_line = lines[i - 1];
+            for (const auto& [var_prog, ssa_in] : line.in_vars) {
+                auto it = prev_line.out_vars.find(var_prog);
+                if (it != prev_line.out_vars.end() && it->second != ssa_in)
+                    cumulative_raw_subst[ssa_in] = it->second;
+            }
+        }
+
+        // Append this line's (substituted) raw formula to the conjunction.
+        if (!line.formula.empty() && line.formula != "true") {
+            std::string f = substituteInFormula(line.formula, cumulative_raw_subst);
+            if (accumulated_raw.empty())
+                accumulated_raw = f;
+            else
+                accumulated_raw = "(and " + accumulated_raw + " " + f + ")";
         }
 
         // Sequential composition
@@ -411,6 +461,8 @@ LinearTransition LinearTransition::buildFromLines(
             accumulated = accumulated.compose(current_trans);
         }
     }
+
+    accumulated.raw_formula = accumulated_raw;
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n--- Transition building complete ---" << std::endl;

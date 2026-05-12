@@ -904,6 +904,18 @@ def determine_algo(ultimate, pasttel):
 # SCATTER PLOT GENERATION
 # =============================================================================
 
+def parse_float(s):
+    """Parse a float from a string that may use comma as decimal separator
+    and/or be wrapped in quotes."""
+    s = s.strip().strip('"').replace(",", ".")
+    if s == "-" or s == "":
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
 def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     """Read the benchmark CSV and generate an interactive HTML scatter plot.
 
@@ -945,50 +957,63 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     for row in rows:
         result = row["Result Code"].strip()
 
-        # Use the most relevant Ultimate time for the X axis
-        if result == "TERMINATING":
-            u_time_str = row.get("Termination (ms)", "-").strip()
-            col_name = "Term"
-        elif result == "NONTERMINATING":
-            u_time_str = row.get("Nontermination (ms)", "-").strip()
-            col_name = "Nonterm"
-        else:
-            u_time_str = row.get("Fixpoint (ms)", "-").strip()
-            col_name = "Fixpoint"
-
         t_time_str = row["pasttel (ms)"].strip()
         name = row["Trace Name"].strip()
         algo = row.get("Algo", "").strip()
         pasttel_status = row.get("PaSTTeL Status", "").strip()
 
+        # Determine Ultimate algo (left part of "UltimateAlgo / PaSTTeLAlgo")
+        algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
+        u_algo = algo_parts[0].strip().lower()
+
+        # Use the most relevant Ultimate time for the X axis
+        if result == "TERMINATING":
+            u_time_str = row.get("Termination (ms)", "-").strip()
+            col_name = "Term"
+        elif result == "NONTERMINATING":
+            if "fixpoint" in u_algo:
+                u_time_str = row.get("Fixpoint (ms)", "-").strip()
+                col_name = "Fixpoint"
+            else:
+                # GNTA and others → Nontermination (ms)
+                u_time_str = row.get("Nontermination (ms)", "-").strip()
+                col_name = "Nonterm"
+        else:
+            u_time_str = row.get("Fixpoint (ms)", "-").strip()
+            col_name = "Fixpoint"
+
         # Skip infeasible / unchecked / Ultimate-unknown
         if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN"):
             continue
         # Skip rows where Ultimate has no time
-        if u_time_str == "-":
+        if u_time_str.strip().strip('"') == "-" or u_time_str.strip().strip('"') == "":
             continue
 
         u_verdict = result  # Ultimate is ground truth for Result Code
 
-        # Derive PaSTTeL verdict from the algo column
-        algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
+        # Derive PaSTTeL verdict from the algo column (right part)
         t_algo = algo_parts[-1] if len(algo_parts) >= 2 else ""
         t_verdict = verdict_from_algo(t_algo) if t_algo else "UNKNOWN"
+
+        # Prioritize the dedicated PaSTTeL Status column for verdict
+        if pasttel_status in ("TERMINATING", "NONTERMINATING"):
+            t_verdict = pasttel_status
 
         # Determine PaSTTeL status (use dedicated column when available)
         if pasttel_status:
             p_status = pasttel_status
-        elif t_time_str == "-":
+        elif t_time_str.strip().strip('"') == "-":
             p_status = "UNKNOWN"
         else:
             p_status = t_verdict
 
         # Compute times (PAR-2 penalty when PaSTTeL has no answer)
-        try:
-            ux = float(u_time_str)
-            ty = float(t_time_str) if t_time_str != "-" else par2_ms
-        except ValueError:
+        ux = parse_float(u_time_str)
+        ty_raw = parse_float(t_time_str)
+
+        if ux is None:
             continue
+        ty = ty_raw if ty_raw is not None else par2_ms
 
         # --- Classify ---
         if p_status == "NOT_SUPPORTED":
@@ -1021,7 +1046,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
                 f"<br>Ultimate: TERMINATING, PaSTTeL: {t_verdict}"
             )
 
-        elif p_status == "TIMEOUT" or t_time_str == "-":
+        elif p_status == "TIMEOUT" or ty_raw is None:
             orange_x.append(ux)
             orange_y.append(ty)
             orange_labels.append(

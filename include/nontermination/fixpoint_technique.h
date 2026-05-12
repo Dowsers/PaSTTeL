@@ -46,6 +46,8 @@ public:
         return "Fixpoint";
     }
 
+    bool requiresLinearization() const override { return false; }
+
     bool validateConfiguration() const override;
 
 private:

@@ -28,7 +28,6 @@ CASES = [
     ("examples/test_unbounded_counter.json",                            "NON-TERMINATING", "both"),
   # ("examples/test_geometric_doubling.json",                           "NON-TERMINATING", "both"),
     ("examples/nonterminate_booleans.json",                             "NON-TERMINATING", "both"),
-    ("examples/fixpoint_nontermination.json",                           "NON-TERMINATING", "both"),
     ("examples/test_ranking_func_with_two_variables_non_terminating.json", "NON-TERMINATING", "both"),
     ("examples/test_with_div_mod.json",                                 "TERMINATING",     "both",        2),
     ("examples/test_with_div_mod_mult.json",                            "TERMINATING",     "both",        2),

@@ -20,7 +20,12 @@ PortfolioOrchestrator::PortfolioOrchestrator(int max_threads)
 void PortfolioOrchestrator::addTechnique(
     std::unique_ptr<AnalysisTechniqueInterface> technique)
 {
-    techniques_.push_back(std::move(technique));
+    if (technique->requiresLinearization())
+        // insert at the end to prioritize techniques that can run on the raw lasso
+        techniques_.push_back(std::move(technique));
+    else
+        // insert at the beginning to prioritize un-processed lassos
+        techniques_.insert(techniques_.begin(), std::move(technique));
 }
 
 // ─────────────────────────────────────────────
@@ -108,7 +113,7 @@ void PortfolioOrchestrator::cancelTechniques(size_t winner, bool verbose)
 //  solve(): enqueue all techniques in order
 // ─────────────────────────────────────────────
 
-void PortfolioOrchestrator::solve(const LassoProgram& lasso)
+void PortfolioOrchestrator::solve(LassoProgram& lasso)
 {
     all_results_.clear();
     final_result_ = {};

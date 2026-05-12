@@ -288,7 +288,7 @@ SMTSolverInterface* createSMTSolver() {
     throw std::runtime_error("Unknown solver type");
 }
 
-AnalysisReport runAnalysis(const LassoProgram& lasso) {
+AnalysisReport runAnalysis(LassoProgram& lasso) {
     PortfolioOrchestrator orchestrator(CPUS);
 
     // Non-termination techniques
@@ -316,8 +316,6 @@ AnalysisReport runAnalysis(const LassoProgram& lasso) {
             "NestedTemplate", configs, 4));
     }
 
-
-
     orchestrator.solve(lasso);
     return orchestrator.join(TIMELIMIT);
 }
@@ -335,7 +333,7 @@ int main(int argc, char** argv) {
     std::string lasso_file = setParameters(argc, argv);
     LassoProgram lasso;
     try{
-        lasso = JsonTraceParser::parseToLasso(lasso_file);
+        lasso = JsonTraceParser::parseToLasso(lasso_file, true);
     } catch (const std::exception& e) {
         std::cerr << "Error: Failed to parse Lasso file: " << e.what() << std::endl;
         return 1;
