@@ -3,7 +3,7 @@
 # ========================
 
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude 
+CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude
 LDFLAGS := -pthread
 
 # ========================
@@ -28,14 +28,12 @@ Z3_LIBS   := -L$(PASTTEL)/lib -lz3
 
 # CVC5_DIR peut être défini via variable d'environnement
 # Si non défini, utiliser une valeur par défaut
-CVC5_DIR ?= $(PASTTEL)
+CVC5_DIR    ?= $(PASTTEL)
 CVC5_CFLAGS := -I$(CVC5_DIR)/include
-CVC5_LIBS   := $(CVC5_DIR)/lib/libcvc5.so $(CVC5_DIR)/lib/libcvc5parser.so $(CVC5_DIR)/lib/libpoly.so.0 $(CVC5_DIR)/lib/libpolyxx.so.0 $(CVC5_DIR)/lib/libpoly.so $(CVC5_DIR)/lib/libpolyxx.so -lgmp
-
+CVC5_LIBS   := -L$(CVC5_DIR)/lib -lcvc5 -lcvc5parser -lpoly -lpolyxx -lgmp -Wl,-rpath,$(CVC5_DIR)/lib
 
 CXXFLAGS += $(Z3_CFLAGS) $(CVC5_CFLAGS)
 LDFLAGS  += $(Z3_LIBS) $(CVC5_LIBS)
-
 # ========================
 # Répertoires
 # ========================
