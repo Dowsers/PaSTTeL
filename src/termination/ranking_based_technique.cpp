@@ -38,7 +38,7 @@ RankingBasedTechnique::RankingBasedTechnique(
 void RankingBasedTechnique::init(const LassoProgram& lasso) {
     lasso_ = &lasso;
     cancelled_.store(false);
-    lasso.declareSolverContext(solver_);
+    lasso.declareSolverContext(solver_, true);
 }
 
 // ============================================================================

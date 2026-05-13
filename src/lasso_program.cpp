@@ -19,7 +19,7 @@ void LassoProgram::linearize() {
     is_linearized = true;
 }
 
-void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
+void LassoProgram::declareSolverContext(SMTSolverInterface* solver, bool linearized) const {
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // 1. Déclarer les constantes symboliques
@@ -64,7 +64,7 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
             if (!solver->variableExists(ssa_in)) {
                 auto sort_it = var_sorts.find(var_prog);
                 std::string sort = (sort_it != var_sorts.end()) ? sort_it->second : "Int";
-                // if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
+                if (linearized && sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
                 solver->declareVariable(ssa_in, sort);
             }
         }
@@ -72,7 +72,7 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver) const {
             if (!solver->variableExists(ssa_out)) {
                 auto sort_it = var_sorts.find(var_prog);
                 std::string sort = (sort_it != var_sorts.end()) ? sort_it->second : "Int";
-                // if (sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
+                if (linearized && sort == "Bool") sort = "Int";  // Bool vars are rewritten to Int 0/1
                 solver->declareVariable(ssa_out, sort);
             }
         }

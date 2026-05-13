@@ -35,7 +35,7 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     eigenvectors.clear();
     lambdas.clear();
     nus.clear();
-    lasso.declareSolverContext(solver_);
+    lasso.declareSolverContext(solver_, true);
 }
 
 // ============================================================================

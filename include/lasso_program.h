@@ -66,7 +66,7 @@ public:
      * variables SSA (stem + loop), et abstractions de fonctions.
      *
      */
-    void declareSolverContext(SMTSolverInterface* solver) const;
+    void declareSolverContext(SMTSolverInterface* solver, bool linearized=false) const;
 };
 
 #endif // __LASSO_PROGRAM_H

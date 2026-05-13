@@ -942,6 +942,27 @@ def parse_float(s):
         return None
 
 
+PASTTEL_SUPPORTED_TERM_ALGOS = {
+    "Affine Template",
+    "Nested Template",
+}
+
+def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
+    """Return True if the Ultimate termination algorithm is implemented by PaSTTeL.
+
+    PaSTTeL only supports Affine and Nested templates for termination.
+    Lex, Phase, n-Phase, n-Lex, … are NOT supported.
+    n-Nested (e.g. 4-nested) IS supported because PaSTTeL has NestedTemplate.
+    """
+    name = u_algo_raw.strip().lower()
+    # Strip optional numeric prefix: "4-nested" → base="nested"
+    m = re.match(r'^(\d+)-(.+)$', name)
+    base = m.group(2) if m else name
+    # Also strip " template" suffix for already-normalised display labels
+    base = re.sub(r'\s+template$', '', base).strip()
+    return base in ("affine", "nested")
+
+
 def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     """Read the benchmark CSV and generate an interactive HTML scatter plot.
 
@@ -949,8 +970,10 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
       - Green:  both agree TERMINATING
       - Blue:   both agree NONTERMINATING
       - Orange: PaSTTeL timeout (no answer within time limit)
-      - Red:    contradiction — Ultimate says TERMINATING but PaSTTeL does not
-      - Purple: NOT SUPPORTED — PaSTTeL does not handle this trace type
+      - Red:    contradiction — Ultimate says TERMINATING (with a supported algo)
+                but PaSTTeL does not agree
+      - Purple: NOT SUPPORTED — Ultimate TERMINATING with an algo not implemented
+                by PaSTTeL (lex, phase, n-phase…) AND PaSTTeL returns UNKNOWN
 
     When PaSTTeL times out or is not supported, a PAR-2 penalty time
     (timeout * 2) is used on the Y axis.
@@ -991,6 +1014,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
         # Determine Ultimate algo (left part of "UltimateAlgo / PaSTTeLAlgo")
         algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
         u_algo = algo_parts[0].strip().lower()
+        u_algo_raw = algo_parts[0].strip()  # raw form for support check
 
         # Use the most relevant Ultimate time for the X axis
         if result == "TERMINATING":
@@ -1041,13 +1065,23 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
             continue
         ty = ty_raw if ty_raw is not None else par2_ms
 
+        # NOT SUPPORTED: Ultimate TERMINATING with an algo not implemented by
+        # PaSTTeL (lex, phase, n-phase, …) AND PaSTTeL returns UNKNOWN.
+        # If PaSTTeL still found TERMINATING independently, keep it green.
+        u_algo_supported = _ultimate_algo_is_supported_by_pasttel(u_algo_raw)
+        is_not_supported = (
+            u_verdict == "TERMINATING"
+            and not u_algo_supported
+            and p_status not in ("TERMINATING", "NONTERMINATING")
+        )
+
         # --- Classify ---
-        if p_status == "NOT_SUPPORTED":
+        if p_status == "NOT_SUPPORTED" or is_not_supported:
             purple_x.append(ux)
             purple_y.append(ty)
             purple_labels.append(
                 f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms"
-                f"<br>Ultimate: {u_verdict}, PaSTTeL: NOT SUPPORTED"
+                f"<br>Ultimate: {u_verdict} ({u_algo_raw}), PaSTTeL: NOT SUPPORTED"
             )
 
         elif u_verdict == "TERMINATING" and t_verdict == "TERMINATING":
@@ -1064,20 +1098,20 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
                 f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
             )
 
-        elif u_verdict == "TERMINATING" and t_verdict != "TERMINATING" and p_status != "TIMEOUT":
-            red_x.append(ux)
-            red_y.append(ty)
-            red_labels.append(
-                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
-                f"<br>Ultimate: TERMINATING, PaSTTeL: {t_verdict}"
-            )
-
         elif p_status == "TIMEOUT" or ty_raw is None:
             orange_x.append(ux)
             orange_y.append(ty)
             orange_labels.append(
                 f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms"
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: TIMEOUT (PAR-2={par2_ms:.0f}ms)"
+            )
+
+        elif u_verdict == "TERMINATING" and t_verdict != "TERMINATING":
+            red_x.append(ux)
+            red_y.append(ty)
+            red_labels.append(
+                f"{name}<br>Algo: {algo}<br>U-{col_name}={ux:.1f}ms  T={ty:.1f}ms"
+                f"<br>Ultimate: TERMINATING ({u_algo_raw}), PaSTTeL: {t_verdict}"
             )
 
         else:
@@ -1416,7 +1450,10 @@ def main():
         u_fixpoint_time = f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-"
         t_time = f"{pasttel['time_ms']:.2f}" if pasttel["time_ms"] >= 0 else "-"
 
-        # Determine PaSTTeL status for scatter plot coloring
+        # Determine PaSTTeL status for scatter plot coloring.
+        # NOT_SUPPORTED: Ultimate TERMINATING with an algo not implemented by
+        # PaSTTeL AND PaSTTeL returned UNKNOWN (not a contradiction).
+        u_algo_supported = _ultimate_algo_is_supported_by_pasttel(ultimate["algo"])
         if pasttel.get("error") == "TIMEOUT":
             p_status = "TIMEOUT"
         elif pasttel["result"] == "NOT SUPPORTED":
@@ -1425,6 +1462,10 @@ def main():
             p_status = "TERMINATING"
         elif pasttel["result"] == "NONTERMINATING":
             p_status = "NONTERMINATING"
+        elif (ultimate["result"] == "TERMINATING"
+              and not u_algo_supported
+              and pasttel["result"] == "UNKNOWN"):
+            p_status = "NOT_SUPPORTED"
         else:
             p_status = "UNKNOWN"
 

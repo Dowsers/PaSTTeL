@@ -254,7 +254,7 @@ void RankingAndInvariantValidator::registerProgramVariablesToSolver(
     SMTSolverInterface* solver,
     const LassoProgram& lasso) {
 
-    lasso.declareSolverContext(solver);
+    lasso.declareSolverContext(solver, true);
 }
 
 

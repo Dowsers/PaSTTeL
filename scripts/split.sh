@@ -2,6 +2,11 @@
 
 
 
+# Move lasso_trace_X.txt files whose Loop TransFormula is N/A with UNKNOWN
+# feasibility into UNKNOWN_LOOP, preserving the parent folder structure.
+grep -rl "Loop TransFormula: N/A (loop feasibility: UNKNOWN)" */*txt 2>/dev/null > unknown_loop.txt
+for n in $(cat unknown_loop.txt); do mkdir -p UNKNOWN_LOOP/$(dirname $n); mv $n UNKNOWN_LOOP/$n ; done
+
 
 grep -ri "Lasso termination:   NONTERMINATING" */*txt | cut -d':' -f1 > non_terminating.txt
 grep -ri "Lasso termination:   TERMINATING" */*txt | cut -d':' -f1 > terminating.txt
@@ -16,3 +21,4 @@ for n in $(cat TERM_LASSO/si_arrays.txt); do rel=${n#TERM_LASSO/}; mkdir -p TERM
 
 grep -ril "Array index supporting invariants:" NON_TERM_LASSO/*/*txt > NON_TERM_LASSO/si_arrays.txt
 for n in $(cat NON_TERM_LASSO/si_arrays.txt); do rel=${n#NON_TERM_LASSO/}; mkdir -p NON_TERM_LASSO/SI_ARRAYS/$(dirname $rel); mv $n NON_TERM_LASSO/SI_ARRAYS/$rel ; done;
+

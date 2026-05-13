@@ -25,7 +25,7 @@ FixpointTechnique::FixpointTechnique(SMTSolverInterface* solver)
 void FixpointTechnique::init(const LassoProgram& lasso) {
     lasso_ = &lasso;
     initialized_ = true;
-    lasso.declareSolverContext(solver_);
+    lasso.declareSolverContext(solver_, false);
 }
 
 // ============================================================================
@@ -199,8 +199,10 @@ void FixpointTechnique::addLoopConstraints()
     // Use raw formula directly when available (avoids linearization blowup).
     if (!lasso_->loop.raw_formula.empty()) {
         solver_->addAssertion(lasso_->loop.raw_formula);
-        if (VERBOSITY == VerbosityLevel::VERBOSE)
+        if (VERBOSITY == VerbosityLevel::VERBOSE) {
             std::cout << "    Loop: raw formula asserted" << std::endl;
+            std::cout << "    Loop formula: " << lasso_->loop.raw_formula << std::endl;
+        }
         return;
     }
     
@@ -277,23 +279,41 @@ void FixpointTechnique::addLoopConstraints()
 
 void FixpointTechnique::addFixpointConstraints()
 {
-    // Pour chaque variable du programme, ajouter : in_var = out_var
+    // Pour chaque variable du programme, ajouter : in_var = out_var.
+    // On ignore :
+    //   - les paires triviales ssa_in == ssa_out (toujours vraies, inutiles)
+    //   - les paires où au moins une var est fraîche (absente de la formule du loop)
+    //     car elles permettent un modèle trivial non-représentatif
+    //   - les variables de sort Array (non-scalaires)
     int constraint_count = 0;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
         std::string ssa_out = lasso_->loop.getSSAVar(var_prog, true);
+
+        // Ignorer les contraintes triviales (variable inchangée)
+        if (ssa_in == ssa_out) continue;
+
+        // Ignorer si l'une ou l'autre est une variable fraîche
+        if (ssa_in.find("_fresh_")  != std::string::npos ||
+            ssa_out.find("_fresh_") != std::string::npos)
+            continue;
+
+        // Ignorer les variables Array
+        auto sort_it = lasso_->var_sorts.find(var_prog);
+        if (sort_it != lasso_->var_sorts.end() &&
+            sort_it->second.find("Array") != std::string::npos)
+            continue;
+
         std::ostringstream constraint;
-        constraint << "(= " << ssa_in
-                << " " << ssa_out << ")";
+        constraint << "(= " << ssa_in << " " << ssa_out << ")";
         solver_->addAssertion(constraint.str());
         constraint_count++;
-        
+
         if (verbose)
-            std::cout << "    • " << ssa_in
-                    << " = " << ssa_out << std::endl;
+            std::cout << "    • " << ssa_in << " = " << ssa_out << std::endl;
     }
-    
+
     if (verbose)
         std::cout << "    ✓ Ajouté " << constraint_count << " contraintes de point fixe" << std::endl;
 }
