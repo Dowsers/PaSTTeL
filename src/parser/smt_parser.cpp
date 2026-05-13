@@ -266,18 +266,17 @@ AffineTerm SMTParser::parseArithExpr(const std::string& expr) {
     if (cleaned.find("(*") == 0) {
         auto parts = splitSExpr(cleaned);
         if (parts.size() == 3 && parts[0] == "*") {
-            // (* a b) — one operand must be a constant, the other an expression
-            // Handles both (* constant expr) and (* expr constant)
-            if (SExprUtils::isNumericLiteral(parts[1])) {
-                double coef = std::stod(parts[1]);
-                AffineTerm inner = parseArithExpr(parts[2]);
-                inner *= coef;
-                return inner;
-            } else if (SExprUtils::isNumericLiteral(parts[2])) {
-                double coef = std::stod(parts[2]);
-                AffineTerm inner = parseArithExpr(parts[1]);
-                inner *= coef;
-                return inner;
+            // (* a b) — one operand must be a constant (possibly expressed as an SMT
+            // sub-expression like (- 1)), the other a linear expression.
+            // Evaluate both sides; if one is variable-free, it is the scalar.
+            AffineTerm t1 = parseArithExpr(parts[1]);
+            AffineTerm t2 = parseArithExpr(parts[2]);
+            if (t1.coefficients.empty()) {
+                t2 *= t1.constant;
+                return t2;
+            } else if (t2.coefficients.empty()) {
+                t1 *= t2.constant;
+                return t1;
             } else {
                 throw NlaTermException(
                     "SMTParser::parseArithExpr: non-linear multiplication: " + cleaned);

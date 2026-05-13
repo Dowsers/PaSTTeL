@@ -665,9 +665,8 @@ std::shared_ptr<Term> SMTSolverZ3::z3ExprToTerm(const z3::expr &value)
             n /= g; d /= g;
 
             if (d == 1)
-                return Term::makeInt(n.convert_to<int64_t>());
-            return Term::makeApp("/", {Term::makeInt(n.convert_to<int64_t>()),
-                                      Term::makeInt(d.convert_to<int64_t>())});
+                return Term::makeInt(n);
+            return Term::makeApp("/", {Term::makeInt(n), Term::makeInt(d)});
         }
     }
 

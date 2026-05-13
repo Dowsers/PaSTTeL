@@ -253,14 +253,36 @@ def parse_vars_mapping(text):
 
 
 def parse_list(text):
-    """Parse 'AuxVars[v1, v2]' or 'AssignedVars[v1, v2]' into a list."""
-    m = re.search(r'\[(.*)\]', text)
+    """Parse 'AuxVars[v1, v2]' or 'AssignedVars[v1, v2]' into a list.
+
+    Handles variable names containing commas inside |...| quoted identifiers,
+    e.g. |v_arrayCell[base_2, (+ offset_2 loopctr_10)]_1|.
+    """
+    m = re.search(r'\[(.*)\]', text, re.DOTALL)
     if not m:
         return []
     content = m.group(1).strip()
     if not content:
         return []
-    return [x.strip() for x in content.split(",") if x.strip()]
+    # Split on commas that are outside |...| pipe-quoted tokens
+    items = []
+    current = []
+    in_pipes = False
+    for ch in content:
+        if ch == '|':
+            in_pipes = not in_pipes
+            current.append(ch)
+        elif ch == ',' and not in_pipes:
+            token = ''.join(current).strip()
+            if token:
+                items.append(token)
+            current = []
+        else:
+            current.append(ch)
+    token = ''.join(current).strip()
+    if token:
+        items.append(token)
+    return items
 
 
 def parse_transformula_block(lines):

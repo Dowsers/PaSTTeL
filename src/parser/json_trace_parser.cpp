@@ -98,9 +98,13 @@ void connectStemToLoop(LassoProgram& lasso) {
         // Pour les identifiants quotés SMT-LIB2 |...[idx]...|, seul l'index
         // interne peut être substitué ; le nom complet reste entre pipes.
         auto substituteVar = [&](const std::string& var_ssa) -> std::string {
-            // Identifiant quoté |...| : substituer l'index interne si besoin
+            // Identifiant quoté |...| : substitution directe ou index interne
             if (var_ssa.size() >= 2 && var_ssa.front() == '|' && var_ssa.back() == '|') {
-                // Cherche [idx] à l'intérieur des pipes
+                // Substitution directe de l'identifiant complet (ex: |v_x_9| → |v_x_5|)
+                auto it_direct = substitution.find(var_ssa);
+                if (it_direct != substitution.end())
+                    return it_direct->second;
+                // Cherche [idx] à l'intérieur des pipes (cellules de tableau)
                 size_t bracket = var_ssa.find('[');
                 if (bracket != std::string::npos) {
                     size_t close = var_ssa.find(']', bracket);
