@@ -336,16 +336,20 @@ def parse_preprocessed_linear_trace_section(lines, start_idx):
         formula = fields.get("Formula", "").strip()
         invars_text = fields.get("InVars", "").strip()
         outvars_text = fields.get("OutVars", "").strip()
+        auxvars_text = fields.get("AuxVars", "").strip()
+        assigned_text = fields.get("AssignedVars", "").strip()
         if not formula:
             return None
         in_vars = parse_vars_mapping("{" + invars_text.strip("{}") + "}") if invars_text else {}
         out_vars = parse_vars_mapping("{" + outvars_text.strip("{}") + "}") if outvars_text else {}
+        aux_vars = parse_list("[" + auxvars_text.strip("[]") + "]") if auxvars_text else []
+        assigned_vars = parse_list("[" + assigned_text.strip("[]") + "]") if assigned_text else []
         return {
             "formula": formula,
             "in_vars": in_vars,
             "out_vars": out_vars,
-            "aux_vars": [],
-            "assigned_vars": [],
+            "aux_vars": aux_vars,
+            "assigned_vars": assigned_vars,
         }
 
     current_field = None  # which field we are accumulating
@@ -387,8 +391,8 @@ def parse_preprocessed_linear_trace_section(lines, start_idx):
         if current is None:
             continue
 
-        # Named field line: "  Formula:  ..." / "  InVars:   ..." / "  OutVars:  ..."
-        m = re.match(r'\s+(Formula|InVars|OutVars)\s*:\s*(.*)', line)
+        # Named field line: "  Formula:  ..." / "  InVars:   ..." / "  OutVars:  ..." / "  AuxVars:  ..." / "  AssignedVars:  ..."
+        m = re.match(r'\s+(Formula|InVars|OutVars|AuxVars|AssignedVars)\s*:\s*(.*)', line)
         if m:
             current_field = m.group(1)
             current_fields[current_field] = m.group(2)
