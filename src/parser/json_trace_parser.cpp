@@ -969,6 +969,9 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
         if (trans.formula.empty()) {
             throw std::runtime_error("Formula is empty. It's not a valid lasso program");
         }
+        if (trans.formula == "true") {
+            trans.formula = "(>= 1 0)";
+        }
     }
 
     // Parse in_vars
