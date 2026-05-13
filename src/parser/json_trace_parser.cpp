@@ -90,17 +90,27 @@ void connectStemToLoop(LassoProgram& lasso) {
         for (const auto& [_, ssa] : lasso.stem.var_to_ssa_out)
             stem_out_ssas.insert(ssa);
 
-        std::map<std::string, std::string> out_rename; // old_loop_out → fresh
+        // out_rename: old_ssa → fresh  (applied to loop polyhedra/formula)
+        // For unmutated vars (loop_in == loop_out == colliding ssa), we rename
+        // both in and out to the same fresh name so identity detection still works.
+        std::map<std::string, std::string> out_rename;
         for (auto& [var_prog, ssa_out_loop] : lasso.loop.var_to_ssa_out) {
             if (stem_out_ssas.count(ssa_out_loop)) {
-                std::string fresh = "v_" + var_prog + "_loop_out_fresh_"
+                auto it_in = lasso.loop.var_to_ssa_in.find(var_prog);
+                bool unmutated = (it_in != lasso.loop.var_to_ssa_in.end() &&
+                                  it_in->second == ssa_out_loop);
+                std::string fresh = "v_" + var_prog + "_loop_fresh_"
                                     + std::to_string(collision_counter++);
                 if (VERBOSITY == VerbosityLevel::VERBOSE)
                     std::cout << "  [connectStemToLoop] Renaming colliding loop_out "
                               << ssa_out_loop << " → " << fresh
-                              << " for var " << var_prog << std::endl;
+                              << " for var " << var_prog
+                              << (unmutated ? " (unmutated: renaming loop_in too)" : "")
+                              << std::endl;
                 out_rename[ssa_out_loop] = fresh;
                 ssa_out_loop = fresh;
+                if (unmutated)
+                    it_in->second = fresh;
             }
         }
 
