@@ -149,31 +149,42 @@ DNFFormula SMTParser::negateConjunction(const std::vector<LinearInequality>& con
     return result;
 }
 
+// Returns true if the polyhedron contains a constraint of the form c >= 0 with c < 0
+// (a constant-only inequality with negative value), which is trivially unsatisfiable.
+static bool isTriviallyUnsat(const std::vector<LinearInequality>& poly) {
+    for (const auto& ineq : poly) {
+        if (ineq.coefficients.empty() && ineq.constant.constant < 0.0)
+            return true;
+    }
+    return false;
+}
+
 DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands) {
     if (operands.empty()) {
         DNFFormula result;
         result.polyhedra.push_back({});
         return result;
     }
-    
+
     if (operands.size() == 1) return operands[0];
-    
+
     DNFFormula result = operands[0];
-    
+
     for (size_t i = 1; i < operands.size(); ++i) {
         DNFFormula new_result;
-        
+
         for (const auto& poly1 : result.polyhedra) {
             for (const auto& poly2 : operands[i].polyhedra) {
                 std::vector<LinearInequality> combined = poly1;
                 combined.insert(combined.end(), poly2.begin(), poly2.end());
-                new_result.polyhedra.push_back(combined);
+                if (!isTriviallyUnsat(combined))
+                    new_result.polyhedra.push_back(combined);
             }
         }
-        
+
         result = new_result;
     }
-    
+
     return result;
 }
 
