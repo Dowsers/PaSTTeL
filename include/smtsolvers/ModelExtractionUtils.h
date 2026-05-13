@@ -305,5 +305,55 @@ inline Rational getGcd(const std::map<std::string, Rational> &assignment)
 }
 
 
+// Normalise une liste de Rational en entiers simplifiés.
+// Travaille en BigInt (boost::multiprecision::cpp_int) pour éviter tout overflow.
+// Algorithme : LCM des dénominateurs → multiplier chaque num → GCD global → diviser.
+// Retourne le vecteur normalisé en long long (saturé à INT64 si trop grand).
+static inline std::vector<long long> rationalListToIntegers(
+    const std::vector<Rational>& rationals)
+{
+    if (rationals.empty()) return {};
+
+    // LCM de tous les dénominateurs (BigInt, toujours > 0 après Rational::reduce)
+    BigInt lcm = 1;
+    for (const auto& r : rationals) {
+        BigInt d = absBigInt(r.den);
+        if (d == 0) continue;
+        BigInt g = Rational::gcd_ll(lcm, d);
+        lcm = lcm / g * d;
+    }
+
+    // Multiplier chaque numérateur par lcm/den
+    std::vector<BigInt> wide;
+    wide.reserve(rationals.size());
+    for (const auto& r : rationals) {
+        BigInt d = absBigInt(r.den);
+        if (d == 0) { wide.push_back(0); continue; }
+        wide.push_back(r.num * (lcm / d));
+    }
+
+    // GCD global de tous les entiers non nuls
+    BigInt g = 0;
+    for (const BigInt& v : wide) {
+        if (v != 0) g = Rational::gcd_ll(absBigInt(g), absBigInt(v));
+    }
+    if (g == 0) g = 1;
+
+    // Diviser par le GCD et convertir en long long (saturation si trop grand)
+    std::vector<long long> integers;
+    integers.reserve(wide.size());
+    const BigInt MAX64 = BigInt(INT64_MAX);
+    const BigInt MIN64 = BigInt(INT64_MIN);
+    for (const BigInt& v : wide) {
+        BigInt r = v / g;
+        if (r > MAX64) r = MAX64;
+        if (r < MIN64) r = MIN64;
+        integers.push_back(r.convert_to<long long>());
+    }
+
+    return integers;
+}
+
+
 
 #endif

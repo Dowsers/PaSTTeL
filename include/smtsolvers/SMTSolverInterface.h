@@ -24,19 +24,7 @@ public:
      * @brief Retourne la valeur d'une variable comme rationnel exact (num, den)
      * den est toujours > 0. Par défaut utilise getValue() converti.
      */
-    virtual std::pair<int64_t, int64_t> getRationalValue(const std::string& var) {
-        double v = getValue(var);
-        // Approximation par défaut : conversion double -> rationnel
-        // Les sous-classes peuvent surcharger pour plus de précision
-        int64_t den = 1;
-        while (std::abs(v * den - std::round(v * den)) > 1e-9 && den < 1000000) den *= 2;
-        return { static_cast<int64_t>(std::round(v * den)), den };
-    }
-
-    virtual Rational getRationalValue2(const std::string& var) {
-        auto [num, den] = getRationalValue(var);
-        return Rational(num, den);
-    }
+    virtual Rational getRationalValue2(const std::string& var) = 0;
 
     virtual void declareVariable(const std::string& name, const std::string& sort) = 0;
     virtual void declareFunction(const std::string& name, const std::string& signature) = 0;

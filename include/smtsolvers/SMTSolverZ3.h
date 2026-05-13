@@ -116,8 +116,6 @@ public:
      * @brief Retourne la valeur exacte comme rationnel (numérateur, dénominateur)
      * Utilise directement l'API Z3 pour éviter la perte de précision.
      */
-    std::pair<int64_t, int64_t> getRationalValue(const std::string& var_name) override;
-
     Rational getRationalValue2(const std::string& var_name) override;
 
     static std::shared_ptr<Term> z3ExprToTerm(const z3::expr &value);

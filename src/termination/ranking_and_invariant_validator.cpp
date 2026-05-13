@@ -178,7 +178,6 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
 
     result.is_valid = true;
-    goto END_AFFINE;
     // TODO: bug somehwere
 
     // ========================================================================
@@ -228,7 +227,6 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
                 && result.rf_non_trivial_check
                 && result.rf_bounded_check
                 && result.rf_decreasing_check;
-END_AFFINE:
     if(verbose) {
         if (result.is_valid) {
             std::cout << "╔═══════════════════════════════════════════════════════╗" << std::endl;
@@ -1005,7 +1003,6 @@ RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidato
 
 
     result.is_valid = true;
-    goto END_NESTED;
     // TODO: check for bugs
     
     for (int i = 0; i < static_cast<int>(components.size()); ++i) {
@@ -1107,7 +1104,6 @@ RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidato
         return result;
     }
 
-END_NESTED:
     result.is_valid = true;
     return result;
 }

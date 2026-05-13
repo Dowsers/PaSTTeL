@@ -12,13 +12,7 @@
 
 extern VerbosityLevel VERBOSITY;
 
-// std::gcd ne supporte pas __int128 en C++17 — implémentation locale
-static __int128 gcd128(__int128 a, __int128 b) {
-    if (a < 0) a = -a;
-    if (b < 0) b = -b;
-    while (b) { __int128 t = b; b = a % b; a = t; }
-    return a;
-}
+
 
 // ============================================================================
 // CONSTRUCTEUR
@@ -566,61 +560,6 @@ std::map<std::string, double> GenericTerminationSynthesizer::extractParametersVa
 }
 
 
-// Normalise une liste de rationnels (num, den) en entiers simplifiés.
-// Utilise __int128 pour les calculs intermédiaires afin d'éviter les overflows
-// quand Z3 retourne des rationnels avec de grands numérateurs/dénominateurs.
-// Retourne le vecteur des numérateurs normalisés (int64_t).
-static std::vector<long long> rationalListToIntegers(
-    const std::vector<std::pair<int64_t, int64_t>>& rationals)
-{
-    if (rationals.empty()) return {};
-
-    using i128 = __int128;
-
-    // LCM de tous les dénominateurs (en __int128 pour éviter l'overflow)
-    i128 lcm = 1;
-    for (const auto& [num, den] : rationals) {
-        if (den == 0) continue;
-        i128 d = (den < 0) ? -(i128)den : (i128)den;
-        i128 l = (lcm < 0) ? -lcm : lcm;
-        i128 g = gcd128(l, d);
-        lcm = lcm / g * d;
-    }
-    if (lcm < 0) lcm = -lcm;
-
-    // Multiplier chaque numérateur par lcm/den (en __int128)
-    std::vector<i128> wide;
-    wide.reserve(rationals.size());
-    for (const auto& [num, den] : rationals) {
-        i128 d = (den < 0) ? -(i128)den : (i128)den;
-        i128 n = (i128)num;
-        if (den < 0) n = -n;
-        wide.push_back(n * (lcm / d));
-    }
-
-    // GCD de tous les entiers non nuls (en __int128)
-    i128 g = 0;
-    for (i128 v : wide) {
-        if (v != 0) g = gcd128(g, v);
-    }
-    if (g == 0) g = 1;
-
-    // Diviser par le GCD et réduire en int64_t
-    // Si le résultat dépasse INT64_MAX, saturer : c'est un signe que Z3
-    // a retourné un modèle non minimal (coefficients arbitrairement grands).
-    std::vector<long long> integers;
-    integers.reserve(wide.size());
-    constexpr i128 MAX64 = (i128)INT64_MAX;
-    constexpr i128 MIN64 = (i128)INT64_MIN;
-    for (i128 v : wide) {
-        i128 r = v / g;
-        if (r > MAX64) r = MAX64;
-        if (r < MIN64) r = MIN64;
-        integers.push_back((long long)r);
-    }
-
-    return integers;
-}
 
 // ============================================================================
 // NORMALISATION
@@ -698,46 +637,6 @@ void GenericTerminationSynthesizer::extractResults()
         SimplifyCoefficient(termination_argument_.ranking_functions[num_comp]);
     }
 
-    //     if (!params.ranking_params.empty() && num_comps > 0) {
-    //         size_t params_per_comp = params.ranking_params.size() / num_comps;
-
-    //         for (size_t ci = 0; ci < num_comps; ++ci) {
-    //             auto& rf = termination_argument_.components[ci];
-    //             size_t base = ci * params_per_comp;
-
-    //             std::vector<std::pair<int64_t, int64_t>> comp_rationals;
-    //             for (size_t i = 0; i < params_per_comp && base + i < params.ranking_params.size(); ++i) {
-    //                 comp_rationals.push_back(solver_->getRationalValue(params.ranking_params[base + i]));
-    //             }
-    //             std::vector<long long> integers = rationalListToIntegers(comp_rationals);
-
-    //             for (size_t i = 0; i < nv && i < integers.size(); ++i) {
-    //                 rf.coefficients[eff_vars[i]] = integers[i];
-    //             }
-    //             if (nv < integers.size()) {
-    //                 rf.constant = integers[nv];
-    //             }
-
-    //             if (verbose)
-    //                 std::cout << "    f" << ci << " (normalized) -> " << rf.toString(eff_vars) << std::endl;
-    //         }
-    //     }
-
-    //     // Delta : valeur double exacte depuis le rationnel Z3.
-    //     if (!params.delta_param.empty()) {
-    //         auto delta_r = solver_->getRationalValue(params.delta_param);
-    //         double delta_val = (delta_r.second != 0)
-    //             ? (double)delta_r.first / (double)delta_r.second
-    //             : (double)delta_r.first;
-    //         for (auto& rf : termination_argument_.components) {
-    //             rf.delta = delta_val;
-    //         }
-    //         if (verbose)
-    //             std::cout << "    delta (normalized) = " << delta_val << std::endl;
-    //     }
-    // }
-
-
     termination_argument_.supporting_invariants.clear();
 
     // Extraire les SI de chaque SIG local (un par template_part).
@@ -773,12 +672,12 @@ void GenericTerminationSynthesizer::extractResults()
 
             int start_idx = si_idx * params_per_si;
 
-            std::vector<std::pair<int64_t, int64_t>> si_rationals;
+            std::vector<Rational> si_rationals;
             for (size_t i = 0; i < num_vars && start_idx + (int)i < (int)si_params.size(); ++i) {
-                si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + i]));
+                si_rationals.push_back(solver_->getRationalValue2(si_params[start_idx + i]));
             }
             if (start_idx + (int)num_vars < (int)si_params.size()) {
-                si_rationals.push_back(solver_->getRationalValue(si_params[start_idx + num_vars]));
+                si_rationals.push_back(solver_->getRationalValue2(si_params[start_idx + num_vars]));
             }
 
             std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
