@@ -81,6 +81,69 @@ void connectStemToLoop(LassoProgram& lasso) {
         std::cout << "\n=== Connecting STEM to LOOP ===" << std::endl;
     }
 
+    // Detect and fix SSA collisions between stem_out and loop_out.
+    // Fix: rename the colliding loop_out SSA to a fresh name
+    {
+        static int collision_counter = 0;
+        // Collect the set of stem_out SSA names for O(1) lookup.
+        std::set<std::string> stem_out_ssas;
+        for (const auto& [_, ssa] : lasso.stem.var_to_ssa_out)
+            stem_out_ssas.insert(ssa);
+
+        std::map<std::string, std::string> out_rename; // old_loop_out → fresh
+        for (auto& [var_prog, ssa_out_loop] : lasso.loop.var_to_ssa_out) {
+            if (stem_out_ssas.count(ssa_out_loop)) {
+                std::string fresh = "v_" + var_prog + "_loop_out_fresh_"
+                                    + std::to_string(collision_counter++);
+                if (VERBOSITY == VerbosityLevel::VERBOSE)
+                    std::cout << "  [connectStemToLoop] Renaming colliding loop_out "
+                              << ssa_out_loop << " → " << fresh
+                              << " for var " << var_prog << std::endl;
+                out_rename[ssa_out_loop] = fresh;
+                ssa_out_loop = fresh;
+            }
+        }
+
+        // Apply the rename to the loop raw_formula and polyhedra.
+        auto applyRename = [&](const std::string& s) -> std::string {
+            auto it = out_rename.find(s);
+            return (it != out_rename.end()) ? it->second : s;
+        };
+        if (!out_rename.empty()) {
+            for (auto& poly : lasso.loop.polyhedra) {
+                for (auto& ineq : poly) {
+                    std::map<std::string, AffineTerm> new_coeffs;
+                    for (const auto& [v, c] : ineq.coefficients)
+                        new_coeffs[applyRename(v)] = c;
+                    ineq.coefficients = new_coeffs;
+                    std::map<std::string, double> new_cc;
+                    for (const auto& [v, val] : ineq.constant.coefficients)
+                        new_cc[applyRename(v)] = val;
+                    ineq.constant.coefficients = new_cc;
+                }
+            }
+            if (!lasso.loop.raw_formula.empty()) {
+                for (const auto& [old_ssa, new_ssa] : out_rename) {
+                    size_t pos = 0;
+                    auto& f = lasso.loop.raw_formula;
+                    while ((pos = f.find(old_ssa, pos)) != std::string::npos) {
+                        bool start_ok = (pos == 0) ||
+                            f[pos-1]==' ' || f[pos-1]=='(' || f[pos-1]==')';
+                        size_t end = pos + old_ssa.size();
+                        bool end_ok = (end == f.size()) ||
+                            f[end]==' ' || f[end]=='(' || f[end]==')';
+                        if (start_ok && end_ok) {
+                            f.replace(pos, old_ssa.size(), new_ssa);
+                            pos += new_ssa.size();
+                        } else {
+                            pos += old_ssa.size();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     std::map<std::string, std::string> substitution;
     for (const auto& [var_prog, ssa_out_stem] : lasso.stem.var_to_ssa_out) {
         auto it = lasso.loop.var_to_ssa_in.find(var_prog);

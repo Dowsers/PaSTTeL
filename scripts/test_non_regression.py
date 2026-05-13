@@ -51,6 +51,7 @@ CASES = [
     ("examples/test_nonterminate_gnta_real.json",                       "NON-TERMINATING", "both"),
     ("examples/test_nonterminate_fixpoint_real.json",                   "NON-TERMINATING", "both"),
     ("examples/BugOldVars03_1.json",                   			"TERMINATING",     "both"),
+    ("examples/only_termination_Ackermann_true-termination1_affine.json","TERMINATING",    "both"),
 ]
 
 
