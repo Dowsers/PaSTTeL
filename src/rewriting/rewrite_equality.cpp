@@ -4,7 +4,7 @@
 #include "parser/sexpr_utils.h"
 
 bool RewriteEquality::canHandle(const std::string& op) const {
-    return op == "=";
+    return op == "=" || op == "not";
 }
 
 std::string RewriteEquality::getName() const {
@@ -22,9 +22,17 @@ std::string RewriteEquality::rewrite(const std::string& formula) {
 
     const std::string& op = tokens[0];
 
+    if (integer_mode_ && op == "not" && tokens.size() == 2) {
+        auto inner = SExprUtils::splitSExpr(SExprUtils::trim(tokens[1]));
+        if (inner.size() == 3 && inner[0] == "=") {
+            std::string a = rewrite(inner[1]);
+            std::string b = rewrite(inner[2]);
+            return "(or (>= " + a + " (+ " + b + " 1)) (<= " + a + " (- " + b + " 1)))";
+        }
+    }
+
     // (= a b) --> (and (<= a b) (>= a b))
     if (op == "=" && tokens.size() == 3) {
-        // Recursively rewrite the operands first
         std::string lhs = rewrite(tokens[1]);
         std::string rhs = rewrite(tokens[2]);
         return "(and (<= " + lhs + " " + rhs + ") (>= " + lhs + " " + rhs + "))";

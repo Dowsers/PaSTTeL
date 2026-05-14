@@ -77,6 +77,7 @@ COMMON_SRCS := \
 	$(SRC_DIR)/rewriting/rewrite_let.cpp \
 	$(SRC_DIR)/rewriting/rewrite_division_modulo.cpp \
 	$(SRC_DIR)/rewriting/rewrite_equality.cpp \
+	$(SRC_DIR)/rewriting/rewrite_strict_inequalities.cpp \
 	$(SRC_DIR)/rewriting/rewrite_booleans.cpp \
 	$(SRC_DIR)/parser/sexpr_utils.cpp
 

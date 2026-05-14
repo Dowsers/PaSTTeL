@@ -12,6 +12,7 @@
 #include "rewriting/rewrite_let.h"
 #include "rewriting/rewrite_division_modulo.h"
 #include "rewriting/rewrite_equality.h"
+#include "rewriting/rewrite_strict_inequalities.h"
 #include "rewriting/rewrite_booleans.h"
 #include "utiles.h"
 
@@ -655,8 +656,12 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         }
 
     }
-    rewriter->addHandler(new RewriteEquality());
 
+    initializeOptionsForAnalysis(lasso);
+
+    rewriter->addHandler(new RewriteEquality(lasso.integer_mode));
+    if (lasso.integer_mode)
+        rewriter->addHandler(new RewriteStrictInequalities());
 
     // 4. Parse STEM transitions
     std::vector<UltimateTransitionLine> stem_lines;
@@ -755,8 +760,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // These are SSA variables present in the formula but not in in_vars/out_vars —
     // They must be declared in the solver but carry no ranking-function coefficient.
     addFreeAuxVariables(lasso, stem_lines, loop_lines);
-
-    initializeOptionsForAnalysis(lasso);
 
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;

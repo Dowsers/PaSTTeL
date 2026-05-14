@@ -149,13 +149,45 @@ DNFFormula SMTParser::negateConjunction(const std::vector<LinearInequality>& con
     return result;
 }
 
-// Returns true if the polyhedron contains a constraint of the form c >= 0 with c < 0
-// (a constant-only inequality with negative value), which is trivially unsatisfiable.
+// Returns true if the polyhedron is trivially unsatisfiable.
+// Detects two cases:
+//   1. Constant-only contradiction: k >= 0 with k < 0
+//   2. Single-variable bound contradiction: v >= lb and v <= ub with lb > ub
+//      (only reliable after RewriteStrictInequalities converts strict to non-strict)
 static bool isTriviallyUnsat(const std::vector<LinearInequality>& poly) {
     for (const auto& ineq : poly) {
         if (ineq.coefficients.empty() && ineq.constant.constant < 0.0)
             return true;
     }
+
+    std::map<std::string, double> lower_bounds;
+    std::map<std::string, double> upper_bounds;
+
+    for (const auto& ineq : poly) {
+        if (ineq.coefficients.size() != 1) continue;
+        const auto& [var, coef_term] = *ineq.coefficients.begin();
+        if (!coef_term.coefficients.empty()) continue;  // parametric coefficient
+        double c = coef_term.constant;
+        double k = ineq.constant.constant;
+        if (std::abs(c) < 1e-12) continue;
+
+        // c*v + k >= 0  =>  v >= -k/c (if c>0)  or  v <= -k/c (if c<0)
+        double bound = -k / c;
+        if (c > 0) {
+            auto it = lower_bounds.find(var);
+            lower_bounds[var] = (it == lower_bounds.end()) ? bound : std::max(it->second, bound);
+        } else {
+            auto it = upper_bounds.find(var);
+            upper_bounds[var] = (it == upper_bounds.end()) ? bound : std::min(it->second, bound);
+        }
+    }
+
+    for (const auto& [var, lb] : lower_bounds) {
+        auto it = upper_bounds.find(var);
+        if (it != upper_bounds.end() && lb > it->second + 1e-9)
+            return true;
+    }
+
     return false;
 }
 
