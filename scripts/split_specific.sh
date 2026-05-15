@@ -99,15 +99,19 @@ ENDFILE {
     # UNKNOWN_LOOP : deplace, ne participe pas aux autres classes
     if (unknown_loop) {
         print "UNKNOWN_LOOP\t" file
+    } else if (has_array) {
+        # Arrays + quoi que ce soit => ARRAY_OP uniquement
+        print "ARRAY_OP\t" file
+    } else if (has_fsig) {
+        # Signatures de fonctions + autres types (bool/int/real/undef) => FUNCT_SIGNATURE uniquement
+        print "FUNCT_SIGNATURE\t" file
     } else {
         classified = 0
-        if (has_bool)                        { print "BOOLEAN_OP\t"      file; classified = 1 }
-        if (has_array)                       { print "ARRAY_OP\t"        file; classified = 1 }
-        if (has_real)                        { print "REAL_VARS\t"       file; classified = 1 }
-        if (has_fsig)                        { print "FUNCT_SIGNATURE\t" file; classified = 1 }
-        if (has_undef)                       { print "UNDEF_TYPE\t"      file; classified = 1 }
-        if (has_si)                          { print "SI_ARRAYS\t"       file; classified = 1 }
-        if (any_var && all_int && !has_fsig) { print "ALL_INT_VARS\t"    file; classified = 1 }
+        if (has_bool)           { print "BOOLEAN_OP\t"   file; classified = 1 }
+        if (has_real)           { print "REAL_VARS\t"    file; classified = 1 }
+        if (has_undef)          { print "UNDEF_TYPE\t"   file; classified = 1 }
+        if (has_si)             { print "SI_ARRAYS\t"    file; classified = 1 }
+        if (any_var && all_int) { print "ALL_INT_VARS\t" file; classified = 1 }
 
         if (!classified) print "OTHERS\t" file
     }
