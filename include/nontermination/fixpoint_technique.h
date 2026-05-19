@@ -19,7 +19,7 @@
  *
  * Basé sur "Proving Non-termination" (Gupta et al., POPL 2008)
  */
-class FixpointTechnique : public AnalysisTechniqueInterface {
+class FixpointTechnique : public AnalysisInterface {
 public:
 
     /**

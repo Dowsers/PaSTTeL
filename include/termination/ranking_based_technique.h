@@ -33,7 +33,7 @@ struct TemplateConfig {
  *
  * Interruptible: peut être annulée via cancel() pour la parallélisation
  */
-class RankingBasedTechnique : public AnalysisTechniqueInterface {
+class RankingBasedTechnique : public AnalysisInterface {
 public:
     /**
      * @brief Constructeur
@@ -81,7 +81,7 @@ private:
     int num_components_;
 
     // État
-    const LassoProgram* lasso_;
+    LassoProgram lasso_;
     std::atomic<bool> cancelled_;
 
     // Résultat de la dernière synthèse réussie

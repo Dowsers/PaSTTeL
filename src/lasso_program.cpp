@@ -5,18 +5,20 @@
 #include "parser/json_trace_parser.h"
 
 // Constructeur par défaut
-LassoProgram::LassoProgram() {
+LassoProgram::LassoProgram()
+    : input_file("")
+    {
     // stem et loop sont automatiquement initialisés par leurs constructeurs
     // stem commence comme "true" (pas de contraintes)
     // loop commence comme "true" aussi
 }
 
-void LassoProgram::linearize() {
+LassoProgram LassoProgram::linearize() {
     if (is_linearized)
-        return;
-    JsonTraceParser::convertLassoStringToLassoProgram(stem.raw_formula, loop.raw_formula, *this);
-
+        return *this;
     is_linearized = true;
+
+    return JsonTraceParser::parseToLasso(input_file, true);
 }
 
 void LassoProgram::declareSolverContext(SMTSolverInterface* solver, bool linearized) const {

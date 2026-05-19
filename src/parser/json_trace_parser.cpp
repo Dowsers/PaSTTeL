@@ -462,6 +462,9 @@ void initializeOptionsForAnalysis(LassoProgram& lasso) {
 LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool linearize) {
     LassoProgram lasso;
 
+    lasso.is_linearized = linearize;
+    lasso.input_file = filename;
+
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n==================================================================" << std::endl;
         std::cout << "=== Parsing JSON trace file: " << filename  << (linearize ? "and LINEARIZING" : "") << "===" << std::endl; 

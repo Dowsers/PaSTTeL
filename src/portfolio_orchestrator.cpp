@@ -18,7 +18,7 @@ PortfolioOrchestrator::PortfolioOrchestrator(int max_threads)
     : max_threads_(max_threads) {}
 
 void PortfolioOrchestrator::addTechnique(
-    std::unique_ptr<AnalysisTechniqueInterface> technique)
+    std::unique_ptr<AnalysisInterface> technique)
 {
     if (technique->requiresLinearization())
         // insert at the end to prioritize techniques that can run on the raw lasso

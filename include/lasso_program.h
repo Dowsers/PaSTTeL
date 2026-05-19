@@ -50,6 +50,8 @@ public:
     bool integer_mode = false;
     bool is_linearized = false;
 
+    std::string input_file;
+
     LassoProgram();
 
     bool hasNoStem() const;
@@ -58,7 +60,7 @@ public:
 
     // Applies rewriting + linearization to raw_formula → populates polyhedra.
     // No-op if already linearized.
-    void linearize();
+    LassoProgram linearize();
 
     /**
      * Déclare tout le contexte du LassoProgram dans un solveur SMT :

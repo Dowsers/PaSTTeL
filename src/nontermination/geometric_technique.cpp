@@ -17,7 +17,6 @@ extern VerbosityLevel VERBOSITY;
 GeometricTechnique::GeometricTechnique(SMTSolverInterface* solver,
     const GeometricNonTerminationSettings& settings)
     : settings_(settings)
-    , lasso_(nullptr)
     , initialized_(false) {
     solver_ = solver;
 }
@@ -27,7 +26,7 @@ GeometricTechnique::GeometricTechnique(SMTSolverInterface* solver,
 // ============================================================================
 
 void GeometricTechnique::init(const LassoProgram& lasso) {
-    lasso_ = &lasso;
+    lasso_ = lasso;
     initialized_ = true;
     // Nettoyer les résultats précédents
     state_init.clear();
@@ -35,7 +34,8 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     eigenvectors.clear();
     lambdas.clear();
     nus.clear();
-    lasso.declareSolverContext(solver_, true);
+    lasso_ = lasso_.linearize();
+    lasso_.declareSolverContext(solver_, true);
 }
 
 // ============================================================================
@@ -53,7 +53,7 @@ AnalysisResult GeometricTechnique::analyze() {
     ProofCertificate proof;
     proof.technique_name = getName();
 
-    if (!initialized_ || !lasso_) {
+    if (!initialized_) {
         proof.description = "Technique not initialized";
         proof_ = proof;
         return proof_.status;
@@ -146,15 +146,15 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // Sort homogène : "Int" si le programme contient des entiers, "Real" sinon
-    const std::string sort = lasso_->integer_mode ? "Int" : "Real";
+    const std::string sort = lasso_.integer_mode ? "Int" : "Real";
 
     if (verbose) {
         std::cout << "    Variable sort: " << sort
-                  << " (integer_mode=" << (lasso_->integer_mode ? "true" : "false") << ")" << std::endl;
+                  << " (integer_mode=" << (lasso_.integer_mode ? "true" : "false") << ")" << std::endl;
     }
 
     // Variables d'état initial (x₀)
-    for (const auto& var : lasso_->program_vars) {
+    for (const auto& var : lasso_.program_vars) {
         std::string init_var = "x0_" + var;
         if (!solver_->variableExists(init_var)) {
             solver_->declareVariable(init_var, sort);
@@ -162,7 +162,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
     }
 
     // Variables d'état honda (x₁)
-    for (const auto& var : lasso_->program_vars) {
+    for (const auto& var : lasso_.program_vars) {
         std::string honda_var = "x1_" + var;
         if (!solver_->variableExists(honda_var)) {
             solver_->declareVariable(honda_var, sort);
@@ -171,7 +171,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
 
     // Eigenvectors (yᵢ) pour i = 0..n-1
     for (int i = 0; i < effective_num_gevs; ++i) {
-        for (const auto& var : lasso_->program_vars) {
+        for (const auto& var : lasso_.program_vars) {
             std::string gev_var = "v" + std::to_string(i) + "_" + var;
             if (!solver_->variableExists(gev_var)) {
                 solver_->declareVariable(gev_var, sort);
@@ -202,7 +202,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
     // }
 
     if (verbose) {
-        std::cout << "    Declared variables for " << lasso_->program_vars.size()
+        std::cout << "    Declared variables for " << lasso_.program_vars.size()
                 << " program variables" << std::endl;
         std::cout << "    Declared " << effective_num_gevs << " eigenvector(s) and eigenvalue(s)" << std::endl;
         if (settings_.nilpotent_components && effective_num_gevs >= 2) {
@@ -220,7 +220,7 @@ bool GeometricTechnique::encodeConstraints(int effective_num_gevs)
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     // 1. Contraintes du stem (si présent)
-    if (!lasso_->hasNoStem()) {
+    if (!lasso_.hasNoStem()) {
         if (verbose)
             std::cout << "    • Adding stem constraints: Stem(x0, x1)" << std::endl;
         addStemConstraints();
@@ -232,7 +232,7 @@ bool GeometricTechnique::encodeConstraints(int effective_num_gevs)
     // 2. Première itération + rays avec cohérence de branche DNF
     if (verbose)
         std::cout << "    • Adding combined loop constraints (branch-consistent, "
-                  << lasso_->loop.polyhedra.size() << " polyhedron/polyhedra)" << std::endl;
+                  << lasso_.loop.polyhedra.size() << " polyhedron/polyhedra)" << std::endl;
     addCombinedLoopConstraints(effective_num_gevs);
 
     // 3. Contraintes d'identité pour variables inchangées (in_ssa == out_ssa)
@@ -260,7 +260,7 @@ void GeometricTechnique::addStemConstraints()
     std::vector<std::vector<std::string>> poly_constraints;
     std::vector<std::string> identity_assertions; // Pour les variables inchangées : x0_var == x1_var
 
-    for (const auto& poly : lasso_->stem.polyhedra) {
+    for (const auto& poly : lasso_.stem.polyhedra) {
         std::vector<std::string> clause_constraints;
 
         for (const auto& ineq : poly) {
@@ -275,10 +275,10 @@ void GeometricTechnique::addStemConstraints()
                     bool is_output = false;
                     std::string prog_var;
                     // TODO: simplify this
-                    for (const auto& [vp, ssa_in] : lasso_->stem.var_to_ssa_in) {
+                    for (const auto& [vp, ssa_in] : lasso_.stem.var_to_ssa_in) {
                         if (ssa_in == var) { is_input = true; prog_var = vp; break; }
                     }
-                    for (const auto& [vp, ssa_out] : lasso_->stem.var_to_ssa_out) {
+                    for (const auto& [vp, ssa_out] : lasso_.stem.var_to_ssa_out) {
                         if (ssa_out == var) { is_output = true; prog_var = vp; break; }
                     }
 
@@ -375,11 +375,11 @@ void GeometricTechnique::addIdentityVariableConstraints(int effective_num_gevs)
 
     // Collect identity variables: in_ssa == out_ssa
     std::vector<std::string> identity_vars;
-    for (const auto& var : lasso_->program_vars) {
-        auto it_in = lasso_->loop.var_to_ssa_in.find(var);
-        auto it_out = lasso_->loop.var_to_ssa_out.find(var);
-        if (it_in != lasso_->loop.var_to_ssa_in.end() &&
-            it_out != lasso_->loop.var_to_ssa_out.end() &&
+    for (const auto& var : lasso_.program_vars) {
+        auto it_in = lasso_.loop.var_to_ssa_in.find(var);
+        auto it_out = lasso_.loop.var_to_ssa_out.find(var);
+        if (it_in != lasso_.loop.var_to_ssa_in.end() &&
+            it_out != lasso_.loop.var_to_ssa_out.end() &&
             it_in->second == it_out->second) {
             identity_vars.push_back(var);
         }
@@ -401,7 +401,7 @@ void GeometricTechnique::addIdentityVariableConstraints(int effective_num_gevs)
     }
 
     // Literal adapté au sort
-    const std::string zero = lasso_->integer_mode ? "0" : "0.0";
+    const std::string zero = lasso_.integer_mode ? "0" : "0.0";
 
     // 1. First iteration identity: sum(v_i_x) = 0 for each identity var
     for (const auto& var : identity_vars) {
@@ -505,10 +505,10 @@ std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
 
             bool is_input = false, is_output = false;
             std::string prog_var;
-            for (const auto& [vp, ssa_in] : lasso_->loop.var_to_ssa_in) {
+            for (const auto& [vp, ssa_in] : lasso_.loop.var_to_ssa_in) {
                 if (ssa_in == var) { is_input = true; prog_var = vp; break; }
             }
-            for (const auto& [vp, ssa_out] : lasso_->loop.var_to_ssa_out) {
+            for (const auto& [vp, ssa_out] : lasso_.loop.var_to_ssa_out) {
                 if (ssa_out == var) { is_output = true; prog_var = vp; break; }
             }
 
@@ -579,10 +579,10 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
 
                 bool is_input = false, is_output = false;
                 std::string prog_var;
-                for (const auto& [vp, ssa_in] : lasso_->loop.var_to_ssa_in) {
+                for (const auto& [vp, ssa_in] : lasso_.loop.var_to_ssa_in) {
                     if (ssa_in == var) { is_input = true; prog_var = vp; break; }
                 }
-                for (const auto& [vp, ssa_out] : lasso_->loop.var_to_ssa_out) {
+                for (const auto& [vp, ssa_out] : lasso_.loop.var_to_ssa_out) {
                     if (ssa_out == var) { is_output = true; prog_var = vp; break; }
                 }
 
@@ -666,7 +666,7 @@ void GeometricTechnique::addCombinedLoopConstraints(int effective_num_gevs)
 
     std::vector<std::vector<std::string>> per_poly_clauses;
 
-    for (const auto& poly : lasso_->loop.polyhedra) {
+    for (const auto& poly : lasso_.loop.polyhedra) {
         std::vector<std::string> clause;
 
         // Première itération : Loop(x1, x1 + y0 + ... + yn) avec ce polyèdre
@@ -740,8 +740,8 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(int effective_num_
     int constraint_count = 0;
 
     // Literals adaptés au sort (Int vs Real)
-    const std::string zero = lasso_->integer_mode ? "0" : "0.0";
-    const std::string one  = lasso_->integer_mode ? "1" : "1.0";
+    const std::string zero = lasso_.integer_mode ? "0" : "0.0";
+    const std::string one  = lasso_.integer_mode ? "1" : "1.0";
 
     // Contraintes sur les eigenvalues
     // En mode LINEAR, lambda est fixé à 1 : pas de variable, pas de contrainte
@@ -770,7 +770,7 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(int effective_num_
         std::ostringstream v_nonzero;
         v_nonzero << "(or";
         for (int i = 0; i < effective_num_gevs; ++i) {
-            for (const auto& var : lasso_->program_vars) {
+            for (const auto& var : lasso_.program_vars) {
                 v_nonzero << " (not (= v" << i << "_" << var << " " << zero << "))";
             }
         }
@@ -825,13 +825,13 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     nus.clear();
 
     // Extraire x₀
-    for (const auto& var : lasso_->program_vars) {
+    for (const auto& var : lasso_.program_vars) {
         std::string init_var = "x0_" + var;
         state_init[var] = solver_->getValue(init_var);
     }
 
     // Extraire x₁
-    for (const auto& var : lasso_->program_vars) {
+    for (const auto& var : lasso_.program_vars) {
         std::string honda_var = "x1_" + var;
         state_honda[var] = solver_->getValue(honda_var);
     }
@@ -839,7 +839,7 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     // Extraire eigenvectors
     for (int i = 0; i < effective_num_gevs; ++i) {
         std::map<std::string, double> gev;
-        for (const auto& var : lasso_->program_vars) {
+        for (const auto& var : lasso_.program_vars) {
             std::string gev_var = "v" + std::to_string(i) + "_" + var;
             gev[var] = solver_->getValue(gev_var);
         }
@@ -944,7 +944,7 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
 // ============================================================================
 
 bool GeometricTechnique::validateConfiguration() const {
-    return initialized_ && lasso_ != nullptr && settings_.num_gevs > 0;
+    return initialized_ && settings_.num_gevs > 0;
 }
 
 // ============================================================================

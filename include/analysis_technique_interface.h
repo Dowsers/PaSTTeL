@@ -42,9 +42,9 @@ struct ProofCertificate {
 /**
  * @brief Interface unifiée pour toutes les techniques d'analyse
  */
-class AnalysisTechniqueInterface {
+class AnalysisInterface {
 public:
-    virtual ~AnalysisTechniqueInterface() = default;
+    virtual ~AnalysisInterface() = default;
 
     /**
      * @brief Initialise la technique avec le programme lasso

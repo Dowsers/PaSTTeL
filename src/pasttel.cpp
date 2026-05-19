@@ -333,7 +333,7 @@ int main(int argc, char** argv) {
     std::string lasso_file = setParameters(argc, argv);
     LassoProgram lasso;
     try{
-        lasso = JsonTraceParser::parseToLasso(lasso_file, true);
+        lasso = JsonTraceParser::parseToLasso(lasso_file, false);
     } catch (const std::exception& e) {
         std::cerr << "Error: Failed to parse Lasso file: " << e.what() << std::endl;
         return 1;

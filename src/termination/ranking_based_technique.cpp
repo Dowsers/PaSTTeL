@@ -24,7 +24,6 @@ RankingBasedTechnique::RankingBasedTechnique(
         : template_name_(template_name)
         , configs_(configs)
         , num_components_(num_components)
-        , lasso_(nullptr)
         , cancelled_(false)
         , last_synthesizer_(nullptr)
 {
@@ -36,9 +35,10 @@ RankingBasedTechnique::RankingBasedTechnique(
 // ============================================================================
 
 void RankingBasedTechnique::init(const LassoProgram& lasso) {
-    lasso_ = &lasso;
+    lasso_ = lasso;
     cancelled_.store(false);
-    lasso.declareSolverContext(solver_, true);
+    lasso_ = lasso_.linearize();
+    lasso_.declareSolverContext(solver_, true);
 }
 
 // ============================================================================
@@ -52,10 +52,6 @@ bool RankingBasedTechnique::validateConfiguration() const {
     }
     if (configs_.empty()) {
         std::cerr << "Error: No configurations provided" << std::endl;
-        return false;
-    }
-    if (!lasso_) {
-        std::cerr << "Error: Technique not initialized (call init() first)" << std::endl;
         return false;
     }
     return true;
@@ -149,7 +145,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
 
     // Créer le synthesizer — les SI sont gérés par SIG à l'intérieur
     auto synthesizer = std::make_unique<GenericTerminationSynthesizer>(
-        *lasso_, ranking_template, std::move(solver_),
+        lasso_, ranking_template, std::move(solver_),
         config.num_si_strict, config.num_si_nonstrict);
 
     // Lancer la synthèse
@@ -176,7 +172,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         if (template_name == "AffineTemplate") {
             auto validation_result = validator.validate(
                 synthesizer->getTerminationArgument(),
-                *lasso_,
+                lasso_,
                 solver_
             );
 
@@ -192,7 +188,7 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
         } else if (template_name == "NestedTemplate") {
             auto validation_result = validator.validateNested(
                 synthesizer->getTerminationArgument(),
-                *lasso_,
+                lasso_,
                 solver_
             );
 

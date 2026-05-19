@@ -46,7 +46,7 @@ struct GeometricNonTerminationSettings {
  * - "Proving Non-termination" (Gupta et al., POPL 2008)
  * - "Geometric Nontermination Arguments" (Leike & Heizmann, TACAS 2018)
  */
-class GeometricTechnique : public AnalysisTechniqueInterface {
+class GeometricTechnique : public AnalysisInterface {
 public:
     /**
      * @brief Constructeur avec paramètres par défaut
@@ -90,7 +90,7 @@ public:
 
 private:
     GeometricNonTerminationSettings settings_;
-    const LassoProgram* lasso_;
+    LassoProgram lasso_;
     bool initialized_;
     ProofCertificate proof_;
 
