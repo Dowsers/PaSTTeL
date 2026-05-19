@@ -574,6 +574,7 @@ void SMTSolverZ3::printModel() const
 
 void SMTSolverZ3::reset()
 {
+    m_interrupted = false;
     m_solver.reset();
     m_variables.clear();
     m_functions.clear(); // Clear function declarations too

@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <cctype>
 #include <mutex>
+#include <atomic>
 
 #include "smtsolvers/SMTSolverCVC5.h"
 
@@ -227,6 +228,7 @@ void SMTSolverCVC5::addAssertion(const std::string& assertion) {
 // ============================================================================
 
 bool SMTSolverCVC5::checkSat() {
+    if (m_interrupted.load(std::memory_order_relaxed)) return false;
     if (m_verbose) {
         std::cout << "[CVC5] Vérification de la satisfiabilité..." << std::endl;
     }
@@ -364,7 +366,7 @@ cvc5::Term SMTSolverCVC5::getVariable(const std::string& name) {
 }
 
 void SMTSolverCVC5::interrupt() {
-    // m_solver.interrupt();
+    m_interrupted.store(true, std::memory_order_relaxed);
     if (m_verbose) {
         std::cout << "[CVC5] CheckSat interrompu" << std::endl;
     }
@@ -380,6 +382,7 @@ void SMTSolverCVC5::printStatistics() const {
 }
 
 void SMTSolverCVC5::reset() {
+    m_interrupted = false;
     m_solver.resetAssertions();
     m_variables.clear();
     m_functions.clear();  // Clear function declarations too

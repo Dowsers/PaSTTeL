@@ -68,8 +68,11 @@ private:
             task();
             {
                 std::lock_guard<std::mutex> lock(mutex_);
-                if (--pending_ == 0)
+                if (--pending_ == 0) {
+                    stop_ = true;
                     done_cv_.notify_all();
+                    task_cv_.notify_all();
+                }
             }
         }
     }

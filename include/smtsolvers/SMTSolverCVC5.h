@@ -43,6 +43,7 @@ private:
 
     // Options
     bool m_verbose;
+    std::atomic<bool> m_interrupted{false};
 
 public:
     /**

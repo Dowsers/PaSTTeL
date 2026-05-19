@@ -82,7 +82,9 @@ public:
     /**
      * @brief Demande l'annulation de la technique (pour parallélisation)
      */
-    virtual void cancel() {}
+    virtual void cancel() {
+        if (solver_) solver_->interrupt();
+    }
 
     /**
      * @brief Indique si la technique peut être annulée

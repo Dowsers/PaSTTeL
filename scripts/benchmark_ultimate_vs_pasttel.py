@@ -1171,7 +1171,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
   <span style="color:orange;">&#9679;</span> Timeout {y_ref} &nbsp;
-  <span style="color:red;">&#9679;</span> UNKNOWN ({x_ref}=TERM, {y_ref}=UNKNOWN) &nbsp;
+  <span style="color:red;">&#9679;</span> UNKNOWN &nbsp;
   <span style="color:purple;">&#9679;</span> Not supported by {y_ref}
 </p>
 <div id="plot"></div>

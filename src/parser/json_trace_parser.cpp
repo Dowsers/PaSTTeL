@@ -153,7 +153,7 @@ void connectStemToLoop(LassoProgram& lasso) {
     // Detect and fix SSA collisions between stem_out and loop_out.
     // Fix: rename the colliding loop_out SSA to a fresh name
     {
-        static int collision_counter = 0;
+        int collision_counter = 0;
         // Collect the set of stem_out SSA names for O(1) lookup.
         std::set<std::string> stem_out_ssas;
         for (const auto& [_, ssa] : lasso.stem.var_to_ssa_out)
@@ -792,7 +792,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     //     (e.g. it's only written but not read), generate a fresh SSA variable.
     //     Without this, getSSAVar() would crash on missing entries.
     {
-        static int fresh_counter = 0;
+        int fresh_counter = 0;
         auto ensureMapping = [&](std::map<std::string, std::string>& mapping,
                                 const std::string& prog_var, const std::string& prefix) {
             if (mapping.find(prog_var) == mapping.end()) {
@@ -881,7 +881,7 @@ void JsonTraceParser::convertLassoStringToLassoProgram(
     }
 
     {
-        static int fresh_counter = 0;
+        int fresh_counter = 0;
         auto ensureMapping = [&](std::map<std::string, std::string>& mapping,
                                 const std::string& prog_var, const std::string& prefix) {
             if (mapping.find(prog_var) == mapping.end()) {

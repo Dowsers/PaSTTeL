@@ -199,10 +199,8 @@ void FixpointTechnique::addLoopConstraints()
     // Use raw formula directly when available (avoids linearization blowup).
     if (!lasso_->loop.raw_formula.empty()) {
         solver_->addAssertion(lasso_->loop.raw_formula);
-        if (VERBOSITY == VerbosityLevel::VERBOSE) {
+        if (VERBOSITY == VerbosityLevel::VERBOSE)
             std::cout << "    Loop: raw formula asserted" << std::endl;
-            std::cout << "    Loop formula: " << lasso_->loop.raw_formula << std::endl;
-        }
         return;
     }
     
