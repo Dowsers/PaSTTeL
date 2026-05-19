@@ -44,6 +44,8 @@ public:
     static void removeArrayVarsFromProgramVars(
                     std::vector<std::string>& program_vars,
                     const std::map<std::string, std::string>& var_sorts);
+
+    static void removeDeadVariables(LassoProgram& lasso);
 private:
     /**
      * Parse a single transition from JSON object.

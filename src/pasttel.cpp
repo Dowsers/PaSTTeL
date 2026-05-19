@@ -343,10 +343,29 @@ int main(int argc, char** argv) {
     if (verbose) {
         for(auto& v : lasso.program_vars)
             std::cout << "Program vars: " << v << " ";
+        std::cout<< "\n=== RAW STEM ===\n";
+        std::cout<< lasso.stem.raw_formula << std::endl;
+        std::cout<< "\n=== RAW LOOP ===\n";
+        std::cout<< lasso.loop.raw_formula << std::endl;
+
+
         std::cout<< "\n=== STEM SMT ===\n";
         std::cout << lasso.stem.toSMTLib2() << std::endl;
+        std::cout<<"\t InVars: ";
+        for(auto& [var, ssa] : lasso.stem.var_to_ssa_in)
+            std::cout << var << " -> " << ssa << "\n\t\t";
+        std::cout<<"\n\t OutVars: ";
+        for(auto& [var, ssa] : lasso.stem.var_to_ssa_out)
+            std::cout << var << " -> " << ssa << "\n\t\t";
         std::cout<< "\n=== LOOP SMT ===\n";
         std::cout << lasso.loop.toSMTLib2() << std::endl;
+        std::cout<<"\t InVars: ";
+        for(auto& [var, ssa] : lasso.loop.var_to_ssa_in)
+            std::cout << var << " -> " << ssa << "\n\t\t";
+        std::cout<<"\n\t OutVars: ";
+        for(auto& [var, ssa] : lasso.loop.var_to_ssa_out)
+            std::cout << var << " -> " << ssa << "\n\t\t";
+        std::cout << "\n";
     }
 
     auto total_start = std::chrono::high_resolution_clock::now();

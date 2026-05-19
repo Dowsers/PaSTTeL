@@ -36,6 +36,74 @@ void JsonTraceParser::removeArrayVarsFromProgramVars(
     }
 }
 
+// Strip pipe quotes and return the bare SSA identifier.
+static std::string stripPipes(const std::string& s) {
+    if (s.size() >= 2 && s.front() == '|' && s.back() == '|')
+        return s.substr(1, s.size() - 2);
+    return s;
+}
+
+// Collect every SSA identifier that appears in a formula string.
+static std::set<std::string> collectLiveSSAs(const std::string& formula) {
+    std::set<std::string> live;
+    std::istringstream ss(formula);
+    std::string tok;
+    while (ss >> tok) {
+        tok.erase(std::remove_if(tok.begin(), tok.end(),
+                  [](char c){ return c == '(' || c == ')' || c == '|'; }), tok.end());
+        if (!tok.empty()) live.insert(tok);
+    }
+    return live;
+}
+
+void JsonTraceParser::removeDeadVariables(LassoProgram& lasso) {
+    // SSA names appearing in each formula, kept separate so stem mappings are
+    // only checked against the stem formula and loop mappings against the loop formula.
+    std::set<std::string> live_stem = collectLiveSSAs(lasso.stem.raw_formula);
+    std::set<std::string> live_loop = collectLiveSSAs(lasso.loop.raw_formula);
+
+    // Each mapping is pruned against the live set of its own transition.
+    auto pruneMapping = [](std::map<std::string, std::string>& m,
+                           const std::string& var,
+                           const std::set<std::string>& live) {
+        auto it = m.find(var);
+        if (it != m.end() && !live.count(stripPipes(it->second)))
+            m.erase(it);
+    };
+
+    auto pruneMappings = [&](const std::string& var) {
+        pruneMapping(lasso.stem.var_to_ssa_in,  var, live_stem);
+        pruneMapping(lasso.stem.var_to_ssa_out, var, live_stem);
+        pruneMapping(lasso.loop.var_to_ssa_in,  var, live_loop);
+        pruneMapping(lasso.loop.var_to_ssa_out, var, live_loop);
+    };
+
+    // A variable is active if it still has at least one live SSA after pruning.
+    std::set<std::string> live_all = live_stem;
+    live_all.insert(live_loop.begin(), live_loop.end());
+    auto hasLiveSSA = [&](const std::string& var) -> bool {
+        for (auto* m : {&lasso.stem.var_to_ssa_in,  &lasso.stem.var_to_ssa_out,
+                        &lasso.loop.var_to_ssa_in,  &lasso.loop.var_to_ssa_out}) {
+            auto it = m->find(var);
+            if (it != m->end() && live_all.count(stripPipes(it->second))) return true;
+        }
+        return false;
+    };
+
+    auto it = lasso.program_vars.begin();
+    while (it != lasso.program_vars.end()) {
+        pruneMappings(*it);
+        if (!hasLiveSSA(*it)) {
+            if (VERBOSITY == VerbosityLevel::VERBOSE)
+                std::cout << "  [removeDeadVariables] Removing dead variable: " << *it << std::endl;
+            lasso.var_sorts.erase(*it);
+            it = lasso.program_vars.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 bool checkDivModOp(const std::string formula) {
     if (formula.find("(div ") != std::string::npos ||
         formula.find("(/ ") != std::string::npos   ||
@@ -713,7 +781,8 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // 7. Connect STEM->LOOP
     connectStemToLoop(lasso);
 
-    // 7b0. Remove unused variables from program_vars list
+    // 7b0. Remove variables that appear in neither stem nor loop.
+    removeDeadVariables(lasso);
 
     // 7b. Ensure all program_vars have SSA mappings in both stem and loop
     //     If a program variable is missing from in_vars or out_vars of the loop

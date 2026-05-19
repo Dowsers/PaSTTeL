@@ -54,6 +54,8 @@ CASES = [
     ("examples/only_termination_Ackermann_true-termination1_affine.json","TERMINATING",    "both",        2),
     ("examples/noInlineTest_nonterminate_GNTA.json",			"NON-TERMINATING", "both", 	  2),
     ("examples/terminate_in_out_ssa_inconsistency_CountTillBound.json", "TERMINATING",     "both",        2),    
+    ("examples/unused_variables_tqli.t2.json", 				"TERMINATING",     "both",        2),    
+    ("examples/unused_variables_ChenFlurMukhopadhyay-SAS2012-Ex2.22.json","TERMINATING",   "both",        2),    
 ]
 
 

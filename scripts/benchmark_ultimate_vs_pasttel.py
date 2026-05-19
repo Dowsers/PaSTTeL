@@ -828,7 +828,7 @@ def convert_to_json(parsed):
 # RUN PASTTEL
 # =============================================================================
 
-def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=60, strat="terminate", solver="z3"):
+def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate", solver="z3"):
     """Run the pasttel binary on a JSON file and parse results.
 
     Returns dict with:
@@ -963,7 +963,7 @@ def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
     return base in ("affine", "nested")
 
 
-def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
+def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-fair"):
     """Read the benchmark CSV and generate an interactive HTML scatter plot.
 
     Points are colored:
@@ -981,6 +981,11 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
     Rows with INFEASIBLE / UNCHECKED / Ultimate-UNKNOWN are skipped.
     A dashed y=x line is drawn for reference.
     """
+    use_baseline = x_col.lower() == "ulr-baseline"
+    x_axis_label = "ULR-Baseline (ms)" if use_baseline else "ULR-Fair (ms)"
+    y_axis_label = "P-ULR-Par6 (ms)"   if use_baseline else "P-ULR-Seq (ms)"
+    plot_title   = "ULR-Baseline vs P-ULR-Par6" if use_baseline else "ULR-Fair vs P-ULR-Seq"
+
     par2_ms = timeout_s * 2 * 1000.0  # PAR-2 penalty in ms
     rows = []
     with open(csv_path, "r") as f:
@@ -1016,26 +1021,30 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
         u_algo = algo_parts[0].strip().lower()
         u_algo_raw = algo_parts[0].strip()  # raw form for support check
 
-        # Use the most relevant Ultimate time for the X axis
-        if result == "TERMINATING":
-            u_time_str = row.get("Termination (ms)", "-").strip()
-            col_name = "Term"
-        elif result == "NONTERMINATING":
-            if "fixpoint" in u_algo:
+        if use_baseline:
+            # X axis: ULR-Baseline (ms) — precomputed cumulative sequential time
+            u_time_str = row.get("ULR-Baseline (ms)", "-").strip()
+            col_name = "Baseline"
+        else:
+            # X axis: ULR-Fair — most relevant Ultimate timing column
+            if result == "TERMINATING":
+                u_time_str = row.get("Termination (ms)", "-").strip()
+                col_name = "Term"
+            elif result == "NONTERMINATING":
+                if "fixpoint" in u_algo:
+                    u_time_str = row.get("Fixpoint (ms)", "-").strip()
+                    col_name = "Fixpoint"
+                else:
+                    u_time_str = row.get("Nontermination (ms)", "-").strip()
+                    col_name = "Nonterm"
+            else:
                 u_time_str = row.get("Fixpoint (ms)", "-").strip()
                 col_name = "Fixpoint"
-            else:
-                # GNTA and others → Nontermination (ms)
-                u_time_str = row.get("Nontermination (ms)", "-").strip()
-                col_name = "Nonterm"
-        else:
-            u_time_str = row.get("Fixpoint (ms)", "-").strip()
-            col_name = "Fixpoint"
 
         # Skip infeasible / unchecked / Ultimate-unknown
         if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN"):
             continue
-        # Skip rows where Ultimate has no time
+        # Skip rows where the reference tool has no time
         if u_time_str.strip().strip('"') == "-" or u_time_str.strip().strip('"') == "":
             continue
 
@@ -1130,26 +1139,40 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=60, log_scale=False):
 
     max_val = max(max(all_x), max(all_y)) if all_y else max(all_x)
 
+    # Embed Plotly JS for offline use (no CDN dependency)
+    try:
+        import plotly
+        import os as _os
+        _plotly_js = _os.path.join(_os.path.dirname(plotly.__file__), "package_data", "plotly.min.js")
+        with open(_plotly_js) as _f:
+            _plotly_bundle = _f.read()
+        _plotly_script = f"<script>{_plotly_bundle}</script>"
+    except Exception:
+        _plotly_script = '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
+
     # Build the HTML with Plotly
+    x_ref = x_axis_label.replace(" (ms)", "")   # e.g. "ULR-Fair" or "ULR-Baseline"
+    y_ref = y_axis_label.replace(" (ms)", "")   # e.g. "P-ULR-Seq" or "P-ULR-Par6"
+
     html = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>Ultimate vs PaSTTeL - Scatter Plot</title>
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<title>{plot_title} - Scatter Plot</title>
+{_plotly_script}
 <style>
   body {{ font-family: Arial, sans-serif; margin: 20px; }}
   #plot {{ width: 100%; height: 85vh; }}
 </style>
 </head>
 <body>
-<h2>Ultimate vs PaSTTeL &mdash; Computation Time Comparison</h2>
+<h2>{plot_title} &mdash; Computation Time Comparison</h2>
 <p>
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
-  <span style="color:orange;">&#9679;</span> Timeout PaSTTeL &nbsp;
-  <span style="color:red;">&#9679;</span> Contradiction (U=TERM, P&ne;TERM) &nbsp;
-  <span style="color:purple;">&#9679;</span> Not supported by PaSTTeL
+  <span style="color:orange;">&#9679;</span> Timeout {y_ref} &nbsp;
+  <span style="color:red;">&#9679;</span> Contradiction ({x_ref}=TERM, {y_ref}&ne;TERM) &nbsp;
+  <span style="color:purple;">&#9679;</span> Not supported by {y_ref}
 </p>
 <div id="plot"></div>
 <script>
@@ -1179,7 +1202,7 @@ var orange = {{
   text: {json.dumps(orange_labels)},
   mode: 'markers',
   type: 'scatter',
-  name: 'Timeout PaSTTeL ({len(orange_x)})',
+  name: 'Timeout {y_ref} ({len(orange_x)})',
   marker: {{ color: 'orange', size: 9, opacity: 0.85, symbol: 'circle-open' }},
   hoverinfo: 'text'
 }};
@@ -1189,7 +1212,7 @@ var red = {{
   text: {json.dumps(red_labels)},
   mode: 'markers',
   type: 'scatter',
-  name: 'Contradiction U=TERM ({len(red_x)})',
+  name: 'Contradiction {x_ref}=TERM ({len(red_x)})',
   marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
   hoverinfo: 'text'
 }};
@@ -1199,7 +1222,7 @@ var purple = {{
   text: {json.dumps(purple_labels)},
   mode: 'markers',
   type: 'scatter',
-  name: 'Not supported ({len(purple_x)})',
+  name: 'Not supported by {y_ref} ({len(purple_x)})',
   marker: {{ color: 'purple', size: 9, opacity: 0.85, symbol: 'diamond-open' }},
   hoverinfo: 'text'
 }};
@@ -1216,11 +1239,11 @@ var diagonal = {{
 }};
 var layout = {{
   xaxis: {{
-    title: 'Ultimate LassoRanker (ms)',
+    title: '{x_axis_label}',
     {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
   }},
   yaxis: {{
-    title: 'PaSTTeL (ms)',
+    title: '{y_axis_label}',
     {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
   }},
   hovermode: 'closest',
@@ -1262,8 +1285,8 @@ def main():
         help="Number of CPUs for pasttel (default: 1)"
     )
     parser.add_argument(
-        "--timeout", type=int, default=60,
-        help="Timeout in seconds for each pasttel run (default: 60)"
+        "--timeout", type=int, default=600,
+        help="Timeout in seconds for each pasttel run (default: 600)"
     )
     parser.add_argument(
         "--plot", nargs="?", const=True, default=False,
@@ -1289,6 +1312,10 @@ def main():
              "'lasso' uses Lasso termination (default: lasso)"
     )
     parser.add_argument(
+        "--x-col", choices=["ulr-fair", "ulr-baseline"], default="ulr-fair",
+        help="X axis for scatter plot: 'ulr-fair' (default) or 'ulr-baseline' (ULR-Baseline (ms) column)"
+    )
+    parser.add_argument(
         "--parse", choices=["normal", "preprocess"], default="normal",
         help="Which trace section to parse from .txt files: "
              "'normal' parses LINEARIZED TRACE (not fully linearized), "
@@ -1304,7 +1331,7 @@ def main():
             print(f"Error: CSV file not found: {csv_file}")
             sys.exit(1)
         html_out = os.path.splitext(csv_file)[0] + "_scatter.html"
-        generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log)
+        generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log, x_col=args.x_col)
         return
 
     # Benchmark mode requires --input-dir and --pasttel-bin
@@ -1359,6 +1386,7 @@ def main():
                 "Fixpoint (ms)":        "-",
                 "Termination (ms)":     "-",
                 "Nontermination (ms)":  "-",
+                "ULR-Baseline (ms)":    "-",
                 "pasttel (ms)": "-",
                 "Stem Size": 0,
                 "Loop Size": 0,
@@ -1380,6 +1408,7 @@ def main():
                 "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
                 "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
+                "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1395,6 +1424,7 @@ def main():
                 "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
                 "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
+                "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1410,6 +1440,7 @@ def main():
                 "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
                 "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
+                "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
@@ -1469,12 +1500,31 @@ def main():
         else:
             p_status = "UNKNOWN"
 
+        # Compute ULR-Baseline: cumulative sequential LassoRanker time.
+        # Order: Fixpoint → Nontermination → Termination (same as LassoRanker's pipeline).
+        # NONTERMINATING via Fixpoint:  Fixpoint only
+        # NONTERMINATING via GNTA:      Fixpoint + Nontermination
+        # TERMINATING (any template):   Fixpoint + Nontermination + Termination
+        u_algo_lower = ultimate["algo"].strip().lower()
+        fix_ms = ultimate['fixpoint_time_ms']
+        term_ms = ultimate['termination_time_ms']
+        nonterm_ms = ultimate['nontermination_time_ms']
+        if result_code == "NONTERMINATING" and "fixpoint" in u_algo_lower:
+            baseline_ms = fix_ms
+        elif result_code == "NONTERMINATING":
+            baseline_ms = fix_ms + nonterm_ms
+        elif result_code == "TERMINATING":
+            baseline_ms = fix_ms + nonterm_ms + term_ms
+        else:
+            baseline_ms = None
+
         row = {
             "Trace Name": trace_file,
             "Result Code": result_code,
             "Fixpoint (ms)":       fmt_ms(ultimate['fixpoint_time_ms']),
             "Termination (ms)":    fmt_ms(ultimate['termination_time_ms']),
             "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
+            "ULR-Baseline (ms)":   fmt_ms(baseline_ms) if baseline_ms is not None else "-",
             "pasttel (ms)": t_time,
             "PaSTTeL Status": p_status,
             "Stem Size": ultimate["stem_size"],
@@ -1492,6 +1542,7 @@ def main():
             "Fixpoint (ms)",
             "Termination (ms)",
             "Nontermination (ms)",
+            "ULR-Baseline (ms)",
             "pasttel (ms)",
             "PaSTTeL Status",
             "Stem Size",
@@ -1529,7 +1580,7 @@ def main():
         # Generate scatter plot if requested
         if args.plot:
             html_out = os.path.splitext(args.output)[0] + "_scatter.html"
-            generate_scatter_plot(args.output, html_out, timeout_s=args.timeout, log_scale=args.log)
+            generate_scatter_plot(args.output, html_out, timeout_s=args.timeout, log_scale=args.log, x_col=args.x_col)
 
 
 if __name__ == "__main__":
