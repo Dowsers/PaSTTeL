@@ -46,6 +46,11 @@ void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
 
     technique.init(lasso);
 
+    if (stop_early_.load(std::memory_order_relaxed)) {
+        log(verbose, "[" + name + "] Skipped (conclusive result already found)");
+        return;
+    }
+
     if (!technique.validateConfiguration()) {
         log(verbose, "[" + name + "] Invalid configuration, skipping");
         return;

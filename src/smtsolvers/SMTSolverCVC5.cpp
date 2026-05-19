@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <iomanip>
+#include <cmath>
 #include <stdexcept>
 #include <cctype>
 #include <mutex>
@@ -597,7 +599,22 @@ cvc5::Term SMTSolverCVC5::parseSexpTokensWithBindings(
 
     // Nombre
     if (std::isdigit(token[0]) || (token[0] == '-' && token.length() > 1)) {
-        if (token.find('.') != std::string::npos) {
+        bool has_dot = token.find('.') != std::string::npos;
+        bool has_exp = token.find('e') != std::string::npos || token.find('E') != std::string::npos;
+        if (has_exp) {
+            // CVC5 mkReal/mkInteger reject scientific notation — convert to fixed-point
+            double v = std::stod(token);
+            double intpart;
+            std::ostringstream oss;
+            if (std::modf(v, &intpart) == 0.0) {
+                oss << std::fixed << std::setprecision(0) << v;
+                return m_tm.mkInteger(oss.str());
+            } else {
+                oss << std::fixed << std::setprecision(10) << v;
+                return m_tm.mkReal(oss.str());
+            }
+        }
+        if (has_dot) {
             return m_tm.mkReal(token);
         } else {
             return m_tm.mkInteger(token);
