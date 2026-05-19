@@ -45,7 +45,8 @@ public:
         SMTSolverInterface* solver,
         const std::string& template_name,
         const std::vector<TemplateConfig>& configs,
-        int num_components_nested = 0);
+        int num_components_nested = 0,
+        int max_components_nested = 5);
 
     // ========================================================================
     // IMPLÉMENTATION DE L'INTERFACE
@@ -79,6 +80,7 @@ private:
     std::string template_name_;
     std::vector<TemplateConfig> configs_;
     int num_components_;
+    int max_components_;
 
     // État
     LassoProgram lasso_;
@@ -95,7 +97,8 @@ private:
     RankingTemplate* createTemplate(
         const std::string& template_name,
         int num_si_strict,
-        int num_si_nonstrict) const;
+        int num_si_nonstrict,
+        int num_components) const;
 
     /**
      * @brief Essaie une combinaison template + configuration
@@ -104,6 +107,7 @@ private:
     bool tryTemplateConfiguration(
         const std::string& template_name,
         const TemplateConfig& config,
+        int num_components,
         int verbosity);
 };
 

@@ -20,10 +20,12 @@ RankingBasedTechnique::RankingBasedTechnique(
     SMTSolverInterface* solver,
     const std::string& template_name,
     const std::vector<TemplateConfig>& configs,
-    int num_components)
+    int num_components,
+    int max_components)
         : template_name_(template_name)
         , configs_(configs)
         , num_components_(num_components)
+        , max_components_(max_components)
         , cancelled_(false)
         , last_synthesizer_(nullptr)
 {
@@ -64,16 +66,17 @@ bool RankingBasedTechnique::validateConfiguration() const {
 RankingTemplate* RankingBasedTechnique::createTemplate(
     const std::string& template_name,
     int /*num_si_strict*/,
-    int /*num_si_nonstrict*/) const {
+    int /*num_si_nonstrict*/,
+    int num_components) const {
 
     // Les SI sont maintenant gérés par SupportingInvariantGenerator dans le synthesizer.
     // Les templates ne reçoivent plus les counts SI.
     if (template_name == "AffineTemplate") {
         return new AffineTemplate();
     } else if (template_name == "NestedTemplate") {
-        return new NestedTemplate(num_components_);
+        return new NestedTemplate(num_components);
     } else if (template_name == "LexicographicTemplate") {
-        return new LexicographicTemplate(num_components_);
+        return new LexicographicTemplate(num_components);
     } else {
         throw std::invalid_argument("Unknown template name: " + template_name);
     }
@@ -95,28 +98,34 @@ AnalysisResult RankingBasedTechnique::analyze() {
 
     bool verbosity = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    for (const auto& config : configs_) {
-        if (cancelled_.load()) {
-            if (verbosity)
-                std::cout << "\n[RankingBased] Technique cancelled" << std::endl;
-            break;
-        }
-        solver_->reset();
-        bool found = tryTemplateConfiguration(template_name_, config, verbosity);
+    bool is_nested = (template_name_ == "NestedTemplate" || template_name_ == "LexicographicTemplate");
+    int nc_min = (num_components_ > 0) ? num_components_ : 1;
+    int nc_max = is_nested ? max_components_ : nc_min;
 
-        if (found) {
-            proof.status = AnalysisResult::TERMINATING;
-            proof.description = "Termination proof found with " + template_name_ + config.description;
-
-            assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
-            const auto& rankfunctions_comp = last_synthesizer_->getTerminationArgument().ranking_functions;
-            proof.proof_details = "";
-            for(const auto& rf : rankfunctions_comp){
-                proof.proof_details += rf.toString() +"\n";
+    for (int nc = nc_min; nc <= nc_max && !cancelled_.load(); nc++) {
+        for (const auto& config : configs_) {
+            if (cancelled_.load()) {
+                if (verbosity)
+                    std::cout << "\n[RankingBased] Technique cancelled" << std::endl;
+                break;
             }
-            proof.rf_witness = rankfunctions_comp[0].coefficients;
-            proof_ = proof;
-            return proof_.status;
+            solver_->reset();
+            bool found = tryTemplateConfiguration(template_name_, config, nc, verbosity);
+
+            if (found) {
+                proof.status = AnalysisResult::TERMINATING;
+                proof.description = "Termination proof found with " + template_name_ + config.description;
+
+                assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
+                const auto& rankfunctions_comp = last_synthesizer_->getTerminationArgument().ranking_functions;
+                proof.proof_details = "";
+                for(const auto& rf : rankfunctions_comp){
+                    proof.proof_details += rf.toString() +"\n";
+                }
+                proof.rf_witness = rankfunctions_comp[0].coefficients;
+                proof_ = proof;
+                return proof_.status;
+            }
         }
     }
     proof.description = "No termination proof found";
@@ -131,17 +140,21 @@ AnalysisResult RankingBasedTechnique::analyze() {
 bool RankingBasedTechnique::tryTemplateConfiguration(
     const std::string& template_name,
     const TemplateConfig& config,
+    int num_components,
     int verbosity) {
 
     if (verbosity) {
         std::cout << "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << std::endl;
-        std::cout << "Trying: " << template_name << config.description << std::endl;
+        std::cout << "Trying: " << template_name << config.description;
+        if (num_components > 0)
+            std::cout << " (components=" << num_components << ")";
+        std::cout << std::endl;
         std::cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << std::endl;
     }
 
     // Créer le template
     RankingTemplate* ranking_template = createTemplate(
-        template_name, config.num_si_strict, config.num_si_nonstrict);
+        template_name, config.num_si_strict, config.num_si_nonstrict, num_components);
 
     // Créer le synthesizer — les SI sont gérés par SIG à l'intérieur
     auto synthesizer = std::make_unique<GenericTerminationSynthesizer>(
@@ -226,8 +239,12 @@ void RankingBasedTechnique::cancel() {
 // ============================================================================
 
 std::string RankingBasedTechnique::getName() const {
-    if(num_components_ > 0)
+    bool is_nested = (template_name_ == "NestedTemplate" || template_name_ == "LexicographicTemplate");
+    if (is_nested && num_components_ > 0) {
+        if (max_components_ > num_components_)
+            return "RankingBased(" + std::to_string(num_components_) + "-" + std::to_string(max_components_) + "-" + template_name_ + ")";
         return "RankingBased(" + std::to_string(num_components_) + "-" + template_name_ + ")";
+    }
     return "RankingBased(" + template_name_ + ")";
 }
 
