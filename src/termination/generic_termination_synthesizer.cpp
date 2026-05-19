@@ -680,13 +680,13 @@ void GenericTerminationSynthesizer::extractResults()
                 si_rationals.push_back(solver_->getRationalValue2(si_params[start_idx + num_vars]));
             }
 
-            std::vector<long long> si_integers = rationalListToIntegers(si_rationals);
+            std::vector<Rational> si_normalized = rationalListNormalize(si_rationals);
 
-            for (size_t i = 0; i < num_vars && i < si_integers.size(); ++i) {
-                si.coefficients[lasso_.program_vars[i]] = si_integers[i];
+            for (size_t i = 0; i < num_vars && i < si_normalized.size(); ++i) {
+                si.coefficients[lasso_.program_vars[i]] = si_normalized[i];
             }
-            if (num_vars < si_integers.size()) {
-                si.constant = si_integers[num_vars];
+            if (num_vars < si_normalized.size()) {
+                si.constant = si_normalized[num_vars];
             }
 
             if (verbose) {

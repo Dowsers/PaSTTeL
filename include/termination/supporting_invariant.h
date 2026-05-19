@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "smtsolvers/ModelExtractionUtils.h"
+
 /**
  * @brief Représente un supporting invariant synthétisé
  *
@@ -13,11 +15,11 @@
  * où ⊳ est > (strict) ou ≥ (non-strict).
  */
 struct SupportingInvariant {
-    std::map<std::string, int64_t> coefficients;  // var → coefficient
-    int64_t constant;
+    std::map<std::string, Rational> coefficients;  // var → coefficient
+    Rational constant;
     bool is_strict;  // true → >, false → ≥
 
-    SupportingInvariant() : constant(0), is_strict(false) {}
+    SupportingInvariant() : constant(Rational::ZERO()), is_strict(false) {}
 
     /**
      * @brief Représentation lisible : "2·x - y + 3"

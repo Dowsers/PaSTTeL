@@ -358,62 +358,54 @@ bool RankingAndInvariantValidator::checkSIIsFalse(
     
     bool has_variables = false;
     for (const auto& [var, coef] : si.coefficients) {
-        if (coef != 0) {
+        if (!coef.isZero()) {
             has_variables = true;
             break;
         }
     }
 
     if (has_variables) {
-        return false;  // Pas trivialement faux si a des variables
+        return false;
     }
 
-    // Seulement une constante
+    bool c_neg = (si.constant.numerator() < BigInt(0));
+    bool c_zero = si.constant.isZero();
     if (si.is_strict) {
-        // SI: c > 0 est FAUX si c <= 0
-        return si.constant <= 0;
+        return c_neg || c_zero;   // c <= 0
     } else {
-        // SI: c >= 0 est FAUX si c < 0
-        return si.constant < 0;
+        return c_neg;             // c < 0
     }
 }
 
 bool RankingAndInvariantValidator::checkSIIsTrue(
     const SupportingInvariant& si) const
 {
-    // SI est trivialement VRAI si :
-    // - Pas de variables (seulement une constante c)
-    // - Non-strict (>=) : c >= 0
-    // - Strict (>)      : c > 0
-    
     bool has_variables = false;
     for (const auto& [var, coef] : si.coefficients) {
-        if (coef != 0) {
+        if (!coef.isZero()) {
             has_variables = true;
             break;
         }
     }
 
     if (has_variables) {
-        return false;  // Pas trivialement vrai si a des variables
+        return false;
     }
 
-    // Seulement une constante
+    bool c_pos = (!si.constant.isZero() && si.constant.numerator() > BigInt(0));
+    bool c_zero = si.constant.isZero();
     if (si.is_strict) {
-        // SI: c > 0 est VRAI si c > 0
-        return si.constant > 0;
+        return c_pos;             // c > 0
     } else {
-        // SI: c >= 0 est VRAI si c >= 0
-        return si.constant >= 0;
+        return c_pos || c_zero;   // c >= 0
     }
 }
 
 bool RankingAndInvariantValidator::checkSINonTriviality(
     const SupportingInvariant& si) const
 {
-    // Au moins un coefficient de variable doit être non-nul
     for (const auto& [var, coef] : si.coefficients) {
-        if (coef != 0) {
+        if (!coef.isZero()) {
             return true;
         }
     }
@@ -449,14 +441,14 @@ bool RankingAndInvariantValidator::checkSIInitiation(
     for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
         const std::string& prog_var = lasso.program_vars[i];
         auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && it->second != 0) {
-            neg_si << " (* " << it->second << " " << lasso.stem.getSSAVar(prog_var, true) << ")";
+        if (it != si.coefficients.end() && !it->second.isZero()) {
+            neg_si << " (* " << it->second.toSMTLibString() << " " << lasso.stem.getSSAVar(prog_var, true) << ")";
             has_terms = true;
         }
     }
 
-    if (si.constant != 0 || !has_terms) {
-        neg_si << " " << si.constant;
+    if (!si.constant.isZero() || !has_terms) {
+        neg_si << " " << si.constant.toSMTLibString();
     }
     
     neg_si << ") 0)";
@@ -488,12 +480,12 @@ bool RankingAndInvariantValidator::checkSIConsecution(
     for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
         const std::string& prog_var = lasso.program_vars[i];
         auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && it->second != 0) {
-            si_x << " (* " << it->second << " " << lasso.loop.getSSAVar(prog_var, false) << ")";
+        if (it != si.coefficients.end() && !it->second.isZero()) {
+            si_x << " (* " << it->second.toSMTLibString() << " " << lasso.loop.getSSAVar(prog_var, false) << ")";
         }
     }
 
-    si_x << " " << si.constant << ") 0)";
+    si_x << " " << si.constant.toSMTLibString() << ") 0)";
     if (VERBOSITY == VerbosityLevel::VERBOSE)
         std::cout << si_x.str() << std::endl;
     solver->addAssertion(si_x.str());
@@ -513,12 +505,12 @@ bool RankingAndInvariantValidator::checkSIConsecution(
     for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
         const std::string& prog_var = lasso.program_vars[i];
         auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && it->second != 0) {
-            neg_si_xprime << " (* " << it->second << " " << lasso.loop.getSSAVar(prog_var, true) << ")";
+        if (it != si.coefficients.end() && !it->second.isZero()) {
+            neg_si_xprime << " (* " << it->second.toSMTLibString() << " " << lasso.loop.getSSAVar(prog_var, true) << ")";
         }
     }
 
-    neg_si_xprime << " " << si.constant << ") 0)";
+    neg_si_xprime << " " << si.constant.toSMTLibString() << ") 0)";
     solver->addAssertion(neg_si_xprime.str());
     
     bool sat = solver->checkSat();
@@ -551,12 +543,12 @@ bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
     for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
         const std::string& prog_var = lasso.program_vars[i];
         auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && it->second != 0) {
-            si_x << " (* " << it->second << " "
+        if (it != si.coefficients.end() && !it->second.isZero()) {
+            si_x << " (* " << it->second.toSMTLibString() << " "
                 << lasso.loop.getSSAVar(prog_var, false) << ")";
         }
     }
-    si_x << " " << si.constant << ") 0)";
+    si_x << " " << si.constant.toSMTLibString() << ") 0)";
     
     // Ajouter SI(x)
     solver->addAssertion(si_x.str());
@@ -641,12 +633,12 @@ bool RankingAndInvariantValidator::checkRFBounded(
             const std::string& prog_var = lasso.program_vars[i];
             auto it = si.coefficients.find(prog_var);
             auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (it != si.coefficients.end() && it->second != 0 &&
+            if (it != si.coefficients.end() && !it->second.isZero() &&
                 var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << it->second << " " << var_ssa_in->second << ")";
+                si_formula << " (* " << it->second.toSMTLibString() << " " << var_ssa_in->second << ")";
             }
         }
-        si_formula << " " << si.constant << ") 0)";
+        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
         solver->addAssertion(si_formula.str());
     }
 
@@ -705,13 +697,13 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
             const std::string& prog_var = lasso.program_vars[i];
             auto it = si.coefficients.find(prog_var);
             auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (it != si.coefficients.end() && it->second != 0 &&
+            if (it != si.coefficients.end() && !it->second.isZero() &&
                 var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << it->second << " " << var_ssa_in->second << ")";
+                si_formula << " (* " << it->second.toSMTLibString() << " " << var_ssa_in->second << ")";
             }
         }
 
-        si_formula << " " << si.constant << ") 0)";
+        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
         solver->addAssertion(si_formula.str());
     }
 
@@ -856,12 +848,12 @@ static void addLoopAndSIConstraints(
         for (const auto& prog_var : lasso.program_vars) {
             auto coef_it = si.coefficients.find(prog_var);
             auto ssa_it = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (coef_it != si.coefficients.end() && coef_it->second != 0 &&
+            if (coef_it != si.coefficients.end() && !coef_it->second.isZero() &&
                 ssa_it != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << coef_it->second << " " << ssa_it->second << ")";
+                si_formula << " (* " << coef_it->second.toSMTLibString() << " " << ssa_it->second << ")";
             }
         }
-        si_formula << " " << si.constant << ") 0)";
+        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
         solver->addAssertion(si_formula.str());
     }
 }

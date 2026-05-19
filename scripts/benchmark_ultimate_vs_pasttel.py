@@ -970,8 +970,8 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
       - Green:  both agree TERMINATING
       - Blue:   both agree NONTERMINATING
       - Orange: PaSTTeL timeout (no answer within time limit)
-      - Red:    contradiction — Ultimate says TERMINATING (with a supported algo)
-                but PaSTTeL does not agree
+      - Red:    UNKNOWN — Ultimate says TERMINATING (with a supported algo)
+                but PaSTTeL does give response
       - Purple: NOT SUPPORTED — Ultimate TERMINATING with an algo not implemented
                 by PaSTTeL (lex, phase, n-phase…) AND PaSTTeL returns UNKNOWN
 
@@ -1171,7 +1171,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
   <span style="color:orange;">&#9679;</span> Timeout {y_ref} &nbsp;
-  <span style="color:red;">&#9679;</span> Contradiction ({x_ref}=TERM, {y_ref}&ne;TERM) &nbsp;
+  <span style="color:red;">&#9679;</span> UNKNOWN ({x_ref}=TERM, {y_ref}=UNKNOWN) &nbsp;
   <span style="color:purple;">&#9679;</span> Not supported by {y_ref}
 </p>
 <div id="plot"></div>
@@ -1212,7 +1212,7 @@ var red = {{
   text: {json.dumps(red_labels)},
   mode: 'markers',
   type: 'scatter',
-  name: 'Contradiction {x_ref}=TERM ({len(red_x)})',
+  name: 'Unknown {x_ref}=TERM ({len(red_x)})',
   marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
   hoverinfo: 'text'
 }};
@@ -1483,7 +1483,7 @@ def main():
 
         # Determine PaSTTeL status for scatter plot coloring.
         # NOT_SUPPORTED: Ultimate TERMINATING with an algo not implemented by
-        # PaSTTeL AND PaSTTeL returned UNKNOWN (not a contradiction).
+        # PaSTTeL AND PaSTTeL returned UNKNOWN.
         u_algo_supported = _ultimate_algo_is_supported_by_pasttel(ultimate["algo"])
         if pasttel.get("error") == "TIMEOUT":
             p_status = "TIMEOUT"

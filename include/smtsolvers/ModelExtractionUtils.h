@@ -125,7 +125,22 @@ struct Rational
 
     BigInt numerator() const { return num; }
     BigInt denominator() const { return den; }
+
     bool operator==(const Rational &o) const { return num == o.num && den == o.den; }
+    bool operator!=(const Rational &o) const { return !(*this == o); }
+    // Cross-multiply for sign-correct comparison (den always > 0 after reduce)
+    bool operator< (const Rational &o) const { return num * o.den <  o.num * den; }
+    bool operator<=(const Rational &o) const { return num * o.den <= o.num * den; }
+    bool operator> (const Rational &o) const { return num * o.den >  o.num * den; }
+    bool operator>=(const Rational &o) const { return num * o.den >= o.num * den; }
+
+    // Comparison with integer literals (e.g. coef != 0, constant < 0)
+    bool operator==(int v) const { return num == v && den == 1; }
+    bool operator!=(int v) const { return !(*this == v); }
+    bool operator< (int v) const { return num <  BigInt(v) * den; }
+    bool operator<=(int v) const { return num <= BigInt(v) * den; }
+    bool operator> (int v) const { return num >  BigInt(v) * den; }
+    bool operator>=(int v) const { return num >= BigInt(v) * den; }
 
     std::string toString() const
     {
@@ -352,6 +367,43 @@ static inline std::vector<long long> rationalListToIntegers(
     }
 
     return integers;
+}
+
+// Scale a list of rationals to coprime integers, keeping them as Rational
+// (denominator=1). No saturation — exact BigInt arithmetic throughout.
+static inline std::vector<Rational> rationalListNormalize(
+    const std::vector<Rational>& rationals)
+{
+    if (rationals.empty()) return {};
+
+    BigInt lcm = 1;
+    for (const auto& r : rationals) {
+        BigInt d = absBigInt(r.den);
+        if (d == 0) continue;
+        BigInt g = Rational::gcd_ll(lcm, d);
+        lcm = lcm / g * d;
+    }
+
+    std::vector<BigInt> wide;
+    wide.reserve(rationals.size());
+    for (const auto& r : rationals) {
+        BigInt d = absBigInt(r.den);
+        if (d == 0) { wide.push_back(0); continue; }
+        wide.push_back(r.num * (lcm / d));
+    }
+
+    BigInt g = 0;
+    for (const BigInt& v : wide) {
+        if (v != 0) g = Rational::gcd_ll(absBigInt(g), absBigInt(v));
+    }
+    if (g == 0) g = 1;
+
+    std::vector<Rational> result;
+    result.reserve(wide.size());
+    for (const BigInt& v : wide) {
+        result.emplace_back(v / g, BigInt(1));
+    }
+    return result;
 }
 
 

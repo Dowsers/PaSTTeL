@@ -10,29 +10,30 @@ std::string SupportingInvariant::toString(const std::vector<std::string>& vars) 
 
     for (const auto& var : vars) {
         auto it = coefficients.find(var);
-        if (it != coefficients.end() && it->second != 0) {
-            if (!first && it->second > 0) {
+        if (it != coefficients.end() && !it->second.isZero()) {
+            Rational abs_coef = it->second.abs();
+            bool negative = (it->second.numerator() < BigInt(0));
+            if (!first && !negative) {
                 oss << " + ";
-            } else if (it->second < 0) {
+            } else if (negative) {
                 oss << " - ";
             }
-
-            int64_t abs_coef = std::abs(it->second);
-            if (abs_coef != 1) {
-                oss << abs_coef << "·";
+            if (!abs_coef.isOne()) {
+                oss << abs_coef.toString() << "·";
             }
             oss << var;
             first = false;
         }
     }
 
-    if (constant != 0) {
-        if (!first && constant > 0) {
+    if (!constant.isZero()) {
+        bool neg = (constant.numerator() < BigInt(0));
+        if (!first && !neg) {
             oss << " + ";
-        } else if (constant < 0) {
+        } else if (neg) {
             oss << " - ";
         }
-        oss << std::abs(constant);
+        oss << constant.abs().toString();
     } else if (first) {
         oss << "0";
     }
