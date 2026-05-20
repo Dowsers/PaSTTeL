@@ -8,7 +8,7 @@
 #include "templates/lexicographic_template.h"
 #include "utiles.h"
 
-#define USE_VALIDATOR true
+#define USE_VALIDATOR false
 
 extern VerbosityLevel VERBOSITY;
 
