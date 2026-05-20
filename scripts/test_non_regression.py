@@ -56,6 +56,9 @@ CASES = [
     ("examples/terminate_in_out_ssa_inconsistency_CountTillBound.json", "TERMINATING",     "both",        2),    
     ("examples/unused_variables_tqli.t2.json", 				"TERMINATING",     "both",        2),    
     ("examples/unused_variables_ChenFlurMukhopadhyay-SAS2012-Ex2.22.json","TERMINATING",   "both",        2),    
+    ("examples/scientific_notation_s3_srvr_14_false-unreach.json",	"NON-TERMINATING", "both",        2),    
+    
+    
 ]
 
 
