@@ -2,7 +2,6 @@
 #define RANKING_AND_INVARIANT_VALIDATOR_H
 
 #include <memory>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -28,17 +27,15 @@ public:
         int si_index;
         bool is_valid;
         std::string error_message;
-        
+
         // Vérifications triviales (RAPIDES)
         bool is_false_check;      // SI trivialement faux ?
         bool is_true_check;       // SI trivialement vrai ?
-        
+
         // Vérifications SMT (LOURDES)
         bool initiation_check;    // stem → SI(x') ?
         bool compatible_check;
         bool consecution_check;   // SI(x) ∧ loop → SI(x') ?
-        
-        std::map<std::string, double> counterexample;
     };
     
     /**
@@ -47,13 +44,12 @@ public:
     struct ValidationResult {
         bool is_valid;
         std::string error_message;
-        
+
         // Résultats pour la ranking function
         bool rf_non_trivial_check;
         bool rf_bounded_check;
         bool rf_decreasing_check;
-        std::map<std::string, double> rf_counterexample;
-        
+
         // Résultats pour les SI
         bool all_si_valid;
         std::vector<SIValidationResult> si_results;
@@ -80,11 +76,9 @@ public:
             int index;
             bool non_trivial_check;
             bool nested_decrease_check;  // fi(x)-fi(x')+f_{i-1}(x)>=0, ou f0-f0'>=delta
-            std::map<std::string, double> counterexample;
         };
         std::vector<ComponentResult> component_results;
         bool last_component_bounded_check;  // f_{k-1}(x) >= 0
-        std::map<std::string, double> bounded_counterexample;
     };
 
     /**
@@ -179,8 +173,7 @@ private:
     bool checkSIInitiation(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver,
-        std::map<std::string, double>& counterexample);
+        SMTSolverInterface* solver);
     
     /**
      * Vérifie que le SI est compatible avec le loop guard.
@@ -195,8 +188,7 @@ private:
     bool checkSICompatibleWithLoop(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver,
-        std::map<std::string, double>& counterexample);
+        SMTSolverInterface* solver);
 
     /**
      * Vérifie la consécution : SI(x) ∧ loop(x, x') → SI(x')
@@ -207,8 +199,7 @@ private:
     bool checkSIConsecution(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver,
-        std::map<std::string, double>& counterexample);
+        SMTSolverInterface* solver);
     
     /**
      * Valide un seul SI (avec toutes les vérifications)
@@ -236,8 +227,7 @@ private:
         const RankingFunction& rf,
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver,
-        std::map<std::string, double>& counterexample);
+        SMTSolverInterface* solver);
     
     /**
      * Vérifie que f(x) - f(x') >= δ dans le loop
@@ -247,8 +237,7 @@ private:
         const std::vector<SupportingInvariant>& supporting_invariants,
         const LassoProgram& lasso,
         SMTSolverInterface* solver,
-        Rational delta,
-        std::map<std::string, double>& counterexample);
+        Rational delta);
 };
 
 #endif // RANKING_AND_INVARIANT_VALIDATOR_H

@@ -7,23 +7,6 @@
 
 extern VerbosityLevel VERBOSITY;
 
-// Helper : extrait la valeur scalaire d'une variable SSA, en ignorant les Array.
-// var_prog : nom de programme (ex: "balance"), ssa : nom SSA (ex: "v_balance_1")
-static void extractScalarValue(
-    const std::string& var_prog,
-    const std::string& ssa,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::map<std::string, double>& counterexample)
-{
-    auto it = lasso.var_sorts.find(var_prog);
-    if (it != lasso.var_sorts.end()) {
-        const std::string& sort = it->second;
-        if (sort.find("Array") != std::string::npos) return;
-    }
-    counterexample[var_prog] = solver->getValue(ssa);
-}
-
 
 // ============================================================================
 // CONSTRUCTEUR
@@ -190,7 +173,7 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
     }
 
     result.rf_bounded_check = checkRFBounded(
-        ranking_function, valid_sis, lasso, solver, result.rf_counterexample);
+        ranking_function, valid_sis, lasso, solver);
 
     if (!result.rf_bounded_check) {
         result.error_message = "Ranking function n'est pas bornée : f(x) < 0 possible";
@@ -205,7 +188,7 @@ RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::val
         }
 
         result.rf_decreasing_check = checkRFDecreasing(
-            ranking_function, valid_sis, lasso, solver, ranking_function.delta, result.rf_counterexample);
+            ranking_function, valid_sis, lasso, solver, ranking_function.delta);
 
         if (!result.rf_decreasing_check) {
             result.error_message = "Ranking function ne décroît pas strictement (même sans SI invalides)";
@@ -312,7 +295,7 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
     
     // 2.1 : Initiation (si pas de stem, on skip)
     if (!lasso.hasNoStem()) {
-        result.initiation_check = checkSIInitiation(si, lasso, solver, result.counterexample);
+        result.initiation_check = checkSIInitiation(si, lasso, solver);
 
         if (!result.initiation_check) {
             result.error_message = "Échec initiation : stem n'implique pas SI";
@@ -324,15 +307,15 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
     }
 
     // 2.2 : Compatibilité avec loop guard (vérifier pas vacuously valid)
-    result.compatible_check = checkSICompatibleWithLoop(si, lasso, solver, result.counterexample);
+    result.compatible_check = checkSICompatibleWithLoop(si, lasso, solver);
 
     if (!result.compatible_check) {
         result.error_message = "SI incompatible avec loop guard (vacuously valid)";
         return result;
     }
-    
+
     // 2.3 : Consécution
-    result.consecution_check = checkSIConsecution(si, lasso, solver, result.counterexample);
+    result.consecution_check = checkSIConsecution(si, lasso, solver);
 
     if (!result.consecution_check) {
         result.error_message = "Échec consécution : SI n'est pas inductif";
@@ -420,8 +403,7 @@ bool RankingAndInvariantValidator::checkSINonTriviality(
 bool RankingAndInvariantValidator::checkSIInitiation(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::map<std::string, double>& counterexample)
+    SMTSolverInterface* solver)
 {
     solver->push();
     
@@ -455,12 +437,6 @@ bool RankingAndInvariantValidator::checkSIInitiation(
     solver->addAssertion(neg_si.str());
     bool sat = solver->checkSat();
     
-    if (sat) {
-        for (const auto& [var_prog, ssa_out] : lasso.stem.var_to_ssa_out) {
-            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
-        }
-    }
-    
     solver->pop();
     return !sat;  // Valide si UNSAT
 }
@@ -469,8 +445,7 @@ bool RankingAndInvariantValidator::checkSIInitiation(
 bool RankingAndInvariantValidator::checkSIConsecution(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::map<std::string, double>& counterexample)
+    SMTSolverInterface* solver)
 {
     solver->push();
     
@@ -515,15 +490,6 @@ bool RankingAndInvariantValidator::checkSIConsecution(
     
     bool sat = solver->checkSat();
     
-    if (sat) {
-        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
-        }
-        for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
-        }
-    }
-
     solver->pop();
     return !sat;
 }
@@ -531,8 +497,7 @@ bool RankingAndInvariantValidator::checkSIConsecution(
 bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
     const SupportingInvariant& si,
     const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::map<std::string, double>& counterexample)
+    SMTSolverInterface* solver)
 {
     solver->push();
     
@@ -579,15 +544,6 @@ bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
     }
     bool sat = solver->checkSat();
     
-    if (!sat) {
-        // SI incompatible avec loop guard
-        // Pas de contre-exemple car UNSAT
-    } else {
-        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
-        }
-    }
-    
     solver->pop();
     return sat;  // Valide si SAT (compatible)
 }
@@ -611,8 +567,7 @@ bool RankingAndInvariantValidator::checkRFBounded(
     const RankingFunction& rf,
     const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::map<std::string, double>& counterexample)
+    SMTSolverInterface* solver)
 {
     solver->push();
 
@@ -658,12 +613,6 @@ bool RankingAndInvariantValidator::checkRFBounded(
 
     bool sat = solver->checkSat();
     
-    if (sat) {
-        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
-        }
-    }
-
     solver->pop();
     return !sat;
 }
@@ -673,8 +622,7 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
     const std::vector<SupportingInvariant>& supporting_invariants,
     const LassoProgram& lasso,
     SMTSolverInterface* solver,
-    Rational delta,
-    std::map<std::string, double>& counterexample)
+    Rational delta)
 {
     solver->push();
 
@@ -746,15 +694,6 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
 
     bool sat = solver->checkSat();
     
-    if (sat) {
-        for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in) {
-            extractScalarValue(var_prog, ssa_in, lasso, solver, counterexample);
-        }
-        for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-            extractScalarValue(var_prog, ssa_out, lasso, solver, counterexample);
-        }
-    }
-
     solver->pop();
     return !sat;
 }
@@ -1019,13 +958,6 @@ RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidato
         solver->addAssertion(decrease_formula);
         bool sat = solver->checkSat();
 
-        if (sat) {
-            for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in)
-                extractScalarValue(var_prog, ssa_in, lasso, solver, result.component_results[i].counterexample);
-            for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out)
-                extractScalarValue(var_prog, ssa_out, lasso, solver, result.component_results[i].counterexample);
-        }
-
         solver->pop();
 
         result.component_results[i].nested_decrease_check = !sat;
@@ -1071,11 +1003,6 @@ RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidato
         // cherche contre-exemple: f_{k-1}(x) < 0
         solver->addAssertion("(< " + flast_x + " 0)");
         bool sat = solver->checkSat();
-
-        if (sat) {
-            for (const auto& [var_prog, ssa_in] : lasso.loop.var_to_ssa_in)
-                extractScalarValue(var_prog, ssa_in, lasso, solver, result.bounded_counterexample);
-        }
 
         solver->pop();
         result.last_component_bounded_check = !sat;
