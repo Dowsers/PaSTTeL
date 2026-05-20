@@ -561,6 +561,39 @@ cvc5::Term SMTSolverCVC5::parseSexpTokensWithBindings(
             return parseQuantifier(op, tokens, pos, bound_vars);
         }
 
+        // Cas spécial: let ((name expr) ...) body
+        if (op == "let") {
+            // Expects: '(' (name expr)* ')' body ')'
+            if (pos >= tokens.size() || tokens[pos] != "(")
+                throw std::runtime_error("let: expected '(' before binding list");
+            pos++; // consume '('
+
+            std::map<std::string, cvc5::Term> new_bound_vars = bound_vars;
+            while (pos < tokens.size() && tokens[pos] != ")") {
+                if (tokens[pos] != "(")
+                    throw std::runtime_error("let: expected '(' before binding pair");
+                pos++; // consume '('
+                if (pos >= tokens.size())
+                    throw std::runtime_error("let: incomplete binding");
+                std::string name = tokens[pos++];
+                cvc5::Term val = parseSexpTokensWithBindings(tokens, pos, bound_vars);
+                if (pos >= tokens.size() || tokens[pos] != ")")
+                    throw std::runtime_error("let: missing ')' after binding value");
+                pos++; // consume ')'
+                new_bound_vars[name] = val;
+            }
+            if (pos >= tokens.size() || tokens[pos] != ")")
+                throw std::runtime_error("let: missing ')' after binding list");
+            pos++; // consume closing ')' of binding list
+
+            cvc5::Term body = parseSexpTokensWithBindings(tokens, pos, new_bound_vars);
+
+            if (pos >= tokens.size() || tokens[pos] != ")")
+                throw std::runtime_error("let: missing ')' after body");
+            pos++; // consume closing ')' of let
+            return body;
+        }
+
         // Collecter les arguments
         std::vector<cvc5::Term> args;
         while (pos < tokens.size() && tokens[pos] != ")") {
