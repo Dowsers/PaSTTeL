@@ -384,7 +384,6 @@ void SMTSolverCVC5::printStatistics() const {
 }
 
 void SMTSolverCVC5::reset() {
-    m_interrupted = false;
     m_solver.resetAssertions();
     m_variables.clear();
     m_functions.clear();  // Clear function declarations too

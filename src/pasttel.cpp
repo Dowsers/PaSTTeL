@@ -258,19 +258,45 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << "\n";
     }
 
-    // Afficher le résultat global
+    // Collect all completed results for time lookup
+    std::vector<ProofCertificate> all_done = report.termination_results;
+    all_done.insert(all_done.end(),
+        report.nontermination_results.begin(),
+        report.nontermination_results.end());
+
+    auto fmt_s = [](double ms) -> std::string {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(3) << (ms / 1000.0) << " s";
+        return oss.str();
+    };
+
+    auto find_time = [&](const std::string& prefix) -> std::string {
+        for (const auto& r : all_done)
+            if (r.technique_name.rfind(prefix, 0) == 0)
+                return fmt_s(r.execution_time_ms);
+        return "-";
+    };
+
     std::cout << "============================================================\n";
     std::cout << "OVERALL RESULT: " << report.overall_result << "\n";
-    std::cout << "TOTAL TIME: " << std::fixed << std::setprecision(3)
-              << (report.total_time_ms / 1000.0) << " s\n";
+    std::cout << "TOTAL TIME: " << fmt_s(report.total_time_ms) << "\n";
 
-    if (!report.termination_results.empty()) {
-        std::cout << "TERMINATING TIME: " << std::fixed << std::setprecision(3)
-                    << (report.terminating_time_ms / 1000.0) << " s\n";
-    }
-    if (!report.nontermination_results.empty()) {
-        std::cout << "NON-TERMINATING TIME: " << std::fixed << std::setprecision(3)
-                    << (report.nonterminating_time_ms / 1000.0) << " s\n";
+    if (!report.registered_techniques.empty()) {
+        std::cout << "TESTED STRATEGIES :\n";
+        for (const auto& name : report.registered_techniques) {
+            std::string label, prefix;
+            if (name == "Fixpoint")
+                { label = "FIXPOINT"; prefix = "Fixpoint"; }
+            else if (name.rfind("Geometric", 0) == 0)
+                { label = "GNTA";     prefix = "Geometric"; }
+            else if (name == "RankingBased(AffineTemplate)")
+                { label = "AFFINE";   prefix = "RankingBased(AffineTemplate)"; }
+            else if (name.find("NestedTemplate") != std::string::npos)
+                { label = "NESTED";   prefix = "RankingBased(NestedTemplate)"; }
+            else
+                { label = name; prefix = name; }
+            std::cout << "  - " << label << " TIME: " << find_time(prefix) << "\n";
+        }
     }
     std::cout << "============================================================\n";
 }
@@ -343,7 +369,6 @@ int main(int argc, char** argv) {
         std::cout<< lasso.stem.raw_formula << std::endl;
         std::cout<< "\n=== RAW LOOP ===\n";
         std::cout<< lasso.loop.raw_formula << std::endl;
-
 
         std::cout<< "\n=== STEM SMT ===\n";
         std::cout << lasso.stem.toSMTLib2() << std::endl;

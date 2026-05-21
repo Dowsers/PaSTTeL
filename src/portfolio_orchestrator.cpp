@@ -170,7 +170,9 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
         pool_->waitAll();
     }
 
-    pool_.reset(); // destroy the pool (joins all workers)
+    if (conclusive_found_.load())
+        pool_->killAll();  // result found: kill threads immediately (don't wait for init())
+    pool_.reset();
 
     if (!conclusive_found_.load()) {
         log(verbose, timed_out
@@ -200,6 +202,9 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
         report.overall_result         = "NON-TERMINATING";
         report.nonterminating_time_ms = final_result_.execution_time_ms;
     }
+
+    for (const auto& t : techniques_)
+        report.registered_techniques.push_back(t->getName());
 
     return report;
 }

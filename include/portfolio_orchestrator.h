@@ -22,6 +22,7 @@ struct AnalysisReport {
     double total_time_ms = 0.0;
     double terminating_time_ms = 0.0;
     double nonterminating_time_ms = 0.0;
+    std::vector<std::string> registered_techniques;
 
     bool isTerminating() const {
         return winner.status == AnalysisResult::TERMINATING;
