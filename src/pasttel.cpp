@@ -270,9 +270,9 @@ void printAnalysisReport(const AnalysisReport& report) {
         return oss.str();
     };
 
-    auto find_time = [&](const std::string& prefix) -> std::string {
+    auto find_time = [&](const std::string& name) -> std::string {
         for (const auto& r : all_done)
-            if (r.technique_name.rfind(prefix, 0) == 0)
+            if (r.technique_name.find(name, 0) != std::string::npos)
                 return fmt_s(r.execution_time_ms);
         return "-";
     };
@@ -284,18 +284,18 @@ void printAnalysisReport(const AnalysisReport& report) {
     if (!report.registered_techniques.empty()) {
         std::cout << "TESTED STRATEGIES :\n";
         for (const auto& name : report.registered_techniques) {
-            std::string label, prefix;
+            std::string label;
             if (name == "Fixpoint")
-                { label = "FIXPOINT"; prefix = "Fixpoint"; }
+                label = "FIXPOINT";
             else if (name.rfind("Geometric", 0) == 0)
-                { label = "GNTA";     prefix = "Geometric"; }
+                label = "GNTA";
             else if (name == "RankingBased(AffineTemplate)")
-                { label = "AFFINE";   prefix = "RankingBased(AffineTemplate)"; }
+                label = "AFFINE";
             else if (name.find("NestedTemplate") != std::string::npos)
-                { label = "NESTED";   prefix = "RankingBased(NestedTemplate)"; }
+                label = "NESTED";
             else
-                { label = name; prefix = name; }
-            std::cout << "  - " << label << " TIME: " << find_time(prefix) << "\n";
+                label = name;
+            std::cout << "  - " << label << " TIME: " << find_time(name) << "\n";
         }
     }
     std::cout << "============================================================\n";
