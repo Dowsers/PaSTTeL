@@ -847,13 +847,13 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
         )
         output = proc.stdout + proc.stderr
     except subprocess.TimeoutExpired:
-        return {"result": "UNKNOWN", "time_ms": -1.0, "algo": "-", "error": "TIMEOUT"}
+        return {"result": "UNKNOWN", "time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": "TIMEOUT"}
     except Exception as e:
-        return {"result": "UNKNOWN", "time_ms": -1.0, "algo": "-", "error": str(e)}
+        return {"result": "UNKNOWN", "time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": str(e)}
 
     # If output contains a Warning, treat as UNKNOWN (parsing limitation)
     if re.search(r'Warning', output):
-        return {"result": "NOT SUPPORTED", "time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
+        return {"result": "NOT SUPPORTED", "time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
 
     # Parse OVERALL RESULT
     result = "UNKNOWN"
@@ -865,17 +865,22 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
         elif "NON-TERMINATING" in raw_result or "NON_TERMINATING" in raw_result:
             result = "NONTERMINATING"
 
-    # Parse TOTAL TIME
+    # Parse winning-technique time (TERMINATING TIME / NON-TERMINATING TIME)
     time_ms = 0.0
-    if result == "TERMINATING" :
+    if result == "TERMINATING":
         m = re.search(r'TERMINATING TIME:\s*([\d.]+)\s*s', output)
-    elif result == "NONTERMINATING" :
+    elif result == "NONTERMINATING":
         m = re.search(r'NON-TERMINATING TIME:\s*([\d.]+)\s*s', output)
-    else :
+    else:
         m = re.search(r'TOTAL TIME:\s*([\d.]+)\s*s', output)
-    
     if m:
-        time_ms = float(m.group(1)) * 1000.0  # convert s to ms
+        time_ms = float(m.group(1)) * 1000.0
+
+    # Parse TOTAL TIME (wall-clock time of the whole PaSTTeL run)
+    total_time_ms = -1.0
+    mt = re.search(r'TOTAL TIME:\s*([\d.]+)\s*s', output)
+    if mt:
+        total_time_ms = float(mt.group(1)) * 1000.0
 
     # Parse which technique succeeded.
     # Output format: "RankingBased(AffineTemplate)   TERMINATING   0.042"
@@ -893,7 +898,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
             algo = _pasttel_algo_name(raw_name)
             break
 
-    return {"result": result, "time_ms": time_ms, "algo": algo}
+    return {"result": result, "time_ms": time_ms, "total_time_ms": total_time_ms, "algo": algo}
 
 
 # =============================================================================
@@ -1011,7 +1016,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     for row in rows:
         result = row["Result Code"].strip()
 
-        t_time_str = row["pasttel (ms)"].strip()
+        t_time_str = row.get("TOTAL-PASTTEL (ms)", row.get("pasttel (ms)", "-")).strip()
         name = row["Trace Name"].strip()
         algo = row.get("Algo", "").strip()
         pasttel_status = row.get("PaSTTeL Status", "").strip()
@@ -1137,6 +1142,79 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         print("No plottable data points found (all INFEASIBLE/UNCHECKED or missing times).")
         return
 
+    x_ref = x_axis_label.replace(" (ms)", "")   # e.g. "ULR-Fair" or "ULR-Baseline"
+    y_ref = y_axis_label.replace(" (ms)", "")   # e.g. "P-ULR-Seq" or "P-ULR-Par6"
+
+    # ── Summary table ────────────────────────────────────────────────────────
+    n_term        = len(green_x)
+    n_nonterm     = len(blue_x)
+    n_timeout     = len(orange_x)
+    n_unknown     = len(red_x)
+    n_notsup      = len(purple_x)
+    total_term_x    = sum(green_x)   / 1000.0
+    total_term_y    = sum(green_y)   / 1000.0
+    total_nonterm_x = sum(blue_x)    / 1000.0
+    total_nonterm_y = sum(blue_y)    / 1000.0
+
+    x_col_hdr = x_axis_label   # e.g. "ULR-Fair (ms)" or "ULR-Baseline (ms)"
+    y_col_hdr = y_axis_label   # e.g. "P-ULR-Seq (ms)" or "P-ULR-Par6 (ms)"
+
+    hdr = f"{'Category':<26}  {'Count':>6}  {x_col_hdr:>22}  {y_col_hdr:>22}"
+    sep = "-" * len(hdr)
+    rows_txt = [
+        f"{'Terminating (common)':<26}  {n_term:>6}  {total_term_x:>19.1f} s  {total_term_y:>19.1f} s",
+        f"{'Non-terminating (common)':<26}  {n_nonterm:>6}  {total_nonterm_x:>19.1f} s  {total_nonterm_y:>19.1f} s",
+        f"{'Timeout ' + y_ref:<26}  {n_timeout:>6}  {'—':>22}  {'—':>22}",
+        f"{'Unknown':<26}  {n_unknown:>6}  {'—':>22}  {'—':>22}",
+        f"{'Not supported (' + y_ref + ')':<26}  {n_notsup:>6}  {'—':>22}  {'—':>22}",
+    ]
+    print(f"\n{sep}\n{hdr}\n{sep}")
+    for r in rows_txt:
+        print(r)
+    print(sep + "\n")
+
+    summary_html = f"""
+<h3>Summary</h3>
+<table border="1" cellpadding="6" cellspacing="0"
+       style="border-collapse:collapse; font-family:monospace; margin-bottom:20px;">
+<thead style="background:#f0f0f0;">
+  <tr>
+    <th>Category</th><th>Count</th>
+    <th>{x_col_hdr} total (s)</th>
+    <th>{y_col_hdr} total (s)</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="color:green;">
+    <td>Terminating (common)</td>
+    <td style="text-align:right;">{n_term}</td>
+    <td style="text-align:right;">{total_term_x:.1f}</td>
+    <td style="text-align:right;">{total_term_y:.1f}</td>
+  </tr>
+  <tr style="color:blue;">
+    <td>Non-terminating (common)</td>
+    <td style="text-align:right;">{n_nonterm}</td>
+    <td style="text-align:right;">{total_nonterm_x:.1f}</td>
+    <td style="text-align:right;">{total_nonterm_y:.1f}</td>
+  </tr>
+  <tr style="color:orange;">
+    <td>Timeout {y_ref}</td>
+    <td style="text-align:right;">{n_timeout}</td>
+    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+  </tr>
+  <tr style="color:red;">
+    <td>Unknown</td>
+    <td style="text-align:right;">{n_unknown}</td>
+    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+  </tr>
+  <tr style="color:purple;">
+    <td>Not supported by {y_ref}</td>
+    <td style="text-align:right;">{n_notsup}</td>
+    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+  </tr>
+</tbody>
+</table>"""
+
     max_val = max(max(all_x), max(all_y)) if all_y else max(all_x)
 
     # Embed Plotly JS for offline use (no CDN dependency)
@@ -1151,9 +1229,6 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         _plotly_script = '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
 
     # Build the HTML with Plotly
-    x_ref = x_axis_label.replace(" (ms)", "")   # e.g. "ULR-Fair" or "ULR-Baseline"
-    y_ref = y_axis_label.replace(" (ms)", "")   # e.g. "P-ULR-Seq" or "P-ULR-Par6"
-
     html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -1174,6 +1249,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
   <span style="color:red;">&#9679;</span> UNKNOWN &nbsp;
   <span style="color:purple;">&#9679;</span> Not supported by {y_ref}
 </p>
+{summary_html}
 <div id="plot"></div>
 <script>
 var green = {{
@@ -1388,6 +1464,7 @@ def main():
                 "Nontermination (ms)":  "-",
                 "ULR-Baseline (ms)":    "-",
                 "pasttel (ms)": "-",
+                "TOTAL-PASTTEL (ms)": "-",
                 "Stem Size": 0,
                 "Loop Size": 0,
                 "Total Size Trace": 0,
@@ -1410,6 +1487,7 @@ def main():
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
+                "TOTAL-PASTTEL (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1426,6 +1504,7 @@ def main():
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
+                "TOTAL-PASTTEL (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1442,6 +1521,7 @@ def main():
                 "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
                 "ULR-Baseline (ms)":   "-",
                 "pasttel (ms)": "-",
+                "TOTAL-PASTTEL (ms)": "-",
                 "Stem Size": ultimate['stem_size'],
                 "Loop Size": ultimate['loop_size'],
                 "Total Size Trace": ultimate['stem_size'] + ultimate['loop_size'],
@@ -1480,6 +1560,7 @@ def main():
         u_time = f"{ultimate['time_ms']:.2f}" if ultimate["time_ms"] >= 0 else "-"
         u_fixpoint_time = f"{ultimate['fixpoint_time_ms']:.2f}" if ultimate['fixpoint_time_ms'] > 0 else "-"
         t_time = f"{pasttel['time_ms']:.2f}" if pasttel["time_ms"] >= 0 else "-"
+        t_total_time = f"{pasttel['total_time_ms']:.2f}" if pasttel["total_time_ms"] >= 0 else "-"
 
         # Determine PaSTTeL status for scatter plot coloring.
         # NOT_SUPPORTED: Ultimate TERMINATING with an algo not implemented by
@@ -1526,6 +1607,7 @@ def main():
             "Nontermination (ms)": fmt_ms(ultimate['nontermination_time_ms']),
             "ULR-Baseline (ms)":   fmt_ms(baseline_ms) if baseline_ms is not None else "-",
             "pasttel (ms)": t_time,
+            "TOTAL-PASTTEL (ms)": t_total_time,
             "PaSTTeL Status": p_status,
             "Stem Size": ultimate["stem_size"],
             "Loop Size": ultimate["loop_size"],
@@ -1544,6 +1626,7 @@ def main():
             "Nontermination (ms)",
             "ULR-Baseline (ms)",
             "pasttel (ms)",
+            "TOTAL-PASTTEL (ms)",
             "PaSTTeL Status",
             "Stem Size",
             "Loop Size",
@@ -1561,8 +1644,8 @@ def main():
         print(f"{'='*60}")
 
         # Print summary table
-        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'Fixpoint (ms)':<15} {'Termination (ms)':<18} {'Nontermination (ms)':<21} {'pasttel (ms)':<14} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
-        print("-" * 185)
+        print(f"\n{'Trace Name':<70} {'Result Code':<15} {'Fixpoint (ms)':<15} {'Termination (ms)':<18} {'Nontermination (ms)':<21} {'pasttel (ms)':<14} {'TOTAL-PASTTEL (ms)':<20} {'Stem':<6} {'Loop':<6} {'Total':<7} {'Algo'}")
+        print("-" * 205)
         for row in results:
             print(
                 f"{row['Trace Name']:<70} "
@@ -1571,6 +1654,7 @@ def main():
                 f"{str(row['Termination (ms)']):<18} "
                 f"{str(row['Nontermination (ms)']):<21} "
                 f"{str(row['pasttel (ms)']):<14} "
+                f"{str(row['TOTAL-PASTTEL (ms)']):<20} "
                 f"{str(row['Stem Size']):<6} "
                 f"{str(row['Loop Size']):<6} "
                 f"{str(row['Total Size Trace']):<7} "
