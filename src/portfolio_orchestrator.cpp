@@ -189,10 +189,7 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
     report.winner = final_result_;
 
     for (const auto& r : all_results_) {
-        if      (r.status == AnalysisResult::TERMINATING)
-            report.termination_results.push_back(r);
-        else if (r.status == AnalysisResult::NON_TERMINATING)
-            report.nontermination_results.push_back(r);
+        report.all_results.push_back(r);
     }
 
     if (final_result_.status == AnalysisResult::TERMINATING) {

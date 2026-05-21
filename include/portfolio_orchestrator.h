@@ -15,8 +15,7 @@
  * @brief Summary of a complete portfolio analysis run
  */
 struct AnalysisReport {
-    std::vector<ProofCertificate> termination_results;
-    std::vector<ProofCertificate> nontermination_results;
+    std::vector<ProofCertificate> all_results;  // all techniques that completed (any status)
     ProofCertificate winner;
     std::string overall_result = "UNKNOWN";
     double total_time_ms = 0.0;

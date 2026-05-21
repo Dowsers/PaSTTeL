@@ -7,6 +7,7 @@
 #include <utility>
 #include <numeric>
 
+
 #include "termination/generic_termination_synthesizer.h"
 #include "utiles.h"
 
@@ -106,65 +107,10 @@ GenericTerminationSynthesizer::SynthesisResult GenericTerminationSynthesizer::sy
             std::cout << "\n[4/4] Solving with SMT..." << std::endl;
             std::cout << "  Total assertions: " << solver_->getAssertionCount() << std::endl;
         }
-
         result.is_valid = solver_->checkSat();
 
         if (result.is_valid) {
-            // getSimplifiedAssignment: maximiser les zéros parmi les paramètres.
-            // IMPORTANT: on ne zéroe PAS les coefficients de variables RF individuellement.
-            // Zéroer un coeff de variable pousse Z3 à compenser avec des ratios
-            // irrationnels dans les autres coefficients, produisant une RF invalide sur ℤ.
-            // On zéroe uniquement: constante RF, delta, SI params.
-            // {
-            //     auto params = template_->getParameters();
-
-            //     // Séparer les ranking_params en "coefficients de variables" (à ne pas zéroer)
-            //     // et "constantes" (dernière entrée de chaque composante, suffixe "_const").
-            //     // Les constantes sont identifiables par le suffixe "_const".
-            //     std::vector<std::string> simplifiable_params;
-            //     for (const auto& p : params.ranking_params) {
-            //         if (p.size() >= 6 && p.substr(p.size() - 6) == "_const")
-            //             simplifiable_params.push_back(p);
-            //     }
-            //     if (!params.delta_param.empty())
-            //         simplifiable_params.push_back(params.delta_param);
-            //     if (!local_sigs_.empty()) {
-            //         auto si_params = local_sigs_.front()->getSIParams();
-            //         for (const auto& p : si_params)
-            //             simplifiable_params.push_back(p);
-            //     }
-
-            //     // Tenter de minimiser delta à sa valeur minimale (delta_value + 1).
-            //     // Cela force Z3 à choisir des coefficients RF cohérents avec un petit delta,
-            //     // évitant des solutions arbitrairement grandes sous-contraintes.
-            //     if (!params.delta_param.empty()) {
-            //         solver_->push();
-            //         solver_->addAssertion("(= " + params.delta_param
-            //             + " " + std::to_string(params.delta_value + 1) + ")");
-            //         if (!solver_->checkSat()) {
-            //             solver_->pop(); // delta_value+1 impossible, garder la solution courante
-            //         } else if (verbose) {
-            //             std::cout << "  getSimplifiedAssignment: delta fixed to "
-            //                       << (params.delta_value + 1) << std::endl;
-            //         }
-            //     }
-
-            //     int zeroed = 0;
-            //     for (const auto& p : simplifiable_params) {
-            //         solver_->push();
-            //         solver_->addAssertion("(= " + p + " 0)");
-            //         if (solver_->checkSat()) {
-            //             ++zeroed;
-            //         } else {
-            //             solver_->pop();
-            //         }
-            //     }
-
-            //     if (verbose && zeroed > 0)
-            //         std::cout << "  getSimplifiedAssignment: " << zeroed
-            //                   << "/" << simplifiable_params.size()
-            //                   << " parameters zeroed" << std::endl;
-            // }
+            // TODO: getSimplifiedAssignment: maximiser les zéros parmi les paramètres.
 
             auto param_names = template_->getParameters();
             result.parameters = extractParametersValues(param_names);

@@ -168,13 +168,22 @@ std::string setParameters(int argc, char** argv) {
  * @brief Affiche un tableau parsable des résultats d'analyse
  */
 void printAnalysisReport(const AnalysisReport& report) {
+    std::vector<ProofCertificate> termination_results;
+    std::vector<ProofCertificate> nontermination_results;
     std::cout << "\n";
     std::cout << "============================================================\n";
     std::cout << "                    ANALYSIS REPORT                         \n";
     std::cout << "============================================================\n\n";
 
+    for (const auto& r : report.all_results) {
+        if (r.status == AnalysisResult::TERMINATING)
+            termination_results.push_back(r);
+        else if (r.status == AnalysisResult::NON_TERMINATING)
+            nontermination_results.push_back(r);
+    }
+
     // Afficher les résultats de terminaison
-    if (!report.termination_results.empty()) {
+    if (!termination_results.empty()) {
         std::cout << "--- TERMINATION TECHNIQUES ---\n";
         std::cout << std::left
                 << std::setw(35) << "Technique"
@@ -183,7 +192,7 @@ void printAnalysisReport(const AnalysisReport& report) {
                 << "Proof\n";
         std::cout << std::string(80, '-') << "\n";
 
-        for (const auto& result : report.termination_results) {
+        for (const auto& result : termination_results) {
             bool is_terminating = (result.status == AnalysisResult::TERMINATING);
             std::cout << std::left
                     << std::setw(35) << result.technique_name
@@ -215,7 +224,7 @@ void printAnalysisReport(const AnalysisReport& report) {
     }
 
     // Afficher les résultats de non-terminaison
-    if (!report.nontermination_results.empty()) {
+    if (!nontermination_results.empty()) {
         std::cout << "--- NON-TERMINATION TECHNIQUES ---\n";
         std::cout << std::left
                   << std::setw(35) << "Technique"
@@ -224,7 +233,7 @@ void printAnalysisReport(const AnalysisReport& report) {
                   << "Proof\n";
         std::cout << std::string(80, '-') << "\n";
 
-        for (const auto& result : report.nontermination_results) {
+        for (const auto& result : nontermination_results) {
             bool is_nonterminating = (result.status == AnalysisResult::NON_TERMINATING);
             std::cout << std::left
                     << std::setw(35) << result.technique_name
@@ -258,12 +267,6 @@ void printAnalysisReport(const AnalysisReport& report) {
         std::cout << "\n";
     }
 
-    // Collect all completed results for time lookup
-    std::vector<ProofCertificate> all_done = report.termination_results;
-    all_done.insert(all_done.end(),
-        report.nontermination_results.begin(),
-        report.nontermination_results.end());
-
     auto fmt_s = [](double ms) -> std::string {
         std::ostringstream oss;
         oss << std::fixed << std::setprecision(3) << (ms / 1000.0) << " s";
@@ -271,7 +274,7 @@ void printAnalysisReport(const AnalysisReport& report) {
     };
 
     auto find_time = [&](const std::string& name) -> std::string {
-        for (const auto& r : all_done)
+        for (const auto& r : report.all_results)
             if (r.technique_name.find(name, 0) != std::string::npos)
                 return fmt_s(r.execution_time_ms);
         return "-";
