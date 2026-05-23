@@ -59,6 +59,10 @@ CASES = [
     ("examples/scientific_notation_s3_srvr_14_false-unreach.json",	"NON-TERMINATING", "both",        2),    
     ("examples/polyrank4.t2_2nested.json",				"TERMINATING",     "both",        2),    
     ("examples/let_op_fixpoint_RanFile023.json",			"NON-TERMINATING", "both",        2),    
+    ("examples/affine_rf_with_div_aux.json",				"TERMINATING",     "both",        2),    
+    ("examples/DivMinus2_no-overflow_term.json",			"TERMINATING",     "both",        2),    
+    ("examples/CallNTimes_bpl_gnta.json",				"NON-TERMINATING", "both",        2),    
+    ("examples/threadpooling_product_WithProcedures_gnta.json", 	"NON-TERMINATING", "both",        2),    
 ]
 
 
