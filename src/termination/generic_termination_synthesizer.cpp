@@ -151,14 +151,15 @@ void GenericTerminationSynthesizer::createLocalSIGs() {
 
     int num_loop_polys = static_cast<int>(lasso_.loop.polyhedra.size());
 
-    // Nombre de parties du template : dec_list.size() + 1 (bounded)
+    // Nombre de parties du template : dec_list.size() + bounded_list.size()
     std::vector<std::string> loop_in_vars, loop_out_vars;
     for (const auto& var : lasso_.program_vars) {
         loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
     auto dec_list = template_->getConstraintsDec(loop_in_vars, loop_out_vars);
-    int num_template_parts = static_cast<int>(dec_list.size()) + 1; // +1 pour bounded
+    auto bounded_list = template_->getConstraintsBounded(loop_in_vars);
+    int num_template_parts = static_cast<int>(dec_list.size()) + static_cast<int>(bounded_list.size());
 
     // Compteur atomique global pour unicite des noms SMT entre appels (thread-safe)
     static std::atomic<int> instance_counter{0};
@@ -204,21 +205,29 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
         loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
     }
 
-    // Conclusions positives du template (avant negation)
+    // Conclusions positives du template (avant negation) -- chaque partie est
+    // une liste OR d'atomes (1 atome pour Affine/Nested, plusieurs pour
+    // Lexicographic's phi_consec/phi_decrement).
     auto dec_list = template_->getConstraintsDec(loop_in_vars, loop_out_vars);
-    LinearInequality bounded = template_->getConstraintsBounded(loop_in_vars);
+    auto bounded_list = template_->getConstraintsBounded(loop_in_vars);
 
-    // Negation logique des conclusions
-    for (auto& dec : dec_list) {
-        dec.negate();
-        dec.strict = !dec.strict;
-        dec.motzkin_coef = LinearInequality::ONE;
+    // Negation logique : chaque atome de chaque partie est nie individuellement
+    // (flip strict, motzkin_coef conserve) -- ET des negations = negation du OU.
+    for (auto& part : dec_list) {
+        for (auto& atom : part) {
+            atom.negate();
+            atom.strict = !atom.strict;
+        }
     }
-    bounded.negate();
-    bounded.strict = !bounded.strict;
-    bounded.motzkin_coef = LinearInequality::ONE;
+    for (auto& part : bounded_list) {
+        for (auto& atom : part) {
+            atom.negate();
+            atom.strict = !atom.strict;
+        }
+    }
 
     int num_dec = static_cast<int>(dec_list.size());
+    int num_bounded = static_cast<int>(bounded_list.size());
 
     bool has_sigs = !local_sigs_.empty();
 
@@ -249,7 +258,9 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
                 }
             }
 
-            ctx.constraints.push_back(dec_list[m]);
+            for (const auto& atom : dec_list[m]) {
+                ctx.constraints.push_back(atom);
+            }
 
             if (verbose)
                 std::cout << "  [phi34] " << ctx.annotation << std::endl;
@@ -259,20 +270,21 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
         }
     }
 
-    // phi4 : un contexte par poly_loop (bounded)
-    {
-        int m_bounded = num_dec; // index de la partie bounded
+    // phi4 : un contexte par (bounded_part x poly_loop)
+    for (int m = 0; m < num_bounded; ++m) {
+        int part_idx = num_dec + m;
         int p = 0;
         for (const auto& polyhedron : lasso_.loop.polyhedra) {
             RankingTemplate::MotzkinContext ctx;
-            ctx.annotation = "phi4: RF boundedness (poly " + std::to_string(p) + ")";
+            ctx.annotation = "phi4: RF boundedness part " + std::to_string(m)
+                           + " (poly " + std::to_string(p) + ")";
 
             for (const auto& ineq : polyhedron) {
                 ctx.constraints.push_back(ineq);
             }
 
             if (has_sigs) {
-                const auto& sig = local_sigs_[p * num_template_parts_ + m_bounded];
+                const auto& sig = local_sigs_[p * num_template_parts_ + part_idx];
                 int num_si = sig->getNumSI();
                 for (int k = 0; k < num_si; ++k) {
                     LinearInequality si_p = sig->buildSI(k, loop_in_vars);
@@ -284,7 +296,9 @@ GenericTerminationSynthesizer::buildPhi34Contexts() const
                 }
             }
 
-            ctx.constraints.push_back(bounded);
+            for (const auto& atom : bounded_list[m]) {
+                ctx.constraints.push_back(atom);
+            }
 
             if (verbose)
                 std::cout << "  [phi34] " << ctx.annotation << std::endl;

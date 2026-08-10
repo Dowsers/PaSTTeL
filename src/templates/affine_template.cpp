@@ -70,7 +70,7 @@ RankingTemplate::TemplateParameters AffineTemplate::getParameters() const {
 // CONCLUSION POSITIVE DE DECROISSANCE : f(x) - f(x')  >= delta
 // ============================================================================
 
-std::vector<LinearInequality> AffineTemplate::getConstraintsDec(
+std::vector<RankingTemplate::ConclusionPart> AffineTemplate::getConstraintsDec(
     const std::vector<std::string>& in_vars,
     const std::vector<std::string>& out_vars) const
 {
@@ -91,14 +91,14 @@ std::vector<LinearInequality> AffineTemplate::getConstraintsDec(
     li.strict = false;
     li.motzkin_coef = LinearInequality::ONE;
 
-    return {li};
+    return { {li} };
 }
 
 // ============================================================================
 // CONCLUSION POSITIVE DE BORNAGE : f(x) >= 0
 // ============================================================================
 
-LinearInequality AffineTemplate::getConstraintsBounded(
+std::vector<RankingTemplate::ConclusionPart> AffineTemplate::getConstraintsBounded(
     const std::vector<std::string>& in_vars) const
 {
     if (!initialized_) {
@@ -108,7 +108,7 @@ LinearInequality AffineTemplate::getConstraintsBounded(
     LinearInequality li = generator_->generate(in_vars);
     li.strict = false;
     li.motzkin_coef = LinearInequality::ONE;
-    return li;
+    return { {li} };
 }
 
 // ============================================================================

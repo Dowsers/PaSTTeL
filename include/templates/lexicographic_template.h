@@ -4,23 +4,27 @@
 #include "templates/ranking_template.h"
 
 /**
- * @brief Template Lexicographique pour ranking functions à k composantes
+ * @brief Template Lexicographique pour ranking functions a k composantes
  *
- * Utilise un vecteur de k fonctions affines (f0, f1, ..., fk-1)
- * qui doivent decroitre en ordre lexicographique a chaque iteration.
+ * Uses a vector of k affine functions (f0, f1, ..., fk-1) that must decrease
+ * in lexicographic order at every loop iteration.
  *
- * Contraintes:
+ * Obligations (see getConstraintsBounded/getConstraintsDec below for how each
+ * maps onto the generic ConclusionPart / OR-of-atoms representation):
  *
- * phi_bound: loop(x,x') -> fi(x) > 0                         (k contraintes)
+ * phi_bound_i: loop(x,x') -> fi(x) > 0                          (k parts, 1 atom each)
  *
  * phi_consec_i (i < k-1): loop(x,x') ->
- *   fi(x') <= fi(x)  OR  exists j<i : fj(x) - fj(x') > dj   (k-1 contraintes)
+ *   fi(x') <= fi(x)  OR  exists j<i : fj(x) - fj(x') > dj       (k-1 parts, 1+i atoms each)
  *
- * phi_decrement: loop(x,x') -> exists i : fi(x) - fi(x') > di (1 contrainte)
+ * phi_decrement: loop(x,x') -> exists i : fi(x) - fi(x') > di   (1 part, k atoms)
  *
- * Les SI (φ1/φ2) sont gérés par SupportingInvariantGenerator.
- * Les si_preconditions sont injectées via getConstraints(si_preconditions).
+ * Source: "Lexicographic Ranking Functions" (Ultimate LassoRanker).
  *
+ * Local supporting invariants (phi1/phi2) and the Motzkin context construction
+ * are delegated to GenericTerminationSynthesizer -- same pipeline as
+ * AffineTemplate/NestedTemplate, thanks to the OR-of-atoms generalization of
+ * getConstraintsDec/getConstraintsBounded.
  */
 class LexicographicTemplate : public RankingTemplate {
 public:
@@ -29,8 +33,19 @@ public:
     // Interface RankingTemplate
     void init(const LassoProgram& lasso) override;
 
-    std::vector<MotzkinContext> getConstraints(
-        const std::vector<LinearInequality>& si_preconditions = {}) const override;
+    std::vector<ConclusionPart> getConstraintsDec(
+        const std::vector<std::string>& in_vars,
+        const std::vector<std::string>& out_vars) const override;
+
+    std::vector<ConclusionPart> getConstraintsBounded(
+        const std::vector<std::string>& in_vars) const override;
+
+    /**
+     * @brief Declares ranking coefficients as Real, and EVERY delta_params_[i]
+     * as Real with a strict `> delta_value_` assertion (all components, not
+     * just the first -- required for soundness of phi_consec/phi_decrement).
+     */
+    void declareParameters(SMTSolverInterface* solver) const override;
 
     TemplateParameters getParameters() const override;
 
@@ -58,13 +73,13 @@ private:
     std::vector<std::vector<std::string>> component_params_;
     std::vector<std::string> delta_params_;  // one delta per component
 
-    // Constraint generation
-    std::vector<MotzkinContext> generateBoundedness() const;
-    std::vector<MotzkinContext> generateConsecution() const;
-    std::vector<MotzkinContext> generateDecrement() const;
-
     // Term building
     LinearInequality buildComponent(int idx, const std::vector<std::string>& vars) const;
+    // fi(in_vars) - fi(out_vars), as a plain LinearInequality (strict/motzkin_coef left default)
+    LinearInequality buildComponentDiff(
+        int idx,
+        const std::vector<std::string>& in_vars,
+        const std::vector<std::string>& out_vars) const;
     void initializeParameters();
 };
 

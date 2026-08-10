@@ -50,18 +50,18 @@ public:
     /**
      * @brief num_components conclusions positives de decroissance (non negees).
      *
-     * i=0 : f0(x) - f0(x')  >= delta   (strict=false, ONE)
-     * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0  (strict=true, ONE)
+     * i=0 : f0(x) - f0(x')  >= delta   (1 atome, strict=false, ONE)
+     * i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0  (1 atome, strict=true, ONE)
      */
-    std::vector<LinearInequality> getConstraintsDec(
+    std::vector<ConclusionPart> getConstraintsDec(
         const std::vector<std::string>& in_vars,
         const std::vector<std::string>& out_vars) const override;
 
     /**
      * @brief Conclusion positive de bornage : f_{n-1}(x) >= 0
-     * (strict=false, motzkin_coef=ONE)
+     * (1 part, 1 atome : strict=false, motzkin_coef=ONE)
      */
-    LinearInequality getConstraintsBounded(
+    std::vector<ConclusionPart> getConstraintsBounded(
         const std::vector<std::string>& in_vars) const override;
 
     /**

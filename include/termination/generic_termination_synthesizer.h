@@ -87,7 +87,7 @@ private:
     // SIGs locaux : un par (poly_loop × template_part), crees par createLocalSIGs()
     // local_sigs_[p * num_template_parts_ + m] = SIG pour branche p, partie m
     std::vector<std::shared_ptr<SupportingInvariantGenerator>> local_sigs_;
-    int num_template_parts_ = 0;  // Nombre de parties du template (dec_list.size() + 1)
+    int num_template_parts_ = 0;  // dec_list.size() + bounded_list.size()
 
     // Etat
     bool synthesized_;

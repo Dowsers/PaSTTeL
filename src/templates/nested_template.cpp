@@ -87,7 +87,7 @@ RankingTemplate::TemplateParameters NestedTemplate::getParameters() const {
 // CONCLUSIONS POSITIVES DE DECROISSANCE 
 // ============================================================================
 
-std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
+std::vector<RankingTemplate::ConclusionPart> NestedTemplate::getConstraintsDec(
     const std::vector<std::string>& in_vars,
     const std::vector<std::string>& out_vars) const
 {
@@ -95,7 +95,7 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
         throw std::runtime_error("NestedTemplate::getConstraintsDec() called before init()");
     }
 
-    std::vector<LinearInequality> result;
+    std::vector<ConclusionPart> result;
 
     // i=0 : f0(x) - f0(x') - delta > 0
     {
@@ -106,7 +106,7 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
         li.constant.coefficients[delta_param_] -= 1.0;
         li.strict = true;
         li.motzkin_coef = LinearInequality::ONE;
-        result.push_back(li);
+        result.push_back({li});
     }
 
     // i>0 : fi(x) - fi(x') + f_{i-1}(x) > 0
@@ -119,7 +119,7 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
         li = li + li3;
         li.strict = true;
         li.motzkin_coef = LinearInequality::ONE;
-        result.push_back(li);
+        result.push_back({li});
     }
 
     return result;
@@ -129,7 +129,7 @@ std::vector<LinearInequality> NestedTemplate::getConstraintsDec(
 // CONCLUSION POSITIVE DE BORNAGE : f_{n-1}(x) > 0
 // ============================================================================
 
-LinearInequality NestedTemplate::getConstraintsBounded(
+std::vector<RankingTemplate::ConclusionPart> NestedTemplate::getConstraintsBounded(
     const std::vector<std::string>& in_vars) const
 {
     if (!initialized_) {
@@ -139,7 +139,7 @@ LinearInequality NestedTemplate::getConstraintsBounded(
     LinearInequality li = generators_[num_components_ - 1]->generate(in_vars);
     li.strict = true;
     li.motzkin_coef = LinearInequality::ONE;
-    return li;
+    return { {li} };
 }
 
 // ============================================================================

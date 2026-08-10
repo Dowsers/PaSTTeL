@@ -119,8 +119,14 @@ AnalysisResult RankingBasedTechnique::analyze() {
                 assert(last_synthesizer_ && "tryTemplateConfiguration returned true but last_synthesizer_ is null");
                 const auto& rankfunctions_comp = last_synthesizer_->getTerminationArgument().ranking_functions;
                 proof.proof_details = "";
-                for(const auto& rf : rankfunctions_comp){
-                    proof.proof_details += rf.toString() +"\n";
+                bool multi_component = rankfunctions_comp.size() > 1;
+                for (size_t i = 0; i < rankfunctions_comp.size(); ++i) {
+                    const auto& rf = rankfunctions_comp[i];
+                    std::string label = multi_component ? ("f" + std::to_string(i) + "(x) = ") : "f(x) = ";
+                    std::string body = rf.toString();
+                    if (body.empty()) body = "0";
+                    proof.proof_details += label + body
+                        + "  [delta" + (multi_component ? std::to_string(i) : "") + " = " + rf.delta.toString() + "]\n";
                 }
                 proof.rf_witness = rankfunctions_comp[0].coefficients;
                 proof_ = proof;

@@ -339,6 +339,8 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
             "AffineTemplate", configs));
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
             "NestedTemplate", configs, 2, 5));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "LexicographicTemplate", configs, 2, 5));
     }
 
     orchestrator.solve(lasso);

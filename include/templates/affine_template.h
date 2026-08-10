@@ -45,17 +45,17 @@ public:
 
     /**
      * @brief Conclusion positive de decroissance : f(x) - f(x')  >= delta
-     * (strict=false, motzkin_coef=ONE)
+     * (1 part, 1 atome : strict=false, motzkin_coef=ONE)
      */
-    std::vector<LinearInequality> getConstraintsDec(
+    std::vector<ConclusionPart> getConstraintsDec(
         const std::vector<std::string>& in_vars,
         const std::vector<std::string>& out_vars) const override;
 
     /**
      * @brief Conclusion positive de bornage : f(x) >= 0
-     * (strict=false, motzkin_coef=ONE)
+     * (1 part, 1 atome : strict=false, motzkin_coef=ONE)
      */
-    LinearInequality getConstraintsBounded(
+    std::vector<ConclusionPart> getConstraintsBounded(
         const std::vector<std::string>& in_vars) const override;
 
     /**

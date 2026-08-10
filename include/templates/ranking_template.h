@@ -38,6 +38,21 @@ public:
     };
 
     /**
+     * @brief One decrease/boundedness obligation part, as a disjunction (OR) of
+     * atoms. Each atom is in POSITIVE form (before negation), with its intended
+     * strict/motzkin_coef already set.
+     *
+     * AffineTemplate/NestedTemplate: one atom per part (no disjunction needed).
+     * LexicographicTemplate: phi_consec_i and phi_decrement are true multi-atom
+     * disjunctions.
+     *
+     * The synthesizer negates EVERY atom of a part (flip strict, keep
+     * motzkin_coef) and packs them into a SINGLE MotzkinContext (AND of
+     * negations = negation of the OR).
+     */
+    using ConclusionPart = std::vector<LinearInequality>;
+
+    /**
      * @brief Informations sur les parametres du template pour SMT
      * (uniquement les parametres de la ranking function -- les SI sont dans SupportingInvariantGenerator)
      */
@@ -97,7 +112,7 @@ public:
      *
      * Le synthesizer negera ces conclusions et construira les contextes Motzkin complets.
      */
-    virtual std::vector<LinearInequality> getConstraintsDec(
+    virtual std::vector<ConclusionPart> getConstraintsDec(
         const std::vector<std::string>& /*in_vars*/,
         const std::vector<std::string>& /*out_vars*/) const
     {
@@ -105,12 +120,13 @@ public:
     }
 
     /**
-     * @brief Retourne la CONCLUSION POSITIVE de bornage (non negee).
+     * @brief Retourne les CONCLUSIONS POSITIVES de bornage (non negees).
      *
-     * AffineTemplate  : f(x) >= 0     (strict=false, ONE)
-     * NestedTemplate  : f_{n-1}(x) >= 0 (strict=false, ONE)
+     * AffineTemplate  : [ f(x) >= 0 ]       (1 part, strict=false, ONE)
+     * NestedTemplate  : [ f_{n-1}(x) >= 0 ] (1 part, strict=false, ONE)
+     * LexicographicTemplate : [ f0(x)>0, f1(x)>0, ..., f_{k-1}(x)>0 ] (k parts)
      */
-    virtual LinearInequality getConstraintsBounded(
+    virtual std::vector<ConclusionPart> getConstraintsBounded(
         const std::vector<std::string>& /*in_vars*/) const
     {
         throw std::logic_error(getName() + "::getConstraintsBounded() not implemented");
@@ -138,16 +154,6 @@ public:
     // ========================================================================
     // METHODES OPTIONNELLES
     // ========================================================================
-
-    /**
-     * @brief Interface legacy -- conservee pour que LexicographicTemplate compile.
-     * A remplacer par getConstraintsDec/Bounded dans les prochains templates.
-     */
-    virtual std::vector<MotzkinContext> getConstraints(
-        const std::vector<LinearInequality>& /*si_preconditions*/ = {}) const
-    {
-        throw std::logic_error(getName() + "::getConstraints() not implemented");
-    }
 
     virtual bool validateConfiguration() const { return true; }
 

@@ -65,46 +65,33 @@ void LexicographicTemplate::initializeParameters() {
 }
 
 // ============================================================================
-// IMPLEMENTATION DE L'INTERFACE
+// DECLARATION DES PARAMETRES SMT
 // ============================================================================
 
-std::vector<RankingTemplate::MotzkinContext> LexicographicTemplate::getConstraints(
-    const std::vector<LinearInequality>& /*si_preconditions*/) const
-{
+void LexicographicTemplate::declareParameters(SMTSolverInterface* solver) const {
     if (!initialized_) {
-        throw std::runtime_error("LexicographicTemplate::getConstraints() called before init()");
+        throw std::runtime_error("LexicographicTemplate::declareParameters() called before init()");
     }
 
-    std::vector<MotzkinContext> all_contexts;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    if (verbose)
-        std::cout << "\n┌─ Generating Lexicographic Constraints ─┐" << std::endl;
-
-    // phi_bound: fi(x) > 0 for each component (k contexts per polyhedron)
-    auto bound = generateBoundedness();
-    if (verbose)
-        std::cout << "│ phi_bound: Boundedness : " << bound.size() << std::endl;
-    all_contexts.insert(all_contexts.end(), bound.begin(), bound.end());
-
-    // phi_consec: lexicographic consecution (k-1 contexts per polyhedron)
-    auto consec = generateConsecution();
-    if (verbose)
-        std::cout << "│ phi_consec: Consecution : " << consec.size() << std::endl;
-    all_contexts.insert(all_contexts.end(), consec.begin(), consec.end());
-
-    // phi_decrement: at least one component decreases (1 context per polyhedron)
-    auto decr = generateDecrement();
-    if (verbose)
-        std::cout << "│ phi_decrement: Decrement : " << decr.size() << std::endl;
-    all_contexts.insert(all_contexts.end(), decr.begin(), decr.end());
-
-    if (verbose) {
-        std::cout << "└─────────────────────────────────────────┘" << std::endl;
-        std::cout << "  Total contexts: " << all_contexts.size() << std::endl;
+    for (const auto& comp_params : component_params_) {
+        for (const auto& param : comp_params) {
+            solver->declareVariable(param, "Real");
+        }
     }
-    return all_contexts;
+
+    // Every delta must be strictly positive -- not just delta_params_[0].
+    // phi_consec/phi_decrement use dj/di as free slack; an unconstrained
+    // (or non-positive) delta would let the solver trivially satisfy the
+    // disjunction without a real decrease, breaking soundness.
+    for (const auto& delta : delta_params_) {
+        solver->declareVariable(delta, "Real");
+        solver->addAssertion("(> " + delta + " " + std::to_string(delta_value_) + ")");
+    }
 }
+
+// ============================================================================
+// IMPLEMENTATION DE L'INTERFACE
+// ============================================================================
 
 RankingTemplate::TemplateParameters LexicographicTemplate::getParameters() const {
     if (!initialized_) {
@@ -180,192 +167,94 @@ LinearInequality LexicographicTemplate::buildComponent(
     return result;
 }
 
+LinearInequality LexicographicTemplate::buildComponentDiff(
+    int idx,
+    const std::vector<std::string>& in_vars,
+    const std::vector<std::string>& out_vars) const
+{
+    // fi(x) - fi(x')
+    LinearInequality li = buildComponent(idx, in_vars);
+    LinearInequality li2 = buildComponent(idx, out_vars);
+    li2.negate();
+    return li + li2;
+}
+
 // ============================================================================
-// phi_bound: BOUNDEDNESS — loop(x,x') -> fi(x) > 0 for each i
+// phi_bound: BOUNDEDNESS -- loop(x,x') -> fi(x) > 0, for each component i
 // ============================================================================
 
-std::vector<RankingTemplate::MotzkinContext>
-LexicographicTemplate::generateBoundedness() const {
-    std::vector<MotzkinContext> contexts;
+std::vector<RankingTemplate::ConclusionPart> LexicographicTemplate::getConstraintsBounded(
+    const std::vector<std::string>& in_vars) const
+{
+    if (!initialized_) {
+        throw std::runtime_error("LexicographicTemplate::getConstraintsBounded() called before init()");
+    }
+
+    std::vector<ConclusionPart> parts;
 
     for (int i = 0; i < num_components_; ++i) {
-        int poly_idx = 0;
-        for (const auto& polyhedron : lasso_.loop.polyhedra) {
-            MotzkinContext ctx;
-            ctx.annotation = "phi_bound: f" + std::to_string(i) +
-                            " > 0 (poly " + std::to_string(poly_idx) + ")";
-
-            for (const auto& ineq : polyhedron) {
-                ctx.constraints.push_back(ineq);
-            }
-
-            std::vector<std::string> loop_in_vars;
-            for (const auto& var : lasso_.program_vars) {
-                loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
-            }
-
-            // fi(x) > 0 — Negation: -fi(x) >= 0
-            LinearInequality fi = buildComponent(i, loop_in_vars);
-
-            LinearInequality neg_bound;
-            neg_bound.strict = false;
-            neg_bound.motzkin_coef = LinearInequality::ONE;
-
-            for (size_t j = 0; j < loop_in_vars.size(); ++j) {
-                AffineTerm coef = fi.getCoefficient(loop_in_vars[j]);
-                coef.negate();
-                neg_bound.setCoefficient(loop_in_vars[j], coef);
-            }
-
-            neg_bound.constant = fi.constant;
-            neg_bound.constant.negate();
-
-            ctx.constraints.push_back(neg_bound);
-            contexts.push_back(ctx);
-            poly_idx++;
-        }
+        LinearInequality atom = buildComponent(i, in_vars);
+        atom.strict = true;
+        atom.motzkin_coef = LinearInequality::ONE;
+        parts.push_back({atom});
     }
 
-    return contexts;
+    return parts;
 }
 
 // ============================================================================
-// phi_consec: CONSECUTION — for each i < k-1:
-//   loop(x,x') -> fi(x') <= fi(x)  OR  exists j<i : fj(x) - fj(x') > dj
+// phi_consec_i (i < k-1) and phi_decrement -- disjunctive decrease conclusions
 //
-// Encoding as Motzkin negation:
-//   NOT( fi(x') <= fi(x)  OR  exists j<i : ... )
-//   = fi(x') > fi(x)  AND  forall j<i : fj(x) - fj(x') <= dj
+// phi_consec_i : fi(x') <= fi(x)  OR  exists j<i : fj(x) - fj(x') > dj
+// phi_decrement:                       exists i   : fi(x) - fi(x') > di
 // ============================================================================
 
-std::vector<RankingTemplate::MotzkinContext>
-LexicographicTemplate::generateConsecution() const {
-    std::vector<MotzkinContext> contexts;
+std::vector<RankingTemplate::ConclusionPart> LexicographicTemplate::getConstraintsDec(
+    const std::vector<std::string>& in_vars,
+    const std::vector<std::string>& out_vars) const
+{
+    if (!initialized_) {
+        throw std::runtime_error("LexicographicTemplate::getConstraintsDec() called before init()");
+    }
 
+    std::vector<ConclusionPart> parts;
+
+    // phi_consec_i, i = 0 .. k-2
     for (int i = 0; i < num_components_ - 1; ++i) {
-        int poly_idx = 0;
-        for (const auto& polyhedron : lasso_.loop.polyhedra) {
-            MotzkinContext ctx;
-            ctx.annotation = "phi_consec: f" + std::to_string(i) +
-                            " consecution (poly " + std::to_string(poly_idx) + ")";
+        ConclusionPart part;
 
-            for (const auto& ineq : polyhedron) {
-                ctx.constraints.push_back(ineq);
-            }
+        // atom: fi(x) - fi(x') >= 0   (i.e. fi(x') <= fi(x))
+        LinearInequality non_incr = buildComponentDiff(i, in_vars, out_vars);
+        non_incr.strict = false;
+        non_incr.motzkin_coef = LinearInequality::ONE;
+        part.push_back(non_incr);
 
-            std::vector<std::string> loop_in_vars, loop_out_vars;
-            for (const auto& var : lasso_.program_vars) {
-                loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
-                loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
-            }
-
-            // Negation part 1: fi(x') - fi(x) > 0
-            LinearInequality fi_in = buildComponent(i, loop_in_vars);
-            LinearInequality fi_out = buildComponent(i, loop_out_vars);
-
-            LinearInequality neg_nonincr;
-            neg_nonincr.strict = true;
-            neg_nonincr.motzkin_coef = LinearInequality::ONE;
-
-            for (size_t j = 0; j < loop_out_vars.size(); ++j) {
-                AffineTerm coef = fi_out.getCoefficient(loop_out_vars[j]);
-                neg_nonincr.setCoefficient(loop_out_vars[j], coef);
-            }
-            for (size_t j = 0; j < loop_in_vars.size(); ++j) {
-                AffineTerm coef = fi_in.getCoefficient(loop_in_vars[j]);
-                coef.negate();
-                neg_nonincr.setCoefficient(loop_in_vars[j], coef);
-            }
-            neg_nonincr.constant = fi_out.constant - fi_in.constant;
-
-            ctx.constraints.push_back(neg_nonincr);
-
-            // Negation part 2: for each j < i, dj - fj(x) + fj(x') >= 0
-            for (int j = 0; j < i; ++j) {
-                LinearInequality fj_in = buildComponent(j, loop_in_vars);
-                LinearInequality fj_out = buildComponent(j, loop_out_vars);
-
-                LinearInequality neg_decr_j;
-                neg_decr_j.strict = false;
-                neg_decr_j.motzkin_coef = LinearInequality::ANYTHING;
-
-                for (size_t v = 0; v < loop_in_vars.size(); ++v) {
-                    AffineTerm coef = fj_in.getCoefficient(loop_in_vars[v]);
-                    coef.negate();
-                    neg_decr_j.setCoefficient(loop_in_vars[v], coef);
-                }
-                for (size_t v = 0; v < loop_out_vars.size(); ++v) {
-                    AffineTerm coef = fj_out.getCoefficient(loop_out_vars[v]);
-                    neg_decr_j.setCoefficient(loop_out_vars[v], coef);
-                }
-                neg_decr_j.constant = fj_out.constant - fj_in.constant;
-                neg_decr_j.constant.coefficients[delta_params_[j]] = 1.0;
-
-                ctx.constraints.push_back(neg_decr_j);
-            }
-
-            contexts.push_back(ctx);
-            poly_idx++;
+        // atom: fj(x) - fj(x') > dj, for each j < i
+        for (int j = 0; j < i; ++j) {
+            LinearInequality decr_j = buildComponentDiff(j, in_vars, out_vars);
+            decr_j.constant.coefficients[delta_params_[j]] -= 1.0;
+            decr_j.strict = true;
+            decr_j.motzkin_coef = LinearInequality::ANYTHING;
+            part.push_back(decr_j);
         }
+
+        parts.push_back(part);
     }
 
-    return contexts;
-}
-
-// ============================================================================
-// phi_decrement: DECREMENT — loop(x,x') -> exists i : fi(x) - fi(x') > di
-//
-// Negation: forall i : di - fi(x) + fi(x') >= 0
-// ============================================================================
-
-std::vector<RankingTemplate::MotzkinContext>
-LexicographicTemplate::generateDecrement() const {
-    std::vector<MotzkinContext> contexts;
-
-    int poly_idx = 0;
-    for (const auto& polyhedron : lasso_.loop.polyhedra) {
-        MotzkinContext ctx;
-        ctx.annotation = "phi_decrement: at least one component decreases (poly "
-                         + std::to_string(poly_idx) + ")";
-
-        for (const auto& ineq : polyhedron) {
-            ctx.constraints.push_back(ineq);
-        }
-
-        std::vector<std::string> loop_in_vars, loop_out_vars;
-        for (const auto& var : lasso_.program_vars) {
-            loop_in_vars.push_back(lasso_.loop.getSSAVar(var, false));
-            loop_out_vars.push_back(lasso_.loop.getSSAVar(var, true));
-        }
-
+    // phi_decrement : exists i : fi(x) - fi(x') > di, for all i = 0 .. k-1
+    {
+        ConclusionPart part;
         for (int i = 0; i < num_components_; ++i) {
-            LinearInequality fi_in = buildComponent(i, loop_in_vars);
-            LinearInequality fi_out = buildComponent(i, loop_out_vars);
-
-            LinearInequality neg_decr;
-            neg_decr.strict = false;
-            neg_decr.motzkin_coef = LinearInequality::ANYTHING;
-
-            for (size_t j = 0; j < loop_in_vars.size(); ++j) {
-                AffineTerm coef = fi_in.getCoefficient(loop_in_vars[j]);
-                coef.negate();
-                neg_decr.setCoefficient(loop_in_vars[j], coef);
-            }
-            for (size_t j = 0; j < loop_out_vars.size(); ++j) {
-                AffineTerm coef = fi_out.getCoefficient(loop_out_vars[j]);
-                neg_decr.setCoefficient(loop_out_vars[j], coef);
-            }
-            neg_decr.constant = fi_out.constant - fi_in.constant;
-            neg_decr.constant.coefficients[delta_params_[i]] = 1.0;
-
-            ctx.constraints.push_back(neg_decr);
+            LinearInequality decr_i = buildComponentDiff(i, in_vars, out_vars);
+            decr_i.constant.coefficients[delta_params_[i]] -= 1.0;
+            decr_i.strict = true;
+            decr_i.motzkin_coef = LinearInequality::ANYTHING;
+            part.push_back(decr_i);
         }
-
-        contexts.push_back(ctx);
-        poly_idx++;
+        parts.push_back(part);
     }
 
-    return contexts;
+    return parts;
 }
 
 // ============================================================================

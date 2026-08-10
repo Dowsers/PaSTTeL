@@ -63,30 +63,6 @@ public:
     bool isStrict(int si_idx) const { return si_idx < num_strict_; }
 
     // ========================================================================
-    // GENERATION DES CONTEXTES MOTZKIN (legacy -- conserve pour LexicographicTemplate)
-    // ========================================================================
-
-    /**
-     * @brief Genere phi1 : stem(x,x') -> SI(x') >= 0
-     */
-    std::vector<RankingTemplate::MotzkinContext> generatePhi1() const;
-
-    /**
-     * @brief Genere phi2 : SI(x) /\ loop(x,x') -> SI(x') >= 0
-     */
-    std::vector<RankingTemplate::MotzkinContext> generatePhi2() const;
-
-    // ========================================================================
-    // PREMISSES POUR LES TEMPLATES RF (legacy -- conserve pour LexicographicTemplate)
-    // ========================================================================
-
-    /**
-     * @brief Construit SI_k(vars) >= 0 pour chaque SI comme premisse RF
-     */
-    std::vector<LinearInequality> buildPreconditions(
-        const std::vector<std::string>& vars) const;
-
-    // ========================================================================
     // ACCESSEURS POUR L'EXTRACTION (utilises par GenericTerminationSynthesizer)
     // ========================================================================
 
