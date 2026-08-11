@@ -14,6 +14,7 @@ import sys
 import unittest
 
 PASTTEL_BIN = os.environ.get("PASTTEL_BIN", "./bin/pasttel")
+CPUS=6
 
 # ---------------------------------------------------------------------------
 # Test cases — format: (file, expected_result, mode[, cpus])
@@ -29,13 +30,13 @@ CASES = [
   # ("examples/test_geometric_doubling.json",                           "NON-TERMINATING", "both"),
     ("examples/nonterminate_booleans.json",                             "NON-TERMINATING", "both"),
     ("examples/test_ranking_func_with_two_variables_non_terminating.json", "NON-TERMINATING", "both"),
-    ("examples/test_with_div_mod.json",                                 "TERMINATING",     "both",        5),
-    ("examples/test_with_div_mod_mult.json",                            "TERMINATING",     "both",        5),
-    ("examples/test_division_termination.json",                         "TERMINATING",     "both",        5),
-    ("examples/test_nested_template_terminating.json",                  "TERMINATING",     "both",        5),
-    ("examples/multiplication_termination.json",                        "TERMINATING",     "both",        5),
-    ("examples/nonterminate_booleans.json",                             "NON-TERMINATING", "both",        5),
-    ("examples/fixpoint_nontermination.json",                           "NON-TERMINATING", "both",        5),
+    ("examples/test_with_div_mod.json",                                 "TERMINATING",     "both",        CPUS),
+    ("examples/test_with_div_mod_mult.json",                            "TERMINATING",     "both",        CPUS),
+    ("examples/test_division_termination.json",                         "TERMINATING",     "both",        CPUS),
+    ("examples/test_nested_template_terminating.json",                  "TERMINATING",     "both",        CPUS),
+    ("examples/multiplication_termination.json",                        "TERMINATING",     "both",        CPUS),
+    ("examples/nonterminate_booleans.json",                             "NON-TERMINATING", "both",        CPUS),
+    ("examples/fixpoint_nontermination.json",                           "NON-TERMINATING", "both",        CPUS),
     ("examples/test_hash_function_axioms.json",                         "TERMINATING",     "both"),
     ("examples/test_array_sum_axioms.json",                             "TERMINATING",     "both"),
     ("examples/test_token_transfer_axioms.json",                        "TERMINATING",     "both"),
@@ -50,19 +51,19 @@ CASES = [
     ("examples/ref_rational_and_simplification.json",                   "TERMINATING",     "both"),
     ("examples/test_nonterminate_gnta_real.json",                       "NON-TERMINATING", "both"),
     ("examples/test_nonterminate_fixpoint_real.json",                   "NON-TERMINATING", "both"),
-    ("examples/BugOldVars03_1.json",                   			"TERMINATING",     "both",        5),
-    ("examples/only_termination_Ackermann_true-termination1_affine.json","TERMINATING",    "both",        5),
-    ("examples/noInlineTest_nonterminate_GNTA.json",			"NON-TERMINATING", "both", 	  5),
-    ("examples/terminate_in_out_ssa_inconsistency_CountTillBound.json", "TERMINATING",     "both",        5),    
-    ("examples/unused_variables_tqli.t2.json", 				"TERMINATING",     "both",        5),    
-    ("examples/unused_variables_ChenFlurMukhopadhyay-SAS2012-Ex2.22.json","TERMINATING",   "both",        5),    
-    ("examples/scientific_notation_s3_srvr_14_false-unreach.json",	"NON-TERMINATING", "both",        5),    
-    ("examples/polyrank4.t2_2nested.json",				"TERMINATING",     "both",        5),    
-    ("examples/let_op_fixpoint_RanFile023.json",			"NON-TERMINATING", "both",        5),    
-    ("examples/affine_rf_with_div_aux.json",				"TERMINATING",     "both",        5),    
-    ("examples/DivMinus2_no-overflow_term.json",			"TERMINATING",     "both",        5),    
-    ("examples/CallNTimes_bpl_gnta.json",				"NON-TERMINATING", "both",        5),    
-    ("examples/threadpooling_product_WithProcedures_gnta.json", 	"NON-TERMINATING", "both",        5),    
+    ("examples/BugOldVars03_1.json",                   			"TERMINATING",     "both",        CPUS),
+    ("examples/only_termination_Ackermann_true-termination1_affine.json","TERMINATING",    "both",        CPUS),
+    ("examples/noInlineTest_nonterminate_GNTA.json",			"NON-TERMINATING", "both", 	  CPUS),
+    ("examples/terminate_in_out_ssa_inconsistency_CountTillBound.json", "TERMINATING",     "both",        CPUS),    
+    ("examples/unused_variables_tqli.t2.json", 				"TERMINATING",     "both",        CPUS),    
+    ("examples/unused_variables_ChenFlurMukhopadhyay-SAS2012-Ex2.22.json","TERMINATING",   "both",        CPUS),    
+    ("examples/scientific_notation_s3_srvr_14_false-unreach.json",	"NON-TERMINATING", "both",        CPUS),    
+    ("examples/polyrank4.t2_2nested.json",				"TERMINATING",     "both",        CPUS),    
+    ("examples/let_op_fixpoint_RanFile023.json",			"NON-TERMINATING", "both",        CPUS),    
+    ("examples/affine_rf_with_div_aux.json",				"TERMINATING",     "both",        CPUS),    
+    ("examples/DivMinus2_no-overflow_term.json",			"TERMINATING",     "both",        CPUS),    
+    ("examples/CallNTimes_bpl_gnta.json",				"NON-TERMINATING", "both",        CPUS),    
+    ("examples/threadpooling_product_WithProcedures_gnta.json", 	"NON-TERMINATING", "both",        CPUS),    
 ]
 
 

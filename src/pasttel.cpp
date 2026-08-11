@@ -341,6 +341,8 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
             "NestedTemplate", configs, 2, 5));
         orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
             "LexicographicTemplate", configs, 2, 5));
+        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            "MultiphaseTemplate", configs, 2, 5));
     }
 
     orchestrator.solve(lasso);

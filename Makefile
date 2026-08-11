@@ -54,6 +54,7 @@ COMMON_SRCS := \
 	$(SRC_DIR)/templates/affine_template.cpp \
 	$(SRC_DIR)/templates/nested_template.cpp \
 	$(SRC_DIR)/templates/lexicographic_template.cpp \
+	$(SRC_DIR)/templates/multiphase_template.cpp \
 	$(SRC_DIR)/termination/motzkin_transform.cpp \
 	$(SRC_DIR)/termination/ranking_function.cpp \
 	$(SRC_DIR)/termination/supporting_invariant.cpp \
