@@ -7,6 +7,7 @@
 #include "templates/nested_template.h"
 #include "templates/lexicographic_template.h"
 #include "templates/multiphase_template.h"
+#include "templates/piecewise_template.h"
 #include "utiles.h"
 
 #define USE_VALIDATOR false
@@ -80,6 +81,8 @@ RankingTemplate* RankingBasedTechnique::createTemplate(
         return new LexicographicTemplate(num_components);
     } else if (template_name == "MultiphaseTemplate") {
         return new MultiphaseTemplate(num_components);
+    } else if (template_name == "PiecewiseTemplate") {
+        return new PiecewiseTemplate(num_components);
     } else {
         throw std::invalid_argument("Unknown template name: " + template_name);
     }
@@ -102,7 +105,7 @@ AnalysisResult RankingBasedTechnique::analyze() {
     bool verbosity = (VERBOSITY == VerbosityLevel::VERBOSE);
 
     bool is_nested = (template_name_ == "NestedTemplate" || template_name_ == "LexicographicTemplate"
-                    || template_name_ == "MultiphaseTemplate");
+                    || template_name_ == "MultiphaseTemplate" || template_name_ == "PiecewiseTemplate");
     int nc_min = (num_components_ > 0) ? num_components_ : 1;
     int nc_max = is_nested ? max_components_ : nc_min;
 
@@ -250,7 +253,7 @@ void RankingBasedTechnique::cancel() {
 
 std::string RankingBasedTechnique::getName() const {
     bool is_nested = (template_name_ == "NestedTemplate" || template_name_ == "LexicographicTemplate"
-                    || template_name_ == "MultiphaseTemplate");
+                    || template_name_ == "MultiphaseTemplate" || template_name_ == "PiecewiseTemplate");
     if (is_nested && num_components_ > 0) {
         if (max_components_ > num_components_)
             return "RankingBased(" + std::to_string(num_components_) + "-" + std::to_string(max_components_) + "-" + template_name_ + ")";
