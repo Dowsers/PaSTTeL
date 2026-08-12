@@ -334,17 +334,11 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
         stem_out_vars.push_back(lasso_.stem.getSSAVar(var, true));
     }
 
-    int num_loop_polys = static_cast<int>(lasso_.loop.polyhedra.size());
-    int ntp = (num_template_parts_ > 0) ? num_template_parts_ : 1;
-
     // Pour chaque SIG local : sig_idx = p * ntp + m
     for (int sig_idx = 0; sig_idx < static_cast<int>(local_sigs_.size()); ++sig_idx) {
         const auto& sig = local_sigs_[sig_idx];
         int num_si = sig->getNumSI();
         if (num_si == 0) continue;
-
-        // Branche de boucle associee a ce SIG
-        int p = (num_loop_polys > 0) ? (sig_idx / ntp) : 0;
 
         // ----------------------------------------------------------------
         // phi1 : stem(x,x') -> SI_k(x') >= 0
@@ -376,16 +370,16 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
         }
 
         // ----------------------------------------------------------------
-        // phi2 : SI_k(x) /\ branch_p(x,x') -> SI_k(x') >= 0
-        // Chaque SIG est inductive uniquement pour sa branche p.
+        // phi2 : SI_k(x) /\ loop(x,x') -> SI_k(x') >= 0
+        // Checked against every loop branch
         // ----------------------------------------------------------------
-        if (p < num_loop_polys) {
-            const auto& polyhedron = lasso_.loop.polyhedra[p];
-            for (int k = 0; k < num_si; ++k) {
+        for (int k = 0; k < num_si; ++k) {
+            int loop_poly_idx = 0;
+            for (const auto& polyhedron : lasso_.loop.polyhedra) {
                 RankingTemplate::MotzkinContext ctx;
                 ctx.annotation = "phi2: SIG" + std::to_string(sig_idx)
                                + " SI_" + std::to_string(k)
-                               + " consecution (loop poly " + std::to_string(p) + ")";
+                               + " consecution (loop poly " + std::to_string(loop_poly_idx) + ")";
 
                 for (const auto& ineq : polyhedron) {
                     ctx.constraints.push_back(ineq);
@@ -406,6 +400,7 @@ GenericTerminationSynthesizer::buildPhi12Contexts() const
                     std::cout << "  [phi12] " << ctx.annotation << std::endl;
 
                 contexts.push_back(ctx);
+                loop_poly_idx++;
             }
         }
     }
