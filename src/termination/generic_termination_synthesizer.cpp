@@ -444,6 +444,19 @@ void GenericTerminationSynthesizer::applyMotzkinTransformations(
         all_vars.insert(abs.fresh_var);
     }
 
+    // Safety net: also eliminate vars missing from var_to_ssa_in/out but still
+    // referenced by a constraint row (e.g. a stale dead-variable-removal pass).
+    // Otherwise their Farkas weight stays free/unbounded, letting the solver
+    // fake a certificate without actually cancelling that coefficient.
+    for (const auto& ctx : contexts) {
+        for (const auto& ineq : ctx.constraints) {
+            for (const auto& [var, coef] : ineq.coefficients) {
+                (void)coef;
+                all_vars.insert(var);
+            }
+        }
+    }
+
     if (verbose) {
         std::cout << "\n  First few contexts:" << std::endl;
         int display_count = std::min(6, (int)contexts.size());
