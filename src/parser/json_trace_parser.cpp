@@ -673,6 +673,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // so that the formulas become linear for Motzkin transformation.
     std::unique_ptr<FormulaLinearizer> linearizer = NULL;
     bool needs_linearizer = !lasso.functions.empty() || has_arrays || has_divmod || !bool_vars.empty();
+    ArrayHandler* array_handler_raw = nullptr;  // kept to register its aux vars after parsing (see below)
 
     if (needs_linearizer && linearize) {
 
@@ -719,6 +720,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         // Add ArrayHandler for array select operations
         if (has_arrays) {
             auto array_handler = std::make_unique<ArrayHandler>();
+            array_handler_raw = array_handler.get();
             linearizer->addHandler(std::move(array_handler));
 
             if (VERBOSITY == VerbosityLevel::VERBOSE) {
@@ -833,6 +835,22 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // They must be declared in the solver but carry no ranking-function coefficient.
     addFreeAuxVariables(lasso, stem_lines, loop_lines);
 
+    // 8d. Register ArrayHandler's own aux vars (created for UNKNOWN index relations
+    // during store elimination) -- these don't exist in the JSON's aux_vars, since
+    // ArrayHandler minted them itself during preprocessing.
+    if (array_handler_raw) {
+        for (const auto& fv : array_handler_raw->getAuxVarNames()) {
+            FunctionAbstraction abs;
+            abs.fresh_var = fv;
+            abs.sort = array_handler_raw->getDefaultElementSort();
+            abs.original_call = "";
+            lasso.function_abstractions.push_back(abs);
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "  Array aux var declared: " << fv << " (" << abs.sort << ")" << std::endl;
+            }
+        }
+    }
+
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
     }
@@ -917,7 +935,8 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
     std::vector<LinearInequality> inequalities;
     std::unique_ptr<FormulaLinearizer> linearizer = NULL;
     FormulaRewriter * rewriter = NULL;
-    
+    ArrayHandler* array_handler_raw = nullptr;  // kept to register its aux vars after parsing (see below)
+
     if (formula == "false") {
         throw std::runtime_error("Formula is false. It's not a valid lasso program");
     }
@@ -942,6 +961,7 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
         // Add ArrayHandler for array select operations
         if (has_arrays) {
             auto array_handler = std::make_unique<ArrayHandler>();
+            array_handler_raw = array_handler.get();
             linearizer->addHandler(std::move(array_handler));
 
             if (VERBOSITY == VerbosityLevel::VERBOSE) {
@@ -995,14 +1015,21 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
     if (!trans.formula.empty() && trans.formula != "true") {
         try {
             std::string formula_to_parse = trans.formula;
-            if(rewriter)
-                formula_to_parse = rewriter->rewrite(formula_to_parse);
+            // Let-inlining always runs first (see parseTransition() for why).
+            formula_to_parse = RewriteLet().rewrite(formula_to_parse);
+            // Array/UF/nonlinear-mult elimination runs BEFORE equality/div-mod/boolean
+            // rewriting (mirrors Ultimate LassoRanker's mapElimination-before-everything-else
+            // pipeline order) -- otherwise RewriteEquality's (= x E) -> (and (<= x E)(>= x E))
+            // split duplicates E textually, and a nested select/store chain in E gets
+            // independently re-elaborated by ArrayHandler once per copy.
             if (linearizer) {
                 LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
                 if (lin_result.was_modified) {
                     formula_to_parse = lin_result.linearized_formula;
                 }
             }
+            if(rewriter)
+                formula_to_parse = rewriter->rewrite(formula_to_parse);
 
             trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
         } catch (const std::exception& e) {
@@ -1015,6 +1042,22 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
         rewriter->storeAuxVarsToLasso(lasso);
     if (linearizer)
         linearizer->storeAbstractionsToLasso(lasso);
+
+    // Register ArrayHandler's own aux vars (created for UNKNOWN index relations
+    // during store elimination) -- these don't exist in the JSON's aux_vars, since
+    // ArrayHandler minted them itself during preprocessing.
+    if (array_handler_raw) {
+        for (const auto& fv : array_handler_raw->getAuxVarNames()) {
+            FunctionAbstraction abs;
+            abs.fresh_var = fv;
+            abs.sort = array_handler_raw->getDefaultElementSort();
+            abs.original_call = "";
+            lasso.function_abstractions.push_back(abs);
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "  Array aux var declared: " << fv << " (" << abs.sort << ")" << std::endl;
+            }
+        }
+    }
 
     return trans;
 }
@@ -1076,6 +1119,35 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
             if(VERBOSITY == VerbosityLevel::VERBOSE) {
                 std::cout << "\nOriginal formula: " << formula_to_parse << std::endl;
             }
+
+            // Let-inlining always runs first, ahead of everything else -- unlike
+            // Ultimate, which never has textual "let" at all (its Term objects are
+            // hash-consed/DAG-shared internally; "let" only shows up when a Term
+            // gets printed to text, e.g. these trace dumps' .cseN aliases for CSE).
+            // ArrayHandler/UFHandler pattern-match raw S-expression syntax, so a
+            // store hidden behind a let-bound alias is invisible to them otherwise.
+            formula_to_parse = RewriteLet().rewrite(formula_to_parse);
+
+            if(VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "After let-inlining: " << formula_to_parse << std::endl;
+            }
+
+            // Array/UF/nonlinear-mult elimination runs BEFORE equality/div-mod/boolean
+            // rewriting (mirrors Ultimate LassoRanker's mapElimination-before-everything-else
+            // pipeline order) -- otherwise RewriteEquality's (= x E) -> (and (<= x E)(>= x E))
+            // split duplicates E textually, and a nested select/store chain in E gets
+            // independently re-elaborated by ArrayHandler once per copy.
+            if (linearizer) {
+                LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
+                if (lin_result.was_modified) {
+                    formula_to_parse = lin_result.linearized_formula;
+                }
+            }
+
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "After linearizing: " << formula_to_parse << std::endl;
+            }
+
             if(rewriter)
                 formula_to_parse = rewriter->rewrite(formula_to_parse);
 
@@ -1083,12 +1155,6 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
                 std::cout << "After rewriting: " << formula_to_parse << std::endl;
             }
 
-            if (linearizer) {
-                LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
-                if (lin_result.was_modified) {
-                    formula_to_parse = lin_result.linearized_formula;
-                }
-            }
             if (linearize)
                 trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
 

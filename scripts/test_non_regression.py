@@ -9,12 +9,13 @@ To add a test case, append a tuple to CASES:
 """
 
 import os
+import re
 import subprocess
 import sys
 import unittest
 
 PASTTEL_BIN = os.environ.get("PASTTEL_BIN", "./bin/pasttel")
-CPUS=6
+CPUS=3
 
 # ---------------------------------------------------------------------------
 # Test cases — format: (file, expected_result, mode[, cpus])
@@ -63,14 +64,22 @@ CASES = [
     ("examples/affine_rf_with_div_aux.json",				"TERMINATING",     "both",        CPUS),    
     ("examples/DivMinus2_no-overflow_term.json",			"TERMINATING",     "both",        CPUS),    
     ("examples/CallNTimes_bpl_gnta.json",				"NON-TERMINATING", "both",        CPUS),    
-    ("examples/threadpooling_product_WithProcedures_gnta.json", 	"NON-TERMINATING", "both",        CPUS),    
+    ("examples/threadpooling_product_WithProcedures_gnta.json", 	"NON-TERMINATING", "both",        CPUS),
+    ("examples/test_array_index_equal_syntactic.json",			"TERMINATING",     "both"),
+    ("examples/test_array_index_not_equal_proved.json",		"NON-TERMINATING", "both"),
+    ("examples/test_array_index_equal_proved.json",			"TERMINATING",     "both"),
+    ("examples/test_array_index_unknown_case_split.json",		"NON-TERMINATING", "both"),
+    ("examples/test_array_chain_outer_equal_skip.json",		"TERMINATING",     "both"),
+    ("examples/test_array_chain_not_equal_then_equal.json",		"TERMINATING",     "both"),
+    ("examples/test_array_chain_double_unknown.json",			"NON-TERMINATING", "both"),
+    ("examples/test_array_chain_triple_unknown.json",			"NON-TERMINATING", "both"),
 ]
 
 
 def make_test(file, expected, mode, cpus=1, solver="z3"):
     def test_method(self):
         result = subprocess.run(
-            [PASTTEL_BIN, file, "-a", mode, "-q", "-c", str(cpus), "-s", solver],
+            [PASTTEL_BIN, file, "-a", mode, "-q", "-c", str(cpus), "-s", solver, "-t", "200"],
             capture_output=True, text=True
         )
         output = result.stdout + result.stderr
@@ -97,6 +106,117 @@ for solver in ["cvc5","z3"]:#, "cvc5"]:
             i += 1
         attrs[name] = make_test(file, expected, mode, cpus, solver)
 NonRegressionTests = type("NonRegressionTests", (unittest.TestCase,), attrs)
+
+
+# ---------------------------------------------------------------------------
+# ArrayHandler transformation cases — format: (file, expected "[ArrayHandler]
+# After:" text)
+#
+# These check ArrayHandler's own text transformation directly, independent of
+# the overall verdict: for NOT_EQUAL/UNKNOWN cases, non-termination detection
+# (Fixpoint) can reach the correct answer via Z3's own native array theory
+# without ever exercising ArrayHandler (it "wins the race" before
+# RankingBased's linearize() call runs). "-a terminate" forces RankingBased
+# to run regardless, so ArrayHandler's transformation is always exercised.
+#
+# Aux var names (arr__ite__N) come from a process-wide atomic counter shared
+# across every linearize() call in the run, so their exact number is not
+# stable across invocations -- normalize_aux_vars() canonicalizes them by
+# order of first appearance before comparing.
+# ---------------------------------------------------------------------------
+
+ARRAY_HANDLER_CASES = [
+    ("examples/test_array_index_equal_syntactic.json",
+     "(and (> v_i_2 0) (= v_x_1 1) (= v_i_3 (- v_i_2 v_x_1)))"),
+    ("examples/test_array_index_not_equal_proved.json",
+     "(and (> v_n_2 0) (> v_m_2 (+ v_n_2 1)) (= v_x_1 (select v_A_2 v_m_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_index_equal_proved.json",
+     "(and (> v_n_2 0) (= v_m_2 v_n_2) (= v_x_1 4) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_index_unknown_case_split.json",
+     "(and (and (> v_n_2 0) (= v_x_1 arr__ite__0) (= v_n_3 (- v_n_2 v_x_1))) "
+     "(or (or (< v_n_2 v_m_2) (> v_n_2 v_m_2)) (and (<= arr__ite__0 4) (>= arr__ite__0 4))) "
+     "(or (and (<= v_n_2 v_m_2) (>= v_n_2 v_m_2)) (and (<= arr__ite__0 (select v_A_2 v_m_2)) (>= arr__ite__0 (select v_A_2 v_m_2)))))"),
+    ("examples/test_array_chain_outer_equal_skip.json",
+     "(and (> v_n_2 0) (= v_m_2 v_n_2) (= v_x_1 4) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_chain_not_equal_then_equal.json",
+     "(and (> v_n_2 0) (> v_m_2 v_n_2) (= v_k_2 v_m_2) (= v_x_1 3) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_chain_double_unknown.json",
+     "(and (and (> v_n_2 0) (= v_x_1 arr__ite__1) (= v_n_3 (- v_n_2 v_x_1))) "
+     "(or (or (< v_m_2 v_k_2) (> v_m_2 v_k_2)) (and (<= arr__ite__0 1) (>= arr__ite__0 1))) "
+     "(or (and (<= v_m_2 v_k_2) (>= v_m_2 v_k_2)) (and (<= arr__ite__0 (select v_A_2 v_k_2)) (>= arr__ite__0 (select v_A_2 v_k_2)))) "
+     "(or (or (< v_n_2 v_k_2) (> v_n_2 v_k_2)) (and (<= arr__ite__1 2) (>= arr__ite__1 2))) "
+     "(or (and (<= v_n_2 v_k_2) (>= v_n_2 v_k_2)) (and (<= arr__ite__1 arr__ite__0) (>= arr__ite__1 arr__ite__0))))"),
+    ("examples/test_array_chain_triple_unknown.json",
+     "(and (and (> v_n_2 0) (= v_x_1 arr__ite__2) (= v_n_3 (- v_n_2 v_x_1))) "
+     "(or (or (< v_k_2 v_p_2) (> v_k_2 v_p_2)) (and (<= arr__ite__0 1) (>= arr__ite__0 1))) "
+     "(or (and (<= v_k_2 v_p_2) (>= v_k_2 v_p_2)) (and (<= arr__ite__0 (select v_A_2 v_p_2)) (>= arr__ite__0 (select v_A_2 v_p_2)))) "
+     "(or (or (< v_m_2 v_p_2) (> v_m_2 v_p_2)) (and (<= arr__ite__1 2) (>= arr__ite__1 2))) "
+     "(or (and (<= v_m_2 v_p_2) (>= v_m_2 v_p_2)) (and (<= arr__ite__1 arr__ite__0) (>= arr__ite__1 arr__ite__0))) "
+     "(or (or (< v_n_2 v_p_2) (> v_n_2 v_p_2)) (and (<= arr__ite__2 3) (>= arr__ite__2 3))) "
+     "(or (and (<= v_n_2 v_p_2) (>= v_n_2 v_p_2)) (and (<= arr__ite__2 arr__ite__1) (>= arr__ite__2 arr__ite__1))))"),
+]
+
+
+def normalize_aux_vars(text):
+    """Canonicalize arr__ite__N names by order of first appearance.
+
+    The underlying counter is a single process-wide atomic shared across
+    every linearize() call in a run, so the exact N is not stable across
+    invocations -- only the *structure* (which occurrences share a name)
+    is meaningful.
+    """
+    seen = {}
+    def repl(m):
+        name = m.group(0)
+        if name not in seen:
+            seen[name] = f"AUX{len(seen)}"
+        return seen[name]
+    return re.sub(r"arr__ite__\d+", repl, text)
+
+
+def make_array_handler_test(file, expected_after):
+    def test_method(self):
+        # ArrayHandler's transformation happens during parsing, seconds before
+        # any ranking-function search starts -- capture it via a short timeout
+        # rather than waiting for "-a terminate" to exhaustively search every
+        # template/config/component (genuinely non-terminating array cases
+        # force that whole search to run to completion and fail, which can
+        # take much longer than the answer we actually need here).
+        try:
+            result = subprocess.run(
+                [PASTTEL_BIN, file, "-a", "terminate", "-v"],
+                capture_output=True, text=True, timeout=10
+            )
+            output = result.stdout + result.stderr
+        except subprocess.TimeoutExpired as e:
+            def as_text(x):
+                if x is None:
+                    return ""
+                return x.decode("utf-8", errors="replace") if isinstance(x, bytes) else x
+            output = as_text(e.stdout) + as_text(e.stderr)
+        match = re.search(r"\[ArrayHandler\] After:\s*(.+)", output)
+        self.assertIsNotNone(
+            match,
+            f"\nFile: {file}\nNo '[ArrayHandler] After:' line found in output.\n"
+            f"Output (first 2000 chars):\n{output[:2000]}"
+        )
+        actual = normalize_aux_vars(match.group(1).strip())
+        expected_norm = normalize_aux_vars(expected_after)
+        self.assertEqual(
+            expected_norm, actual,
+            f"\nFile    : {file}\nExpected: {expected_norm}\nGot     : {actual}"
+        )
+    return test_method
+
+
+array_handler_attrs = {}
+for file, expected_after in ARRAY_HANDLER_CASES:
+    name = "test_arrayhandler_" + os.path.splitext(os.path.basename(file))[0]
+    array_handler_attrs[name] = make_array_handler_test(file, expected_after)
+ArrayHandlerTransformationTests = type(
+    "ArrayHandlerTransformationTests", (unittest.TestCase,), array_handler_attrs
+)
+
 
 if __name__ == "__main__":
     # Write JUnit XML to test-reports/ if xmlrunner is available, else use default runner

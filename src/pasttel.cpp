@@ -28,9 +28,9 @@ LinearMode LINEAR_MODE = LINEAR;
 
 // Configurations par défaut pour les templates de ranking
 std::vector<TemplateConfig> configs = {
+   {0, 0, "(0, 0)"},
     {0, 1, "(0, 1)"},
     // {1, 0, "(1, 0)"},
-    // {0, 0, "(0, 0)"},
     // {0, 2, "(0, 2)"},
     // {1, 1, "(1, 1)"},
     // {2, 0, "(2, 0)"},

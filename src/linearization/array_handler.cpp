@@ -1,7 +1,10 @@
 #include <sstream>
 #include <iostream>
+#include <atomic>
+#include <cctype>
 
 #include "linearization/array_handler.h"
+#include "smtsolvers/SMTSolverZ3.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;
@@ -40,6 +43,112 @@ std::string ArrayHandler::getName() const {
 
 // splitSExpr() and trim() are now inline in the header, delegating to SExprUtils.
 
+std::string ArrayHandler::freshAuxVar() const {
+    static std::atomic<int> s_counter{0};
+    std::string name = "arr__ite__" + std::to_string(s_counter++);
+    m_created_aux_vars.push_back(name);
+    return name;
+}
+
+namespace {
+// RewriteEquality runs before ArrayHandler, so any "=" atom minted here would
+// never get its usual (<=,>=) split and the downstream DNF parser rejects
+// bare "=". Pre-split it ourselves, matching what RewriteEquality would do.
+std::string eq(const std::string& a, const std::string& b) {
+    return "(and (<= " + a + " " + b + ") (>= " + a + " " + b + "))";
+}
+// Same reasoning for disequality: avoid emitting "(not (= a b))".
+std::string neq(const std::string& a, const std::string& b) {
+    return "(or (< " + a + " " + b + ") (> " + a + " " + b + "))";
+}
+}  // namespace
+
+// ============================================================================
+// CLASSIFICATION D'INDEX -- decision SMT reelle, jamais une supposition
+// syntaxique. Matches Ultimate LassoRanker's IndexAnalyzer.
+// ============================================================================
+
+namespace {
+
+bool isIdentifierAtom(const std::string& s) {
+    if (s.empty() || s == "true" || s == "false") return false;
+    size_t i = (s[0] == '-') ? 1 : 0;
+    if (i >= s.size()) return false;
+    for (; i < s.size(); ++i) {
+        if (!std::isdigit(static_cast<unsigned char>(s[i]))) return true;  // has a non-digit -> identifier
+    }
+    return false;  // all digits (with optional leading '-') -> numeral
+}
+
+// Collects free identifiers from an S-expression, classifying each as a
+// scalar or an array based on whether it's ever used as select/store's
+// first argument. Best-effort: this is only used to declare variables for
+// throwaway satisfiability probes, not for the real analysis.
+void collectIdentifiers(const std::string& expr, std::set<std::string>& scalars,
+                        std::set<std::string>& arrays) {
+    std::string t = SExprUtils::trim(expr);
+    if (t.empty()) return;
+    if (t[0] != '(') {
+        if (isIdentifierAtom(t) && !arrays.count(t)) scalars.insert(t);
+        return;
+    }
+
+    auto tokens = SExprUtils::splitSExpr(t);
+    if (tokens.empty()) return;
+
+    size_t start = 1;
+    if ((tokens[0] == "select" || tokens[0] == "store") && tokens.size() >= 2) {
+        std::string arr_tok = SExprUtils::trim(tokens[1]);
+        if (!arr_tok.empty() && arr_tok[0] != '(' && isIdentifierAtom(arr_tok)) {
+            arrays.insert(arr_tok);
+            scalars.erase(arr_tok);
+        } else {
+            collectIdentifiers(tokens[1], scalars, arrays);
+        }
+        start = 2;
+    }
+    for (size_t i = start; i < tokens.size(); ++i) {
+        collectIdentifiers(tokens[i], scalars, arrays);
+    }
+}
+
+}  // namespace
+
+bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::string& extra_assertion) const {
+    std::set<std::string> scalars, arrays;
+    collectIdentifiers(context, scalars, arrays);
+    collectIdentifiers(extra_assertion, scalars, arrays);
+
+    SMTSolverZ3 solver(false);
+    for (const auto& a : arrays) {
+        solver.declareVariable(a, "(Array Int " + m_default_element_sort + ")");
+    }
+    for (const auto& s : scalars) {
+        solver.declareVariable(s, m_default_element_sort);
+    }
+
+    std::string ctx = SExprUtils::trim(context);
+    if (!ctx.empty() && ctx != "true") solver.addAssertion(ctx);
+    solver.addAssertion(extra_assertion);
+    return solver.checkSat();
+}
+
+ArrayHandler::IndexRelation ArrayHandler::classifyIndices(
+    const std::string& idx1, const std::string& idx2, const std::string& context) const
+{
+    if (SExprUtils::trim(idx1) == SExprUtils::trim(idx2)) {
+        return IndexRelation::EQUAL;  // syntactic fast path -- still a correct answer
+    }
+
+    bool eq_possible = isSatisfiableWith(context, "(= " + idx1 + " " + idx2 + ")");
+    if (!eq_possible) return IndexRelation::NOT_EQUAL;
+
+    bool neq_possible = isSatisfiableWith(context, "(not (= " + idx1 + " " + idx2 + "))");
+    if (!neq_possible) return IndexRelation::EQUAL;
+
+    return IndexRelation::UNKNOWN;
+}
+
 // ============================================================================
 // PREPROCESSING : point d'entree
 // ============================================================================
@@ -56,14 +165,29 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
         std::cout << "  [ArrayHandler] Preprocessing store expressions..." << std::endl;
     }
 
+    // Note: m_created_aux_vars accumulates across ALL transitions handled by
+    // this instance (stem + loop share one ArrayHandler) -- never cleared here.
+    std::vector<std::string> extra;
+
     // Etape 1 : simplifier (select (store ...) ...) par read-over-write
-    std::string result = simplifySelectStore(trimmed);
+    std::string result = simplifySelectStore(trimmed, trimmed, extra);
 
     // Etape 2 : expanser les egalites store en egalites select
-    result = expandStoreEqualities(result);
+    result = expandStoreEqualities(result, trimmed, extra);
+
+    if (!extra.empty()) {
+        std::ostringstream oss;
+        oss << "(and " << result;
+        for (const auto& e : extra) oss << " " << e;
+        oss << ")";
+        result = oss.str();
+    }
 
     if (verbose && result != formula) {
-        std::cout << "  [ArrayHandler] Store elimination done." << std::endl;
+        std::cout << "  [ArrayHandler] Before: " << formula << std::endl;
+        std::cout << "  [ArrayHandler] After:  " << result << std::endl;
+        std::cout << "  [ArrayHandler] Store elimination done ("
+                  << m_created_aux_vars.size() << " aux var(s))." << std::endl;
     }
 
     return result;
@@ -71,12 +195,15 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
 
 // ============================================================================
 // READ-OVER-WRITE : (select (store arr idx val) j)
-//   si idx == j : val
-//   si idx != j : (select arr j)
-// Hypothese : indices syntaxiquement differents => distincts.
+//   classifyIndices(idx, j) == EQUAL     -> val
+//   classifyIndices(idx, j) == NOT_EQUAL -> (select arr j)
+//   classifyIndices(idx, j) == UNKNOWN   -> fresh aux var + guarded disjunctions
+//                                            (idx≠j ∨ aux=val) ∧ (idx=j ∨ aux=other)
 // ============================================================================
 
-std::string ArrayHandler::simplifySelectStore(const std::string& expr) {
+std::string ArrayHandler::simplifySelectStore(
+    const std::string& expr, const std::string& context, std::vector<std::string>& extra) const
+{
     std::string trimmed = trim(expr);
     if (trimmed.empty() || trimmed[0] != '(') return trimmed;
 
@@ -87,7 +214,7 @@ std::string ArrayHandler::simplifySelectStore(const std::string& expr) {
     std::vector<std::string> simplified;
     simplified.push_back(tokens[0]);
     for (size_t i = 1; i < tokens.size(); ++i) {
-        simplified.push_back(simplifySelectStore(tokens[i]));
+        simplified.push_back(simplifySelectStore(tokens[i], context, extra));
     }
 
     // Check for (select (store arr idx val) j)
@@ -102,12 +229,18 @@ std::string ArrayHandler::simplifySelectStore(const std::string& expr) {
                 std::string idx = store_tokens[2];
                 std::string val = store_tokens[3];
 
-                if (idx == j) {
-                    // Same index: return the stored value
+                IndexRelation rel = classifyIndices(idx, j, context);
+                if (rel == IndexRelation::EQUAL) {
                     return val;
+                } else if (rel == IndexRelation::NOT_EQUAL) {
+                    return simplifySelectStore("(select " + inner_arr + " " + j + ")", context, extra);
                 } else {
-                    // Different index: skip the store, recurse
-                    return simplifySelectStore("(select " + inner_arr + " " + j + ")");
+                    std::string other = simplifySelectStore(
+                        "(select " + inner_arr + " " + j + ")", context, extra);
+                    std::string aux = freshAuxVar();
+                    extra.push_back("(or " + neq(idx, j) + " " + eq(aux, val) + ")");
+                    extra.push_back("(or " + eq(idx, j) + " " + eq(aux, other) + ")");
+                    return aux;
                 }
             }
         }
@@ -127,7 +260,9 @@ std::string ArrayHandler::simplifySelectStore(const std::string& expr) {
 // EXPANSION DES STORE-EGALITES EN SELECT-EGALITES
 // ============================================================================
 
-std::string ArrayHandler::expandStoreEqualities(const std::string& formula) {
+std::string ArrayHandler::expandStoreEqualities(
+    const std::string& formula, const std::string& context, std::vector<std::string>& extra) const
+{
     std::string trimmed = trim(formula);
     if (trimmed.empty() || trimmed[0] != '(' || trimmed.find("store") == std::string::npos) {
         return formula;
@@ -146,7 +281,7 @@ std::string ArrayHandler::expandStoreEqualities(const std::string& formula) {
         // Process each conjunct
         std::vector<std::string> new_conjuncts;
         for (size_t i = 1; i < tokens.size(); ++i) {
-            auto expanded = expandSingleConjunct(tokens[i], all_indices);
+            auto expanded = expandSingleConjunct(tokens[i], all_indices, context, extra);
             new_conjuncts.insert(new_conjuncts.end(), expanded.begin(), expanded.end());
         }
 
@@ -162,7 +297,7 @@ std::string ArrayHandler::expandStoreEqualities(const std::string& formula) {
     }
 
     // Single formula that might be a store equality
-    auto expanded = expandSingleConjunct(trimmed, all_indices);
+    auto expanded = expandSingleConjunct(trimmed, all_indices, context, extra);
     if (expanded.size() == 1) return expanded[0];
 
     std::ostringstream result;
@@ -175,7 +310,8 @@ std::string ArrayHandler::expandStoreEqualities(const std::string& formula) {
 }
 
 std::vector<std::string> ArrayHandler::expandSingleConjunct(
-    const std::string& conjunct, const std::set<std::string>& all_indices)
+    const std::string& conjunct, const std::set<std::string>& all_indices,
+    const std::string& context, std::vector<std::string>& extra) const
 {
     auto tokens = splitSExpr(conjunct);
     if (tokens.size() != 3 || tokens[0] != "=") {
@@ -204,13 +340,13 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
     // For each concrete index, generate (= (select arr_new idx) evaluated_value)
     std::vector<std::string> result;
     for (const auto& idx : all_indices) {
-        std::string value = evaluateStoreAtIndex(store_expr, idx);
+        std::string value = evaluateStoreAtIndex(store_expr, idx, context, extra);
         std::string new_select = "(select " + arr_new + " " + idx + ")";
 
         // Skip tautologies (value == the select on same array at same index)
         if (value == new_select) continue;
 
-        result.push_back("(= " + new_select + " " + value + ")");
+        result.push_back(eq(new_select, value));
     }
 
     if (result.empty()) {
@@ -225,7 +361,8 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
 // ============================================================================
 
 std::string ArrayHandler::evaluateStoreAtIndex(
-    const std::string& store_expr, const std::string& index)
+    const std::string& store_expr, const std::string& index,
+    const std::string& context, std::vector<std::string>& extra) const
 {
     std::string trimmed = trim(store_expr);
 
@@ -243,10 +380,17 @@ std::string ArrayHandler::evaluateStoreAtIndex(
     std::string store_idx = tokens[2];
     std::string store_val = tokens[3];
 
-    if (store_idx == index) {
+    IndexRelation rel = classifyIndices(store_idx, index, context);
+    if (rel == IndexRelation::EQUAL) {
         return store_val;
+    } else if (rel == IndexRelation::NOT_EQUAL) {
+        return evaluateStoreAtIndex(inner_arr, index, context, extra);
     } else {
-        return evaluateStoreAtIndex(inner_arr, index);
+        std::string other = evaluateStoreAtIndex(inner_arr, index, context, extra);
+        std::string aux = freshAuxVar();
+        extra.push_back("(or " + neq(store_idx, index) + " " + eq(aux, store_val) + ")");
+        extra.push_back("(or " + eq(store_idx, index) + " " + eq(aux, other) + ")");
+        return aux;
     }
 }
 
