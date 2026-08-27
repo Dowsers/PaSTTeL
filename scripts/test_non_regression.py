@@ -72,7 +72,12 @@ CASES = [
     ("examples/test_array_chain_outer_equal_skip.json",		"TERMINATING",     "both"),
     ("examples/test_array_chain_not_equal_then_equal.json",		"TERMINATING",     "both"),
     ("examples/test_array_chain_double_unknown.json",			"NON-TERMINATING", "both"),
+    ("examples/test_array_nested_store_equality_2d.json",		"TERMINATING",     "both"),
+    ("examples/test_array_nested_store_equality_or.json",		"TERMINATING",     "both"),
+    ("examples/test_array_nested_store_equality_3d.json",		"UNKNOWN",         "both"),
     ("examples/test_array_chain_triple_unknown.json",			"NON-TERMINATING", "both"),
+    ("examples/test_array_scoping_unrelated_indices.json",		"TERMINATING",     "both"),
+    ("examples/test_array_scoping_two_arrays.json",			"TERMINATING",     "both"),
 ]
 
 
@@ -154,6 +159,29 @@ ARRAY_HANDLER_CASES = [
      "(or (and (<= v_m_2 v_p_2) (>= v_m_2 v_p_2)) (and (<= arr__ite__1 arr__ite__0) (>= arr__ite__1 arr__ite__0))) "
      "(or (or (< v_n_2 v_p_2) (> v_n_2 v_p_2)) (and (<= arr__ite__2 3) (>= arr__ite__2 3))) "
      "(or (and (<= v_n_2 v_p_2) (>= v_n_2 v_p_2)) (and (<= arr__ite__2 arr__ite__1) (>= arr__ite__2 arr__ite__1))))"),
+    ("examples/test_array_nested_store_equality_2d.json",
+     "(and (> v_n_2 0) (> v_j_2 v_i_2) "
+     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4)) "
+     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_nested_store_equality_or.json",
+     "(and (> v_n_2 0) (> v_j_2 v_i_2) (= v_i_2 1) "
+     "(or (and (= v_i_2 1) "
+     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4))) "
+     "(and (= v_i_2 2) (= v_A_3 v_A_2))) "
+     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_nested_store_equality_3d.json",
+     "(and (> v_n_2 0) (> v_j_2 v_i_2) (> v_k_2 v_j_2) "
+     "(and (<= (select (select (select v_A_3 v_i_2) v_j_2) v_k_2) 5) (>= (select (select (select v_A_3 v_i_2) v_j_2) v_k_2) 5)) "
+     "(= v_x_1 (select (select (select v_A_3 v_i_2) v_j_2) v_k_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_scoping_unrelated_indices.json",
+     "(and (> v_n_2 0) (> v_j_2 v_i_2) (> v_m_2 v_k_2) "
+     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4)) "
+     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_array_scoping_two_arrays.json",
+     "(and (> v_n_2 0) (> v_j_2 v_i_2) "
+     "(and (<= (select v_A_3 v_i_2) 4) (>= (select v_A_3 v_i_2) 4)) "
+     "(and (<= (select v_B_3 v_k_2) 7) (>= (select v_B_3 v_k_2) 7)) "
+     "(= v_x_1 (select v_A_3 v_i_2)) (= v_y_1 (select v_B_3 v_k_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
 ]
 
 

@@ -1002,9 +1002,10 @@ PASTTEL_SUPPORTED_TERM_ALGOS = {
 def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
     """Return True if the Ultimate termination algorithm is implemented by PaSTTeL.
 
-    PaSTTeL only supports Affine and Nested templates for termination.
-    Lex, Phase, n-Phase, n-Lex, … are NOT supported.
-    n-Nested (e.g. 4-nested) IS supported because PaSTTeL has NestedTemplate.
+    PaSTTeL has AffineTemplate, NestedTemplate, LexicographicTemplate,
+    MultiphaseTemplate and PiecewiseTemplate. n-Nested/n-Phase/n-Lex (e.g.
+    "4-nested", "2-phase") ARE supported since PaSTTeL's templates take a
+    component-count range too.
     """
     name = u_algo_raw.strip().lower()
     # Strip optional numeric prefix: "4-nested" → base="nested"
@@ -1012,7 +1013,7 @@ def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
     base = m.group(2) if m else name
     # Also strip " template" suffix for already-normalised display labels
     base = re.sub(r'\s+template$', '', base).strip()
-    return base in ("affine", "nested")
+    return base in ("affine", "nested", "lex", "lexicographic", "phase", "piecewise")
 
 
 def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-baseline"):

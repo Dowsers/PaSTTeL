@@ -416,7 +416,8 @@ void storeAbstractFunctionsToLasso(LassoProgram& lasso,
 
 void addFreeAuxVariables(LassoProgram& lasso,
                 const std::vector<UltimateTransitionLine>& stem_lines,
-                const std::vector<UltimateTransitionLine>& loop_lines) {
+                const std::vector<UltimateTransitionLine>& loop_lines,
+                ArrayHandler* array_handler_raw = nullptr) {
     std::set<std::string> already_declared;
     for (const auto& abs : lasso.function_abstractions) {
         already_declared.insert(abs.fresh_var);
@@ -425,13 +426,24 @@ void addFreeAuxVariables(LassoProgram& lasso,
         for (const auto& line : lines) {
             for (const auto& fv : line.free_vars) {
                 if (already_declared.insert(fv).second) {
+                    // A free var can be array-typed -- e.g. a local variable
+                    // only ever named via an "A' = (store A i v)" equality,
+                    // never an in/out var, so setVarSorts() never covered it.
+                    // ArrayHandler learns exactly this case while eliminating
+                    // stores (see expandSingleConjunct); consult it instead
+                    // of defaulting straight to "Int".
+                    std::string sort = "Int";
+                    if (array_handler_raw) {
+                        std::string known = array_handler_raw->getKnownSort(fv);
+                        if (!known.empty()) sort = known;
+                    }
                     FunctionAbstraction abs;
                     abs.fresh_var = fv;
-                    abs.sort = "Int";
+                    abs.sort = sort;
                     abs.original_call = "";
                     lasso.function_abstractions.push_back(abs);
                     if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                        std::cout << "  Free aux var declared: " << fv << " (Int)" << std::endl;
+                        std::cout << "  Free aux var declared: " << fv << " (" << sort << ")" << std::endl;
                     }
                 }
             }
@@ -836,7 +848,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // 8c. Register free_vars (auxiliary variables) from all transitions as function_abstractions (Int, no assertion).
     // These are SSA variables present in the formula but not in in_vars/out_vars —
     // They must be declared in the solver but carry no ranking-function coefficient.
-    addFreeAuxVariables(lasso, stem_lines, loop_lines);
+    addFreeAuxVariables(lasso, stem_lines, loop_lines, array_handler_raw);
 
     // 8d. Register ArrayHandler's own aux vars (created for UNKNOWN index relations
     // during store elimination) -- these don't exist in the JSON's aux_vars, since

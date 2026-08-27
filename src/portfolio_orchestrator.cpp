@@ -44,7 +44,12 @@ void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
         return;
     }
 
-    technique.init(lasso);
+    try {
+        technique.init(lasso);
+    } catch (const std::exception& e) {
+        log(verbose, "[" + name + "] Exception during init: " + e.what());
+        return;
+    }
 
     if (stop_early_.load(std::memory_order_relaxed)) {
         log(verbose, "[" + name + "] Skipped (conclusive result already found)");

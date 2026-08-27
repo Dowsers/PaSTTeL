@@ -3,6 +3,7 @@
 
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 #include "linearization/non_linear_term_handler.h"
 #include "parser/sexpr_utils.h"
@@ -117,17 +118,46 @@ public:
         return SExprUtils::splitSExpr(expr);
     }
 
+    /**
+     * @brief Real sort of `identifier` IF this instance has actual evidence
+     * for it (a declared var_types/array_vars entry, or a store-equality
+     * target it inferred one while eliminating -- see expandSingleConjunct),
+     * or empty if unknown. Unlike computeSort()'s internal fallback (which
+     * assumes an unrecognized identifier is "one array layer away" because
+     * every caller inside this class already knows it's looking at an array
+     * expression), a caller here has no such guarantee -- e.g. a genuinely
+     * scalar free variable (a div/mod aux var) must not get promoted to
+     * array-sorted just because nothing is known about it.
+     */
+    std::string getKnownSort(const std::string& identifier) const {
+        std::string trimmed = trim(identifier);
+        auto it = m_var_sorts.find(trimmed);
+        if (it != m_var_sorts.end()) return it->second;
+        auto aux_it = m_aux_var_sorts.find(trimmed);
+        if (aux_it != m_aux_var_sorts.end()) return aux_it->second;
+        return "";
+    }
+
 private:
     std::string m_default_element_sort;
 
-    // Real declared sort per array variable name (see setVarSorts()).
-    std::map<std::string, std::string> m_var_sorts;
+    // Real declared sort per array variable name (see setVarSorts()). Also
+    // grows at preprocessing time: a store-equality's target var (e.g. "A'"
+    // in "A' = (store A i v)") gets its inferred sort recorded here too, so
+    // a later lookup (including from outside this class, e.g. a free/local
+    // variable never covered by setVarSorts()) can find it -- see
+    // getKnownSort() and expandSingleConjunct().
+    mutable std::map<std::string, std::string> m_var_sorts;
 
     // Aux vars minted during the last preprocessFormula() call (see getAuxVarNames()).
     mutable std::vector<std::string> m_created_aux_vars;
 
     // Real sort per aux var name (see getAuxVarSort()).
     mutable std::map<std::string, std::string> m_aux_var_sorts;
+
+    // name -> the array expression it was defined from (e.g. "A'" -> "A" once
+    // "A' = (store A ...)" has been seen). See resolveArrayBase().
+    mutable std::map<std::string, std::string> m_array_equiv_base;
 
     /**
      * @brief Sort of the array-valued expression `expr` (a variable name, or
@@ -146,19 +176,48 @@ private:
     bool isArraySort(const std::string& sort) const;
 
     /**
+     * @brief Follows m_array_equiv_base until reaching a name nothing else
+     * was ever recorded as being derived from (cycle-safe). E.g. once
+     * expandSingleConjunct() has seen "A' = (store A ...)", resolveArrayBase
+     * ("A'") returns whatever A itself resolves to.
+     */
+    std::string resolveArrayBase(const std::string& name) const;
+
+    /**
+     * @brief (base array, dimension depth) that `expr` refers to: 0 if expr
+     * IS (or resolves via m_array_equiv_base to) a base array name itself;
+     * select adds one dimension, store keeps the same one (it doesn't change
+     * which cells are reachable, just their values). Used to scope index
+     * candidates per array per dimension (matching Ultimate MapEliminator's
+     * per-`MapTemplate` `ArrayIndex` position-wise comparison) instead of
+     * pooling every index in the whole formula regardless of which array or
+     * dimension it's ever actually used with -- the latter cross-multiplies
+     * unrelated candidates and can blow up UNKNOWN-relation case-splitting
+     * for no semantic reason.
+     */
+    std::pair<std::string, int> computeArrayIdentity(const std::string& expr) const;
+
+    /**
+     * @brief All indices used to access exactly (array_base, dimension)
+     * anywhere in `formula` -- an index only ever used for a different
+     * array, or for a different dimension of the same array, is excluded.
+     */
+    std::set<std::string> collectIndicesForIdentity(const std::string& formula,
+                                                      const std::string& array_base,
+                                                      int dimension) const;
+
+    /**
      * @brief Builds an equality atom `lhs_expr = rhs_expr`, decomposing
      * recursively (one "(select lhs_expr idx)" / evaluateStoreAtIndex(rhs,
      * idx) pair per index) as long as rhs_expr's sort is still array-valued
      * -- an array-sorted equality can't be a LinearInequality downstream, so
      * this must bottom out at scalars before eq()'s <=/>= split is valid.
-     * `all_indices` is the set of concrete indices to case over at every
-     * dimension (matches the existing flat-array behaviour of trying every
-     * index seen anywhere in the formula, harmless-if-irrelevant since a
-     * mismatched dimension's index just classifies NOT_EQUAL against it).
+     * The index candidates tried at each dimension come from
+     * collectIndicesForIdentity() against rhs_expr's own (base, dimension)
+     * identity, not a flat whole-formula pool.
      */
     std::string buildArrayEqualityAtom(const std::string& lhs_expr,
                                         const std::string& rhs_expr,
-                                        const std::set<std::string>& all_indices,
                                         const std::string& context,
                                         std::vector<std::string>& extra) const;
 
@@ -183,7 +242,7 @@ private:
                                        std::vector<std::string>& extra) const;
 
     std::vector<std::string> expandSingleConjunct(
-        const std::string& conjunct, const std::set<std::string>& all_indices,
+        const std::string& conjunct,
         const std::string& context, std::vector<std::string>& extra) const;
 
     /** Fresh aux var name for an unresolved select-of-store value, of sort `sort`. */

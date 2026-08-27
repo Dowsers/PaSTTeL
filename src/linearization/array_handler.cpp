@@ -64,21 +64,89 @@ bool ArrayHandler::isArraySort(const std::string& sort) const {
     return trimmed.size() > 6 && trimmed.substr(0, 6) == "(Array";
 }
 
+std::string ArrayHandler::resolveArrayBase(const std::string& name) const {
+    std::string current = trim(name);
+    std::set<std::string> seen;
+    while (true) {
+        auto it = m_array_equiv_base.find(current);
+        if (it == m_array_equiv_base.end()) return current;
+        if (!seen.insert(current).second) return current;  // cycle guard
+        current = it->second;
+    }
+}
+
+std::pair<std::string, int> ArrayHandler::computeArrayIdentity(const std::string& expr) const {
+    std::string trimmed = trim(expr);
+
+    if (trimmed.empty() || trimmed[0] != '(') {
+        return {resolveArrayBase(trimmed), 0};
+    }
+
+    auto tokens = splitSExpr(trimmed);
+    if (!tokens.empty()) {
+        if (tokens[0] == "select" && tokens.size() == 3) {
+            auto inner = computeArrayIdentity(tokens[1]);
+            return {inner.first, inner.second + 1};
+        }
+        if (tokens[0] == "store" && tokens.size() == 4) {
+            return computeArrayIdentity(tokens[1]);  // store preserves identity
+        }
+    }
+    // Unrecognized compound expression -- treat itself as its own base
+    // (shouldn't normally arise for a genuinely array-valued expression).
+    return {trimmed, 0};
+}
+
+std::set<std::string> ArrayHandler::collectIndicesForIdentity(
+    const std::string& formula, const std::string& array_base, int dimension) const
+{
+    std::set<std::string> result;
+    std::string trimmed = trim(formula);
+    if (trimmed.empty() || trimmed[0] != '(') return result;
+
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return result;
+
+    if ((tokens[0] == "select" && tokens.size() == 3) ||
+        (tokens[0] == "store" && tokens.size() == 4)) {
+        auto identity = computeArrayIdentity(tokens[1]);
+        if (identity.first == array_base && identity.second == dimension
+            && !tokens[2].empty() && tokens[2][0] != '(') {
+            result.insert(tokens[2]);
+        }
+    }
+
+    for (size_t i = 1; i < tokens.size(); ++i) {
+        std::set<std::string> sub = collectIndicesForIdentity(tokens[i], array_base, dimension);
+        result.insert(sub.begin(), sub.end());
+    }
+    return result;
+}
+
 std::string ArrayHandler::buildArrayEqualityAtom(
     const std::string& lhs_expr, const std::string& rhs_expr,
-    const std::set<std::string>& all_indices, const std::string& context,
-    std::vector<std::string>& extra) const
+    const std::string& context, std::vector<std::string>& extra) const
 {
     if (!isArraySort(computeSort(rhs_expr))) {
         return eq(lhs_expr, rhs_expr);
     }
 
+    // Only case over indices this SAME array is actually accessed at, at this
+    // SAME dimension, anywhere in the formula -- matches Ultimate MapEliminator's
+    // per-MapTemplate, position-wise ArrayIndex comparison (see class doc).
+    // Pooling every index seen anywhere in the whole formula regardless of
+    // which array/dimension it's used with cross-multiplies unrelated
+    // candidates and can blow up UNKNOWN-relation case-splitting for no
+    // semantic reason.
+    auto identity = computeArrayIdentity(rhs_expr);
+    std::set<std::string> candidates = collectIndicesForIdentity(context, identity.first, identity.second);
+
     std::vector<std::string> parts;
-    for (const auto& idx : all_indices) {
+    for (const auto& idx : candidates) {
         std::string value = evaluateStoreAtIndex(rhs_expr, idx, context, extra);
         std::string new_lhs = "(select " + lhs_expr + " " + idx + ")";
         if (value == new_lhs) continue;  // tautology: unaffected read of the same cell
-        parts.push_back(buildArrayEqualityAtom(new_lhs, value, all_indices, context, extra));
+        parts.push_back(buildArrayEqualityAtom(new_lhs, value, context, extra));
     }
 
     if (parts.empty()) return eq(lhs_expr, rhs_expr);  // no concrete indices to case over
@@ -345,13 +413,12 @@ std::string ArrayHandler::simplifySelectStore(
                     // aux's value may itself be array-valued (a "row"), in
                     // which case a plain eq() (scalar <=/>= split) is invalid
                     // -- decompose down to scalars, same as buildArrayEqualityAtom
-                    // does for the store-equality path.
-                    std::set<std::string> all_indices;
-                    collectArrayIndices(context, all_indices);
+                    // does for the store-equality path (which also scopes its
+                    // own index candidates internally, per-array/per-dimension).
                     extra.push_back("(or " + neq(idx, j) + " "
-                                     + buildArrayEqualityAtom(aux, val, all_indices, context, extra) + ")");
+                                     + buildArrayEqualityAtom(aux, val, context, extra) + ")");
                     extra.push_back("(or " + eq(idx, j) + " "
-                                     + buildArrayEqualityAtom(aux, other, all_indices, context, extra) + ")");
+                                     + buildArrayEqualityAtom(aux, other, context, extra) + ")");
                     return aux;
                 }
             }
@@ -380,36 +447,31 @@ std::string ArrayHandler::expandStoreEqualities(
         return formula;
     }
 
-    // Collect all concrete indices used in the entire formula
-    std::set<std::string> all_indices;
-    collectArrayIndices(trimmed, all_indices);
-
-    if (all_indices.empty()) return formula;
-
     auto tokens = splitSExpr(trimmed);
     if (tokens.empty()) return trimmed;
 
-    if (tokens[0] == "and") {
-        // Process each conjunct
-        std::vector<std::string> new_conjuncts;
+    // Recurse through the whole boolean structure, not just a top-level
+    // "and" -- a store-equality routinely lives inside an "or" branch (an
+    // if/else in the source) or under a "not", and would otherwise never be
+    // found (falls through unexpanded to a raw, un-eliminated store).
+    if (tokens[0] == "and" || tokens[0] == "or") {
+        std::vector<std::string> parts;
         for (size_t i = 1; i < tokens.size(); ++i) {
-            auto expanded = expandSingleConjunct(tokens[i], all_indices, context, extra);
-            new_conjuncts.insert(new_conjuncts.end(), expanded.begin(), expanded.end());
+            parts.push_back(expandStoreEqualities(tokens[i], context, extra));
         }
-
-        if (new_conjuncts.size() == 1) return new_conjuncts[0];
-
         std::ostringstream result;
-        result << "(and";
-        for (const auto& c : new_conjuncts) {
-            result << " " << c;
-        }
+        result << "(" << tokens[0];
+        for (const auto& p : parts) result << " " << p;
         result << ")";
         return result.str();
     }
+    if (tokens[0] == "not" && tokens.size() == 2) {
+        return "(not " + expandStoreEqualities(tokens[1], context, extra) + ")";
+    }
 
-    // Single formula that might be a store equality
-    auto expanded = expandSingleConjunct(trimmed, all_indices, context, extra);
+    // Single formula that might be a store equality (expandSingleConjunct
+    // scopes its own index candidates to the equality's own array/dimension).
+    auto expanded = expandSingleConjunct(trimmed, context, extra);
     if (expanded.size() == 1) return expanded[0];
 
     std::ostringstream result;
@@ -422,7 +484,7 @@ std::string ArrayHandler::expandStoreEqualities(
 }
 
 std::vector<std::string> ArrayHandler::expandSingleConjunct(
-    const std::string& conjunct, const std::set<std::string>& all_indices,
+    const std::string& conjunct,
     const std::string& context, std::vector<std::string>& extra) const
 {
     auto tokens = splitSExpr(conjunct);
@@ -449,6 +511,29 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         return {conjunct};
     }
 
+    // arr_new's sort is exactly store_expr's -- if it's a genuinely free/local
+    // variable (not covered by setVarSorts(), e.g. an intermediate array only
+    // ever named via this equality, never an in/out var), this is the only
+    // place that ever learns it. Record it so a later lookup -- from within
+    // this class or externally via getKnownSort() -- doesn't have to guess.
+    if (m_var_sorts.find(arr_new) == m_var_sorts.end()) {
+        m_var_sorts[arr_new] = computeSort(store_expr);
+    }
+
+    // arr_new is DEFINED by this equality as store_expr -- record the
+    // equivalence (base-level only) so index-candidate scoping treats them as
+    // the same array, matching Ultimate MapEliminator's union-find over
+    // observed array-equalities (mRelatedArays), not as two unrelated arrays.
+    auto store_identity = computeArrayIdentity(store_expr);
+    if (store_identity.second == 0 && m_array_equiv_base.find(arr_new) == m_array_equiv_base.end()) {
+        m_array_equiv_base[arr_new] = store_identity.first;
+    }
+
+    // Only case over indices this array is actually accessed at, at dimension
+    // 0, anywhere in the formula -- see buildArrayEqualityAtom()'s comment.
+    std::set<std::string> all_indices =
+        collectIndicesForIdentity(context, resolveArrayBase(arr_new), 0);
+
     // For each concrete index, generate (= (select arr_new idx) evaluated_value)
     std::vector<std::string> result;
     for (const auto& idx : all_indices) {
@@ -462,7 +547,7 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         // a "row" one dimension short of a scalar) -- decompose further
         // rather than emitting an array-sorted equality, which can't be a
         // LinearInequality downstream.
-        result.push_back(buildArrayEqualityAtom(new_select, value, all_indices, context, extra));
+        result.push_back(buildArrayEqualityAtom(new_select, value, context, extra));
     }
 
     if (result.empty()) {
@@ -504,12 +589,10 @@ std::string ArrayHandler::evaluateStoreAtIndex(
     } else {
         std::string other = evaluateStoreAtIndex(inner_arr, index, context, extra);
         std::string aux = freshAuxVar(peelArrayDimension(computeSort(inner_arr)));
-        std::set<std::string> all_indices;
-        collectArrayIndices(context, all_indices);
         extra.push_back("(or " + neq(store_idx, index) + " "
-                         + buildArrayEqualityAtom(aux, store_val, all_indices, context, extra) + ")");
+                         + buildArrayEqualityAtom(aux, store_val, context, extra) + ")");
         extra.push_back("(or " + eq(store_idx, index) + " "
-                         + buildArrayEqualityAtom(aux, other, all_indices, context, extra) + ")");
+                         + buildArrayEqualityAtom(aux, other, context, extra) + ")");
         return aux;
     }
 }
