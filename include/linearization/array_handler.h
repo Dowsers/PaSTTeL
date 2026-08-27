@@ -1,6 +1,7 @@
 #ifndef ARRAY_HANDLER_H
 #define ARRAY_HANDLER_H
 
+#include <map>
 #include <set>
 #include <vector>
 #include "linearization/non_linear_term_handler.h"
@@ -71,6 +72,32 @@ public:
     const std::string& getDefaultElementSort() const { return m_default_element_sort; }
 
     /**
+     * @brief Real sort of a specific aux var created by getAuxVarNames()
+     * (falls back to getDefaultElementSort() if unknown). Needed because,
+     * for a nested array, an UNKNOWN-relation case split partway through
+     * resolving one dimension stands for a whole sub-array (e.g. a "row"),
+     * not always a scalar -- a single default sort for every aux var this
+     * instance ever creates would mis-type it.
+     */
+    std::string getAuxVarSort(const std::string& name) const {
+        auto it = m_aux_var_sorts.find(name);
+        return it != m_aux_var_sorts.end() ? it->second : m_default_element_sort;
+    }
+
+    /**
+     * @brief Declares each array variable's real full sort (e.g.
+     * "A" -> "(Array Int (Array Int Int))"), so getSort() can peel exactly
+     * one dimension per select instead of assuming every array's element
+     * is a scalar. Without this, a select into a nested array (the classic
+     * C heap-memory-model idiom, base -> offset -> value) gets abstracted
+     * as if it read a scalar, and a later store into that wrongly-scalar
+     * variable is nonsensical downstream. Call once after construction.
+     */
+    void setVarSorts(const std::map<std::string, std::string>& var_sorts) {
+        for (const auto& [name, sort] : var_sorts) m_var_sorts[name] = sort;
+    }
+
+    /**
      * @brief Decides whether idx1==idx2 given the constraints in `context`,
      * via real SMT queries against a throwaway solver -- never assumes
      * syntactic difference means semantic difference.
@@ -93,8 +120,47 @@ public:
 private:
     std::string m_default_element_sort;
 
+    // Real declared sort per array variable name (see setVarSorts()).
+    std::map<std::string, std::string> m_var_sorts;
+
     // Aux vars minted during the last preprocessFormula() call (see getAuxVarNames()).
     mutable std::vector<std::string> m_created_aux_vars;
+
+    // Real sort per aux var name (see getAuxVarSort()).
+    mutable std::map<std::string, std::string> m_aux_var_sorts;
+
+    /**
+     * @brief Sort of the array-valued expression `expr` (a variable name, or
+     * a `(select ...)`/`(store ...)` expression -- select peels one
+     * dimension off its array's sort, store's sort is that of the array it
+     * writes into). Falls back to `(Array Int m_default_element_sort)` for
+     * anything not traceable to a declared variable (matches the pre-N0
+     * flat-array assumption for the common case).
+     */
+    std::string computeSort(const std::string& expr) const;
+
+    /** Peels one "(Array <idx> <elem>)" layer, returning <elem>. */
+    std::string peelArrayDimension(const std::string& sort) const;
+
+    /** True if `sort` is "(Array ...)" -- i.e. still has dimensions left to peel. */
+    bool isArraySort(const std::string& sort) const;
+
+    /**
+     * @brief Builds an equality atom `lhs_expr = rhs_expr`, decomposing
+     * recursively (one "(select lhs_expr idx)" / evaluateStoreAtIndex(rhs,
+     * idx) pair per index) as long as rhs_expr's sort is still array-valued
+     * -- an array-sorted equality can't be a LinearInequality downstream, so
+     * this must bottom out at scalars before eq()'s <=/>= split is valid.
+     * `all_indices` is the set of concrete indices to case over at every
+     * dimension (matches the existing flat-array behaviour of trying every
+     * index seen anywhere in the formula, harmless-if-irrelevant since a
+     * mismatched dimension's index just classifies NOT_EQUAL against it).
+     */
+    std::string buildArrayEqualityAtom(const std::string& lhs_expr,
+                                        const std::string& rhs_expr,
+                                        const std::set<std::string>& all_indices,
+                                        const std::string& context,
+                                        std::vector<std::string>& extra) const;
 
     /**
      * Simplifie recursivement (select (store arr idx val) j) par read-over-write.
@@ -120,8 +186,8 @@ private:
         const std::string& conjunct, const std::set<std::string>& all_indices,
         const std::string& context, std::vector<std::string>& extra) const;
 
-    /** Fresh aux var name for an unresolved select-of-store value. */
-    std::string freshAuxVar() const;
+    /** Fresh aux var name for an unresolved select-of-store value, of sort `sort`. */
+    std::string freshAuxVar(const std::string& sort) const;
 
     /**
      * @brief True if `context` AND `extra_assertion` are jointly satisfiable

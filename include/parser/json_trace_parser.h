@@ -12,6 +12,8 @@
 #include "transition.h"
 #include "lasso_program.h"
 
+class ArrayHandler;
+
 /**
  * JSON-based trace parser
  * Parses traces in JSON format to LassoProgram
@@ -60,7 +62,9 @@ private:
         const nlohmann::json& trans_json,
         FormulaLinearizer* linearizer = nullptr,
         FormulaRewriter* rewriter = nullptr,
-        bool linearize = false);
+        bool linearize = false,
+        const std::map<std::string, std::string>* var_sorts = nullptr,
+        ArrayHandler* array_handler = nullptr);
 
     /**
      * Parse variable mapping from JSON object

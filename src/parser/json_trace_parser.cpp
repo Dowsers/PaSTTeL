@@ -720,6 +720,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         // Add ArrayHandler for array select operations
         if (has_arrays) {
             auto array_handler = std::make_unique<ArrayHandler>();
+            array_handler->setVarSorts(lasso.var_sorts);
             array_handler_raw = array_handler.get();
             linearizer->addHandler(std::move(array_handler));
 
@@ -740,7 +741,8 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     std::vector<UltimateTransitionLine> stem_lines;
     if (j.contains("stem") && j["stem"].is_array()) {
         for (const auto& trans_json : j["stem"]) {
-            stem_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize));
+            stem_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize,
+                                                  &lasso.var_sorts, array_handler_raw));
         }
     }
 
@@ -756,7 +758,8 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     std::vector<UltimateTransitionLine> loop_lines;
     if (j.contains("loop") && j["loop"].is_array()) {
         for (const auto& trans_json : j["loop"]) {
-            loop_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize));
+            loop_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize,
+                                                  &lasso.var_sorts, array_handler_raw));
         }
     }
 
@@ -842,7 +845,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         for (const auto& fv : array_handler_raw->getAuxVarNames()) {
             FunctionAbstraction abs;
             abs.fresh_var = fv;
-            abs.sort = array_handler_raw->getDefaultElementSort();
+            abs.sort = array_handler_raw->getAuxVarSort(fv);
             abs.original_call = "";
             lasso.function_abstractions.push_back(abs);
             if (VERBOSITY == VerbosityLevel::VERBOSE) {
@@ -961,6 +964,7 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
         // Add ArrayHandler for array select operations
         if (has_arrays) {
             auto array_handler = std::make_unique<ArrayHandler>();
+            array_handler->setVarSorts(lasso.var_sorts);
             array_handler_raw = array_handler.get();
             linearizer->addHandler(std::move(array_handler));
 
@@ -1050,7 +1054,7 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
         for (const auto& fv : array_handler_raw->getAuxVarNames()) {
             FunctionAbstraction abs;
             abs.fresh_var = fv;
-            abs.sort = array_handler_raw->getDefaultElementSort();
+            abs.sort = array_handler_raw->getAuxVarSort(fv);
             abs.original_call = "";
             lasso.function_abstractions.push_back(abs);
             if (VERBOSITY == VerbosityLevel::VERBOSE) {
@@ -1070,7 +1074,9 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
     const nlohmann::json& trans_json,
     FormulaLinearizer* linearizer,
     FormulaRewriter* rewriter,
-    bool linearize) {
+    bool linearize,
+    const std::map<std::string, std::string>* var_sorts,
+    ArrayHandler* array_handler) {
     UltimateTransitionLine trans;
 
     // Extract source label
@@ -1100,6 +1106,23 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
     // Parse out_vars
     if (trans_json.contains("out_vars") && trans_json["out_vars"].is_object()) {
         trans.out_vars = parseVarsMapping(trans_json["out_vars"]);
+    }
+
+    // ArrayHandler needs sorts keyed by SSA name (what actually appears in the
+    // formula text), but var_sorts (from the JSON's var_types/array_vars) is
+    // keyed by program variable name -- translate via this line's own
+    // in_vars/out_vars before processing its formula.
+    if (array_handler && var_sorts) {
+        std::map<std::string, std::string> ssa_sorts;
+        auto addSort = [&](const std::map<std::string, std::string>& mapping) {
+            for (const auto& [prog_var, ssa_var] : mapping) {
+                auto it = var_sorts->find(prog_var);
+                if (it != var_sorts->end()) ssa_sorts[ssa_var] = it->second;
+            }
+        };
+        addSort(trans.in_vars);
+        addSort(trans.out_vars);
+        array_handler->setVarSorts(ssa_sorts);
     }
 
     // Parse aux_vars (free SSA variables present in formula but not in in_vars/out_vars)

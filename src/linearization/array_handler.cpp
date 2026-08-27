@@ -9,6 +9,19 @@
 
 extern VerbosityLevel VERBOSITY;
 
+namespace {
+// RewriteEquality runs before ArrayHandler, so any "=" atom minted here would
+// never get its usual (<=,>=) split and the downstream DNF parser rejects
+// bare "=". Pre-split it ourselves, matching what RewriteEquality would do.
+std::string eq(const std::string& a, const std::string& b) {
+    return "(and (<= " + a + " " + b + ") (>= " + a + " " + b + "))";
+}
+// Same reasoning for disequality: avoid emitting "(not (= a b))".
+std::string neq(const std::string& a, const std::string& b) {
+    return "(or (< " + a + " " + b + ") (> " + a + " " + b + "))";
+}
+}  // namespace
+
 // ============================================================================
 // CONSTRUCTEUR + INTERFACE EXISTANTE
 // ============================================================================
@@ -28,9 +41,102 @@ std::string ArrayHandler::getPrefix() const {
     return "arr__";
 }
 
-std::string ArrayHandler::getSort(const std::string& /*op*/,
-                                  const std::vector<std::string>& /*args*/) const {
+std::string ArrayHandler::getSort(const std::string& op,
+                                  const std::vector<std::string>& args) const {
+    if (op == "select" && !args.empty()) {
+        return peelArrayDimension(computeSort(args[0]));
+    }
     return m_default_element_sort;
+}
+
+std::string ArrayHandler::peelArrayDimension(const std::string& sort) const {
+    std::string trimmed = trim(sort);
+    if (trimmed.size() > 6 && trimmed.substr(0, 6) == "(Array") {
+        auto tokens = splitSExpr(trimmed);
+        if (tokens.size() == 3) return tokens[2];
+    }
+    // Not an array sort (already a scalar leaf, or unrecognized) -- nothing to peel.
+    return trimmed;
+}
+
+bool ArrayHandler::isArraySort(const std::string& sort) const {
+    std::string trimmed = trim(sort);
+    return trimmed.size() > 6 && trimmed.substr(0, 6) == "(Array";
+}
+
+std::string ArrayHandler::buildArrayEqualityAtom(
+    const std::string& lhs_expr, const std::string& rhs_expr,
+    const std::set<std::string>& all_indices, const std::string& context,
+    std::vector<std::string>& extra) const
+{
+    if (!isArraySort(computeSort(rhs_expr))) {
+        return eq(lhs_expr, rhs_expr);
+    }
+
+    std::vector<std::string> parts;
+    for (const auto& idx : all_indices) {
+        std::string value = evaluateStoreAtIndex(rhs_expr, idx, context, extra);
+        std::string new_lhs = "(select " + lhs_expr + " " + idx + ")";
+        if (value == new_lhs) continue;  // tautology: unaffected read of the same cell
+        parts.push_back(buildArrayEqualityAtom(new_lhs, value, all_indices, context, extra));
+    }
+
+    if (parts.empty()) return eq(lhs_expr, rhs_expr);  // no concrete indices to case over
+    if (parts.size() == 1) return parts[0];
+
+    std::ostringstream oss;
+    oss << "(and";
+    for (const auto& p : parts) oss << " " << p;
+    oss << ")";
+    return oss.str();
+}
+
+std::string ArrayHandler::computeSort(const std::string& expr) const {
+    std::string trimmed = trim(expr);
+
+    auto it = m_var_sorts.find(trimmed);
+    if (it != m_var_sorts.end()) return it->second;
+
+    // Also check aux vars this same instance already minted (e.g. a chain of
+    // stores: the outer level's case-split aux var becomes the "inner_arr"
+    // fed into the next recursive level) -- without this, a previously
+    // correctly-typed (possibly scalar) aux var looks like "just another
+    // unrecognized identifier" and gets wrongly assumed array-valued.
+    auto aux_it = m_aux_var_sorts.find(trimmed);
+    if (aux_it != m_aux_var_sorts.end()) return aux_it->second;
+
+    if (trimmed.size() > 1 && trimmed[0] == '(') {
+        auto tokens = splitSExpr(trimmed);
+        if (!tokens.empty()) {
+            if (tokens[0] == "select" && tokens.size() == 3) {
+                return peelArrayDimension(computeSort(tokens[1]));
+            }
+            if (tokens[0] == "store" && tokens.size() == 4) {
+                // store's result is the same array sort as what it writes into.
+                return computeSort(tokens[1]);
+            }
+        }
+        // Any other compound expression (arithmetic, ite, etc.) -- scalar.
+        return m_default_element_sort;
+    }
+
+    // A numeral (optional leading '-', otherwise all digits) is definitely
+    // scalar, never "one more array layer away" -- distinct from a genuinely
+    // unrecognized identifier below (e.g. buildArrayEqualityAtom() calls this
+    // on a stored *value*, which is often a plain constant like "4").
+    {
+        size_t i = (!trimmed.empty() && trimmed[0] == '-') ? 1 : 0;
+        bool all_digits = i < trimmed.size();
+        for (; i < trimmed.size(); ++i) {
+            if (!std::isdigit(static_cast<unsigned char>(trimmed[i]))) { all_digits = false; break; }
+        }
+        if (all_digits) return m_default_element_sort;
+    }
+
+    // Unrecognized identifier (fresh var from another handler, unrelated SSA
+    // var, etc.) -- assume it's being used as an array one layer from a
+    // scalar, matching the flat-array default this replaces.
+    return "(Array Int " + m_default_element_sort + ")";
 }
 
 std::string ArrayHandler::getName() const {
@@ -43,25 +149,13 @@ std::string ArrayHandler::getName() const {
 
 // splitSExpr() and trim() are now inline in the header, delegating to SExprUtils.
 
-std::string ArrayHandler::freshAuxVar() const {
+std::string ArrayHandler::freshAuxVar(const std::string& sort) const {
     static std::atomic<int> s_counter{0};
     std::string name = "arr__ite__" + std::to_string(s_counter++);
     m_created_aux_vars.push_back(name);
+    m_aux_var_sorts[name] = sort;
     return name;
 }
-
-namespace {
-// RewriteEquality runs before ArrayHandler, so any "=" atom minted here would
-// never get its usual (<=,>=) split and the downstream DNF parser rejects
-// bare "=". Pre-split it ourselves, matching what RewriteEquality would do.
-std::string eq(const std::string& a, const std::string& b) {
-    return "(and (<= " + a + " " + b + ") (>= " + a + " " + b + "))";
-}
-// Same reasoning for disequality: avoid emitting "(not (= a b))".
-std::string neq(const std::string& a, const std::string& b) {
-    return "(or (< " + a + " " + b + ") (> " + a + " " + b + "))";
-}
-}  // namespace
 
 // ============================================================================
 // CLASSIFICATION D'INDEX -- decision SMT reelle, jamais une supposition
@@ -121,7 +215,13 @@ bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::stri
 
     SMTSolverZ3 solver(false);
     for (const auto& a : arrays) {
-        solver.declareVariable(a, "(Array Int " + m_default_element_sort + ")");
+        // Real per-variable sort (see computeSort()) -- a hardcoded flat
+        // "(Array Int elem)" here would mis-type a nested array (e.g.
+        // "(Array Int (Array Int Int))"), and asserting a formula that then
+        // stores into a wrongly-scalar-typed select is a Z3 type error --
+        // silently corrupting this SAT probe's verdict (observed: an
+        // UNKNOWN index relation misclassified as NOT_EQUAL).
+        solver.declareVariable(a, computeSort(a));
     }
     for (const auto& s : scalars) {
         solver.declareVariable(s, m_default_element_sort);
@@ -237,9 +337,21 @@ std::string ArrayHandler::simplifySelectStore(
                 } else {
                     std::string other = simplifySelectStore(
                         "(select " + inner_arr + " " + j + ")", context, extra);
-                    std::string aux = freshAuxVar();
-                    extra.push_back("(or " + neq(idx, j) + " " + eq(aux, val) + ")");
-                    extra.push_back("(or " + eq(idx, j) + " " + eq(aux, other) + ")");
+                    // The value at one dimension's cell -- itself another
+                    // (sub-)array unless inner_arr's sort has just this one
+                    // dimension left, matching what getSort("select", ...)
+                    // would compute for this same select.
+                    std::string aux = freshAuxVar(peelArrayDimension(computeSort(inner_arr)));
+                    // aux's value may itself be array-valued (a "row"), in
+                    // which case a plain eq() (scalar <=/>= split) is invalid
+                    // -- decompose down to scalars, same as buildArrayEqualityAtom
+                    // does for the store-equality path.
+                    std::set<std::string> all_indices;
+                    collectArrayIndices(context, all_indices);
+                    extra.push_back("(or " + neq(idx, j) + " "
+                                     + buildArrayEqualityAtom(aux, val, all_indices, context, extra) + ")");
+                    extra.push_back("(or " + eq(idx, j) + " "
+                                     + buildArrayEqualityAtom(aux, other, all_indices, context, extra) + ")");
                     return aux;
                 }
             }
@@ -346,7 +458,11 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         // Skip tautologies (value == the select on same array at same index)
         if (value == new_select) continue;
 
-        result.push_back(eq(new_select, value));
+        // value may itself still be array-valued (a nested-array cell, e.g.
+        // a "row" one dimension short of a scalar) -- decompose further
+        // rather than emitting an array-sorted equality, which can't be a
+        // LinearInequality downstream.
+        result.push_back(buildArrayEqualityAtom(new_select, value, all_indices, context, extra));
     }
 
     if (result.empty()) {
@@ -387,9 +503,13 @@ std::string ArrayHandler::evaluateStoreAtIndex(
         return evaluateStoreAtIndex(inner_arr, index, context, extra);
     } else {
         std::string other = evaluateStoreAtIndex(inner_arr, index, context, extra);
-        std::string aux = freshAuxVar();
-        extra.push_back("(or " + neq(store_idx, index) + " " + eq(aux, store_val) + ")");
-        extra.push_back("(or " + eq(store_idx, index) + " " + eq(aux, other) + ")");
+        std::string aux = freshAuxVar(peelArrayDimension(computeSort(inner_arr)));
+        std::set<std::string> all_indices;
+        collectArrayIndices(context, all_indices);
+        extra.push_back("(or " + neq(store_idx, index) + " "
+                         + buildArrayEqualityAtom(aux, store_val, all_indices, context, extra) + ")");
+        extra.push_back("(or " + eq(store_idx, index) + " "
+                         + buildArrayEqualityAtom(aux, other, all_indices, context, extra) + ")");
         return aux;
     }
 }
