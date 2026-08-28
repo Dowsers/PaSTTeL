@@ -79,8 +79,9 @@ CASES = [
     ("examples/test_array_scoping_unrelated_indices.json",		"TERMINATING",     "both"),
     ("examples/test_array_scoping_two_arrays.json",			"TERMINATING",     "both"),
     ("examples/test_fixpoint_array_state_real_4bitcounter.json",	"UNKNOWN",         "both"),
-    ("examples/test_fixpoint_array_state_change.json",			"UNKNOWN",         "both"),
+    ("examples/test_fixpoint_array_state_change.json",			"TERMINATING",     "both"),
     ("examples/test_geometric_array_select_real_commoncell.json",	"UNKNOWN",         "both"),
+    ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
 ]
 
 
@@ -182,9 +183,12 @@ ARRAY_HANDLER_CASES = [
      "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_scoping_two_arrays.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) "
-     "(and (<= (select v_A_3 v_i_2) 4) (>= (select v_A_3 v_i_2) 4)) "
-     "(and (<= (select v_B_3 v_k_2) 7) (>= (select v_B_3 v_k_2) 7)) "
-     "(= v_x_1 (select v_A_3 v_i_2)) (= v_y_1 (select v_B_3 v_k_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(and (<= arrcell__A__v_i_2__out 4) (>= arrcell__A__v_i_2__out 4)) "
+     "(and (<= arrcell__B__v_k_2__out 7) (>= arrcell__B__v_k_2__out 7)) "
+     "(= v_x_1 arrcell__A__v_i_2__out) (= v_y_1 arrcell__B__v_k_2__out) (= v_n_3 (- v_n_2 v_x_1)))"),
+    ("examples/test_fixpoint_array_state_change.json",
+     "(and (< arrcell__A__v_i_2__in 5) "
+     "(and (<= arrcell__A__v_i_2__out (+ arrcell__A__v_i_2__in 1)) (>= arrcell__A__v_i_2__out (+ arrcell__A__v_i_2__in 1))))"),
 ]
 
 
@@ -313,12 +317,19 @@ FixpointConstraintTests = type(
 # was never tied into the eigenvector/honda-state recurrence, letting the
 # solver satisfy the per-iteration ray constraints once and report a
 # spurious geometric non-termination witness. GeometricTechnique now detects
-# any "(select "/"(store " in the raw stem/loop formula and skips its search
-# instead (see has_unmodeled_array_mutation_ in geometric_technique.h/.cpp).
+# any "(select "/"(store " remaining in the raw stem/loop formula AFTER
+# ArrayHandler's array-cell promotion pass has run (see
+# ArrayHandler::promoteInvariantArrayCells) and skips its search for what
+# promotion could not safely resolve -- a non-invariant index in particular
+# (test_array_promotion_noninvariant_index.json: the cell moves every
+# iteration, so it can't be treated as one persistent state variable).
+# test_fixpoint_array_state_change.json used to be the example here (its
+# array cell has an invariant index) -- now that promotion handles it, it no
+# longer skips at all (moved to CASES, verdict TERMINATING).
 # ---------------------------------------------------------------------------
 
 GEOMETRIC_SKIP_CASES = [
-    "examples/test_fixpoint_array_state_change.json",
+    "examples/test_array_promotion_noninvariant_index.json",
 ]
 
 

@@ -75,6 +75,32 @@ std::string ArrayHandler::resolveArrayBase(const std::string& name) const {
     }
 }
 
+void ArrayHandler::setInvariantIndexCandidates(
+    const std::map<std::string, std::string>& in_vars,
+    const std::map<std::string, std::string>& out_vars) const
+{
+    m_invariant_index_ssa.clear();
+    m_array_ssa_side.clear();
+    for (const auto& [prog_var, in_ssa] : in_vars) {
+        auto out_it = out_vars.find(prog_var);
+        if (out_it == out_vars.end()) continue;
+        const std::string& out_ssa = out_it->second;
+        if (in_ssa == out_ssa) {
+            m_invariant_index_ssa.insert(in_ssa);
+            // An array whose own in/out SSA name is unchanged has nothing to
+            // promote: there's no "before"/"after" distinction to make (both
+            // sides are the identical name), so recording it here would make
+            // every occurrence collapse onto whichever side is written last,
+            // silently dropping the other -- FormulaLinearizer's own Phase 2
+            // caching (same select text -> same fresh var) already handles a
+            // genuinely-invariant array correctly on its own.
+            continue;
+        }
+        m_array_ssa_side[in_ssa] = {prog_var, true};
+        m_array_ssa_side[out_ssa] = {prog_var, false};
+    }
+}
+
 std::pair<std::string, int> ArrayHandler::computeArrayIdentity(const std::string& expr) const {
     std::string trimmed = trim(expr);
 
@@ -325,8 +351,10 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     std::string trimmed = trim(formula);
     if (trimmed.empty() || trimmed == "true") return formula;
 
-    // Pas de store dans la formule ? Rien a faire.
-    if (trimmed.find("store") == std::string::npos) return formula;
+    // Nothing to do if there's neither a store to eliminate nor a select to
+    // possibly promote (see promoteInvariantArrayCells()).
+    if (trimmed.find("store") == std::string::npos &&
+        trimmed.find("select") == std::string::npos) return formula;
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     if (verbose) {
@@ -350,6 +378,13 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
         oss << ")";
         result = oss.str();
     }
+
+    // Etape 3 : promouvoir les cellules a index invariant en variables de
+    // programme scalaires. Doit tourner apres les etapes 1-2 : c'est
+    // buildArrayEqualityAtom() (appele par expandStoreEqualities) qui fait
+    // apparaitre la valeur "out" comme un select litteral, via son propre
+    // scoping d'indices par (array, dimension) -- voir collectIndicesForIdentity().
+    result = promoteInvariantArrayCells(result);
 
     if (verbose && result != formula) {
         std::cout << "  [ArrayHandler] Before: " << formula << std::endl;
@@ -555,6 +590,62 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
     }
 
     return result;
+}
+
+std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) const {
+    std::string trimmed = trim(expr);
+    if (trimmed.empty() || trimmed[0] != '(') return trimmed;
+
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return trimmed;
+
+    std::vector<std::string> rebuilt;
+    rebuilt.push_back(tokens[0]);
+    for (size_t i = 1; i < tokens.size(); ++i) {
+        rebuilt.push_back(promoteInvariantArrayCells(tokens[i]));
+    }
+
+    if (rebuilt[0] == "select" && rebuilt.size() == 3) {
+        const std::string& base_ssa = rebuilt[1];
+        const std::string& index_ssa = rebuilt[2];
+        bool base_is_plain = !base_ssa.empty() && base_ssa[0] != '(';
+        bool index_is_plain = !index_ssa.empty() && index_ssa[0] != '(';
+
+        if (base_is_plain && index_is_plain && m_invariant_index_ssa.count(index_ssa)) {
+            auto side_it = m_array_ssa_side.find(base_ssa);
+            if (side_it != m_array_ssa_side.end()) {
+                const std::string& array_prog_var = side_it->second.first;
+                bool is_in_side = side_it->second.second;
+
+                std::string elem_sort = peelArrayDimension(computeSort(base_ssa));
+                if (elem_sort == "Int" || elem_sort == "Real") {
+                    std::string key = array_prog_var + "@" + index_ssa;
+                    auto cell_it = m_promoted_cell_index.find(key);
+                    size_t idx_in_vec;
+                    if (cell_it == m_promoted_cell_index.end()) {
+                        PromotedCell cell;
+                        cell.pseudo_var = "arrcell__" + array_prog_var + "__" + index_ssa;
+                        cell.in_ssa = cell.pseudo_var + "__in";
+                        cell.out_ssa = cell.pseudo_var + "__out";
+                        cell.sort = elem_sort;
+                        m_promoted_cells.push_back(cell);
+                        idx_in_vec = m_promoted_cells.size() - 1;
+                        m_promoted_cell_index[key] = idx_in_vec;
+                    } else {
+                        idx_in_vec = cell_it->second;
+                    }
+                    const PromotedCell& cell = m_promoted_cells[idx_in_vec];
+                    return is_in_side ? cell.in_ssa : cell.out_ssa;
+                }
+            }
+        }
+    }
+
+    std::ostringstream oss;
+    oss << "(" << rebuilt[0];
+    for (size_t i = 1; i < rebuilt.size(); ++i) oss << " " << rebuilt[i];
+    oss << ")";
+    return oss.str();
 }
 
 // ============================================================================

@@ -51,6 +51,7 @@ LinearizationResult FormulaLinearizer::linearize(const std::string& formula) {
 
     if (formula.empty() || formula == "true" || m_handlers.empty()) {
         result.linearized_formula = formula;
+        result.preprocessed_formula = formula;
         result.was_modified = false;
         return result;
     }
@@ -62,6 +63,7 @@ LinearizationResult FormulaLinearizer::linearize(const std::string& formula) {
     for (const auto& handler : m_handlers) {
         preprocessed = handler->preprocessFormula(preprocessed);
     }
+    result.preprocessed_formula = preprocessed;
 
     result.linearized_formula = linearizeExpr(preprocessed);
 

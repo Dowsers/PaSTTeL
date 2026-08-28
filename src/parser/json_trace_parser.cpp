@@ -4,6 +4,7 @@
 #include <set>
 #include <memory>
 #include <regex>
+#include <algorithm>
 
 #include "parser/json_trace_parser.h"
 #include "linearization/formula_linearizer.h"
@@ -866,6 +867,28 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         }
     }
 
+    // 8e. Register ArrayHandler's promoted array cells (invariant-index reads/
+    // writes rewritten to genuine loop-carried scalars -- see
+    // ArrayHandler::promoteInvariantArrayCells()) as real program variables.
+    // Their var_to_ssa_in/out entries already flowed into lasso.stem/loop via
+    // buildFromLines() above (parseTransition() wrote them into each line's
+    // in_vars/out_vars); program_vars still needs this explicit append since
+    // RankingBasedTechnique/GenericTerminationSynthesizer size their search
+    // strictly off program_vars, not the SSA maps.
+    if (array_handler_raw) {
+        for (const auto& cell : array_handler_raw->getPromotedCells()) {
+            if (std::find(lasso.program_vars.begin(), lasso.program_vars.end(),
+                          cell.pseudo_var) == lasso.program_vars.end()) {
+                lasso.program_vars.push_back(cell.pseudo_var);
+            }
+            lasso.var_sorts[cell.pseudo_var] = cell.sort;
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "  Promoted array cell: " << cell.pseudo_var
+                          << " (" << cell.sort << ")" << std::endl;
+            }
+        }
+    }
+
     if (VERBOSITY == VerbosityLevel::VERBOSE) {
         std::cout << "\n=== LassoProgram constructed successfully ===" << std::endl;
     }
@@ -1135,6 +1158,11 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
         addSort(trans.in_vars);
         addSort(trans.out_vars);
         array_handler->setVarSorts(ssa_sorts);
+        // Lets ArrayHandler recognize an invariant-index array cell and
+        // promote it to a genuine loop-carried scalar variable instead of an
+        // opaque linearizer aux var -- see setInvariantIndexCandidates() and
+        // the getPromotedCells() merge after linearize() below.
+        array_handler->setInvariantIndexCandidates(trans.in_vars, trans.out_vars);
     }
 
     // Parse aux_vars (free SSA variables present in formula but not in in_vars/out_vars)
@@ -1174,6 +1202,34 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
             // independently re-elaborated by ArrayHandler once per copy.
             if (linearizer) {
                 LinearizationResult lin_result = linearizer->linearize(formula_to_parse);
+
+                // Array-cell promotion (ArrayHandler::promoteInvariantArrayCells,
+                // run as part of preprocessFormula() above) rewrote any
+                // invariant-index select into a plain pseudo-variable inside
+                // lin_result.preprocessed_formula -- propagate that into
+                // trans.formula/in_vars/out_vars so raw_formula (consumed by
+                // FixpointTechnique and GeometricTechnique's array-mutation
+                // guard) and the lasso-level SSA composition both see the
+                // promoted cell as a genuine loop-carried variable, not an
+                // opaque linearizer aux var. getPromotedCells() accumulates
+                // across every transition this ArrayHandler has processed, so
+                // filter to the ones this transition's own preprocessed text
+                // actually references.
+                if (array_handler && trans.formula.find("select") != std::string::npos) {
+                    bool any_promoted = false;
+                    for (const auto& cell : array_handler->getPromotedCells()) {
+                        if (lin_result.preprocessed_formula.find(cell.in_ssa) != std::string::npos ||
+                            lin_result.preprocessed_formula.find(cell.out_ssa) != std::string::npos) {
+                            trans.in_vars[cell.pseudo_var] = cell.in_ssa;
+                            trans.out_vars[cell.pseudo_var] = cell.out_ssa;
+                            any_promoted = true;
+                        }
+                    }
+                    if (any_promoted) {
+                        trans.formula = lin_result.preprocessed_formula;
+                    }
+                }
+
                 if (lin_result.was_modified) {
                     formula_to_parse = lin_result.linearized_formula;
                 }

@@ -94,20 +94,28 @@ private:
     bool initialized_;
     ProofCertificate proof_;
 
-    // True if an Array-sorted program variable is actually mutated in the
-    // loop (computed in init(), before linearize() erases array-typed
-    // program_vars in favor of scalar aux vars). This technique's honda-
-    // state/eigenvector encoding only tracks program_vars declared via
-    // declareVariables() -- linearization aux vars standing in for array
-    // cells (arr__select__N) fall through to addStemConstraints()'s "free
-    // auxiliary variable" branch instead, so they never get an x0_/x1_/
-    // eigenvector identity tying their value across iterations. The solver
-    // can then satisfy the per-iteration ray/iter side-constraints once,
-    // independent of any real recurrence, and report a spurious geometric
-    // witness that ignores the array actually changing -- see
+    // True if a `(select `/`(store ` remains in the raw stem/loop formula
+    // after array-cell promotion has run (ArrayHandler::promoteInvariantArrayCells,
+    // wired in JsonTraceParser::parseTransition/parseToLasso). Promotion turns
+    // an array cell accessed at a provably loop-invariant index into a genuine
+    // scalar program variable (arrcell__<array>__<index>), which then gets
+    // normal x0_/x1_/eigenvector treatment via declareVariables() like any
+    // other loop-carried variable -- no GeometricTechnique-specific code
+    // needed for that case. What can still remain here is exactly what
+    // promotion can't safely handle: a non-invariant index (the cell isn't a
+    // fixed slot across repeated loop applications -- promoting it would be
+    // unsound the same way the original bug was), an unresolved index
+    // relation, or a non-Int/Real element sort (declareVariables() assumes
+    // one uniform numeric sort for every program variable). For any of those,
+    // this technique still declines rather than risk the original bug: an
+    // unmodeled/opaque linearizer aux var (arr__select__N) never gets an
+    // x0_/x1_/eigenvector identity tying its value across iterations, so the
+    // solver could satisfy the per-iteration ray/iter side-constraints once,
+    // independent of any real recurrence, and report a spurious witness that
+    // ignores the array actually changing -- see
     // FixpointTechnique::addFixpointConstraints() for the equivalent bug
-    // fixed there (which is representable there because Fixpoint checks
-    // simple `=` equality on the raw formula rather than an eigen-recurrence).
+    // fixed there (representable there because Fixpoint checks simple `=`
+    // equality on the raw formula rather than an eigen-recurrence).
     bool has_unmodeled_array_mutation_ = false;
 
     // Résultats extraits

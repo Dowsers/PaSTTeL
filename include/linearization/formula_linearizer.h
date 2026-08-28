@@ -27,6 +27,17 @@
 struct LinearizationResult {
     std::string linearized_formula;  // Formule avec les termes non-lineaires remplaces
     bool was_modified;               // true si au moins une substitution a ete faite
+
+    // Formule apres le passage des handlers (preprocessFormula(), Phase 1)
+    // mais AVANT le remplacement generique select/store -> variable fraiche
+    // (linearizeExpr(), Phase 2). Utilisee par ArrayHandler::getPromotedCells()
+    // / le fix "array-cell promotion" du parser : ArrayHandler y a deja
+    // reecrit les cellules a index invariant en noms de variables reguliers
+    // (voir ArrayHandler::promoteInvariantArrayCells), donc c'est ce texte,
+    // pas linearized_formula, qui doit alimenter raw_formula pour que
+    // FixpointTechnique et le garde-fou array de GeometricTechnique voient
+    // la promotion.
+    std::string preprocessed_formula;
 };
 
 /**

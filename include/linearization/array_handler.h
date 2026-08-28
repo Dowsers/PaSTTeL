@@ -99,6 +99,47 @@ public:
     }
 
     /**
+     * @brief A single loop-carried array cell promoted to a genuine scalar
+     * program variable -- see setInvariantIndexCandidates()/getPromotedCells().
+     */
+    struct PromotedCell {
+        std::string pseudo_var;  // synthesized program-var name, e.g. "arrcell__A__v_i_2"
+        std::string in_ssa;      // fresh SSA name standing in for the cell's value on entry
+        std::string out_ssa;     // fresh SSA name standing in for the cell's value on exit
+        std::string sort;        // element sort (always "Int" or "Real" -- see promoteInvariantArrayCells())
+    };
+
+    /**
+     * @brief Declares this transition's own program-var -> in/out SSA name
+     * mapping, so preprocessFormula() can recognize when an index used in a
+     * `(select array index)` is provably loop-invariant (same SSA value on
+     * both sides of the transition) and when a `(select ...)` argument is
+     * literally this transition's declared in- or out-SSA name for some
+     * array-sorted program variable. Both are required to safely promote an
+     * array cell to a real loop-carried state variable -- see
+     * promoteInvariantArrayCells() for why invariance matters. Call once per
+     * transition, before preprocessFormula(); mirrors setVarSorts()'s pattern
+     * of per-transition context the class doesn't otherwise have visibility
+     * into (ArrayHandler operates on formula text alone).
+     */
+    void setInvariantIndexCandidates(const std::map<std::string, std::string>& in_vars,
+                                      const std::map<std::string, std::string>& out_vars) const;
+
+    /**
+     * @brief Array cells promoted by the last preprocessFormula() call(s)
+     * (cumulative across every transition this instance has processed, like
+     * getAuxVarNames() -- callers must filter to the ones actually referenced
+     * in the transition they care about, e.g. by checking whether in_ssa/
+     * out_ssa appears in that transition's own (post-preprocessing) formula
+     * text). The caller must register each one as a genuine program variable
+     * (program_vars + var_to_ssa_in/out + var_sorts) -- unlike getAuxVarNames()'s
+     * one-shot scalars, these represent state that persists across the loop
+     * transition and must get the same treatment as any other loop variable
+     * for techniques that reason about repeated loop iterations (GeometricTechnique).
+     */
+    const std::vector<PromotedCell>& getPromotedCells() const { return m_promoted_cells; }
+
+    /**
      * @brief Decides whether idx1==idx2 given the constraints in `context`,
      * via real SMT queries against a throwaway solver -- never assumes
      * syntactic difference means semantic difference.
@@ -158,6 +199,22 @@ private:
     // name -> the array expression it was defined from (e.g. "A'" -> "A" once
     // "A' = (store A ...)" has been seen). See resolveArrayBase().
     mutable std::map<std::string, std::string> m_array_equiv_base;
+
+    // SSA names provably unchanged across the current transition (in == out
+    // for some program var) -- only such a name is safe as a promotable
+    // cell's index. See setInvariantIndexCandidates().
+    mutable std::set<std::string> m_invariant_index_ssa;
+
+    // SSA name -> (program var, is_in_side) for every var declared via
+    // setInvariantIndexCandidates() for the current transition. Lets
+    // promoteInvariantArrayCells() recognize a `(select ssa_name ...)` whose
+    // ssa_name IS this transition's own in- or out-SSA name for some array.
+    mutable std::map<std::string, std::pair<std::string, bool>> m_array_ssa_side;
+
+    // Promoted cells found so far, keyed by "array_prog_var@index_ssa" to
+    // keep repeated occurrences of the same cell mapped to one pseudo_var.
+    mutable std::vector<PromotedCell> m_promoted_cells;
+    mutable std::map<std::string, size_t> m_promoted_cell_index;
 
     /**
      * @brief Sort of the array-valued expression `expr` (a variable name, or
@@ -244,6 +301,26 @@ private:
     std::vector<std::string> expandSingleConjunct(
         const std::string& conjunct,
         const std::string& context, std::vector<std::string>& extra) const;
+
+    /**
+     * @brief Promotes `(select base_ssa index_ssa)` occurrences to a plain
+     * scalar pseudo-variable when: base_ssa is literally this transition's
+     * declared in- or out-SSA name for some array-sorted program variable
+     * (via setInvariantIndexCandidates(), not a nested select/store -- only
+     * depth-1 array cells are promoted, nested/multi-dimensional identities
+     * are left as-is), index_ssa is loop-invariant, and the element sort is
+     * "Int" or "Real" (GeometricTechnique::declareVariables() assumes one
+     * uniform numeric sort for every program variable it tracks -- promoting
+     * a Bool or nested-Array element would mis-type that). Must run AFTER
+     * simplifySelectStore()/expandStoreEqualities(): those steps are what
+     * make the "out" side's value appear as a literal select in the first
+     * place (via buildArrayEqualityAtom()'s per-identity index scoping --
+     * see collectIndicesForIdentity()), not something this method derives
+     * itself. Every distinct (array, index) identity maps to one PromotedCell,
+     * recorded in m_promoted_cells/m_promoted_cell_index regardless of how
+     * many occurrences are rewritten.
+     */
+    std::string promoteInvariantArrayCells(const std::string& expr) const;
 
     /** Fresh aux var name for an unresolved select-of-store value, of sort `sort`. */
     std::string freshAuxVar(const std::string& sort) const;

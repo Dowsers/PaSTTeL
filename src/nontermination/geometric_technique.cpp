@@ -35,20 +35,27 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     lambdas.clear();
     nus.clear();
 
-    // Detect array select/store in the raw (pre-linearization) formula --
-    // see header comment on has_unmodeled_array_mutation_. Checking for a
-    // literal `store` isn't enough: an array *read* whose index relation
-    // ArrayHandler can't resolve also introduces an untracked aux var
-    // (arr__select__N) into the loop's linearized polyhedra, breaking
-    // soundness the same way a store would.
+    lasso_ = lasso_.linearize();
+
+    // Detect array select/store remaining in the raw formula AFTER
+    // linearize() -- which is what actually runs ArrayHandler's promotion
+    // pass (JsonTraceParser::parseTransition re-parses the file with
+    // linearize=true; the `lasso` parameter above is the original,
+    // unlinearized object and never sees promotion, so checking it here
+    // would report every array access as unresolved, defeating promotion
+    // entirely). See header comment on has_unmodeled_array_mutation_.
+    // Checking for a literal `store` isn't enough: an array *read* whose
+    // index relation ArrayHandler can't resolve (or whose index isn't
+    // loop-invariant, so promotion left it alone) also introduces an
+    // untracked aux var (arr__select__N) into the loop's linearized
+    // polyhedra, breaking soundness the same way a store would.
     auto has_array_op = [](const std::string& formula) {
         return formula.find("(select ") != std::string::npos ||
                formula.find("(store ") != std::string::npos;
     };
     has_unmodeled_array_mutation_ =
-        has_array_op(lasso.loop.raw_formula) || has_array_op(lasso.stem.raw_formula);
+        has_array_op(lasso_.loop.raw_formula) || has_array_op(lasso_.stem.raw_formula);
 
-    lasso_ = lasso_.linearize();
     lasso_.declareSolverContext(solver_, true);
 }
 
