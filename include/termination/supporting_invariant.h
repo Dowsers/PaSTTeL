@@ -2,6 +2,7 @@
 #define SUPPORTING_INVARIANT_H
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -26,6 +27,16 @@ struct SupportingInvariant {
      * @param vars Ordre d'affichage des variables
      */
     std::string toString(const std::vector<std::string>& vars) const;
+
+    /**
+     * @brief Same as toString(vars), but each variable is rendered via
+     * display_name(var) instead of printed as-is -- lookup in `coefficients`
+     * still uses the raw `var` from `vars`, only what gets printed changes.
+     * Lets a caller with extra context (e.g. LassoProgram::prettyVarName())
+     * show "A[i]" instead of a raw promoted-array-cell variable name.
+     */
+    std::string toString(const std::vector<std::string>& vars,
+                          const std::function<std::string(const std::string&)>& display_name) const;
 };
 
 #endif // SUPPORTING_INVARIANT_H

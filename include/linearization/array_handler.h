@@ -107,6 +107,17 @@ public:
         std::string in_ssa;      // fresh SSA name standing in for the cell's value on entry
         std::string out_ssa;     // fresh SSA name standing in for the cell's value on exit
         std::string sort;        // element sort (always "Int" or "Real" -- see promoteInvariantArrayCells())
+
+        // Structured display info, kept separate from pseudo_var's flat name
+        // so a reader (e.g. LassoProgram::prettyVarName()) can render it as
+        // "A[i]" instead of the raw internal identifier. index_display has
+        // exactly one entry today (depth-1 promotion only); it's a vector,
+        // not a single string, so a future multi-dimensional promotion
+        // (A[i][j]) needs no change here or in any reader of this struct --
+        // only promoteInvariantArrayCells() itself would need to populate
+        // more than one entry.
+        std::string array_name;                  // e.g. "A" -- program-var level, not an SSA name
+        std::vector<std::string> index_display;   // e.g. {"i"} -- readable index name(s)
     };
 
     /**
@@ -210,6 +221,13 @@ private:
     // promoteInvariantArrayCells() recognize a `(select ssa_name ...)` whose
     // ssa_name IS this transition's own in- or out-SSA name for some array.
     mutable std::map<std::string, std::pair<std::string, bool>> m_array_ssa_side;
+
+    // SSA name -> program var, for EVERY var declared via
+    // setInvariantIndexCandidates() (not just arrays) -- lets
+    // promoteInvariantArrayCells() resolve an index like "v_i_2" back to its
+    // readable program-variable name ("i") for PromotedCell::index_display,
+    // instead of baking the raw SSA name into what gets displayed later.
+    mutable std::map<std::string, std::string> m_ssa_to_prog_var;
 
     // Promoted cells found so far, keyed by "array_prog_var@index_ssa" to
     // keep repeated occurrences of the same cell mapped to one pseudo_var.

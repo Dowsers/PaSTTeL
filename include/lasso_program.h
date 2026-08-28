@@ -1,6 +1,8 @@
 #ifndef __LASSO_PROGRAM_H
 #define __LASSO_PROGRAM_H
 
+#include <sstream>
+
 #include "transition.h"
 #include "smtsolvers/SMTSolverInterface.h"
 #include "utiles.h"
@@ -25,6 +27,16 @@ struct Axiom {
     std::string description; // Description optionnelle
 };
 
+// Display info for a promoted array cell (ArrayHandler::PromotedCell) -- lets
+// LassoProgram::prettyVarName() print "A[i]" instead of the raw internal
+// pseudo-variable name. index_display is a vector (not a single string) so a
+// future multi-dimensional array-cell promotion (A[i][j]) needs no change
+// here: only the promotion code that populates this would grow the vector.
+struct ArrayCellInfo {
+    std::string array_name;
+    std::vector<std::string> index_display;
+};
+
 // Lasso = stem ; loop*
 class LassoProgram {
 public:
@@ -46,6 +58,10 @@ public:
 
     // Sorts des variables de programme (par défaut "Int")
     std::map<std::string, std::string> var_sorts;
+
+    // Display info for promoted array cells, keyed like var_sorts (by
+    // pseudo_var). See ArrayCellInfo / prettyVarName().
+    std::map<std::string, ArrayCellInfo> array_cell_info;
 
     bool integer_mode = false;
     bool is_linearized = false;
@@ -69,6 +85,20 @@ public:
      *
      */
     void declareSolverContext(SMTSolverInterface* solver, bool linearized=false) const;
+
+    /**
+     * @brief Readable name for `var`: "A[i]" if it's a promoted array cell
+     * (see array_cell_info), else `var` unchanged. Generic over index count,
+     * so a future multi-dimensional promotion needs no change here.
+     */
+    std::string prettyVarName(const std::string& var) const {
+        auto it = array_cell_info.find(var);
+        if (it == array_cell_info.end()) return var;
+        std::ostringstream oss;
+        oss << it->second.array_name;
+        for (const auto& idx : it->second.index_display) oss << "[" << idx << "]";
+        return oss.str();
+    }
 };
 
 #endif // __LASSO_PROGRAM_H

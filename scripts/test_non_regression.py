@@ -82,6 +82,7 @@ CASES = [
     ("examples/test_fixpoint_array_state_change.json",			"TERMINATING",     "both"),
     ("examples/test_geometric_array_select_real_commoncell.json",	"UNKNOWN",         "both"),
     ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
+    ("examples/test_array_promotion_cell_in_ranking.json",		"TERMINATING",     "both"),
 ]
 
 
@@ -362,6 +363,53 @@ for file in GEOMETRIC_SKIP_CASES:
     geometric_skip_attrs[name] = make_geometric_skip_test(file)
 GeometricArraySkipTests = type(
     "GeometricArraySkipTests", (unittest.TestCase,), geometric_skip_attrs
+)
+
+
+# ---------------------------------------------------------------------------
+# Structural test: Supporting Invariants now reach the actual returned
+# report/certificate (proof.proof_details), not just verbose console output
+# (they used to be printed only inside GenericTerminationSynthesizer under
+# VERBOSITY==VERBOSE and never copied into ProofCertificate at all -- see
+# RankingBasedTechnique::analyze()). Checked WITHOUT -v, since the whole
+# point is that this no longer needs verbose mode to be visible.
+# ---------------------------------------------------------------------------
+
+SI_CERTIFICATE_CASES = [
+    ("examples/test_variable_decrease.json",
+     ["Supporting invariants:", "[0] y - 2 >= 0", "[1] 1 >= 0"]),
+]
+
+
+def make_si_certificate_test(file, expected_lines):
+    def test_method(self):
+        try:
+            result = subprocess.run(
+                [PASTTEL_BIN, file, "-a", "terminate"],
+                capture_output=True, text=True, timeout=10
+            )
+            output = result.stdout + result.stderr
+        except subprocess.TimeoutExpired as e:
+            def as_text(x):
+                if x is None:
+                    return ""
+                return x.decode("utf-8", errors="replace") if isinstance(x, bytes) else x
+            output = as_text(e.stdout) + as_text(e.stderr)
+        for expected in expected_lines:
+            self.assertIn(
+                expected, output,
+                f"\nFile: {file}\nExpected '{expected}' in non-verbose report.\n"
+                f"Output (first 2000 chars):\n{output[:2000]}"
+            )
+    return test_method
+
+
+si_certificate_attrs = {}
+for file, expected_lines in SI_CERTIFICATE_CASES:
+    name = "test_sicert_" + os.path.splitext(os.path.basename(file))[0]
+    si_certificate_attrs[name] = make_si_certificate_test(file, expected_lines)
+SupportingInvariantCertificateTests = type(
+    "SupportingInvariantCertificateTests", (unittest.TestCase,), si_certificate_attrs
 )
 
 

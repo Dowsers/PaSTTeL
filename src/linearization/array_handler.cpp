@@ -81,10 +81,13 @@ void ArrayHandler::setInvariantIndexCandidates(
 {
     m_invariant_index_ssa.clear();
     m_array_ssa_side.clear();
+    m_ssa_to_prog_var.clear();
     for (const auto& [prog_var, in_ssa] : in_vars) {
         auto out_it = out_vars.find(prog_var);
         if (out_it == out_vars.end()) continue;
         const std::string& out_ssa = out_it->second;
+        m_ssa_to_prog_var[in_ssa] = prog_var;
+        m_ssa_to_prog_var[out_ssa] = prog_var;
         if (in_ssa == out_ssa) {
             m_invariant_index_ssa.insert(in_ssa);
             // An array whose own in/out SSA name is unchanged has nothing to
@@ -628,6 +631,10 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                         cell.in_ssa = cell.pseudo_var + "__in";
                         cell.out_ssa = cell.pseudo_var + "__out";
                         cell.sort = elem_sort;
+                        cell.array_name = array_prog_var;
+                        auto idx_name_it = m_ssa_to_prog_var.find(index_ssa);
+                        cell.index_display.push_back(
+                            idx_name_it != m_ssa_to_prog_var.end() ? idx_name_it->second : index_ssa);
                         m_promoted_cells.push_back(cell);
                         idx_in_vec = m_promoted_cells.size() - 1;
                         m_promoted_cell_index[key] = idx_in_vec;

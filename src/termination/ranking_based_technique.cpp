@@ -135,6 +135,27 @@ AnalysisResult RankingBasedTechnique::analyze() {
                     proof.proof_details += label + body
                         + "  [delta" + (multi_component ? std::to_string(i) : "") + " = " + rf.delta.toString() + "]\n";
                 }
+
+                // Surface the Supporting Invariants that actually made this
+                // proof go through -- already fully computed by the
+                // synthesizer at this point (see GenericTerminationSynthesizer
+                // ::extractResults()), previously only ever printed to
+                // verbose console output. Variable names go through
+                // lasso_.prettyVarName() so a promoted array cell prints as
+                // "A[i]" instead of its raw internal name.
+                const auto& sis = last_synthesizer_->getTerminationArgument().supporting_invariants;
+                if (!sis.empty()) {
+                    auto display_name = [this](const std::string& var) {
+                        return lasso_.prettyVarName(var);
+                    };
+                    proof.proof_details += "Supporting invariants:\n";
+                    for (size_t i = 0; i < sis.size(); ++i) {
+                        proof.proof_details += "  [" + std::to_string(i) + "] "
+                            + sis[i].toString(lasso_.program_vars, display_name)
+                            + " " + (sis[i].is_strict ? ">" : ">=") + " 0\n";
+                    }
+                }
+
                 proof.rf_witness = rankfunctions_comp[0].coefficients;
                 proof_ = proof;
                 return proof_.status;

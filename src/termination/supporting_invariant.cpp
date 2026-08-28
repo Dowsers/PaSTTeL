@@ -3,7 +3,13 @@
 
 #include "termination/supporting_invariant.h"
 
-std::string SupportingInvariant::toString(const std::vector<std::string>& vars) const
+std::string SupportingInvariant::toString(const std::vector<std::string>& vars) const {
+    return toString(vars, [](const std::string& var) { return var; });
+}
+
+std::string SupportingInvariant::toString(
+    const std::vector<std::string>& vars,
+    const std::function<std::string(const std::string&)>& display_name) const
 {
     std::ostringstream oss;
     bool first = true;
@@ -21,7 +27,7 @@ std::string SupportingInvariant::toString(const std::vector<std::string>& vars) 
             if (!abs_coef.isOne()) {
                 oss << abs_coef.toString() << "·";
             }
-            oss << var;
+            oss << display_name(var);
             first = false;
         }
     }

@@ -799,6 +799,30 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         }
     }
 
+    // 6b. Register ArrayHandler's promoted array cells (invariant-index reads/
+    // writes rewritten to genuine loop-carried scalars -- see
+    // ArrayHandler::promoteInvariantArrayCells()) as real program variables.
+    // Must run BEFORE step 7b's ensureMapping pass below: a cell promoted in
+    // only one of stem/loop (e.g. the array is read in the loop but never
+    // touched in the stem) needs 7b's existing fresh-SSA fallback to give it
+    // an entry on the OTHER side too, exactly like any ordinary program var
+    // that's only written or only read -- registering program_vars/var_sorts/
+    // array_cell_info this early is what makes that safety net cover it.
+    if (array_handler_raw) {
+        for (const auto& cell : array_handler_raw->getPromotedCells()) {
+            if (std::find(lasso.program_vars.begin(), lasso.program_vars.end(),
+                          cell.pseudo_var) == lasso.program_vars.end()) {
+                lasso.program_vars.push_back(cell.pseudo_var);
+            }
+            lasso.var_sorts[cell.pseudo_var] = cell.sort;
+            lasso.array_cell_info[cell.pseudo_var] = {cell.array_name, cell.index_display};
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "  Promoted array cell: " << cell.pseudo_var
+                          << " (" << cell.sort << ") = " << lasso.prettyVarName(cell.pseudo_var) << std::endl;
+            }
+        }
+    }
+
     // 7. Connect STEM->LOOP
     connectStemToLoop(lasso);
 
@@ -863,28 +887,6 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
             lasso.function_abstractions.push_back(abs);
             if (VERBOSITY == VerbosityLevel::VERBOSE) {
                 std::cout << "  Array aux var declared: " << fv << " (" << abs.sort << ")" << std::endl;
-            }
-        }
-    }
-
-    // 8e. Register ArrayHandler's promoted array cells (invariant-index reads/
-    // writes rewritten to genuine loop-carried scalars -- see
-    // ArrayHandler::promoteInvariantArrayCells()) as real program variables.
-    // Their var_to_ssa_in/out entries already flowed into lasso.stem/loop via
-    // buildFromLines() above (parseTransition() wrote them into each line's
-    // in_vars/out_vars); program_vars still needs this explicit append since
-    // RankingBasedTechnique/GenericTerminationSynthesizer size their search
-    // strictly off program_vars, not the SSA maps.
-    if (array_handler_raw) {
-        for (const auto& cell : array_handler_raw->getPromotedCells()) {
-            if (std::find(lasso.program_vars.begin(), lasso.program_vars.end(),
-                          cell.pseudo_var) == lasso.program_vars.end()) {
-                lasso.program_vars.push_back(cell.pseudo_var);
-            }
-            lasso.var_sorts[cell.pseudo_var] = cell.sort;
-            if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                std::cout << "  Promoted array cell: " << cell.pseudo_var
-                          << " (" << cell.sort << ")" << std::endl;
             }
         }
     }
