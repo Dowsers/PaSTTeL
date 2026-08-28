@@ -282,7 +282,12 @@ void FixpointTechnique::addFixpointConstraints()
     //   - les paires triviales ssa_in == ssa_out (toujours vraies, inutiles)
     //   - les paires où au moins une var est fraîche (absente de la formule du loop)
     //     car elles permettent un modèle trivial non-représentatif
-    //   - les variables de sort Array (non-scalaires)
+    // Les variables Array sont incluses : Z3/CVC5 décident nativement l'égalité
+    // de tableaux, et un tableau loop-carried (ex: modèle mémoire heap
+    // #memory_int/#valid/#length) qui change réellement à chaque itération ne
+    // doit pas etre skip sinon on obtiendrait un faux "point fixe" en ne
+    // figeant que les variables scalaires (ex: pointeurs), alors que le
+    // contenu réel évolue -- cause de faux verdicts NON-TERMINATING.
     int constraint_count = 0;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
@@ -295,12 +300,6 @@ void FixpointTechnique::addFixpointConstraints()
         // Ignorer si l'une ou l'autre est une variable fraîche
         if (ssa_in.find("_fresh_")  != std::string::npos ||
             ssa_out.find("_fresh_") != std::string::npos)
-            continue;
-
-        // Ignorer les variables Array
-        auto sort_it = lasso_->var_sorts.find(var_prog);
-        if (sort_it != lasso_->var_sorts.end() &&
-            sort_it->second.find("Array") != std::string::npos)
             continue;
 
         std::ostringstream constraint;

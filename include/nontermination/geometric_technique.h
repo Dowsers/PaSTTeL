@@ -94,6 +94,22 @@ private:
     bool initialized_;
     ProofCertificate proof_;
 
+    // True if an Array-sorted program variable is actually mutated in the
+    // loop (computed in init(), before linearize() erases array-typed
+    // program_vars in favor of scalar aux vars). This technique's honda-
+    // state/eigenvector encoding only tracks program_vars declared via
+    // declareVariables() -- linearization aux vars standing in for array
+    // cells (arr__select__N) fall through to addStemConstraints()'s "free
+    // auxiliary variable" branch instead, so they never get an x0_/x1_/
+    // eigenvector identity tying their value across iterations. The solver
+    // can then satisfy the per-iteration ray/iter side-constraints once,
+    // independent of any real recurrence, and report a spurious geometric
+    // witness that ignores the array actually changing -- see
+    // FixpointTechnique::addFixpointConstraints() for the equivalent bug
+    // fixed there (which is representable there because Fixpoint checks
+    // simple `=` equality on the raw formula rather than an eigen-recurrence).
+    bool has_unmodeled_array_mutation_ = false;
+
     // Résultats extraits
     std::map<std::string, double> state_init;                // État initial x₀
     std::map<std::string, double> state_honda;               // État honda x₁

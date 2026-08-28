@@ -34,6 +34,20 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     eigenvectors.clear();
     lambdas.clear();
     nus.clear();
+
+    // Detect array select/store in the raw (pre-linearization) formula --
+    // see header comment on has_unmodeled_array_mutation_. Checking for a
+    // literal `store` isn't enough: an array *read* whose index relation
+    // ArrayHandler can't resolve also introduces an untracked aux var
+    // (arr__select__N) into the loop's linearized polyhedra, breaking
+    // soundness the same way a store would.
+    auto has_array_op = [](const std::string& formula) {
+        return formula.find("(select ") != std::string::npos ||
+               formula.find("(store ") != std::string::npos;
+    };
+    has_unmodeled_array_mutation_ =
+        has_array_op(lasso.loop.raw_formula) || has_array_op(lasso.stem.raw_formula);
+
     lasso_ = lasso_.linearize();
     lasso_.declareSolverContext(solver_, true);
 }
@@ -55,6 +69,17 @@ AnalysisResult GeometricTechnique::analyze() {
 
     if (!initialized_) {
         proof.description = "Technique not initialized";
+        proof_ = proof;
+        return proof_.status;
+    }
+
+    if (has_unmodeled_array_mutation_) {
+        if (verbose)
+            std::cout << "\n  Skipping: an Array-typed variable is mutated by the loop; "
+                          "this technique's eigenvector encoding cannot represent that "
+                          "soundly (see has_unmodeled_array_mutation_)." << std::endl;
+        proof.description = "Skipped: loop mutates an Array-typed variable, which this "
+                             "technique's linear eigenvector encoding cannot soundly represent";
         proof_ = proof;
         return proof_.status;
     }

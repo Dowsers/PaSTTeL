@@ -78,6 +78,9 @@ CASES = [
     ("examples/test_array_chain_triple_unknown.json",			"NON-TERMINATING", "both"),
     ("examples/test_array_scoping_unrelated_indices.json",		"TERMINATING",     "both"),
     ("examples/test_array_scoping_two_arrays.json",			"TERMINATING",     "both"),
+    ("examples/test_fixpoint_array_state_real_4bitcounter.json",	"UNKNOWN",         "both"),
+    ("examples/test_fixpoint_array_state_change.json",			"UNKNOWN",         "both"),
+    ("examples/test_geometric_array_select_real_commoncell.json",	"UNKNOWN",         "both"),
 ]
 
 
@@ -243,6 +246,111 @@ for file, expected_after in ARRAY_HANDLER_CASES:
     array_handler_attrs[name] = make_array_handler_test(file, expected_after)
 ArrayHandlerTransformationTests = type(
     "ArrayHandlerTransformationTests", (unittest.TestCase,), array_handler_attrs
+)
+
+
+# ---------------------------------------------------------------------------
+# Structural tests for FixpointTechnique's x=x' constraint generation.
+# Regression guard for the bug where Array-sorted loop-carried variables were
+# excluded from the fixpoint check: a loop that only ever mutates an array
+# (no scalar state changes) got 0 constraints added, so the loop formula's
+# plain satisfiability was mistaken for a genuine fixpoint -- a false
+# NON-TERMINATING verdict whenever the array is the only real loop-carried
+# state. Checked via "-a nonterminate" (Fixpoint's own log, independent of
+# which non-termination technique wins the portfolio race for the final
+# verdict -- see the real concrete case in CASES, which races against
+# GeometricTechnique and is not usable to test Fixpoint's fix in isolation).
+# ---------------------------------------------------------------------------
+
+FIXPOINT_CONSTRAINT_CASES = [
+    ("examples/test_fixpoint_array_state_change.json", "1", ["v_A_1 = v_A_3"]),
+]
+
+
+def make_fixpoint_constraint_test(file, expected_count, expected_assignments):
+    def test_method(self):
+        try:
+            result = subprocess.run(
+                [PASTTEL_BIN, file, "-a", "nonterminate", "-v"],
+                capture_output=True, text=True, timeout=10
+            )
+            output = result.stdout + result.stderr
+        except subprocess.TimeoutExpired as e:
+            def as_text(x):
+                if x is None:
+                    return ""
+                return x.decode("utf-8", errors="replace") if isinstance(x, bytes) else x
+            output = as_text(e.stdout) + as_text(e.stderr)
+        section_match = re.search(
+            r"Ajout des contraintes de point fixe.*?✓ Ajout\xe9 (\d+) contraintes de point fixe",
+            output, re.DOTALL
+        )
+        self.assertIsNotNone(
+            section_match,
+            f"\nFile: {file}\nNo fixpoint-constraint section found in output.\n"
+            f"Output (first 2000 chars):\n{output[:2000]}"
+        )
+        section = section_match.group(0)
+        self.assertEqual(expected_count, section_match.group(1), f"File: {file}")
+        assignments = re.findall(r"    • (.+)", section)
+        self.assertEqual(expected_assignments, assignments, f"File: {file}")
+    return test_method
+
+
+fixpoint_constraint_attrs = {}
+for file, expected_count, expected_assignments in FIXPOINT_CONSTRAINT_CASES:
+    name = "test_fixpointconstraints_" + os.path.splitext(os.path.basename(file))[0]
+    fixpoint_constraint_attrs[name] = make_fixpoint_constraint_test(file, expected_count, expected_assignments)
+FixpointConstraintTests = type(
+    "FixpointConstraintTests", (unittest.TestCase,), fixpoint_constraint_attrs
+)
+
+
+# ---------------------------------------------------------------------------
+# Structural test for GeometricTechnique's array-select/store guard.
+# Regression guard for the bug where an array read/write in the loop
+# introduced an aux var (arr__select__N) into the linearized polyhedra that
+# was never tied into the eigenvector/honda-state recurrence, letting the
+# solver satisfy the per-iteration ray constraints once and report a
+# spurious geometric non-termination witness. GeometricTechnique now detects
+# any "(select "/"(store " in the raw stem/loop formula and skips its search
+# instead (see has_unmodeled_array_mutation_ in geometric_technique.h/.cpp).
+# ---------------------------------------------------------------------------
+
+GEOMETRIC_SKIP_CASES = [
+    "examples/test_fixpoint_array_state_change.json",
+]
+
+
+def make_geometric_skip_test(file):
+    def test_method(self):
+        try:
+            result = subprocess.run(
+                [PASTTEL_BIN, file, "-a", "nonterminate", "-v"],
+                capture_output=True, text=True, timeout=10
+            )
+            output = result.stdout + result.stderr
+        except subprocess.TimeoutExpired as e:
+            def as_text(x):
+                if x is None:
+                    return ""
+                return x.decode("utf-8", errors="replace") if isinstance(x, bytes) else x
+            output = as_text(e.stdout) + as_text(e.stderr)
+        self.assertIn(
+            "an Array-typed variable is mutated by the loop",
+            output,
+            f"\nFile: {file}\nGeometricTechnique did not report skipping due to array "
+            f"select/store.\nOutput (first 2000 chars):\n{output[:2000]}"
+        )
+    return test_method
+
+
+geometric_skip_attrs = {}
+for file in GEOMETRIC_SKIP_CASES:
+    name = "test_geometricskip_" + os.path.splitext(os.path.basename(file))[0]
+    geometric_skip_attrs[name] = make_geometric_skip_test(file)
+GeometricArraySkipTests = type(
+    "GeometricArraySkipTests", (unittest.TestCase,), geometric_skip_attrs
 )
 
 
