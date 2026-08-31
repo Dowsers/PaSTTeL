@@ -96,6 +96,28 @@ def _pasttel_algo_name(raw_name):
     return raw_name
 
 
+def _normalize_strat_label(label):
+    """Canonical display name for a strategy label in the TESTED STRATEGIES block.
+
+    The block mixes short labels and full technique names:
+        FIXPOINT / GNTA / AFFINE / NESTED
+        RankingBased(2-5-LexicographicTemplate) / ...(2-5-MultiphaseTemplate) / ...(2-5-PiecewiseTemplate)
+    Normalising both to the same canonical name used by _pasttel_algo_name lets
+    us match a block entry against the winning technique's name.
+    """
+    l = label.strip()
+    u = l.upper()
+    if u == "FIXPOINT":
+        return "Fixpoint"
+    if u == "GNTA":
+        return "GNTA"
+    if u == "AFFINE":
+        return "Affine Template"
+    if u == "NESTED":
+        return "Nested Template"
+    return _pasttel_algo_name(l)
+
+
 def sanitize_identifier(s):
     """Remove ~, #, | characters that cause issues in the pasttel parser."""
     s = re.sub(r'old\(([^()]*)\)', r'old_\1_', s)
@@ -867,19 +889,33 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
     if mt:
         total_time_ms = float(mt.group(1)) * 1000.0
 
-    # Parse individual strategy times from the TESTED STRATEGIES block.
-    # Lines like:  "  - FIXPOINT TIME: 0.003 s"  or  "  - FIXPOINT TIME: -"
-    def _parse_strat_time(label):
-        m = re.search(rf'-\s+{label} TIME:\s*([\d.]+)\s*s', output)
-        return float(m.group(1)) * 1000.0 if m else -1.0
+    # Parse per-strategy times from the TESTED STRATEGIES block, generically.
+    # PaSTTeL runs up to 7 strategies, and the block mixes short labels with
+    # full technique names:
+    #   "  - FIXPOINT TIME: 0.003 s"                              (short label)
+    #   "  - RankingBased(2-5-MultiphaseTemplate) TIME: 0.686 s"  (template label)
+    #   "  - NESTED TIME: -"                                      (not run)
+    # Keyed by the canonical display name so it matches the winner's algo name.
+    strat_order = []          # [(canonical_name, ms)] in report order (ms=-1 if not run)
+    strat_times = {}          # canonical_name -> ms
+    for line in output.split("\n"):
+        m = re.search(r'-\s+(.+?)\s+TIME:\s*([\d.]+)\s*s', line)
+        if m:
+            key = _normalize_strat_label(m.group(1))
+            ms = float(m.group(2)) * 1000.0
+            strat_order.append((key, ms))
+            strat_times[key] = ms
+            continue
+        m = re.search(r'-\s+(.+?)\s+TIME:\s*-\s*$', line)
+        if m:
+            strat_order.append((_normalize_strat_label(m.group(1)), -1.0))
 
-    fixpoint_ms = _parse_strat_time("FIXPOINT")
-    gnta_ms     = _parse_strat_time("GNTA")
-    affine_ms   = _parse_strat_time("AFFINE")
-    nested_ms   = _parse_strat_time("NESTED")
-
-    # Parse winning technique name
+    # Parse the winning technique: its name AND its own reported time. The result
+    # table row is "Technique  Result  Time(s)  Proof", so the time is the first
+    # float-parsable token after the name. This is robust for ALL 7 strategies
+    # (affine/nested/lexicographic/multiphase/piecewise/gnta/fixpoint).
     algo = "-"
+    winner_ms = -1.0
     for line in output.split("\n"):
         stripped = line.strip()
         if not stripped or stripped.startswith("---") or stripped.startswith("="):
@@ -887,54 +923,41 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
         if stripped.startswith("Technique") or stripped.startswith("OVERALL"):
             continue
         if "TERMINATING" in stripped or "NON-TERM" in stripped:
-            raw_name = stripped.split()[0]
-            algo = _pasttel_algo_name(raw_name)
+            parts = stripped.split()
+            algo = _pasttel_algo_name(parts[0])
+            for tok in parts[1:]:
+                try:
+                    winner_ms = float(tok) * 1000.0
+                    break
+                except ValueError:
+                    continue
             break
 
-    # Compute P-ULR time:
-    #   sequential (cpus=1): cumulative sum of strategies run before (and including) the winner
-    #   parallel (cpus>1):   time of the winning strategy only
-    algo_lower = algo.strip().lower()
-    if cpus == 1:
-        # Execution order: Fixpoint → GNTA → Affine → Nested
-        # Accumulate from the first strategy up to (and including) the winner.
-        ordered = [
-            ("fixpoint", fixpoint_ms),
-            ("gnta",     gnta_ms),
-            ("affine",   affine_ms),
-            ("nested",   nested_ms),
-        ]
-        winner_key = None
-        if "fixpoint" in algo_lower:
-            winner_key = "fixpoint"
-        elif "gnta" in algo_lower:
-            winner_key = "gnta"
-        elif "affine" in algo_lower:
-            winner_key = "affine"
-        elif "nested" in algo_lower:
-            winner_key = "nested"
+    # Individual times kept in the return payload (backward compat).
+    fixpoint_ms = strat_times.get("Fixpoint", -1.0)
+    gnta_ms     = strat_times.get("GNTA", -1.0)
+    affine_ms   = strat_times.get("Affine Template", -1.0)
+    nested_ms   = strat_times.get("Nested Template", -1.0)
 
+    # Compute P-ULR time:
+    #   parallel (cpus>1):   the winning technique's own time.
+    #   sequential (cpus=1): cumulative time of every strategy run up to and
+    #                        including the winner (report order).
+    if cpus == 1:
         ulr_time_ms = -1.0
-        if winner_key:
-            cumul = 0.0
-            for key, ms in ordered:
-                if ms >= 0:
-                    cumul += ms
-                if key == winner_key:
-                    ulr_time_ms = cumul
-                    break
+        cumul = 0.0
+        matched = False
+        for key, ms in strat_order:
+            if ms >= 0:
+                cumul += ms
+            if key == algo:
+                ulr_time_ms = cumul
+                matched = True
+                break
+        if not matched:
+            ulr_time_ms = winner_ms
     else:
-        # Parallel: only the winning technique's time matters
-        if "fixpoint" in algo_lower:
-            ulr_time_ms = fixpoint_ms
-        elif "gnta" in algo_lower:
-            ulr_time_ms = gnta_ms
-        elif "affine" in algo_lower:
-            ulr_time_ms = affine_ms
-        elif "nested" in algo_lower:
-            ulr_time_ms = nested_ms
-        else:
-            ulr_time_ms = -1.0
+        ulr_time_ms = winner_ms if winner_ms >= 0 else strat_times.get(algo, -1.0)
 
     return {
         "result":       result,
@@ -1124,7 +1147,10 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         elif u_verdict == "NONTERMINATING" and t_verdict == "NONTERMINATING":
             blue_x.append(ux); blue_y.append(ty)
             blue_labels.append(f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms")
-        elif p_status == "TIMEOUT" or ty_raw is None:
+        elif p_status == "TIMEOUT":
+            # Real timeout only (subprocess killed at the time limit). A genuine
+            # UNKNOWN concluded *under* the timeout has ty_raw is None too, but must
+            # NOT be coloured orange — it falls through to the red (UNKNOWN) branch.
             orange_x.append(ux); orange_y.append(ty)
             orange_labels.append(
                 f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms"
