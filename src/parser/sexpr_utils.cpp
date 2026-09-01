@@ -59,6 +59,44 @@ std::vector<std::string> splitSExpr(const std::string& expr) {
     return result;
 }
 
+std::vector<std::string> collectSymbols(const std::string& expr) {
+    std::vector<std::string> symbols;
+    const size_t n = expr.size();
+    std::string current;
+
+    auto flush = [&]() {
+        if (!current.empty()) {
+            symbols.push_back(current);
+            current.clear();
+        }
+    };
+
+    for (size_t i = 0; i < n; ++i) {
+        char c = expr[i];
+        if (c == '|') {
+            // SMT-LIB2 quoted symbol: everything up to the next '|' is a single
+            // atom, regardless of internal spaces / parens / commas / brackets.
+            flush();
+            std::string quoted(1, '|');
+            ++i;
+            while (i < n && expr[i] != '|') {
+                quoted += expr[i];
+                ++i;
+            }
+            if (i < n) quoted += '|';   // closing pipe (kept)
+            symbols.push_back(quoted);
+        } else if (c == '(' || c == ')' ||
+                   std::isspace(static_cast<unsigned char>(c))) {
+            // Delimiters for unquoted atoms.
+            flush();
+        } else {
+            current += c;
+        }
+    }
+    flush();
+    return symbols;
+}
+
 bool isNumericLiteral(const std::string& s) {
     std::string trimmed = trim(s);
     if (trimmed.empty()) return false;

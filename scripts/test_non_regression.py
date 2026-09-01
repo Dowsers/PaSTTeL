@@ -83,6 +83,26 @@ CASES = [
     ("examples/test_geometric_array_select_real_commoncell.json",	"UNKNOWN",         "both"),
     ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
     ("examples/test_array_promotion_cell_in_ranking.json",		"TERMINATING",     "both"),
+
+    # -----------------------------------------------------------------------
+    # Real Ultimate-preprocessed array lassos (cell-scalar encoding, copied from
+    # stats/vmcai26/ARRAY_OP). These lock in two parser fixes:
+    #   - pipe-aware collectLiveSSAs: multidimensional #memory_int cells (whose
+    #     index contains a space) must NOT be dropped as "dead", otherwise GNTA
+    #     invents a spurious NON-TERMINATING argument on a terminating lasso.
+    #   - connectStemToLoop raw_formula substitution kept consistent with the
+    #     in/out maps, so loop-only ranking cells survive (basename-3 needs a
+    #     3-lexicographic RF over those cells).
+    # Expected verdicts are Ultimate's ground truth; all pass on z3 and cvc5.
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",           "TERMINATING",     "both",        CPUS),
+    ("examples/array/arr_CookSeeZuleger_Fig3_2Dcell_term.json",         "TERMINATING",     "both",        CPUS),
+    ("examples/array/arr_a05_alloca_term.json",                         "TERMINATING",     "both",        CPUS),
+    ("examples/array/arr_basename3_lex_desync_term.json",               "TERMINATING",     "both",        CPUS),
+    ("examples/array/arr_array04_alloca_nonterm.json",                  "NON-TERMINATING", "both",        CPUS),
+    ("examples/array/arr_Arrays02_equiv_const_idx_nonterm.json",        "NON-TERMINATING", "both",        CPUS),
+    ("examples/array/arr_GasCake02_nonterm.json",                       "NON-TERMINATING", "both",        CPUS),
+    ("examples/array/arr_NonTermination3_nonterm.json",                 "NON-TERMINATING", "both",        CPUS),
+    ("examples/array/arr_printf_nonterm.json",                          "NON-TERMINATING", "both",        CPUS),
 ]
 
 

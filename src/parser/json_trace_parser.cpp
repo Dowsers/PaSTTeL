@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "parser/json_trace_parser.h"
+#include "parser/sexpr_utils.h"
 #include "linearization/formula_linearizer.h"
 #include "linearization/uf_handler.h"
 #include "linearization/array_handler.h"
@@ -45,14 +46,20 @@ static std::string stripPipes(const std::string& s) {
 }
 
 // Collect every SSA identifier that appears in a formula string.
+//
+// Uses a pipe-aware tokenizer (SExprUtils::collectSymbols): an SMT-LIB2 quoted
+// symbol |...| is treated as a single atom even when it contains spaces, e.g. a
+// multidimensional array cell |v_arrayCell_v_#memory_int_1[base_2, off_3]_1|.
+// A naive whitespace split shreds such a name into fragments, so its full
+// identifier never matches the value stored in var_to_ssa_in/out, and
+// removeDeadVariables would then wrongly drop the (very much alive) program
+// variable. Identifiers are stored pipe-stripped, matching stripPipes() applied
+// to the mapping values in pruneMapping()/hasLiveSSA().
 static std::set<std::string> collectLiveSSAs(const std::string& formula) {
     std::set<std::string> live;
-    std::istringstream ss(formula);
-    std::string tok;
-    while (ss >> tok) {
-        tok.erase(std::remove_if(tok.begin(), tok.end(),
-                  [](char c){ return c == '(' || c == ')' || c == '|'; }), tok.end());
-        if (!tok.empty()) live.insert(tok);
+    for (const std::string& sym : SExprUtils::collectSymbols(formula)) {
+        std::string id = stripPipes(sym);
+        if (!id.empty()) live.insert(id);
     }
     return live;
 }
@@ -302,25 +309,48 @@ void connectStemToLoop(LassoProgram& lasso) {
             ssa_out = substituteVar(ssa_out);
         }
 
-        // Apply same substitution to raw_formula (word-boundary replacement).
+        // Apply the SAME substitution to raw_formula, atom by atom, via substituteVar
+        // — so the formula stays byte-consistent with the maps updated above.
+        //
+        // A plain word-boundary string replace desyncs here on quoted array-cell
+        // names: substituteVar rewrites the index INSIDE |...[idx]...|, but a
+        // word-boundary replace skips an index occurrence flanked by '[' / ']'
+        // (and, conversely, it rewrites a scalar buried in a compound cell index
+        // like (+ off 1) that substituteVar leaves untouched). Either way the
+        // cell's map value and its formula occurrence diverge, and
+        // removeDeadVariables then wrongly drops the (live) program variable.
+        // Walking atoms and applying substituteVar to each — quoted |...| symbols
+        // as a whole — makes both representations identical by construction.
         if (!lasso.loop.raw_formula.empty()) {
-            for (const auto& [old_ssa, new_ssa] : substitution) {
-                size_t pos = 0;
-                auto& f = lasso.loop.raw_formula;
-                while ((pos = f.find(old_ssa, pos)) != std::string::npos) {
-                    bool start_ok = (pos == 0) ||
-                        f[pos-1]==' ' || f[pos-1]=='(' || f[pos-1]==')';
-                    size_t end = pos + old_ssa.size();
-                    bool end_ok = (end == f.size()) ||
-                        f[end]==' ' || f[end]=='(' || f[end]==')';
-                    if (start_ok && end_ok) {
-                        f.replace(pos, old_ssa.size(), new_ssa);
-                        pos += new_ssa.size();
-                    } else {
-                        pos += old_ssa.size();
-                    }
+            const std::string f = lasso.loop.raw_formula;
+            std::string out;
+            out.reserve(f.size());
+            std::string atom;
+            auto flushAtom = [&]() {
+                if (!atom.empty()) { out += substituteVar(atom); atom.clear(); }
+            };
+            for (size_t i = 0; i < f.size(); ) {
+                char c = f[i];
+                if (c == '|') {
+                    // Quoted symbol: consume through the closing pipe as one atom.
+                    flushAtom();
+                    size_t j = i + 1;
+                    while (j < f.size() && f[j] != '|') ++j;
+                    size_t past = (j < f.size()) ? j + 1 : j;  // include closing '|'
+                    out += substituteVar(f.substr(i, past - i));
+                    i = past;
+                } else if (c == '(' || c == ')' || c == ' ' ||
+                           c == '\t' || c == '\n' || c == '\r') {
+                    flushAtom();
+                    out += c;
+                    ++i;
+                } else {
+                    atom += c;
+                    ++i;
                 }
             }
+            flushAtom();
+            lasso.loop.raw_formula = out;
         }
     }
 }
