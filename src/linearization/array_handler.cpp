@@ -305,23 +305,47 @@ void collectIdentifiers(const std::string& expr, std::set<std::string>& scalars,
 
 }  // namespace
 
+std::string ArrayHandler::sortForProbe(const std::string& id, bool used_as_array) const {
+    // Trust an explicitly declared sort first: the program variable itself,
+    // then an aux var minted here, then the program variable this SSA name
+    // stands for (setInvariantIndexCandidates() records both in/out SSA -> prog
+    // var). Only with no declared sort do we fall back to the usage-based guess
+    // -- and there, unlike computeSort()'s "unknown -> array" default (right for
+    // a select head, wrong for a bare index), we honour how the identifier was
+    // actually used in this formula.
+    auto it = m_var_sorts.find(id);
+    if (it != m_var_sorts.end()) return it->second;
+    auto aux = m_aux_var_sorts.find(id);
+    if (aux != m_aux_var_sorts.end()) return aux->second;
+    auto pv = m_ssa_to_prog_var.find(id);
+    if (pv != m_ssa_to_prog_var.end()) {
+        auto vs = m_var_sorts.find(pv->second);
+        if (vs != m_var_sorts.end()) return vs->second;
+    }
+    return used_as_array ? "(Array Int " + m_default_element_sort + ")"
+                         : m_default_element_sort;
+}
+
 bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::string& extra_assertion) const {
     std::set<std::string> scalars, arrays;
     collectIdentifiers(context, scalars, arrays);
     collectIdentifiers(extra_assertion, scalars, arrays);
 
     SMTSolverZ3 solver(false);
+    // Declare each identifier with its most reliable sort. A declared program-
+    // or aux-var sort (found directly, or via the SSA -> program-var map) always
+    // wins over the usage-based scalar/array guess: an array SSA that only ever
+    // appears as an `=` operand -- e.g. v_a_out in `(= v_a_out (store v_a_in ...))`,
+    // never as a select/store head -- is otherwise classified scalar, so the
+    // store equality becomes a Z3 type error, the whole probe is spuriously
+    // UNSAT, and EVERY index pair collapses to NOT_EQUAL. That is a soundness
+    // hole in classifyIndices (a genuinely-equal index pair mis-read as
+    // distinct drops a frame condition), not a mere missed optimization.
     for (const auto& a : arrays) {
-        // Real per-variable sort (see computeSort()) -- a hardcoded flat
-        // "(Array Int elem)" here would mis-type a nested array (e.g.
-        // "(Array Int (Array Int Int))"), and asserting a formula that then
-        // stores into a wrongly-scalar-typed select is a Z3 type error --
-        // silently corrupting this SAT probe's verdict (observed: an
-        // UNKNOWN index relation misclassified as NOT_EQUAL).
-        solver.declareVariable(a, computeSort(a));
+        solver.declareVariable(a, sortForProbe(a, /*used_as_array=*/true));
     }
     for (const auto& s : scalars) {
-        solver.declareVariable(s, m_default_element_sort);
+        solver.declareVariable(s, sortForProbe(s, /*used_as_array=*/false));
     }
 
     std::string ctx = SExprUtils::trim(context);
@@ -388,6 +412,22 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     // apparaitre la valeur "out" comme un select litteral, via son propre
     // scoping d'indices par (array, dimension) -- voir collectIndicesForIdentity().
     result = promoteInvariantArrayCells(result);
+
+    // Etape 4 : congruence fonctionnelle entre cellules promues d'un meme
+    // tableau dont les indices sont (prouvablement) egaux -- sinon deux
+    // (select a i)/(select a j) avec i==j deviennent des scalaires independants,
+    // ce qui laisse GeometricTechnique fabriquer une fausse preuve de
+    // non-terminaison. Le contexte est la formule d'origine (elle porte les
+    // contraintes d'index comme (= v_j_5 v_i_8)), pas `result` ou les selects
+    // ont deja ete remplaces. Voir buildPromotedCellCongruence().
+    std::vector<std::string> congruence = buildPromotedCellCongruence(trimmed, result);
+    if (!congruence.empty()) {
+        std::ostringstream oss;
+        oss << "(and " << result;
+        for (const auto& c : congruence) oss << " " << c;
+        oss << ")";
+        result = oss.str();
+    }
 
     if (verbose && result != formula) {
         std::cout << "  [ArrayHandler] Before: " << formula << std::endl;
@@ -632,6 +672,7 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                         cell.out_ssa = cell.pseudo_var + "__out";
                         cell.sort = elem_sort;
                         cell.array_name = array_prog_var;
+                        cell.index_ssa = index_ssa;
                         auto idx_name_it = m_ssa_to_prog_var.find(index_ssa);
                         cell.index_display.push_back(
                             idx_name_it != m_ssa_to_prog_var.end() ? idx_name_it->second : index_ssa);
@@ -653,6 +694,59 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
     for (size_t i = 1; i < rebuilt.size(); ++i) oss << " " << rebuilt[i];
     oss << ")";
     return oss.str();
+}
+
+// ============================================================================
+// CONGRUENCE FONCTIONNELLE (ACKERMANN) ENTRE CELLULES PROMUES
+// ============================================================================
+
+std::vector<std::string> ArrayHandler::buildPromotedCellCongruence(
+    const std::string& context, const std::string& referenced) const
+{
+    std::vector<std::string> atoms;
+
+    // Group promoted cells by array program variable; only same-array cells can
+    // alias. Sets are tiny (one entry per distinct invariant index of an array),
+    // so the O(n^2) pairing below issues only a handful of classifyIndices()
+    // SMT queries per array -- the same cost model the store path already pays.
+    // m_promoted_cells is cumulative across transitions, so keep only the cells
+    // whose (unique) scalar name occurs in this transition's formula.
+    std::map<std::string, std::vector<const PromotedCell*>> by_array;
+    for (const auto& cell : m_promoted_cells) {
+        if (referenced.find(cell.in_ssa) == std::string::npos &&
+            referenced.find(cell.out_ssa) == std::string::npos) {
+            continue;
+        }
+        by_array[cell.array_name].push_back(&cell);
+    }
+
+    for (const auto& [array_name, cells] : by_array) {
+        (void)array_name;
+        for (size_t a = 0; a < cells.size(); ++a) {
+            for (size_t b = a + 1; b < cells.size(); ++b) {
+                const PromotedCell* ca = cells[a];
+                const PromotedCell* cb = cells[b];
+                // Distinct PromotedCells always have distinct index SSA (the
+                // (array,index) key dedups), so this is a genuine index pair.
+                IndexRelation rel = classifyIndices(ca->index_ssa, cb->index_ssa, context);
+                if (rel == IndexRelation::NOT_EQUAL) continue;
+
+                if (rel == IndexRelation::EQUAL) {
+                    // Indices provably equal -> same cell in every state.
+                    // Unconditional equality on both sides; no case split.
+                    atoms.push_back(eq(ca->in_ssa, cb->in_ssa));
+                    atoms.push_back(eq(ca->out_ssa, cb->out_ssa));
+                } else {  // UNKNOWN -> guarded Ackermann implication, per side.
+                    atoms.push_back("(or " + neq(ca->index_ssa, cb->index_ssa)
+                                    + " " + eq(ca->in_ssa, cb->in_ssa) + ")");
+                    atoms.push_back("(or " + neq(ca->index_ssa, cb->index_ssa)
+                                    + " " + eq(ca->out_ssa, cb->out_ssa) + ")");
+                }
+            }
+        }
+    }
+
+    return atoms;
 }
 
 // ============================================================================

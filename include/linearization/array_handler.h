@@ -117,6 +117,7 @@ public:
         // only promoteInvariantArrayCells() itself would need to populate
         // more than one entry.
         std::string array_name;                  // e.g. "A" -- program-var level, not an SSA name
+        std::string index_ssa;                   // e.g. "v_i_2" -- the (invariant) index SSA term
         std::vector<std::string> index_display;   // e.g. {"i"} -- readable index name(s)
     };
 
@@ -340,6 +341,33 @@ private:
      */
     std::string promoteInvariantArrayCells(const std::string& expr) const;
 
+    /**
+     * @brief Functional-consistency (Ackermann) congruence over promoted cells.
+     * Two cells of the same array whose indices are provably equal denote the
+     * same memory location and must hold the same value; promotion keys cells on
+     * the syntactic index name alone, so without this a `(select a i)` and a
+     * `(select a j)` with `i == j` entailed become independent scalars -- letting
+     * GeometricTechnique fabricate a spurious non-termination witness (see the
+     * "IndexEqualityInformationInLoop" case). For every pair of cells of one
+     * array this emits, reusing classifyIndices() against `context`:
+     *   EQUAL     -> `(= cellA cellB)` on both in- and out-sides (no disjunction);
+     *   UNKNOWN   -> `(or (not (= idxA idxB)) (= cellA cellB))`, the guarded
+     *                Ackermann implication, mirroring evaluateStoreAtIndex();
+     *   NOT_EQUAL -> nothing.
+     * This is the read-read analogue of the store path's existing congruence and
+     * matches Ultimate MapEliminator's index-equality handling. Returns the list
+     * of extra conjuncts to AND into the preprocessed formula.
+     *
+     * @param context   the ORIGINAL (pre-promotion) transition formula, carrying
+     *                  the index constraints classifyIndices() reasons over.
+     * @param referenced the post-promotion formula; m_promoted_cells is
+     *                  cumulative across every transition this instance handled,
+     *                  so only cells whose scalar name actually appears here
+     *                  belong to the current transition and are paired.
+     */
+    std::vector<std::string> buildPromotedCellCongruence(
+        const std::string& context, const std::string& referenced) const;
+
     /** Fresh aux var name for an unresolved select-of-store value, of sort `sort`. */
     std::string freshAuxVar(const std::string& sort) const;
 
@@ -348,6 +376,15 @@ private:
      * (via a throwaway Z3 instance; identifiers are auto-declared).
      */
     bool isSatisfiableWith(const std::string& context, const std::string& extra_assertion) const;
+
+    /**
+     * @brief Best sort to declare `id` with for an isSatisfiableWith() probe:
+     * a declared program/aux-var sort (directly or via the SSA -> program-var
+     * map) if known, else the usage-based guess (`used_as_array` decides). Keeps
+     * an array SSA that only appears as an `=` operand from being mis-typed
+     * scalar -- see isSatisfiableWith() for why that would be unsound.
+     */
+    std::string sortForProbe(const std::string& id, bool used_as_array) const;
 
     static std::string trim(const std::string& s) {
         return SExprUtils::trim(s);
