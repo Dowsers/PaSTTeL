@@ -1028,6 +1028,280 @@ RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidato
 }
 
 // ============================================================================
+// HELPERS PARTAGÉS + VALIDATION LEX / MULTIPHASE / PIECEWISE
+// ============================================================================
+
+// Conjonction SMT-LIB robuste (>=1 atome) : évite le cas dégénéré (and X).
+static std::string smtAnd(const std::vector<std::string>& atoms) {
+    if (atoms.empty()) return "true";
+    if (atoms.size() == 1) return atoms[0];
+    std::ostringstream o;
+    o << "(and";
+    for (const auto& a : atoms) o << " " << a;
+    o << ")";
+    return o.str();
+}
+
+bool RankingAndInvariantValidator::validateAllSupportingInvariants(
+    const std::vector<SupportingInvariant>& sis,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver,
+    std::vector<SIValidationResult>& si_results_out)
+{
+    valid_sis.clear();
+    si_results_out.clear();
+    if (sis.empty()) return true;
+
+    int num_trivial_false = 0;
+    for (size_t i = 0; i < sis.size(); ++i) {
+        SIValidationResult r = validateSingleSI(static_cast<int>(i), sis[i], lasso, solver);
+        si_results_out.push_back(r);
+        if (r.is_false_check) {
+            ++num_trivial_false;
+        } else if (!r.is_true_check && r.is_valid) {
+            valid_sis.push_back(sis[i]);   // non-trivial and proven inductive
+        }
+    }
+    // A trivially-true SI is a tautology (safe to drop); only a trivially-FALSE
+    // SI (or, implicitly, a needed but non-inductive one) endangers soundness.
+    return num_trivial_false == 0;
+}
+
+RankingAndInvariantValidator::ValidationResult
+RankingAndInvariantValidator::validateLexicographic(
+    const TerminationArgument& argument,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver)
+{
+    const auto& C = argument.ranking_functions;
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+
+    ValidationResult res;
+    res.is_valid = false;
+    res.rf_non_trivial_check = false;
+    res.rf_bounded_check = false;
+    res.rf_decreasing_check = false;
+    res.all_si_valid = false;
+
+    if (C.empty()) { res.error_message = "Lexicographic: no components"; return res; }
+
+    registerProgramVariablesToSolver(solver, lasso);
+    res.all_si_valid = validateAllSupportingInvariants(
+        argument.supporting_invariants, lasso, solver, res.si_results);
+    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
+
+    res.rf_non_trivial_check = true;
+    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
+    if (!res.rf_non_trivial_check) { res.error_message = "a lexicographic component is trivial"; return res; }
+
+    const int k = static_cast<int>(C.size());
+
+    // (1) borne : loop ∧ SI ⇒ fi(x) > 0     [contre-exemple : fi(x) <= 0]
+    bool bounded_ok = true;
+    for (int i = 0; i < k; ++i) {
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion("(<= " + buildRFFormula(C[i], lasso, false) + " 0)");
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { bounded_ok = false; if (verbose) std::cout << "  FAIL bound: f" << i << "(x) > 0 violated" << std::endl; }
+    }
+    res.rf_bounded_check = bounded_ok;
+    if (!bounded_ok) { res.error_message = "lexicographic bound fi(x) > 0 violated"; return res; }
+
+    // (2) consécution i=0..k-2 : fi(x') <= fi(x)  ∨  ∃ j<i : fj(x)-fj(x') > dj
+    //     contre-exemple : fi(x') > fi(x)  ∧  ∀ j<i : fj(x)-fj(x') <= dj
+    bool dec_ok = true;
+    for (int i = 0; i + 1 < k; ++i) {
+        std::vector<std::string> ce;
+        ce.push_back("(> " + buildRFFormula(C[i], lasso, true) + " " + buildRFFormula(C[i], lasso, false) + ")");
+        for (int j = 0; j < i; ++j)
+            ce.push_back("(<= (- " + buildRFFormula(C[j], lasso, false) + " " + buildRFFormula(C[j], lasso, true)
+                         + ") " + C[j].delta.toSMTLibString() + ")");
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(smtAnd(ce));
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL consec: component " << i << std::endl; }
+    }
+
+    // (3) décrément : ∃ i : fi(x)-fi(x') > di
+    //     contre-exemple : ∀ i : fi(x)-fi(x') <= di
+    {
+        std::vector<std::string> ce;
+        for (int i = 0; i < k; ++i)
+            ce.push_back("(<= (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
+                         + ") " + C[i].delta.toSMTLibString() + ")");
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(smtAnd(ce));
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL decrement: no component strictly decreases" << std::endl; }
+    }
+    res.rf_decreasing_check = dec_ok;
+    if (!dec_ok) { res.error_message = "lexicographic decrease/consecution violated"; return res; }
+
+    res.is_valid = true;
+    return res;
+}
+
+RankingAndInvariantValidator::ValidationResult
+RankingAndInvariantValidator::validateMultiphase(
+    const TerminationArgument& argument,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver)
+{
+    const auto& C = argument.ranking_functions;
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+
+    ValidationResult res;
+    res.is_valid = false;
+    res.rf_non_trivial_check = false;
+    res.rf_bounded_check = false;
+    res.rf_decreasing_check = false;
+    res.all_si_valid = false;
+
+    if (C.empty()) { res.error_message = "Multiphase: no phases"; return res; }
+
+    registerProgramVariablesToSolver(solver, lasso);
+    res.all_si_valid = validateAllSupportingInvariants(
+        argument.supporting_invariants, lasso, solver, res.si_results);
+    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
+
+    res.rf_non_trivial_check = true;
+    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
+    if (!res.rf_non_trivial_check) { res.error_message = "a multiphase phase is trivial"; return res; }
+
+    const int k = static_cast<int>(C.size());
+
+    // décroissance de phase :
+    //   phase 0   : f0(x)-f0(x') > δ0
+    //   phase i>=1: fi(x)-fi(x') > δi  ∨  f_{i-1}(x) > 0
+    bool dec_ok = true;
+    for (int i = 0; i < k; ++i) {
+        std::string decr = "(<= (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
+                           + ") " + C[i].delta.toSMTLibString() + ")";   // contre-ex de fi(x)-fi(x') > δi
+        std::string ce = (i == 0)
+            ? decr
+            : smtAnd({decr, "(<= " + buildRFFormula(C[i - 1], lasso, false) + " 0)"});  // ∧ f_{i-1}(x) <= 0
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(ce);
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL phase decrease: phase " << i << std::endl; }
+    }
+    res.rf_decreasing_check = dec_ok;
+    if (!dec_ok) { res.error_message = "multiphase decrease violated"; return res; }
+
+    // borne : f_{k-1}(x) >= 0     [contre-exemple : f_{k-1}(x) < 0]
+    {
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion("(< " + buildRFFormula(C.back(), lasso, false) + " 0)");
+        bool sat = solver->checkSat();
+        solver->pop();
+        res.rf_bounded_check = !sat;
+    }
+    if (!res.rf_bounded_check) { res.error_message = "multiphase last phase not bounded (f_{k-1}(x) < 0 possible)"; return res; }
+
+    res.is_valid = true;
+    return res;
+}
+
+RankingAndInvariantValidator::ValidationResult
+RankingAndInvariantValidator::validatePiecewise(
+    const TerminationArgument& argument,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver)
+{
+    const auto& C = argument.ranking_functions;   // fonctions locales f_i
+    const auto& H = argument.guards;               // gardes h_i (morceau i actif si h_i(x) >= 0)
+    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+
+    ValidationResult res;
+    res.is_valid = false;
+    res.rf_non_trivial_check = false;
+    res.rf_bounded_check = false;
+    res.rf_decreasing_check = false;
+    res.all_si_valid = false;
+
+    if (C.empty()) { res.error_message = "Piecewise: no pieces"; return res; }
+
+    registerProgramVariablesToSolver(solver, lasso);
+    res.all_si_valid = validateAllSupportingInvariants(
+        argument.supporting_invariants, lasso, solver, res.si_results);
+    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
+
+    res.rf_non_trivial_check = true;
+    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
+    if (!res.rf_non_trivial_check) { res.error_message = "a piecewise piece is trivial"; return res; }
+
+    // Sans les gardes on ne peut pas vérifier les conditions dépendantes de h_i :
+    // on accepte (jamais de rejet sur du non-vérifié) avec un avertissement.
+    if (H.size() != C.size()) {
+        std::cout << "  [validator] WARNING: Piecewise guards unavailable (have "
+                  << H.size() << " guards for " << C.size()
+                  << " pieces); checked SI + non-triviality only." << std::endl;
+        res.error_message = "piecewise: guards unavailable — h_i conditions unchecked";
+        res.is_valid = true;
+        return res;
+    }
+
+    const int k = static_cast<int>(C.size());
+
+    // phi_bound_i : h_i(x) < 0  ∨  f_i(x) >= 0    [contre-ex : h_i(x) >= 0 ∧ f_i(x) < 0]
+    bool bounded_ok = true;
+    for (int i = 0; i < k; ++i) {
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(smtAnd({
+            "(>= " + buildRFFormula(H[i], lasso, false) + " 0)",
+            "(< "  + buildRFFormula(C[i], lasso, false) + " 0)"}));
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { bounded_ok = false; if (verbose) std::cout << "  FAIL bound: piece " << i << " (h_i>=0 ∧ f_i<0)" << std::endl; }
+    }
+    res.rf_bounded_check = bounded_ok;
+    if (!bounded_ok) { res.error_message = "piecewise bound (h_i>=0 ⇒ f_i>=0) violated"; return res; }
+
+    // phi_decr_i : h_i(x) < 0  ∨  f_i(x)-f_i(x') >= δi
+    //   [contre-ex : h_i(x) >= 0 ∧ f_i(x)-f_i(x') < δi]
+    bool dec_ok = true;
+    for (int i = 0; i < k; ++i) {
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(smtAnd({
+            "(>= " + buildRFFormula(H[i], lasso, false) + " 0)",
+            "(< (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
+                + ") " + C[i].delta.toSMTLibString() + ")"}));
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL decrease: piece " << i << std::endl; }
+    }
+
+    // phi_exhaustive : ⋁_i h_i(x) >= 0     [contre-ex : ⋀_i h_i(x) < 0]
+    {
+        std::vector<std::string> ce;
+        for (int i = 0; i < k; ++i)
+            ce.push_back("(< " + buildRFFormula(H[i], lasso, false) + " 0)");
+        solver->push();
+        addLoopAndSIConstraints(lasso, valid_sis, solver);
+        solver->addAssertion(smtAnd(ce));
+        bool sat = solver->checkSat();
+        solver->pop();
+        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL exhaustive: a transition lands in no piece" << std::endl; }
+    }
+    res.rf_decreasing_check = dec_ok;
+    if (!dec_ok) { res.error_message = "piecewise decrease/exhaustiveness violated"; return res; }
+
+    res.is_valid = true;
+    return res;
+}
+
+// ============================================================================
 // AFFICHAGE NESTED
 // ============================================================================
 

@@ -37,6 +37,10 @@ extern VerbosityLevel VERBOSITY;
 extern int CPUS;
 extern SolverType SOLVER;
 extern int TIMELIMIT;
+// Post-synthesis ranking-function/SI validator (opt-in via -val). When true,
+// every synthesized ranking argument is re-checked with the SMT solver and the
+// config is rejected if the certificate does not hold on the actual loop.
+extern bool USE_RF_VALIDATOR;
 
 // Configurations par défaut pour les templates de ranking
 extern std::vector<TemplateConfig> configs;

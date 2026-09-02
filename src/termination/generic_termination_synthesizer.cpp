@@ -594,6 +594,10 @@ void GenericTerminationSynthesizer::extractResults()
     termination_argument_.ranking_functions =
         template_->extractRankingFunctions(solver_, lasso_.program_vars);
 
+    // Gardes h_i (PiecewiseTemplate uniquement ; vide pour les autres templates).
+    termination_argument_.guards =
+        template_->extractGuards(solver_, lasso_.program_vars);
+
     if (verbose)
         std::cout << "  ✓ Composantes extraites : " << termination_argument_.ranking_functions.size() << std::endl;
 

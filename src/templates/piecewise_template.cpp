@@ -215,6 +215,26 @@ std::vector<RankingFunction> PiecewiseTemplate::extractRankingFunctions(
     return components;
 }
 
+std::vector<RankingFunction> PiecewiseTemplate::extractGuards(
+    SMTSolverInterface* solver,
+    const std::vector<std::string>& program_vars) const
+{
+    std::vector<RankingFunction> guards;
+    size_t n = program_vars.size();
+
+    for (int i = 0; i < num_pieces_; ++i) {
+        RankingFunction h;   // guard h_i : piece i active where h_i(x) >= 0
+        auto values = guard_generators_[i]->extractRationals(solver);
+        for (size_t j = 0; j < n && j < values.size(); ++j)
+            h.coefficients[program_vars[j]] = values[j];
+        if (values.size() > n)
+            h.constant = values[n];
+        // delta unused for a guard (left at 0)
+        guards.push_back(h);
+    }
+    return guards;
+}
+
 // ============================================================================
 // AFFICHAGE
 // ============================================================================

@@ -15,6 +15,7 @@
  */
 struct TerminationArgument {
     std::vector<RankingFunction> ranking_functions;            // toutes les composantes (1 pour Affine, k pour Lex/Nested)
+    std::vector<RankingFunction> guards;                       // gardes h_i (PiecewiseTemplate uniquement, sinon vide)
     std::vector<SupportingInvariant> supporting_invariants;
 
     TerminationArgument() = default;

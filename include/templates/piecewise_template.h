@@ -54,6 +54,11 @@ public:
         SMTSolverInterface* solver,
         const std::vector<std::string>& program_vars) const override;
 
+    /** @brief Extrait les gardes h_i (une par morceau), pour la validation. */
+    std::vector<RankingFunction> extractGuards(
+        SMTSolverInterface* solver,
+        const std::vector<std::string>& program_vars) const override;
+
     std::string getName() const override {
         return std::to_string(num_pieces_) + "-piecewise";
     }

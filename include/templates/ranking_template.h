@@ -91,6 +91,18 @@ public:
         const std::vector<std::string>& program_vars) const = 0;
 
     /**
+     * @brief Extrait les fonctions de garde h_i du template, si il en a.
+     *
+     * Seul PiecewiseTemplate en produit (une garde affine par morceau, le
+     * morceau i etant actif la ou h_i(x) >= 0). Les autres templates n'ont pas
+     * de gardes et renvoient un vecteur vide (implementation par defaut).
+     * Le delta des RankingFunction renvoyees n'a pas de sens ici (laisse a 0).
+     */
+    virtual std::vector<RankingFunction> extractGuards(
+        SMTSolverInterface* /*solver*/,
+        const std::vector<std::string>& /*program_vars*/) const { return {}; }
+
+    /**
      * @brief Retourne le nom du template (pour logging)
      */
     virtual std::string getName() const = 0;

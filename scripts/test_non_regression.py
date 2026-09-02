@@ -106,17 +106,50 @@ CASES = [
 ]
 
 
-def make_test(file, expected, mode, cpus=1, solver="z3"):
+# ---------------------------------------------------------------------------
+# Cases additionally run WITH the ranking-function validator (-val).
+#
+# The validator (opt-in) re-checks every synthesized ranking function + its
+# supporting invariants with the SMT solver (bounded + template-specific
+# decrease). These cases are known to keep the SAME verdict under validation on
+# both z3 and cvc5 — i.e. their certificates are genuinely valid — so any future
+# change that makes the validator wrongly reject them (or makes synthesis emit an
+# invalid certificate) turns them red here. Verdicts are Ultimate's ground truth.
+# ---------------------------------------------------------------------------
+
+VAL_CASES = [
+    # Classic termination (affine / nested / lex / multiphase / piecewise paths).
+    ("examples/test_variable_decrease.json",                            "TERMINATING",     "both", CPUS),
+    ("examples/multiplication_termination.json",                        "TERMINATING",     "both", CPUS),
+    ("examples/test_ranking_func_with_two_variables.json",              "TERMINATING",     "both", CPUS),
+    ("examples/test_nested_template_terminating.json",                  "TERMINATING",     "both", CPUS),
+    ("examples/test_simple_counter.json",                               "TERMINATING",     "both", CPUS),
+    ("examples/DivMinus2_no-overflow_term.json",                        "TERMINATING",     "both", CPUS),
+    # Array lassos (cell-scalar encoding) — TERM validated, NT unaffected by -val.
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",           "TERMINATING",     "both", CPUS),
+    ("examples/array/arr_CookSeeZuleger_Fig3_2Dcell_term.json",         "TERMINATING",     "both", CPUS),
+    ("examples/array/arr_a05_alloca_term.json",                         "TERMINATING",     "both", CPUS),
+    ("examples/array/arr_basename3_lex_desync_term.json",               "TERMINATING",     "both", CPUS),
+    ("examples/array/arr_array04_alloca_nonterm.json",                  "NON-TERMINATING", "both", CPUS),
+    ("examples/array/arr_Arrays02_equiv_const_idx_nonterm.json",        "NON-TERMINATING", "both", CPUS),
+    ("examples/array/arr_GasCake02_nonterm.json",                       "NON-TERMINATING", "both", CPUS),
+    ("examples/array/arr_NonTermination3_nonterm.json",                 "NON-TERMINATING", "both", CPUS),
+    ("examples/array/arr_printf_nonterm.json",                          "NON-TERMINATING", "both", CPUS),
+]
+
+
+def make_test(file, expected, mode, cpus=1, solver="z3", validate=False):
     def test_method(self):
-        result = subprocess.run(
-            [PASTTEL_BIN, file, "-a", mode, "-q", "-c", str(cpus), "-s", solver, "-t", "200"],
-            capture_output=True, text=True
-        )
+        cmd = [PASTTEL_BIN, file, "-a", mode, "-q", "-c", str(cpus), "-s", solver, "-t", "200"]
+        if validate:
+            cmd.append("-val")   # re-check the synthesized ranking function
+        result = subprocess.run(cmd, capture_output=True, text=True)
         output = result.stdout + result.stderr
         overall = next((l for l in output.splitlines() if "OVERALL RESULT" in l), "")
         self.assertIn(
             expected, overall,
-            f"\nFile   : {file}\nMode   : {mode}\nExpected: {expected}\nGot    : {overall or '(no OVERALL RESULT line)'}"
+            f"\nFile   : {file}\nMode   : {mode}\nValidate: {validate}"
+            f"\nExpected: {expected}\nGot    : {overall or '(no OVERALL RESULT line)'}"
         )
     return test_method
 
@@ -135,6 +168,19 @@ for solver in ["cvc5","z3"]:#, "cvc5"]:
             name = f"{base}_{i}"
             i += 1
         attrs[name] = make_test(file, expected, mode, cpus, solver)
+
+# Same cases, but WITH the -val ranking-function validator enabled.
+for solver in ["cvc5", "z3"]:
+    for entry in VAL_CASES:
+        file, expected, mode = entry[0], entry[1], entry[2]
+        cpus = entry[3] if len(entry) > 3 else 1
+        name = "test_val_" + os.path.splitext(os.path.basename(file))[0] + "__" + mode + "__" + solver
+        base, i = name, 1
+        while name in attrs:
+            name = f"{base}_{i}"
+            i += 1
+        attrs[name] = make_test(file, expected, mode, cpus, solver, validate=True)
+
 NonRegressionTests = type("NonRegressionTests", (unittest.TestCase,), attrs)
 
 

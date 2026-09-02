@@ -10,9 +10,8 @@
 #include "templates/piecewise_template.h"
 #include "utiles.h"
 
-#define USE_VALIDATOR false
-
 extern VerbosityLevel VERBOSITY;
+extern bool USE_RF_VALIDATOR;   // opt-in (-val): re-check the synthesized RF
 
 // ============================================================================
 // CONSTRUCTEUR
@@ -214,39 +213,48 @@ bool RankingBasedTechnique::tryTemplateConfiguration(
     }
     // VALIDATION POST-SYNTHÈSE
 
-    if (USE_VALIDATOR){
+    if (USE_RF_VALIDATOR) {
+        // The synthesis assertions (template params, Motzkin, SIGs) still sit on
+        // the solver; drop them so the certificate is re-checked on a clean
+        // context. The termination argument was already materialized during
+        // synthesize(), so we no longer need the solver's synthesis state.
+        solver_->reset();
+
         RankingAndInvariantValidator validator;
+        const TerminationArgument arg = synthesizer->getTerminationArgument();
+        bool ok = true;
+        std::string err;
+
         if (template_name == "AffineTemplate") {
-            auto validation_result = validator.validate(
-                synthesizer->getTerminationArgument(),
-                lasso_,
-                solver_
-            );
-
-            if (!validation_result.is_valid) {
-                if (verbosity)
-                    std::cout << "\nValidation failed!" << std::endl;
-                return false;
-            }
-
-            if (verbosity)
-                validator.printValidationResult(validation_result);
-
+            auto r = validator.validate(arg, lasso_, solver_);
+            ok = r.is_valid; err = r.error_message;
+            if (verbosity && ok) validator.printValidationResult(r);
         } else if (template_name == "NestedTemplate") {
-            auto validation_result = validator.validateNested(
-                synthesizer->getTerminationArgument(),
-                lasso_,
-                solver_
-            );
+            auto r = validator.validateNested(arg, lasso_, solver_);
+            ok = r.is_valid; err = r.error_message;
+            if (verbosity && ok) validator.printNestedValidationResult(r);
+        } else if (template_name == "LexicographicTemplate") {
+            auto r = validator.validateLexicographic(arg, lasso_, solver_);
+            ok = r.is_valid; err = r.error_message;
+            if (verbosity && ok) validator.printValidationResult(r);
+        } else if (template_name == "MultiphaseTemplate") {
+            auto r = validator.validateMultiphase(arg, lasso_, solver_);
+            ok = r.is_valid; err = r.error_message;
+            if (verbosity && ok) validator.printValidationResult(r);
+        } else if (template_name == "PiecewiseTemplate") {
+            auto r = validator.validatePiecewise(arg, lasso_, solver_);
+            ok = r.is_valid; err = r.error_message;
+            if (verbosity && ok) validator.printValidationResult(r);
+        } else {
+            // Unknown template: no validator available — do not silently accept.
+            ok = false; err = "no validator for template " + template_name;
+        }
 
-            if (!validation_result.is_valid) {
-                if (verbosity)
-                    std::cout << "\nNested validation failed: " << validation_result.error_message << std::endl;
-                return false;
-            }
-
+        if (!ok) {
             if (verbosity)
-                validator.printNestedValidationResult(validation_result);
+                std::cout << "\n[validator] " << template_name
+                          << " ranking function REJECTED: " << err << std::endl;
+            return false;
         }
     }
 

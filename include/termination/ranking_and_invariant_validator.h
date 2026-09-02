@@ -110,6 +110,43 @@ public:
         SMTSolverInterface* solver);
 
     /**
+     * Valide un argument produit par LexicographicTemplate (k composantes).
+     * Sémantique (cf. LexicographicTemplate) :
+     *   - bound_i      : loop ∧ SI ⇒ fi(x) > 0            (toutes les composantes)
+     *   - consec_i<k-1 : loop ∧ SI ⇒ fi(x') ≤ fi(x) ∨ ∃ j<i : fj(x)-fj(x') > dj
+     *   - decrement    : loop ∧ SI ⇒ ∃ i : fi(x)-fi(x') > di
+     */
+    ValidationResult validateLexicographic(
+        const TerminationArgument& argument,
+        const LassoProgram& lasso,
+        SMTSolverInterface* solver);
+
+    /**
+     * Valide un argument produit par MultiphaseTemplate (k phases).
+     * Sémantique (cf. MultiphaseTemplate) :
+     *   - decr_0      : loop ∧ SI ⇒ f0(x)-f0(x') > δ0
+     *   - decr_i≥1    : loop ∧ SI ⇒ fi(x)-fi(x') > δi ∨ f_{i-1}(x) > 0
+     *   - bound       : loop ∧ SI ⇒ f_{k-1}(x) ≥ 0
+     */
+    ValidationResult validateMultiphase(
+        const TerminationArgument& argument,
+        const LassoProgram& lasso,
+        SMTSolverInterface* solver);
+
+    /**
+     * Valide (partiellement) un argument produit par PiecewiseTemplate.
+     * Les gardes h_i ne sont pas exposées dans le TerminationArgument, donc les
+     * conditions phi_bound_i / phi_decr_i / phi_exhaustive (qui référencent h_i)
+     * ne peuvent PAS être vérifiées ici. On valide donc uniquement les SI
+     * (initiation/consécution) et la non-trivialité des f_i, et on ACCEPTE avec
+     * un avertissement (jamais de rejet sur une condition non vérifiée).
+     */
+    ValidationResult validatePiecewise(
+        const TerminationArgument& argument,
+        const LassoProgram& lasso,
+        SMTSolverInterface* solver);
+
+    /**
      * Affiche les résultats de validation
      */
     void printValidationResult(const ValidationResult& result) const;
@@ -209,6 +246,17 @@ private:
         const SupportingInvariant& si,
         const LassoProgram& lasso,
         SMTSolverInterface* solver);
+
+    /**
+     * Valide tous les SI d'un argument (partage validate / validateNested).
+     * Remplit `si_results_out`, peuple `valid_sis` (SI non-triviaux prouvés
+     * inductifs), et renvoie false ssi un SI est trivialement FAUX.
+     */
+    bool validateAllSupportingInvariants(
+        const std::vector<SupportingInvariant>& sis,
+        const LassoProgram& lasso,
+        SMTSolverInterface* solver,
+        std::vector<SIValidationResult>& si_results_out);
     
     // ========================================================================
     // VÉRIFICATIONS - RANKING FUNCTION

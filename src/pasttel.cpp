@@ -23,6 +23,7 @@ int CPUS = 1;
 SolverType SOLVER = Z3;
 NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
 int TIMELIMIT = 6000;
+bool USE_RF_VALIDATOR = false;
 bool verbose = false;
 LinearMode LINEAR_MODE = LINEAR;
 
@@ -49,6 +50,8 @@ void printHelp(const char* programName) {
                 << "  -nla <overapproximate|underapproximate|none>\n"
                 << "                                     Non-linear arithmetic handling (default: overapproximate)\n"
                 << "  -mode <linear|nonlinear>           Set analysis mode (default: linear)\n"
+                << "  -val, --validate                   Re-check every synthesized ranking function\n"
+                << "                                     with the SMT solver (default: off)\n"
                 << "  -h, --help                         Show this help message\n"
                 << "\nExamples:\n"
                 << "  " << programName << " -a terminate -s z3 -c 4 -t 300 input.json\n"
@@ -104,6 +107,9 @@ std::string setParameters(int argc, char** argv) {
         else if (arg == "-v") {
             VERBOSITY = VerbosityLevel::VERBOSE;
             verbose = true;
+        }
+        else if (arg == "-val" || arg == "--validate") {
+            USE_RF_VALIDATOR = true;
         }
         else if (arg == "-nla" && i + 1 < args.size()) {
             std::string val = args[++i];
