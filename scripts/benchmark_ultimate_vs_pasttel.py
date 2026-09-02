@@ -1079,6 +1079,10 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     red_x, red_y, red_labels = [], [], []
     orange_x, orange_y, orange_labels = [], [], []
     purple_x, purple_y, purple_labels = [], [], []
+    # Contradiction: BOTH tools concluded, but disagree (one says TERMINATING,
+    # the other NONTERMINATING). This is a soundness discrepancy, not a mere
+    # PaSTTeL failure, so it gets its own category and colour.
+    contra_x, contra_y, contra_labels = [], [], []
 
     def verdict_from_algo(a):
         a = a.strip().lower()
@@ -1147,6 +1151,13 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         elif u_verdict == "NONTERMINATING" and t_verdict == "NONTERMINATING":
             blue_x.append(ux); blue_y.append(ty)
             blue_labels.append(f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms")
+        elif t_verdict in ("TERMINATING", "NONTERMINATING") and t_verdict != u_verdict:
+            # Both concluded but disagree -> soundness contradiction.
+            contra_x.append(ux); contra_y.append(ty)
+            contra_labels.append(
+                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms"
+                f"<br>CONTRADICTION — Ultimate: {u_verdict} ({u_algo_raw}), PaSTTeL: {t_verdict}"
+            )
         elif p_status == "TIMEOUT":
             # Real timeout only (subprocess killed at the time limit). A genuine
             # UNKNOWN concluded *under* the timeout has ty_raw is None too, but must
@@ -1169,8 +1180,8 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
                 f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
             )
 
-    all_y = green_y + blue_y + red_y + orange_y + purple_y
-    all_x = green_x + blue_x + red_x + orange_x + purple_x
+    all_y = green_y + blue_y + red_y + orange_y + purple_y + contra_y
+    all_x = green_x + blue_x + red_x + orange_x + purple_x + contra_x
     if not all_x:
         print("No plottable data points found (all INFEASIBLE/UNCHECKED or missing times).")
         return
@@ -1184,26 +1195,66 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     n_timeout     = len(orange_x)
     n_unknown     = len(red_x)
     n_notsup      = len(purple_x)
+    n_contra      = len(contra_x)
     total_term_x    = sum(green_x)   / 1000.0
     total_term_y    = sum(green_y)   / 1000.0
     total_nonterm_x = sum(blue_x)    / 1000.0
     total_nonterm_y = sum(blue_y)    / 1000.0
+    total_contra_x  = sum(contra_x)  / 1000.0
+    total_contra_y  = sum(contra_y)  / 1000.0
+
+    # PAR-2: an instance PaSTTeL did not solve (timeout / unknown / not-supported)
+    # is penalised as 2*timeout on the P-ULR (Y) axis. Those Y values already hold
+    # par2_ms (substituted when ty_raw is None), so summing them yields the
+    # penalised cumulative runtime. Ultimate (X) solved every plotted instance,
+    # so its cumulative carries no penalty.
+    total_timeout_x = sum(orange_x) / 1000.0
+    total_timeout_y = sum(orange_y) / 1000.0
+    total_unknown_x = sum(red_x)    / 1000.0
+    total_unknown_y = sum(red_y)    / 1000.0
+    total_notsup_x  = sum(purple_x) / 1000.0
+    total_notsup_y  = sum(purple_y) / 1000.0
+
+    # Instances solved by BOTH techniques (common terminating + non-terminating).
+    n_both       = n_term + n_nonterm
+    total_both_x = total_term_x + total_nonterm_x
+    total_both_y = total_term_y + total_nonterm_y
+
+    # PAR-2 grand total over the instances that count: solved (terminating +
+    # non-terminating) and genuine timeouts. Unknown (red) and Not-supported
+    # (purple) instances are excluded entirely. Timeout Y values already hold
+    # par2_ms (the 2*timeout penalty); solved Y values hold real times.
+    par2_x = green_x + blue_x + orange_x
+    par2_y = green_y + blue_y + orange_y
+    n_all        = len(par2_x)
+    par2_total_x = sum(par2_x) / 1000.0
+    par2_total_y = sum(par2_y) / 1000.0
 
     x_col_hdr = x_axis_label   # e.g. "ULR-Fair (ms)" or "ULR-Baseline (ms)"
     y_col_hdr = y_axis_label   # e.g. "P-ULR-Seq (ms)" or "P-ULR-Par6 (ms)"
 
-    hdr = f"{'Category':<26}  {'Count':>6}  {x_col_hdr:>22}  {y_col_hdr:>22}"
+    # NB: the X column ("ULR-Baseline") is always the reference tool's own time.
+    # It ALWAYS concludes TERMINATING/NONTERMINATING on every plotted instance
+    # (INFEASIBLE/UNCHECKED/UNKNOWN rows are filtered out upstream). The
+    # "Timeout / Unknown / Not supported" categories therefore describe PaSTTeL's
+    # outcome, NOT the reference — the X time there is simply how long the
+    # reference took to solve the instances PaSTTeL could not.
+    hdr = f"{'Category':<34}  {'Count':>6}  {x_col_hdr:>22}  {y_col_hdr:>22}"
     sep = "-" * len(hdr)
     rows_txt = [
-        f"{'Terminating (common)':<26}  {n_term:>6}  {total_term_x:>19.2f} s  {total_term_y:>19.2f} s",
-        f"{'Non-terminating (common)':<26}  {n_nonterm:>6}  {total_nonterm_x:>19.2f} s  {total_nonterm_y:>19.2f} s",
-        f"{'Timeout ' + y_ref:<26}  {n_timeout:>6}  {'—':>22}  {'—':>22}",
-        f"{'Unknown':<26}  {n_unknown:>6}  {'—':>22}  {'—':>22}",
-        f"{'Not supported (' + y_ref + ')':<26}  {n_notsup:>6}  {'—':>22}  {'—':>22}",
+        f"{'Terminating (common)':<34}  {n_term:>6}  {total_term_x:>19.2f} s  {total_term_y:>19.2f} s",
+        f"{'Non-terminating (common)':<34}  {n_nonterm:>6}  {total_nonterm_x:>19.2f} s  {total_nonterm_y:>19.2f} s",
+        f"{'Contradiction (both disagree)':<34}  {n_contra:>6}  {total_contra_x:>19.2f} s  {total_contra_y:>19.2f} s",
+        f"{'PaSTTeL Timeout (PAR-2 x2)':<34}  {n_timeout:>6}  {total_timeout_x:>19.2f} s  {total_timeout_y:>19.2f} s",
+        f"{'PaSTTeL Unknown (no P-ULR time)':<34}  {n_unknown:>6}  {total_unknown_x:>19.2f} s  {'-':>21}",
+        f"{'PaSTTeL Not supported (no P-ULR)':<34}  {n_notsup:>6}  {total_notsup_x:>19.2f} s  {'-':>21}",
     ]
     print(f"\n{sep}\n{hdr}\n{sep}")
     for r in rows_txt:
         print(r)
+    print(sep)
+    print(f"{'Solved by BOTH (cumul.)':<34}  {n_both:>6}  {total_both_x:>19.2f} s  {total_both_y:>19.2f} s")
+    print(f"{'PAR-2 total (all)':<34}  {n_all:>6}  {par2_total_x:>19.2f} s  {par2_total_y:>19.2f} s")
     print(sep + "\n")
 
     summary_html = f"""
@@ -1230,20 +1281,35 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     <td style="text-align:right;">{total_nonterm_x:.2f}</td>
     <td style="text-align:right;">{total_nonterm_y:.2f}</td>
   </tr>
+  <tr style="color:black; background:#fff3cd;">
+    <td>Contradiction (both disagree)</td>
+    <td style="text-align:right;">{n_contra}</td>
+    <td style="text-align:right;">{total_contra_x:.2f}</td><td style="text-align:right;">{total_contra_y:.2f}</td>
+  </tr>
   <tr style="color:orange;">
-    <td>Timeout {y_ref}</td>
+    <td>{y_ref} Timeout (PAR-2 &times;2)</td>
     <td style="text-align:right;">{n_timeout}</td>
-    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+    <td style="text-align:right;">{total_timeout_x:.2f}</td><td style="text-align:right;">{total_timeout_y:.2f}</td>
   </tr>
   <tr style="color:red;">
-    <td>Unknown</td>
+    <td>{y_ref} Unknown (no P-ULR time)</td>
     <td style="text-align:right;">{n_unknown}</td>
-    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+    <td style="text-align:right;">{total_unknown_x:.2f}</td><td style="text-align:right;">-</td>
   </tr>
   <tr style="color:purple;">
-    <td>Not supported by {y_ref}</td>
+    <td>{y_ref} Not supported (no P-ULR time)</td>
     <td style="text-align:right;">{n_notsup}</td>
-    <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
+    <td style="text-align:right;">{total_notsup_x:.2f}</td><td style="text-align:right;">-</td>
+  </tr>
+  <tr style="font-weight:bold; border-top:2px solid #333;">
+    <td>Solved by both (cumulative)</td>
+    <td style="text-align:right;">{n_both}</td>
+    <td style="text-align:right;">{total_both_x:.2f}</td><td style="text-align:right;">{total_both_y:.2f}</td>
+  </tr>
+  <tr style="font-weight:bold;">
+    <td>PAR-2 total (all instances)</td>
+    <td style="text-align:right;">{n_all}</td>
+    <td style="text-align:right;">{par2_total_x:.2f}</td><td style="text-align:right;">{par2_total_y:.2f}</td>
   </tr>
 </tbody>
 </table>"""
@@ -1278,9 +1344,16 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
 <p>
   <span style="color:green;">&#9679;</span> Terminating &nbsp;
   <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
-  <span style="color:orange;">&#9679;</span> Timeout {y_ref} &nbsp;
-  <span style="color:red;">&#9679;</span> UNKNOWN &nbsp;
-  <span style="color:purple;">&#9679;</span> Not supported by {y_ref}
+  <span style="color:black;">&#9733;</span> Contradiction &nbsp;
+  <span style="color:orange;">&#9679;</span> {y_ref} Timeout &nbsp;
+  <span style="color:red;">&#9679;</span> {y_ref} Unknown &nbsp;
+  <span style="color:purple;">&#9679;</span> {y_ref} Not supported
+</p>
+<p style="font-size:0.85em; color:#555;">
+  Note: the X axis ({x_ref}) is the reference tool and always concludes
+  TERMINATING/NONTERMINATING on every plotted instance. The Timeout / Unknown /
+  Not-supported categories describe {y_ref}'s outcome — the X time shown there is
+  the reference's own time to solve instances {y_ref} could not.
 </p>
 {summary_html}
 <div id="plot"></div>
@@ -1335,6 +1408,16 @@ var purple = {{
   marker: {{ color: 'purple', size: 9, opacity: 0.85, symbol: 'diamond-open' }},
   hoverinfo: 'text'
 }};
+var contra = {{
+  x: {json.dumps(contra_x)},
+  y: {json.dumps(contra_y)},
+  text: {json.dumps(contra_labels)},
+  mode: 'markers',
+  type: 'scatter',
+  name: 'Contradiction ({len(contra_x)})',
+  marker: {{ color: 'black', size: 12, opacity: 0.9, symbol: 'star' }},
+  hoverinfo: 'text'
+}};
 var diag_max = {max_val * 1.05};
 var diagonal = {{
   x: [0, diag_max],
@@ -1359,7 +1442,7 @@ var layout = {{
   legend: {{ x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)' }},
   margin: {{ l: 70, r: 30, t: 30, b: 70 }}
 }};
-Plotly.newPlot('plot', [diagonal, green, blue, orange, red, purple], layout);
+Plotly.newPlot('plot', [diagonal, green, blue, orange, red, purple, contra], layout);
 </script>
 </body>
 </html>"""
