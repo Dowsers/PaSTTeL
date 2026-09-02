@@ -230,6 +230,24 @@ private:
     // instead of baking the raw SSA name into what gets displayed later.
     mutable std::map<std::string, std::string> m_ssa_to_prog_var;
 
+    // Array SSA name -> program var, for arrays UNCHANGED across the transition
+    // (in-SSA == out-SSA). Ultimate promotes such loop-invariant array reads
+    // too (ArrayCellRepVarConstructor treats every array cell uniformly); their
+    // cells are loop-invariant (in == out), giving the ranking template a real
+    // variable for a bound like `#length[base]`. See promoteInvariantArrayCells().
+    mutable std::map<std::string, std::string> m_invariant_array_ssa;
+
+    // Non-invariant scalar/array SSA name -> its opposite-side SSA name (in<->out
+    // for the same program var). Lets isIndexLoopInvariant() ask classifyIndices()
+    // whether an index whose in/out SSA DIFFER is nonetheless provably equal
+    // across the loop (e.g. `v_base_156`/`v_base_155` tied by `(= ...)` in the
+    // body) -- the semantic index invariance Ultimate's IndexAnalyzer gives.
+    mutable std::map<std::string, std::string> m_scalar_partner;
+
+    // The current transition formula (set by preprocessFormula), used as the
+    // SMT context for isIndexLoopInvariant()'s classifyIndices() probes.
+    mutable std::string m_current_context;
+
     // Promoted cells found so far, keyed by "array_prog_var@index_ssa" to
     // keep repeated occurrences of the same cell mapped to one pseudo_var.
     mutable std::vector<PromotedCell> m_promoted_cells;
@@ -385,6 +403,17 @@ private:
      * scalar -- see isSatisfiableWith() for why that would be unsound.
      */
     std::string sortForProbe(const std::string& id, bool used_as_array) const;
+
+    /**
+     * @brief True if the index term `index_ssa` has the same value on loop entry
+     * and exit -- the condition for its array cell to be a loop-carried (or
+     * loop-invariant) scalar. This is Ultimate's IndexAnalyzer notion, applied
+     * semantically, not syntactically: an index is invariant if its in/out SSA
+     * are the identical name, if it is a numeric literal, or if classifyIndices()
+     * proves its in-SSA equal to its out-SSA against the transition (e.g. two
+     * distinct SSA names tied by an `(= ...)` conjunct in the loop body).
+     */
+    bool isIndexLoopInvariant(const std::string& index_ssa) const;
 
     static std::string trim(const std::string& s) {
         return SExprUtils::trim(s);

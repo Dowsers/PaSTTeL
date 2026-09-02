@@ -82,25 +82,36 @@ void ArrayHandler::setInvariantIndexCandidates(
     m_invariant_index_ssa.clear();
     m_array_ssa_side.clear();
     m_ssa_to_prog_var.clear();
+    m_invariant_array_ssa.clear();
+    m_scalar_partner.clear();
     for (const auto& [prog_var, in_ssa] : in_vars) {
         auto out_it = out_vars.find(prog_var);
         if (out_it == out_vars.end()) continue;
         const std::string& out_ssa = out_it->second;
         m_ssa_to_prog_var[in_ssa] = prog_var;
         m_ssa_to_prog_var[out_ssa] = prog_var;
+
+        bool is_array = false;
+        auto sort_it = m_var_sorts.find(prog_var);
+        if (sort_it != m_var_sorts.end()) is_array = isArraySort(sort_it->second);
+
         if (in_ssa == out_ssa) {
             m_invariant_index_ssa.insert(in_ssa);
-            // An array whose own in/out SSA name is unchanged has nothing to
-            // promote: there's no "before"/"after" distinction to make (both
-            // sides are the identical name), so recording it here would make
-            // every occurrence collapse onto whichever side is written last,
-            // silently dropping the other -- FormulaLinearizer's own Phase 2
-            // caching (same select text -> same fresh var) already handles a
-            // genuinely-invariant array correctly on its own.
+            // An unchanged array (in-SSA == out-SSA) has no in/out cell
+            // distinction, but its reads at loop-invariant indices ARE promotable
+            // as loop-invariant scalars (Ultimate promotes them just the same).
+            // Record it so promoteInvariantArrayCells() can build such a cell --
+            // a genuine ranking-usable variable for a bound like `#length[base]`.
+            if (is_array) m_invariant_array_ssa[in_ssa] = prog_var;
             continue;
         }
         m_array_ssa_side[in_ssa] = {prog_var, true};
         m_array_ssa_side[out_ssa] = {prog_var, false};
+        // Remember the opposite-side name so isIndexLoopInvariant() can probe
+        // whether a non-syntactically-invariant index is still provably equal
+        // across the loop.
+        m_scalar_partner[in_ssa] = out_ssa;
+        m_scalar_partner[out_ssa] = in_ssa;
     }
 }
 
@@ -378,6 +389,10 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     std::string trimmed = trim(formula);
     if (trimmed.empty() || trimmed == "true") return formula;
 
+    // SMT context for isIndexLoopInvariant()'s classifyIndices() probes: the
+    // original transition formula, which carries the index-equality conjuncts.
+    m_current_context = trimmed;
+
     // Nothing to do if there's neither a store to eliminate nor a select to
     // possibly promote (see promoteInvariantArrayCells()).
     if (trimmed.find("store") == std::string::npos &&
@@ -635,6 +650,29 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
     return result;
 }
 
+bool ArrayHandler::isIndexLoopInvariant(const std::string& index_ssa) const {
+    // Syntactically unchanged index (in-SSA == out-SSA name).
+    if (m_invariant_index_ssa.count(index_ssa)) return true;
+
+    // Numeric literal -- a constant, hence trivially loop-invariant.
+    {
+        size_t i = (!index_ssa.empty() && index_ssa[0] == '-') ? 1 : 0;
+        bool all_digits = i < index_ssa.size();
+        for (; i < index_ssa.size(); ++i)
+            if (!std::isdigit(static_cast<unsigned char>(index_ssa[i]))) { all_digits = false; break; }
+        if (all_digits) return true;
+    }
+
+    // Distinct in/out SSA names, but the loop body may still force them equal
+    // (e.g. `(= v_base_156 v_base_155)`). Ask classifyIndices() -- the SMT-based
+    // IndexAnalyzer -- against the current transition.
+    auto p = m_scalar_partner.find(index_ssa);
+    if (p != m_scalar_partner.end()) {
+        return classifyIndices(index_ssa, p->second, m_current_context) == IndexRelation::EQUAL;
+    }
+    return false;
+}
+
 std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) const {
     std::string trimmed = trim(expr);
     if (trimmed.empty() || trimmed[0] != '(') return trimmed;
@@ -654,28 +692,53 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
         bool base_is_plain = !base_ssa.empty() && base_ssa[0] != '(';
         bool index_is_plain = !index_ssa.empty() && index_ssa[0] != '(';
 
-        if (base_is_plain && index_is_plain && m_invariant_index_ssa.count(index_ssa)) {
+        if (base_is_plain && index_is_plain && isIndexLoopInvariant(index_ssa)) {
+            // Two array kinds are promotable (Ultimate treats both uniformly):
+            //  - a MUTATED array (distinct in/out SSA): the cell is loop-carried,
+            //    its value differs in/out -> distinct in_ssa/out_ssa, the read
+            //    resolves to whichever side this SSA version is;
+            //  - an UNCHANGED array (in-SSA == out-SSA) read at a loop-invariant
+            //    index: the cell is a loop CONSTANT -> a single in==out scalar,
+            //    the ranking-usable variable for a bound like `#length[base]`.
             auto side_it = m_array_ssa_side.find(base_ssa);
-            if (side_it != m_array_ssa_side.end()) {
-                const std::string& array_prog_var = side_it->second.first;
-                bool is_in_side = side_it->second.second;
+            auto invarr_it = m_invariant_array_ssa.find(base_ssa);
+            bool array_mutated  = (side_it  != m_array_ssa_side.end());
+            bool array_constant = (invarr_it != m_invariant_array_ssa.end());
+
+            if (array_mutated || array_constant) {
+                const std::string& array_prog_var =
+                    array_mutated ? side_it->second.first : invarr_it->second;
 
                 std::string elem_sort = peelArrayDimension(computeSort(base_ssa));
                 if (elem_sort == "Int" || elem_sort == "Real") {
-                    std::string key = array_prog_var + "@" + index_ssa;
+                    // Key by the index's PROGRAM VARIABLE, not its SSA name, so
+                    // the SAME cell a[k] read in the stem (index SSA v_k_9) and in
+                    // the loop (index SSA v_k_10) maps to ONE cell variable --
+                    // this is Ultimate's array/index representative keying. Keying
+                    // by raw SSA would split a[k] into two independent variables
+                    // and let GeometricTechnique pick different values in stem and
+                    // loop, ignoring a stem constraint like `a[k] >= 1` and
+                    // fabricating non-termination (the "CommonCellVariable" case).
+                    auto idx_pv_it = m_ssa_to_prog_var.find(index_ssa);
+                    std::string index_rep =
+                        idx_pv_it != m_ssa_to_prog_var.end() ? idx_pv_it->second : index_ssa;
+                    std::string key = array_prog_var + "@" + index_rep;
                     auto cell_it = m_promoted_cell_index.find(key);
                     size_t idx_in_vec;
                     if (cell_it == m_promoted_cell_index.end()) {
                         PromotedCell cell;
-                        cell.pseudo_var = "arrcell__" + array_prog_var + "__" + index_ssa;
-                        cell.in_ssa = cell.pseudo_var + "__in";
-                        cell.out_ssa = cell.pseudo_var + "__out";
+                        cell.pseudo_var = "arrcell__" + array_prog_var + "__" + index_rep;
+                        if (array_constant) {
+                            // Loop-invariant cell: one name for both sides.
+                            cell.in_ssa = cell.out_ssa = cell.pseudo_var + "__inv";
+                        } else {
+                            cell.in_ssa = cell.pseudo_var + "__in";
+                            cell.out_ssa = cell.pseudo_var + "__out";
+                        }
                         cell.sort = elem_sort;
                         cell.array_name = array_prog_var;
                         cell.index_ssa = index_ssa;
-                        auto idx_name_it = m_ssa_to_prog_var.find(index_ssa);
-                        cell.index_display.push_back(
-                            idx_name_it != m_ssa_to_prog_var.end() ? idx_name_it->second : index_ssa);
+                        cell.index_display.push_back(index_rep);
                         m_promoted_cells.push_back(cell);
                         idx_in_vec = m_promoted_cells.size() - 1;
                         m_promoted_cell_index[key] = idx_in_vec;
@@ -683,6 +746,8 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                         idx_in_vec = cell_it->second;
                     }
                     const PromotedCell& cell = m_promoted_cells[idx_in_vec];
+                    // Constant cell: in_ssa == out_ssa, so side is irrelevant.
+                    bool is_in_side = array_mutated ? side_it->second.second : true;
                     return is_in_side ? cell.in_ssa : cell.out_ssa;
                 }
             }
