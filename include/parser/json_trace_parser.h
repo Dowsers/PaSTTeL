@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <atomic>
 
 #include "parser/smt_parser.h"
 #include "linearization/formula_linearizer.h"
@@ -23,10 +24,13 @@ public:
     /**
      * Parse JSON file to LassoProgram
      * @param filename Path to .json file
+     * @param cancel_flag Forwarded to ArrayHandler/SMTParser::parseFormulaToDNF
+     *        Optional: nullptr (default) means never cancel.
      * @return LassoProgram structure
      * @throws std::runtime_error if file cannot be opened or JSON is invalid
      */
-    static LassoProgram parseToLasso(const std::string& filename, bool linearize = false);
+    static LassoProgram parseToLasso(const std::string& filename, bool linearize = false,
+                                      const std::atomic<bool>* cancel_flag = nullptr);
 
     static void convertLassoStringToLassoProgram(
                 const std::string& stem_formula,
@@ -64,7 +68,8 @@ private:
         FormulaRewriter* rewriter = nullptr,
         bool linearize = false,
         const std::map<std::string, std::string>* var_sorts = nullptr,
-        ArrayHandler* array_handler = nullptr);
+        ArrayHandler* array_handler = nullptr,
+        const std::atomic<bool>* cancel_flag = nullptr);
 
     /**
      * Parse variable mapping from JSON object

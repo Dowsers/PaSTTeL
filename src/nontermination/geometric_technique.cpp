@@ -28,6 +28,7 @@ GeometricTechnique::GeometricTechnique(SMTSolverInterface* solver,
 void GeometricTechnique::init(const LassoProgram& lasso) {
     lasso_ = lasso;
     initialized_ = true;
+    cancelled_.store(false);
     // Nettoyer les résultats précédents
     state_init.clear();
     state_honda.clear();
@@ -35,7 +36,7 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
     lambdas.clear();
     nus.clear();
 
-    lasso_ = lasso_.linearize();
+    lasso_ = lasso_.linearize(&cancelled_);
 
     // Detect array select/store remaining in the raw formula AFTER
     // linearize() -- which is what actually runs ArrayHandler's promotion
@@ -57,6 +58,12 @@ void GeometricTechnique::init(const LassoProgram& lasso) {
         has_array_op(lasso_.loop.raw_formula) || has_array_op(lasso_.stem.raw_formula);
 
     lasso_.declareSolverContext(solver_, true);
+}
+
+void GeometricTechnique::cancel() {
+    cancelled_.store(true);
+    if (solver_)
+        solver_->interrupt();
 }
 
 // ============================================================================

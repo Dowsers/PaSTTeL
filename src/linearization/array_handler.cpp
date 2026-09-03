@@ -26,8 +26,10 @@ std::string neq(const std::string& a, const std::string& b) {
 // CONSTRUCTEUR + INTERFACE EXISTANTE
 // ============================================================================
 
-ArrayHandler::ArrayHandler(const std::string& default_element_sort)
+ArrayHandler::ArrayHandler(const std::string& default_element_sort,
+                            const std::atomic<bool>* cancel_flag)
     : m_default_element_sort(default_element_sort)
+    , m_cancel_flag(cancel_flag)
 {
 }
 
@@ -368,17 +370,48 @@ bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::stri
 ArrayHandler::IndexRelation ArrayHandler::classifyIndices(
     const std::string& idx1, const std::string& idx2, const std::string& context) const
 {
-    if (SExprUtils::trim(idx1) == SExprUtils::trim(idx2)) {
+    std::string t1 = SExprUtils::trim(idx1);
+    std::string t2 = SExprUtils::trim(idx2);
+    if (t1 == t2) {
         return IndexRelation::EQUAL;  // syntactic fast path -- still a correct answer
     }
 
+    // Memoized: see m_index_relation_cache's doc comment. Order-independent
+    // key since the relation is symmetric in idx1/idx2.
+    const std::string& lo = (t1 < t2) ? t1 : t2;
+    const std::string& hi = (t1 < t2) ? t2 : t1;
+    std::string cache_key = lo + '\x01' + hi;
+    auto cached = m_index_relation_cache.find(cache_key);
+    if (cached != m_index_relation_cache.end()) {
+        return cached->second;
+    }
+
+    // Each isSatisfiableWith() call below builds a fresh throwaway solver
+    // over the whole `context` formula -- unlike distributeAND's Cartesian
+    // blowup, a single distinct pair can be expensive on its own for a
+    // large/array-heavy context, and there is no bound on how many distinct
+    // pairs a formula has even with memoization removing repeats. Same
+    // reasoning as smt_parser.cpp's checkCancellation(): poll the calling
+    // technique's own cancellation flag (passed in at construction -- see
+    // m_cancel_flag) rather than run unboundedly once it's been told to stop.
+    if (m_cancel_flag && m_cancel_flag->load(std::memory_order_relaxed)) {
+        throw PreprocessingCancelledException(
+            "Index-equality classification cancelled -- this instance has "
+            "too many distinct array-index pairs to classify before any SMT "
+            "solving on the actual problem even starts");
+    }
+
+    IndexRelation result;
     bool eq_possible = isSatisfiableWith(context, "(= " + idx1 + " " + idx2 + ")");
-    if (!eq_possible) return IndexRelation::NOT_EQUAL;
+    if (!eq_possible) {
+        result = IndexRelation::NOT_EQUAL;
+    } else {
+        bool neq_possible = isSatisfiableWith(context, "(not (= " + idx1 + " " + idx2 + "))");
+        result = neq_possible ? IndexRelation::UNKNOWN : IndexRelation::EQUAL;
+    }
 
-    bool neq_possible = isSatisfiableWith(context, "(not (= " + idx1 + " " + idx2 + "))");
-    if (!neq_possible) return IndexRelation::EQUAL;
-
-    return IndexRelation::UNKNOWN;
+    m_index_relation_cache[cache_key] = result;
+    return result;
 }
 
 // ============================================================================
@@ -392,6 +425,8 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     // SMT context for isIndexLoopInvariant()'s classifyIndices() probes: the
     // original transition formula, which carries the index-equality conjuncts.
     m_current_context = trimmed;
+    // A fresh context invalidates every previously memoized verdict.
+    m_index_relation_cache.clear();
 
     // Nothing to do if there's neither a store to eliminate nor a select to
     // possibly promote (see promoteInvariantArrayCells()).

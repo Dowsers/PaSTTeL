@@ -502,7 +502,8 @@ void initializeOptionsForAnalysis(LassoProgram& lasso) {
 // MAIN PARSING RAW JSON INTO (LINEAR) LASSO PROGRAM
 // ============================================================================
 
-LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool linearize) {
+LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool linearize,
+                                            const std::atomic<bool>* cancel_flag) {
     LassoProgram lasso;
 
     lasso.is_linearized = linearize;
@@ -762,7 +763,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
 
         // Add ArrayHandler for array select operations
         if (has_arrays) {
-            auto array_handler = std::make_unique<ArrayHandler>();
+            auto array_handler = std::make_unique<ArrayHandler>("Int", cancel_flag);
             array_handler->setVarSorts(lasso.var_sorts);
             array_handler_raw = array_handler.get();
             linearizer->addHandler(std::move(array_handler));
@@ -785,7 +786,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     if (j.contains("stem") && j["stem"].is_array()) {
         for (const auto& trans_json : j["stem"]) {
             stem_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize,
-                                                  &lasso.var_sorts, array_handler_raw));
+                                                  &lasso.var_sorts, array_handler_raw, cancel_flag));
         }
     }
 
@@ -802,7 +803,7 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     if (j.contains("loop") && j["loop"].is_array()) {
         for (const auto& trans_json : j["loop"]) {
             loop_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize,
-                                                  &lasso.var_sorts, array_handler_raw));
+                                                  &lasso.var_sorts, array_handler_raw, cancel_flag));
         }
     }
 
@@ -1103,12 +1104,16 @@ UltimateTransitionLine JsonTraceParser::convertSMTFormula2ToLinearInequalities(
                 formula_to_parse = rewriter->rewrite(formula_to_parse);
 
             trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
+        } catch (const PreprocessingCancelledException&) {
+            // Unlike a genuine parse failure, this transition isn't
+            // malformed -- it just didn't finish in time. 
+            throw;
         } catch (const std::exception& e) {
             std::cerr << "Warning: Failed to parse formula: " << trans.formula << std::endl;
             std::cerr << "Error: " << e.what() << std::endl;
         }
     }
-    
+
     if(rewriter)
         rewriter->storeAuxVarsToLasso(lasso);
     if (linearizer)
@@ -1143,7 +1148,8 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
     FormulaRewriter* rewriter,
     bool linearize,
     const std::map<std::string, std::string>* var_sorts,
-    ArrayHandler* array_handler) {
+    ArrayHandler* array_handler,
+    const std::atomic<bool>* cancel_flag) {
     UltimateTransitionLine trans;
 
     // Extract source label
@@ -1279,8 +1285,13 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
             }
 
             if (linearize)
-                trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse);
+                trans.dnf = SMTParser::parseFormulaToDNF(formula_to_parse, cancel_flag);
 
+        } catch (const PreprocessingCancelledException&) {
+            // See the other parseTransition catch site for why this must
+            // propagate instead of being swallowed like a genuine parse
+            // failure.
+            throw;
         } catch (const std::exception& e) {
             std::cerr << "Warning: Failed to parse formula: " << trans.formula << std::endl;
             std::cerr << "Error: " << e.what() << std::endl;

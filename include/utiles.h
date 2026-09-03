@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <cmath>
 #include <string>
+#include <stdexcept>
 
 enum VerbosityLevel {
     QUIET,
@@ -13,6 +14,26 @@ enum VerbosityLevel {
 
 
 extern VerbosityLevel VERBOSITY;
+
+// Thrown by any deeply nested, otherwise non-cancellable preprocessing step
+// (SMTParser::distributeAND's DNF expansion; ArrayHandler::classifyIndices'
+// own throwaway-solver queries -- both run entirely in plain C++, before any
+// SMT solver call, so SMTSolverInterface::interrupt() can't reach them) once
+// the technique's own cancellation flag -- threaded down explicitly as a
+// `const std::atomic<bool>*` from RankingBasedTechnique::init() /
+// GeometricTechnique::init() through LassoProgram::linearize(),
+// JsonTraceParser::parseToLasso()/parseTransition(), ArrayHandler's
+// constructor and SMTParser::parseFormulaToDNF()/distributeAND() -- is set.
+// The flag is already set by PortfolioOrchestrator::cancelTechniques() both
+// when the time limit is reached and as soon as another technique wins, so
+// preprocessing stops the moment either happens, not just at -t.
+// Distinguished from a plain unsupported-construct failure so callers
+// (PortfolioOrchestrator::join()) can report a TIMEOUT rather than
+// "not supported" when nothing else completes a run either.
+class PreprocessingCancelledException : public std::runtime_error {
+public:
+    explicit PreprocessingCancelledException(const std::string& msg) : std::runtime_error(msg) {}
+};
 
 
 // Helper function to format a double for SMT-LIB2 output

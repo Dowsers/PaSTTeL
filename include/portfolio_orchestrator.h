@@ -96,6 +96,16 @@ private:
     std::atomic<bool>             conclusive_found_{false};
     std::atomic<bool> stop_early_{false};          // conclusive_found_ OU timeout
 
+    // Set (first occurrence wins, like conclusive_found_) when a technique's
+    // own init() throws -- e.g. a technique that linearizes the lasso (most
+    // of them; FixpointTechnique is the one that doesn't) hitting an
+    // unsupported SMT-LIB2 construct or a preprocessing timeout. join() uses
+    // this to tell "every technique that actually ran init() failed the same
+    // way" apart from a plain "nothing conclusive" UNKNOWN.
+    std::atomic<bool>             had_init_exception_{false};
+    std::string                   init_exception_message_;
+    bool                          init_exception_is_timeout_ = false;
+
 };
 
 #endif // PORTFOLIO_ORCHESTRATOR_H

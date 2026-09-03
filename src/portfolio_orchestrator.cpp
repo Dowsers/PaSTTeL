@@ -46,8 +46,27 @@ void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
 
     try {
         technique.init(lasso);
+    } catch (const PreprocessingCancelledException& e) {
+        log(verbose, "[" + name + "] Exception during init: " + e.what());
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (!had_init_exception_.load()) {
+                init_exception_message_ = e.what();
+                init_exception_is_timeout_ = true;
+            }
+        }
+        had_init_exception_.store(true);
+        return;
     } catch (const std::exception& e) {
         log(verbose, "[" + name + "] Exception during init: " + e.what());
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (!had_init_exception_.load()) {
+                init_exception_message_ = e.what();
+                init_exception_is_timeout_ = false;
+            }
+        }
+        had_init_exception_.store(true);
         return;
     }
 
@@ -203,6 +222,8 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
     } else if (final_result_.status == AnalysisResult::NON_TERMINATING) {
         report.overall_result         = "NON-TERMINATING";
         report.nonterminating_time_ms = final_result_.execution_time_ms;
+    } else if (all_results_.empty() && had_init_exception_.load()) {
+        report.overall_result = init_exception_is_timeout_ ? "TIMEOUT" : "NOT SUPPORTED";
     }
 
     for (const auto& t : techniques_)

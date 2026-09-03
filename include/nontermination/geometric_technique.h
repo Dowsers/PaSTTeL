@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <atomic>
 
 #include "lasso_program.h"
 #include "linear_inequality.h"
@@ -82,6 +83,7 @@ public:
     }
 
     bool validateConfiguration() const override;
+    void cancel() override;
 
     // Accesseurs
     void setSettings(const GeometricNonTerminationSettings& settings);
@@ -89,6 +91,7 @@ public:
     int getNumGEVs() const;
 
 private:
+    std::atomic<bool> cancelled_{false};
     GeometricNonTerminationSettings settings_;
     LassoProgram lasso_;
     bool initialized_;

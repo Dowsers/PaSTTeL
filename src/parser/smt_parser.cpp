@@ -8,18 +8,19 @@
 
 extern VerbosityLevel VERBOSITY;
 
-DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula) {
+DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula,
+                                         const std::atomic<bool>* cancel_flag) {
     DNFFormula result;
     std::string trimmed = smtFormula;
     size_t start = trimmed.find_first_not_of(" \t\n\r");
     size_t end = trimmed.find_last_not_of(" \t\n\r");
-    
+
     if (start == std::string::npos) {
         result.polyhedra.push_back({});
         return result;
     }
     trimmed = trimmed.substr(start, end - start + 1);
-    
+
     if (trimmed == "true") {
         LinearInequality tautology;
         tautology.constant = AffineTerm(0.0);
@@ -34,66 +35,66 @@ DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula) {
         result.polyhedra.push_back({false_ineq});
         return result;
     }
-    
+
     if (trimmed[0] != '(') {
         std::cerr << "WARNING: unexpected atomic formula: " << trimmed << std::endl;
         result.polyhedra.push_back({});
         return result;
     }
-    
+
     std::vector<std::string> tokens = splitSExpr(trimmed);
     if (tokens.empty()) {
         result.polyhedra.push_back({});
         return result;
     }
-    
+
     std::string op = tokens[0];
-    
+
     // NOT
     if (op == "not") {
         if (tokens.size() != 2) {
             throw std::runtime_error("NOT expects exactly 1 argument");
         }
-        
-        DNFFormula inner = parseFormulaToDNF(tokens[1]);
-        
+
+        DNFFormula inner = parseFormulaToDNF(tokens[1], cancel_flag);
+
         std::vector<DNFFormula> negated_operands;
         for (const auto& poly : inner.polyhedra) {
             negated_operands.push_back(negateConjunction(poly));
         }
-        
-        result = distributeAND(negated_operands);
+
+        result = distributeAND(negated_operands, cancel_flag);
         return result;
     }
-    
+
     // AND
     if (op == "and") {
         std::vector<DNFFormula> operands;
         for (size_t i = 1; i < tokens.size(); ++i) {
-            operands.push_back(parseFormulaToDNF(tokens[i]));
+            operands.push_back(parseFormulaToDNF(tokens[i], cancel_flag));
         }
-        result = distributeAND(operands);
+        result = distributeAND(operands, cancel_flag);
         return result;
     }
-    
+
     // OR
     if (op == "or") {
         for (size_t i = 1; i < tokens.size(); ++i) {
-            DNFFormula operand = parseFormulaToDNF(tokens[i]);
+            DNFFormula operand = parseFormulaToDNF(tokens[i], cancel_flag);
             result.polyhedra.insert(result.polyhedra.end(),
                                     operand.polyhedra.begin(),
                                     operand.polyhedra.end());
         }
         return result;
     }
-    
+
     // Atomic formulas
     if (op == "=" || op == "<" || op == ">" || op == "<=" || op == ">=") {
         std::vector<LinearInequality> constraints = parseAtomicFormula(trimmed);
         result.polyhedra.push_back(constraints);
         return result;
     }
-    
+
     std::vector<LinearInequality> constraints = parseAtomicFormula(trimmed);
     result.polyhedra.push_back(constraints);
     return result;
@@ -191,7 +192,29 @@ static bool isTriviallyUnsat(const std::vector<LinearInequality>& poly) {
     return false;
 }
 
-DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands) {
+// Cartesian-product DNF expansion: k conjuncts with n1, n2, ... disjuncts
+// each produce up to n1*n2*... polyhedra. isTriviallyUnsat() prunes some
+// (single-variable numeric bound contradictions only), but nothing bounds
+// the blowup itself -- a handful of source-level `or`s combined with
+// ArrayHandler's own index-equality case-splits can reach thousands of
+// polyhedra on a genuinely small instance (confirmed: a 3-variable loop
+// body -> 48, a 40-variable one -> 2592), and this runs entirely before any
+// SMT solver is ever invoked, so SMTSolverInterface::interrupt() can't reach
+// it. Poll cancel_flag (threaded down from the calling technique's own
+// cancellation flag -- see parseFormulaToDNF's doc comment) periodically and
+// bail out with a distinguishable exception instead of running forever once
+// that technique has been told to stop.
+static void checkCancellation(const std::atomic<bool>* cancel_flag) {
+    if (cancel_flag && cancel_flag->load(std::memory_order_relaxed)) {
+        throw PreprocessingCancelledException(
+            "DNF expansion cancelled while still combining disjuncts -- this "
+            "instance's boolean/array case-split structure likely blows up "
+            "combinatorially before any SMT solving even starts");
+    }
+}
+
+DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands,
+                                     const std::atomic<bool>* cancel_flag) {
     if (operands.empty()) {
         DNFFormula result;
         result.polyhedra.push_back({});
@@ -203,10 +226,22 @@ DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands) {
     DNFFormula result = operands[0];
 
     for (size_t i = 1; i < operands.size(); ++i) {
+        checkCancellation(cancel_flag);
         DNFFormula new_result;
 
+        size_t combos_since_check = 0;
         for (const auto& poly1 : result.polyhedra) {
             for (const auto& poly2 : operands[i].polyhedra) {
+                // Also checked inside the innermost loop, throttled: a
+                // single (i.e. i fixed) combination step can itself be
+                // huge if both sides already grew large from earlier
+                // conjuncts, well before the next outer-loop checkpoint.
+                // An atomic load is far cheaper than the wall-clock read
+                // this replaced, so this can afford to check much more often.
+                if (++combos_since_check >= 4096) {
+                    combos_since_check = 0;
+                    checkCancellation(cancel_flag);
+                }
                 std::vector<LinearInequality> combined = poly1;
                 combined.insert(combined.end(), poly2.begin(), poly2.end());
                 if (!isTriviallyUnsat(combined))

@@ -13,12 +13,12 @@ LassoProgram::LassoProgram()
     // loop commence comme "true" aussi
 }
 
-LassoProgram LassoProgram::linearize() {
+LassoProgram LassoProgram::linearize(const std::atomic<bool>* cancel_flag) {
     if (is_linearized)
         return *this;
     is_linearized = true;
 
-    return JsonTraceParser::parseToLasso(input_file, true);
+    return JsonTraceParser::parseToLasso(input_file, true, cancel_flag);
 }
 
 void LassoProgram::declareSolverContext(SMTSolverInterface* solver, bool linearized) const {

@@ -2,6 +2,7 @@
 #define __LASSO_PROGRAM_H
 
 #include <sstream>
+#include <atomic>
 
 #include "transition.h"
 #include "smtsolvers/SMTSolverInterface.h"
@@ -76,7 +77,10 @@ public:
 
     // Applies rewriting + linearization to raw_formula → populates polyhedra.
     // No-op if already linearized.
-    LassoProgram linearize();
+    // cancel_flag: forwarded to JsonTraceParser::parseToLasso so the calling
+    // technique's own cancellation flag reaches the deeply nested.
+    // Optional: nullptr (default) means never cancel.
+    LassoProgram linearize(const std::atomic<bool>* cancel_flag = nullptr);
 
     /**
      * Déclare tout le contexte du LassoProgram dans un solveur SMT :

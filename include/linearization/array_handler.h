@@ -1,6 +1,7 @@
 #ifndef ARRAY_HANDLER_H
 #define ARRAY_HANDLER_H
 
+#include <atomic>
 #include <map>
 #include <set>
 #include <utility>
@@ -42,7 +43,11 @@ class ArrayHandler : public NonLinearTermHandler {
 public:
     enum class IndexRelation { EQUAL, NOT_EQUAL, UNKNOWN };
 
-    explicit ArrayHandler(const std::string& default_element_sort = "Int");
+    // cancel_flag: forwarded to classifyIndices()'s own cancellation check
+    // (see its doc comment) -- optional so callers outside a cancellable
+    // technique (tests, one-off tools) don't have to pass anything.
+    explicit ArrayHandler(const std::string& default_element_sort = "Int",
+                           const std::atomic<bool>* cancel_flag = nullptr);
 
     // Interface NonLinearTermHandler
     bool canHandle(const std::string& op) const override;
@@ -155,6 +160,14 @@ public:
      * @brief Decides whether idx1==idx2 given the constraints in `context`,
      * via real SMT queries against a throwaway solver -- never assumes
      * syntactic difference means semantic difference.
+     *
+     * Memoized per (idx1, idx2) pair for the current preprocessFormula()
+     * call (see m_index_relation_cache): a chain of stores/selects on the
+     * same array routinely asks the same handful of index pairs dozens of
+     * times over (confirmed: 6 underlying pairs asked ~42 times each on one
+     * real instance), each occurrence otherwise paying for two fresh SMT
+     * solver round-trips to re-derive an answer that cannot have changed --
+     * `context` is fixed for the whole call, so the verdict can't either.
      */
     IndexRelation classifyIndices(const std::string& idx1,
                                    const std::string& idx2,
@@ -193,6 +206,7 @@ public:
 
 private:
     std::string m_default_element_sort;
+    const std::atomic<bool>* m_cancel_flag;
 
     // Real declared sort per array variable name (see setVarSorts()). Also
     // grows at preprocessing time: a store-equality's target var (e.g. "A'"
@@ -247,6 +261,13 @@ private:
     // The current transition formula (set by preprocessFormula), used as the
     // SMT context for isIndexLoopInvariant()'s classifyIndices() probes.
     mutable std::string m_current_context;
+
+    // classifyIndices() memoization for the current preprocessFormula() call
+    // -- cleared whenever m_current_context changes (a fresh transition means
+    // a fresh set of constraints, so a stale verdict could be wrong). Keyed
+    // by idx1+"\x01"+idx2 with idx1<=idx2 lexicographically, since EQUAL/
+    // NOT_EQUAL/UNKNOWN is symmetric in its two arguments.
+    mutable std::map<std::string, IndexRelation> m_index_relation_cache;
 
     // Promoted cells found so far, keyed by "array_prog_var@index_ssa" to
     // keep repeated occurrences of the same cell mapped to one pseudo_var.
