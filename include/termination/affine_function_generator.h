@@ -32,8 +32,16 @@ public:
 
     /**
      * @brief Déclare toutes les variables de coefficients dans le solveur SMT
+     *
+     * @param phantom_mask Optionnel, aligné sur `vars` passé à generate() (même
+     * ordre, même taille num_vars). Si phantom_mask[i] est vrai, le coefficient
+     * prefix_i est forcé à 0 par une assertion -- voir
+     * LassoProgram::loopPhantomVarMask() pour la justification : une variable
+     * "fresh" côté loop n'a aucune existence dans la vraie formule de la boucle,
+     * son coefficient ne peut donc être fixé par aucune élimination de Motzkin.
      */
-    void declareParameters(SMTSolverInterface* solver) const;
+    void declareParameters(SMTSolverInterface* solver,
+                            const std::vector<bool>& phantom_mask = {}) const;
 
     /**
      * @brief Construit la LinearInequality représentant l'expression affine

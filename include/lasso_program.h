@@ -99,6 +99,34 @@ public:
         for (const auto& idx : it->second.index_display) oss << "[" << idx << "]";
         return oss.str();
     }
+
+    /**
+     * @brief Mask aligned with program_vars: true at index j iff program_vars[j]
+     * has no genuine SSA occurrence on the loop's "in" or "out" side (its
+     * mapping was synthesized by the parser's ensureMapping fallback -- see
+     * json_trace_parser.cpp -- to keep getSSAVar() from throwing, not read
+     * from the loop's real formula).
+     *
+     * Such a variable carries no information about the reachable state: its
+     * "in"/"out" SSA instances are free symbols unconstrained by Loop(x) and
+     * unrelated to each other. A ranking/guard template must never be given
+     * a nonzero coefficient on one -- Motzkin elimination cannot pin it down
+     * (nothing else in the loop's constraints mentions it), so the solver is
+     * free to pick whatever value makes an obligation pass without that
+     * having any bearing on real program behavior.
+     */
+    std::vector<bool> loopPhantomVarMask() const {
+        std::vector<bool> mask(program_vars.size(), false);
+        for (size_t j = 0; j < program_vars.size(); ++j) {
+            const auto& var = program_vars[j];
+            auto it_in = loop.var_to_ssa_in.find(var);
+            auto it_out = loop.var_to_ssa_out.find(var);
+            bool in_fresh  = (it_in  == loop.var_to_ssa_in.end())  || (it_in->second.find("_fresh_")  != std::string::npos);
+            bool out_fresh = (it_out == loop.var_to_ssa_out.end()) || (it_out->second.find("_fresh_") != std::string::npos);
+            mask[j] = in_fresh || out_fresh;
+        }
+        return mask;
+    }
 };
 
 #endif // __LASSO_PROGRAM_H

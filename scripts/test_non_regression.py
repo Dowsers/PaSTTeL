@@ -138,11 +138,78 @@ VAL_CASES = [
 ]
 
 
-def make_test(file, expected, mode, cpus=1, solver="z3", validate=False):
+# ---------------------------------------------------------------------------
+# Cases run with BOTH -val AND -only <template>, so a single template's own
+# certificate (not whichever technique wins the portfolio race) decides the
+# verdict.
+#
+# Locks in the loopPhantomVarMask() fix (generic_termination_synthesizer.cpp /
+# affine_function_generator.* / every template's declareParameters()): a
+# program variable absent from the loop's real formula on either side gets a
+# synthetic "..._fresh_loop_in/out_N" SSA placeholder (see
+# json_trace_parser.cpp's ensureMapping) purely so getSSAVar() doesn't throw.
+# Before the fix, nothing stopped a ranking/guard template from picking a
+# nonzero coefficient on such a placeholder: Motzkin elimination can never
+# pin it down (it appears nowhere else), so the solver was free to assign it
+# whatever value made an obligation pass with no bearing on real program
+# behavior. On arr_a05_alloca_term.json this let PiecewiseTemplate's own
+# search settle on a certificate that -val's independent bound check refuted
+# with a genuine counterexample (piece 1's f(x)<0 was reachable) -- silently
+# wrong in the default (non -val) run whenever Piecewise happened to win the
+# portfolio race. Confirmed via a full isolated sweep of the 217-case
+# ARRAY_OP benchmark: zero remaining "..._fresh_loop_" occurrence in any
+# validator-checked inequality for any of the 5 templates after the fix.
+# In portfolio mode (no -only) this never shows up here: AffineTemplate wins
+# arr_a05 in ~0.05s, long before PiecewiseTemplate's own (slower) search
+# would even complete -- exactly why -only is needed to lock this in.
+# ---------------------------------------------------------------------------
+
+#
+# Expected verdicts below are per-solver, NOT uniformly "TERMINATING": isolated
+# from the rest of the portfolio, a template that has no proof shaped for its
+# own template (e.g. PiecewiseTemplate alone has no valid piecewise-shaped
+# certificate for arr_a05 -- AffineTemplate is what actually solves it in
+# portfolio mode) legitimately reports UNKNOWN, and CVC5 sometimes fails to
+# find within timeout a proof Z3 finds (or vice-versa). Each value here was
+# confirmed empirically post-fix; asserting the exact verdict (rather than
+# skipping the UNKNOWN cases) is deliberate -- if the phantom-var exploit
+# ever comes back, an isolated template could suddenly flip from a genuine
+# UNKNOWN to a bogus TERMINATING, which is exactly what this must catch.
+ONLY_VAL_CASES = [
+    # (file, expected, mode, template, solver)
+    ("examples/array/arr_a05_alloca_term.json",               "TERMINATING", "terminate", "affine",        "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "affine",        "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "nested",        "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "nested",        "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "nested",        "z3"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "nested",        "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "lexicographic", "z3"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "lexicographic", "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "multiphase",    "z3"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "multiphase",    "cvc5"),
+    # The concrete instance the phantom-var exploit was found on (see the
+    # module-level comment above): PiecewiseTemplate alone, z3, WAS able to
+    # find a certificate here -- it just used to be an unsound one.
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
+]
+
+
+def make_test(file, expected, mode, cpus=1, solver="z3", validate=False, only=None):
     def test_method(self):
         cmd = [PASTTEL_BIN, file, "-a", mode, "-q", "-c", str(cpus), "-s", solver, "-t", "200"]
         if validate:
             cmd.append("-val")   # re-check the synthesized ranking function
+        if only:
+            cmd += ["-only", only]
         result = subprocess.run(cmd, capture_output=True, text=True)
         output = result.stdout + result.stderr
         overall = next((l for l in output.splitlines() if "OVERALL RESULT" in l), "")
@@ -180,6 +247,17 @@ for solver in ["cvc5", "z3"]:
             name = f"{base}_{i}"
             i += 1
         attrs[name] = make_test(file, expected, mode, cpus, solver, validate=True)
+
+# Same idea, but pinning down a single template's own certificate via -only.
+# Solver is fixed per entry (see ONLY_VAL_CASES comment) -- not looped over
+# both, since the expected verdict genuinely differs by solver here.
+for file, expected, mode, only, solver in ONLY_VAL_CASES:
+    name = "test_only_" + only + "_" + os.path.splitext(os.path.basename(file))[0] + "__" + solver
+    base, i = name, 1
+    while name in attrs:
+        name = f"{base}_{i}"
+        i += 1
+    attrs[name] = make_test(file, expected, mode, CPUS, solver, validate=True, only=only)
 
 NonRegressionTests = type("NonRegressionTests", (unittest.TestCase,), attrs)
 

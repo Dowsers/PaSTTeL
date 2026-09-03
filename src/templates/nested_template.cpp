@@ -58,8 +58,9 @@ void NestedTemplate::declareParameters(SMTSolverInterface* solver) const {
     if (!initialized_) {
         throw std::runtime_error("NestedTemplate::declareParameters() called before init()");
     }
+    auto phantom_mask = lasso_.loopPhantomVarMask();
     for (const auto& gen : generators_) {
-        gen->declareParameters(solver);
+        gen->declareParameters(solver, phantom_mask);
     }
     solver->declareVariable(delta_param_, "Real");
     solver->addAssertion("(> " + delta_param_ + " " + std::to_string(delta_value_) + ")");

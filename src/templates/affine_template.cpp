@@ -46,7 +46,7 @@ void AffineTemplate::declareParameters(SMTSolverInterface* solver) const {
     if (!initialized_) {
         throw std::runtime_error("AffineTemplate::declareParameters() called before init()");
     }
-    generator_->declareParameters(solver);
+    generator_->declareParameters(solver, lasso_.loopPhantomVarMask());
     solver->declareVariable(delta_param_, "Real");
     solver->addAssertion("(> " + delta_param_ + " " + std::to_string(delta_value_) + ")");
 }

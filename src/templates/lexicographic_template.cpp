@@ -73,9 +73,17 @@ void LexicographicTemplate::declareParameters(SMTSolverInterface* solver) const 
         throw std::runtime_error("LexicographicTemplate::declareParameters() called before init()");
     }
 
+    // comp_params[j] pairs with program_vars[j] (see initializeParameters());
+    // the trailing "_const" entry has no program-var counterpart.
+    auto phantom_mask = lasso_.loopPhantomVarMask();
     for (const auto& comp_params : component_params_) {
         for (const auto& param : comp_params) {
             solver->declareVariable(param, "Real");
+        }
+        for (size_t j = 0; j < phantom_mask.size() && j < comp_params.size(); ++j) {
+            if (phantom_mask[j]) {
+                solver->addAssertion("(= " + comp_params[j] + " 0.0)");
+            }
         }
     }
 

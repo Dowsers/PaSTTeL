@@ -536,45 +536,34 @@ std::map<std::string, double> GenericTerminationSynthesizer::extractParametersVa
 void
 GenericTerminationSynthesizer::SimplifyCoefficient(RankingFunction &rf)
 {
+    // coefficients, constant AND delta must be rescaled by the *same* factor:
+    // Z3 proved "f(x) - f(x') >= delta" for the raw (unscaled) f, so scaling f
+    // alone without scaling delta the same way invalidates that inequality.
+    // rationalListNormalize() jointly LCMs the denominators and GCDs the
+    // resulting integers over the whole batch (getGcd() above folds pairwise
+    // from Rational::ONE(), so gcd(1, x) = 1 forever and it silently never
+    // reduces the numerators — kept only for the (dead) isZero() check below).
+    std::vector<std::string> keys;
+    std::vector<Rational> values;
+    for (const auto &[name, val] : rf.coefficients) {
+        keys.push_back(name);
+        values.push_back(val);
+    }
+    keys.push_back("_constante_value_");
+    values.push_back(rf.constant);
+    keys.push_back("_delta_value_");
+    values.push_back(rf.delta);
 
-    std::map<std::string, Rational> assignment(rf.coefficients);
-    // std::string delta_tmp_name = "_delta_param_";
-    std::string constant_tmp_name = "_constante_value_";
+    std::vector<Rational> normalized = rationalListNormalize(values);
 
-    assignment["_constante_value_"] = rf.constant;
-    // assignment["_delta_param_"] = rf.delta;
-
-    Rational gcd = getGcd(assignment);
-    if ((VERBOSITY == VerbosityLevel::VERBOSE)){
-        std::cout << "\t GCD value: "<< gcd.toString() <<"\n";
+    if ((VERBOSITY == VerbosityLevel::VERBOSE)) {
+        std::cout << "\t GCD-normalized coefficients + constant + delta jointly\n";
     }
 
-    if (gcd.isZero())
-    {
-        rf.constant = Rational::ZERO();
-        // rf.delta = Rational::ZERO();
-        // assignment.erase(delta_tmp_name);
-        assignment.erase(constant_tmp_name);
-        // Special case: all coefficients are zero
-        for (const auto &[name, val] : assignment)
-        {
-            assert(val.isZero());
-            rf.coefficients[name] = Rational::ZERO();
-        }
-    }
-    else
-    {
-        rf.constant = assignment[constant_tmp_name].div(gcd);
-        // rf.delta = assignment[delta_tmp_name].div(gcd);
-        // assignment.erase(delta_tmp_name);
-        assignment.erase(constant_tmp_name);
-        // Divide each coefficient by GCD → must yield integer (denom == 1)
-        for (const auto &[name, val] : assignment)
-        {
-            Rational c = val.div(gcd);
-            assert(c.denominator() == 1 && "GCD division must yield integer");
-            rf.coefficients[name] = c;
-        }
+    for (size_t i = 0; i < keys.size(); ++i) {
+        if (keys[i] == "_constante_value_") rf.constant = normalized[i];
+        else if (keys[i] == "_delta_value_") rf.delta = normalized[i];
+        else rf.coefficients[keys[i]] = normalized[i];
     }
 }
 

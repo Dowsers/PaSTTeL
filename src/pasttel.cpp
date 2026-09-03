@@ -24,6 +24,7 @@ SolverType SOLVER = Z3;
 NlaHandling NLA_HANDLING = NlaHandling::OVERAPPROXIMATE;
 int TIMELIMIT = 6000;
 bool USE_RF_VALIDATOR = false;
+std::string ONLY_TEMPLATE = "";
 bool verbose = false;
 LinearMode LINEAR_MODE = LINEAR;
 
@@ -52,6 +53,9 @@ void printHelp(const char* programName) {
                 << "  -mode <linear|nonlinear>           Set analysis mode (default: linear)\n"
                 << "  -val, --validate                   Re-check every synthesized ranking function\n"
                 << "                                     with the SMT solver (default: off)\n"
+                << "  -only <affine|nested|lexicographic|multiphase|piecewise>\n"
+                << "                                     Restrict the termination portfolio to a single\n"
+                << "                                     ranking template (default: run all)\n"
                 << "  -h, --help                         Show this help message\n"
                 << "\nExamples:\n"
                 << "  " << programName << " -a terminate -s z3 -c 4 -t 300 input.json\n"
@@ -110,6 +114,16 @@ std::string setParameters(int argc, char** argv) {
         }
         else if (arg == "-val" || arg == "--validate") {
             USE_RF_VALIDATOR = true;
+        }
+        else if (arg == "-only" && i + 1 < args.size()) {
+            std::string val = args[++i];
+            if (val == "affine" || val == "nested" || val == "lexicographic"
+                || val == "multiphase" || val == "piecewise") {
+                ONLY_TEMPLATE = val;
+            } else {
+                std::cerr << "Error: Invalid -only template '" << val << "'. See --help.\n";
+                std::exit(EXIT_FAILURE);
+            }
         }
         else if (arg == "-nla" && i + 1 < args.size()) {
             std::string val = args[++i];
@@ -339,18 +353,25 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
         }
     }
 
-    // Termination techniques
+    // Termination techniques -- -only restricts this to a single template,
+    // so that its own certificate decides the result instead of being
+    // cancelled by whichever technique wins the portfolio race first.
     if (MODE == TERMINATION || MODE == BOTH) {
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "AffineTemplate", configs));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "NestedTemplate", configs, 2, 5));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "LexicographicTemplate", configs, 2, 5));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "MultiphaseTemplate", configs, 2, 5));
-        orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-            "PiecewiseTemplate", configs, 2, 5));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "affine")
+            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "AffineTemplate", configs));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "nested")
+            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "NestedTemplate", configs, 2, 5));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "lexicographic")
+            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "LexicographicTemplate", configs, 2, 5));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "multiphase")
+            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "MultiphaseTemplate", configs, 2, 5));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "piecewise")
+            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "PiecewiseTemplate", configs, 2, 5));
     }
 
     orchestrator.solve(lasso);

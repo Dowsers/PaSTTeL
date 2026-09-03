@@ -63,8 +63,9 @@ void PiecewiseTemplate::declareParameters(SMTSolverInterface* solver) const {
         throw std::runtime_error("PiecewiseTemplate::declareParameters() called before init()");
     }
 
-    for (const auto& gen : rank_generators_) gen->declareParameters(solver);
-    for (const auto& gen : guard_generators_) gen->declareParameters(solver);
+    auto phantom_mask = lasso_.loopPhantomVarMask();
+    for (const auto& gen : rank_generators_) gen->declareParameters(solver, phantom_mask);
+    for (const auto& gen : guard_generators_) gen->declareParameters(solver, phantom_mask);
 
     // Every delta must be strictly positive -- not just delta_params_[0].
     // An unconstrained delta_i would let the solver satisfy phi_decr_i's

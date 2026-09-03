@@ -43,8 +43,9 @@ void SupportingInvariantGenerator::initializeGenerators() {
 void SupportingInvariantGenerator::declareParameters(
     SMTSolverInterface* solver) const
 {
+    auto phantom_mask = lasso_.loopPhantomVarMask();
     for (const auto& gen : generators_) {
-        gen->declareParameters(solver);
+        gen->declareParameters(solver, phantom_mask);
     }
 }
 

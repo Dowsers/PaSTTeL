@@ -21,10 +21,18 @@ AffineFunctionGenerator::AffineFunctionGenerator(
 // ============================================================================
 
 void AffineFunctionGenerator::declareParameters(
-    SMTSolverInterface* solver) const
+    SMTSolverInterface* solver,
+    const std::vector<bool>& phantom_mask) const
 {
     for (const auto& name : param_names_) {
         solver->declareVariable(name, "Real");
+    }
+    // phantom_mask indexes program vars (num_vars_ entries); the trailing
+    // constant_name has no corresponding program var and is never forced.
+    for (int i = 0; i < num_vars_ && i < static_cast<int>(phantom_mask.size()); ++i) {
+        if (phantom_mask[i]) {
+            solver->addAssertion("(= " + param_names_[i] + " 0.0)");
+        }
     }
 }
 

@@ -60,8 +60,9 @@ void MultiphaseTemplate::declareParameters(SMTSolverInterface* solver) const {
         throw std::runtime_error("MultiphaseTemplate::declareParameters() called before init()");
     }
 
+    auto phantom_mask = lasso_.loopPhantomVarMask();
     for (const auto& gen : generators_) {
-        gen->declareParameters(solver);
+        gen->declareParameters(solver, phantom_mask);
     }
 
     // Every delta must be strictly positive -- not just delta_params_[0].
