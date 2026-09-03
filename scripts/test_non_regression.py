@@ -80,7 +80,7 @@ CASES = [
     ("examples/test_array_scoping_two_arrays.json",			"TERMINATING",     "both"),
     ("examples/test_fixpoint_array_state_real_4bitcounter.json",	"UNKNOWN",         "both"),
     ("examples/test_fixpoint_array_state_change.json",			"TERMINATING",     "both"),
-    ("examples/test_geometric_array_select_real_commoncell.json",	"UNKNOWN",         "both"),
+    ("examples/test_geometric_array_select_real_commoncell.json",	"TERMINATING",      "both"),
     ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
     ("examples/test_array_promotion_cell_in_ranking.json",		"TERMINATING",     "both"),
 
@@ -205,13 +205,13 @@ ARRAY_HANDLER_CASES = [
     ("examples/test_array_index_equal_syntactic.json",
      "(and (> v_i_2 0) (= v_x_1 1) (= v_i_3 (- v_i_2 v_x_1)))"),
     ("examples/test_array_index_not_equal_proved.json",
-     "(and (> v_n_2 0) (> v_m_2 (+ v_n_2 1)) (= v_x_1 (select v_A_2 v_m_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(and (> v_n_2 0) (> v_m_2 (+ v_n_2 1)) (= v_x_1 arrcell__A__m__inv) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_index_equal_proved.json",
      "(and (> v_n_2 0) (= v_m_2 v_n_2) (= v_x_1 4) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_index_unknown_case_split.json",
      "(and (and (> v_n_2 0) (= v_x_1 arr__ite__0) (= v_n_3 (- v_n_2 v_x_1))) "
      "(or (or (< v_n_2 v_m_2) (> v_n_2 v_m_2)) (and (<= arr__ite__0 4) (>= arr__ite__0 4))) "
-     "(or (and (<= v_n_2 v_m_2) (>= v_n_2 v_m_2)) (and (<= arr__ite__0 (select v_A_2 v_m_2)) (>= arr__ite__0 (select v_A_2 v_m_2)))))"),
+     "(or (and (<= v_n_2 v_m_2) (>= v_n_2 v_m_2)) (and (<= arr__ite__0 arrcell__A__m__inv) (>= arr__ite__0 arrcell__A__m__inv))))"),
     ("examples/test_array_chain_outer_equal_skip.json",
      "(and (> v_n_2 0) (= v_m_2 v_n_2) (= v_x_1 4) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_chain_not_equal_then_equal.json",
@@ -219,13 +219,13 @@ ARRAY_HANDLER_CASES = [
     ("examples/test_array_chain_double_unknown.json",
      "(and (and (> v_n_2 0) (= v_x_1 arr__ite__1) (= v_n_3 (- v_n_2 v_x_1))) "
      "(or (or (< v_m_2 v_k_2) (> v_m_2 v_k_2)) (and (<= arr__ite__0 1) (>= arr__ite__0 1))) "
-     "(or (and (<= v_m_2 v_k_2) (>= v_m_2 v_k_2)) (and (<= arr__ite__0 (select v_A_2 v_k_2)) (>= arr__ite__0 (select v_A_2 v_k_2)))) "
+     "(or (and (<= v_m_2 v_k_2) (>= v_m_2 v_k_2)) (and (<= arr__ite__0 arrcell__A__k__inv) (>= arr__ite__0 arrcell__A__k__inv))) "
      "(or (or (< v_n_2 v_k_2) (> v_n_2 v_k_2)) (and (<= arr__ite__1 2) (>= arr__ite__1 2))) "
      "(or (and (<= v_n_2 v_k_2) (>= v_n_2 v_k_2)) (and (<= arr__ite__1 arr__ite__0) (>= arr__ite__1 arr__ite__0))))"),
     ("examples/test_array_chain_triple_unknown.json",
      "(and (and (> v_n_2 0) (= v_x_1 arr__ite__2) (= v_n_3 (- v_n_2 v_x_1))) "
      "(or (or (< v_k_2 v_p_2) (> v_k_2 v_p_2)) (and (<= arr__ite__0 1) (>= arr__ite__0 1))) "
-     "(or (and (<= v_k_2 v_p_2) (>= v_k_2 v_p_2)) (and (<= arr__ite__0 (select v_A_2 v_p_2)) (>= arr__ite__0 (select v_A_2 v_p_2)))) "
+     "(or (and (<= v_k_2 v_p_2) (>= v_k_2 v_p_2)) (and (<= arr__ite__0 arrcell__A__p__inv) (>= arr__ite__0 arrcell__A__p__inv))) "
      "(or (or (< v_m_2 v_p_2) (> v_m_2 v_p_2)) (and (<= arr__ite__1 2) (>= arr__ite__1 2))) "
      "(or (and (<= v_m_2 v_p_2) (>= v_m_2 v_p_2)) (and (<= arr__ite__1 arr__ite__0) (>= arr__ite__1 arr__ite__0))) "
      "(or (or (< v_n_2 v_p_2) (> v_n_2 v_p_2)) (and (<= arr__ite__2 3) (>= arr__ite__2 3))) "
@@ -250,12 +250,12 @@ ARRAY_HANDLER_CASES = [
      "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_scoping_two_arrays.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) "
-     "(and (<= arrcell__A__v_i_2__out 4) (>= arrcell__A__v_i_2__out 4)) "
-     "(and (<= arrcell__B__v_k_2__out 7) (>= arrcell__B__v_k_2__out 7)) "
-     "(= v_x_1 arrcell__A__v_i_2__out) (= v_y_1 arrcell__B__v_k_2__out) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(and (<= arrcell__A__i__out 4) (>= arrcell__A__i__out 4)) "
+     "(and (<= arrcell__B__k__out 7) (>= arrcell__B__k__out 7)) "
+     "(= v_x_1 arrcell__A__i__out) (= v_y_1 arrcell__B__k__out) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_fixpoint_array_state_change.json",
-     "(and (< arrcell__A__v_i_2__in 5) "
-     "(and (<= arrcell__A__v_i_2__out (+ arrcell__A__v_i_2__in 1)) (>= arrcell__A__v_i_2__out (+ arrcell__A__v_i_2__in 1))))"),
+     "(and (< arrcell__A__i__in 5) "
+     "(and (<= arrcell__A__i__out (+ arrcell__A__i__in 1)) (>= arrcell__A__i__out (+ arrcell__A__i__in 1))))"),
 ]
 
 
