@@ -427,6 +427,7 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     m_current_context = trimmed;
     // A fresh context invalidates every previously memoized verdict.
     m_index_relation_cache.clear();
+    m_array_resolution_cache.clear();
 
     // Nothing to do if there's neither a store to eliminate nor a select to
     // possibly promote (see promoteInvariantArrayCells()).
@@ -521,15 +522,26 @@ std::string ArrayHandler::simplifySelectStore(
         if (arr_expr.size() > 6 && arr_expr.substr(0, 6) == "(store") {
             auto store_tokens = splitSExpr(arr_expr);
             if (store_tokens.size() == 4 && store_tokens[0] == "store") {
+                // Memoized: see m_array_resolution_cache's doc comment. Must
+                // be checked before classifyIndices()/the recursive `other`
+                // call below -- those are exactly the expensive work a repeat
+                // occurrence of the same (arr_expr, j) pair needs to skip.
+                std::string cache_key = arr_expr + '\x01' + j;
+                auto cached = m_array_resolution_cache.find(cache_key);
+                if (cached != m_array_resolution_cache.end()) {
+                    return cached->second;
+                }
+
                 std::string inner_arr = store_tokens[1];
                 std::string idx = store_tokens[2];
                 std::string val = store_tokens[3];
 
                 IndexRelation rel = classifyIndices(idx, j, context);
+                std::string result;
                 if (rel == IndexRelation::EQUAL) {
-                    return val;
+                    result = val;
                 } else if (rel == IndexRelation::NOT_EQUAL) {
-                    return simplifySelectStore("(select " + inner_arr + " " + j + ")", context, extra);
+                    result = simplifySelectStore("(select " + inner_arr + " " + j + ")", context, extra);
                 } else {
                     std::string other = simplifySelectStore(
                         "(select " + inner_arr + " " + j + ")", context, extra);
@@ -547,8 +559,10 @@ std::string ArrayHandler::simplifySelectStore(
                                      + buildArrayEqualityAtom(aux, val, context, extra) + ")");
                     extra.push_back("(or " + eq(idx, j) + " "
                                      + buildArrayEqualityAtom(aux, other, context, extra) + ")");
-                    return aux;
+                    result = aux;
                 }
+                m_array_resolution_cache[cache_key] = result;
+                return result;
             }
         }
     }
@@ -869,15 +883,28 @@ std::string ArrayHandler::evaluateStoreAtIndex(
         return "(select " + trimmed + " " + index + ")";
     }
 
+    // Memoized: see m_array_resolution_cache's doc comment. Must be checked
+    // before classifyIndices()/the recursive `other` call below -- those are
+    // exactly the expensive work a repeat occurrence of the same
+    // (store_expr, index) pair needs to skip. This cache is shared with
+    // simplifySelectStore(), which also calls this function's sibling logic
+    // via buildArrayEqualityAtom()'s per-dimension recursion.
+    std::string cache_key = trimmed + '\x01' + index;
+    auto cached = m_array_resolution_cache.find(cache_key);
+    if (cached != m_array_resolution_cache.end()) {
+        return cached->second;
+    }
+
     std::string inner_arr = tokens[1];
     std::string store_idx = tokens[2];
     std::string store_val = tokens[3];
 
     IndexRelation rel = classifyIndices(store_idx, index, context);
+    std::string result;
     if (rel == IndexRelation::EQUAL) {
-        return store_val;
+        result = store_val;
     } else if (rel == IndexRelation::NOT_EQUAL) {
-        return evaluateStoreAtIndex(inner_arr, index, context, extra);
+        result = evaluateStoreAtIndex(inner_arr, index, context, extra);
     } else {
         std::string other = evaluateStoreAtIndex(inner_arr, index, context, extra);
         std::string aux = freshAuxVar(peelArrayDimension(computeSort(inner_arr)));
@@ -885,8 +912,10 @@ std::string ArrayHandler::evaluateStoreAtIndex(
                          + buildArrayEqualityAtom(aux, store_val, context, extra) + ")");
         extra.push_back("(or " + eq(store_idx, index) + " "
                          + buildArrayEqualityAtom(aux, other, context, extra) + ")");
-        return aux;
+        result = aux;
     }
+    m_array_resolution_cache[cache_key] = result;
+    return result;
 }
 
 // ============================================================================

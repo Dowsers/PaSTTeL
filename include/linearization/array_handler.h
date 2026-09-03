@@ -269,6 +269,24 @@ private:
     // NOT_EQUAL/UNKNOWN is symmetric in its two arguments.
     mutable std::map<std::string, IndexRelation> m_index_relation_cache;
 
+    // simplifySelectStore()/evaluateStoreAtIndex() memoization: both resolve
+    // "value of this store-chain expression at this index", and without this
+    // cache each REPEATS that full resolution -- including the recursive
+    // descent into the chain's own inner store/select structure via `other`,
+    // and (on UNKNOWN) minting a fresh aux var + emitting 2 guarded
+    // disjunctions -- on every single textual occurrence of the same
+    // (chain, index) pair, even though the answer can't change (`context` is
+    // fixed for the whole call, same as m_index_relation_cache above). A
+    // chain of stores read from several downstream points routinely asks the
+    // same pair dozens of times over; confirmed root cause of a 3-store,
+    // 1-UNKNOWN-pair chain minting 42 separate aux vars instead of 1. Keyed
+    // by chain_expr+"\x01"+index -- NOT symmetric (chain_expr and index play
+    // different roles), unlike m_index_relation_cache's key. Cleared
+    // alongside it in preprocessFormula(). Shared between both functions:
+    // they solve the same sub-problem, so a value resolved by one is valid
+    // for the other too when their (chain_expr, index) text happens to match.
+    mutable std::map<std::string, std::string> m_array_resolution_cache;
+
     // Promoted cells found so far, keyed by "array_prog_var@index_ssa" to
     // keep repeated occurrences of the same cell mapped to one pseudo_var.
     mutable std::vector<PromotedCell> m_promoted_cells;
