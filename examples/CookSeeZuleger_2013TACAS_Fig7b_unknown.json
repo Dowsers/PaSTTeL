@@ -1,0 +1,46 @@
+{
+  "program_vars": [
+    "x",
+    "y",
+    "z"
+  ],
+  "var_types": {
+    "x": "Int",
+    "y": "Int",
+    "z": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "true",
+      "in_vars": {},
+      "out_vars": {},
+      "aux_vars": [],
+      "assigned_vars": []
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 1 v_x_19) (let ((.cse0 (= v_y_18 v_y_17))) (or (and (= v_z_19 (+ v_z_18 1)) .cse0) (and .cse0 (= v_x_19 (+ v_x_18 1)) (= v_z_19 v_z_18)) (and (= v_x_19 v_x_18) (= v_y_18 (+ v_y_17 1))))) (<= 1 v_z_19) (<= 1 v_y_18))",
+      "in_vars": {
+        "z": "v_z_19",
+        "y": "v_y_18",
+        "x": "v_x_19"
+      },
+      "out_vars": {
+        "z": "v_z_18",
+        "y": "v_y_17",
+        "x": "v_x_18"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "z",
+        "y",
+        "x"
+      ]
+    }
+  ]
+}

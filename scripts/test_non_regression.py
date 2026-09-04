@@ -97,6 +97,34 @@ CASES = [
 
 
 # ---------------------------------------------------------------------------
+# z3-only: same (file, expected, mode[, cpus]) shape as CASES, but run with
+# z3 alone instead of both solvers -- for a file where cvc5 is known not to
+# terminate within any budget (make_test has no external subprocess timeout,
+# so a cvc5 entry here would hang the whole suite, not just fail one test).
+# ---------------------------------------------------------------------------
+
+Z3_ONLY_CASES = [
+    # CookSeeZuleger-2013TACAS-Fig7b.bpl (Cook, See, Zuleger, TACAS 2013,
+    # "Ramsey vs. Lexicographic Termination Proving"): their own paper's
+    # example, built specifically so that no plain ranking function --
+    # multiphase, lexicographic, or nested -- can prove termination. The loop
+    # decreases one of x/y/z while havoc-ing another, defeating any measure
+    # that must decrease "in order" over a fixed tuple; a real proof needs a
+    # Ramsey-style / well-founded-transition-invariant argument, a technique
+    # family PaSTTeL does not implement at all. Not a template bug to fix (the
+    # actual multiphase phi_bound bug this session found is a separate,
+    # already-fixed issue -- see the CASES entry for multiphase_3Phase_term.json).
+    # Expected UNKNOWN, locking in that the portfolio correctly gives up
+    # rather than claiming an unsound proof. z3-only: cvc5 gets stuck deep in
+    # one ranking template's own solver call, past its interrupt() check --
+    # confirmed hung past -t 200 with both -c 1 and -c 3, no output at all --
+    # the same solver cancellation-responsiveness gap noted elsewhere this
+    # session, unrelated to this file specifically.
+    ("examples/CookSeeZuleger_2013TACAS_Fig7b_unknown.json",             "UNKNOWN",         "both"),
+]
+
+
+# ---------------------------------------------------------------------------
 # Cases additionally run WITH the ranking-function validator (-val).
 # ---------------------------------------------------------------------------
 
@@ -229,6 +257,17 @@ for file, expected, mode, only, solver in ONLY_VAL_CASES:
         name = f"{base}_{i}"
         i += 1
     attrs[name] = make_test(file, expected, mode, CPUS, solver, validate=True, only=only)
+
+# z3-only cases (see Z3_ONLY_CASES comment -- cvc5 known not to terminate).
+for entry in Z3_ONLY_CASES:
+    file, expected, mode = entry[0], entry[1], entry[2]
+    cpus = entry[3] if len(entry) > 3 else 1
+    name = "test_" + os.path.splitext(os.path.basename(file))[0] + "__" + mode + "__z3only"
+    base, i = name, 1
+    while name in attrs:
+        name = f"{base}_{i}"
+        i += 1
+    attrs[name] = make_test(file, expected, mode, cpus, "z3")
 
 NonRegressionTests = type("NonRegressionTests", (unittest.TestCase,), attrs)
 
