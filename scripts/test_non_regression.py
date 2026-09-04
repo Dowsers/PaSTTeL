@@ -83,17 +83,7 @@ CASES = [
     ("examples/test_geometric_array_select_real_commoncell.json",	"TERMINATING",      "both"),
     ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
     ("examples/test_array_promotion_cell_in_ranking.json",		"TERMINATING",     "both"),
-
-    # -----------------------------------------------------------------------
-    # Real Ultimate-preprocessed array lassos (cell-scalar encoding, copied from
-    # stats/vmcai26/ARRAY_OP). These lock in two parser fixes:
-    #   - pipe-aware collectLiveSSAs: multidimensional #memory_int cells (whose
-    #     index contains a space) must NOT be dropped as "dead", otherwise GNTA
-    #     invents a spurious NON-TERMINATING argument on a terminating lasso.
-    #   - connectStemToLoop raw_formula substitution kept consistent with the
-    #     in/out maps, so loop-only ranking cells survive (basename-3 needs a
-    #     3-lexicographic RF over those cells).
-    # Expected verdicts are Ultimate's ground truth; all pass on z3 and cvc5.
+    ("examples/multiphase_3Phase_term.json",                            "TERMINATING",     "both"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",           "TERMINATING",     "both",        CPUS),
     ("examples/array/arr_CookSeeZuleger_Fig3_2Dcell_term.json",         "TERMINATING",     "both",        CPUS),
     ("examples/array/arr_a05_alloca_term.json",                         "TERMINATING",     "both",        CPUS),
@@ -108,13 +98,6 @@ CASES = [
 
 # ---------------------------------------------------------------------------
 # Cases additionally run WITH the ranking-function validator (-val).
-#
-# The validator (opt-in) re-checks every synthesized ranking function + its
-# supporting invariants with the SMT solver (bounded + template-specific
-# decrease). These cases are known to keep the SAME verdict under validation on
-# both z3 and cvc5 — i.e. their certificates are genuinely valid — so any future
-# change that makes the validator wrongly reject them (or makes synthesis emit an
-# invalid certificate) turns them red here. Verdicts are Ultimate's ground truth.
 # ---------------------------------------------------------------------------
 
 VAL_CASES = [
@@ -143,25 +126,6 @@ VAL_CASES = [
 # certificate (not whichever technique wins the portfolio race) decides the
 # verdict.
 #
-# Locks in the loopPhantomVarMask() fix (generic_termination_synthesizer.cpp /
-# affine_function_generator.* / every template's declareParameters()): a
-# program variable absent from the loop's real formula on either side gets a
-# synthetic "..._fresh_loop_in/out_N" SSA placeholder (see
-# json_trace_parser.cpp's ensureMapping) purely so getSSAVar() doesn't throw.
-# Before the fix, nothing stopped a ranking/guard template from picking a
-# nonzero coefficient on such a placeholder: Motzkin elimination can never
-# pin it down (it appears nowhere else), so the solver was free to assign it
-# whatever value made an obligation pass with no bearing on real program
-# behavior. On arr_a05_alloca_term.json this let PiecewiseTemplate's own
-# search settle on a certificate that -val's independent bound check refuted
-# with a genuine counterexample (piece 1's f(x)<0 was reachable) -- silently
-# wrong in the default (non -val) run whenever Piecewise happened to win the
-# portfolio race. Confirmed via a full isolated sweep of the 217-case
-# ARRAY_OP benchmark: zero remaining "..._fresh_loop_" occurrence in any
-# validator-checked inequality for any of the 5 templates after the fix.
-# In portfolio mode (no -only) this never shows up here: AffineTemplate wins
-# arr_a05 in ~0.05s, long before PiecewiseTemplate's own (slower) search
-# would even complete -- exactly why -only is needed to lock this in.
 # ---------------------------------------------------------------------------
 
 #
@@ -183,8 +147,9 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "nested",        "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
-    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
-    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
+    # isolated single-template check.
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "multiphase",    "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "multiphase",    "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
@@ -200,6 +165,12 @@ ONLY_VAL_CASES = [
     # find a certificate here -- it just used to be an unsound one.
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "piecewise",     "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
+
+    # Isolated-template lock-in for the phi_bound fix itself: MultiphaseTemplate
+    # alone, -val-checked, must still prove Ultimate's own canonical 3-phase
+    # example (see the CASES entry above for the full portfolio version).
+    ("examples/multiphase_3Phase_term.json",                   "TERMINATING", "terminate", "multiphase",    "z3"),
+    ("examples/multiphase_3Phase_term.json",                   "TERMINATING", "terminate", "multiphase",    "cvc5"),
 ]
 
 

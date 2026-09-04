@@ -870,9 +870,6 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
     except Exception as e:
         return {"result": "UNKNOWN", "ulr_time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": str(e)}
 
-    if re.search(r'Warning', output):
-        return {"result": "NOT SUPPORTED", "ulr_time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
-
     # Parse OVERALL RESULT
     result = "UNKNOWN"
     m = re.search(r'OVERALL RESULT:\s*(.+)', output)
@@ -882,6 +879,14 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
             result = "TERMINATING"
         elif "NON-TERMINATING" in raw or "NON_TERMINATING" in raw:
             result = "NONTERMINATING"
+
+    # A "Warning: Failed to parse formula" is only informative when nothing
+    # else resolved the lasso. Under -c>1, several techniques run their own
+    # independent linearization concurrently; a LOSING technique's own parse
+    # failure must not override a WINNING technique's conclusive verdict that
+    # shows up elsewhere in the very same output (see OVERALL RESULT above).
+    if result == "UNKNOWN" and re.search(r'Warning', output):
+        return {"result": "NOT SUPPORTED", "ulr_time_ms": -1.0, "total_time_ms": -1.0, "algo": "-", "error": "WARNING in output"}
 
     # Parse TOTAL TIME
     total_time_ms = -1.0

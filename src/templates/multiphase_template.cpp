@@ -151,7 +151,8 @@ std::vector<RankingTemplate::ConclusionPart> MultiphaseTemplate::getConstraintsD
 }
 
 // ============================================================================
-// phi_bound : f_{k-1}(x) >= 0 -- last phase only
+// phi_bound : OR_i f_i(x) > 0, over every phase -- matches Ultimate
+// LassoRanker's MultiphaseTemplate exactly (see class doc comment).
 // ============================================================================
 
 std::vector<RankingTemplate::ConclusionPart> MultiphaseTemplate::getConstraintsBounded(
@@ -161,10 +162,14 @@ std::vector<RankingTemplate::ConclusionPart> MultiphaseTemplate::getConstraintsB
         throw std::runtime_error("MultiphaseTemplate::getConstraintsBounded() called before init()");
     }
 
-    LinearInequality li = generators_[num_phases_ - 1]->generate(in_vars);
-    li.strict = false;
-    li.motzkin_coef = LinearInequality::ONE;
-    return { {li} };
+    ConclusionPart part;
+    for (int i = 0; i < num_phases_; ++i) {
+        LinearInequality li = generators_[i]->generate(in_vars);
+        li.strict = true;
+        li.motzkin_coef = LinearInequality::ANYTHING;
+        part.push_back(li);
+    }
+    return { part };
 }
 
 // ============================================================================

@@ -52,7 +52,7 @@ public:
 
 private:
 
-    const LassoProgram* lasso_;
+    LassoProgram lasso_;
     bool initialized_;
     ProofCertificate proof_;
 

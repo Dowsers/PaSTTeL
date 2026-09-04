@@ -13,8 +13,7 @@ extern VerbosityLevel VERBOSITY;
 // ============================================================================
 
 FixpointTechnique::FixpointTechnique(SMTSolverInterface* solver)
-    : lasso_(nullptr)
-    , initialized_(false) {
+    : initialized_(false) {
     solver_ = solver;
 }
 
@@ -23,9 +22,14 @@ FixpointTechnique::FixpointTechnique(SMTSolverInterface* solver)
 // ============================================================================
 
 void FixpointTechnique::init(const LassoProgram& lasso) {
-    lasso_ = &lasso;
+    // Copy (not a pointer into the caller's object): PortfolioOrchestrator::
+    // solve() shares one LassoProgram across every technique's thread via
+    // std::cref(), same as RankingBasedTechnique/GeometricTechnique -- this
+    // technique doesn't linearize, but still shouldn't be the odd one out
+    // holding a raw pointer into that shared object.
+    lasso_ = lasso;
     initialized_ = true;
-    lasso.declareSolverContext(solver_, false);
+    lasso_.declareSolverContext(solver_, false);
 }
 
 // ============================================================================
@@ -40,7 +44,7 @@ AnalysisResult FixpointTechnique::analyze() {
     ProofCertificate proof;
     proof.technique_name = getName();
 
-    if (!initialized_ || !lasso_) {
+    if (!initialized_) {
         proof.description = "Technique not initialized";
         proof_ = proof;
         return proof_.status;
@@ -54,7 +58,7 @@ AnalysisResult FixpointTechnique::analyze() {
 
     // Cas trivial : loop = "true" → boucle infinie sans contrainte
     // Only valid when using linearized polyhedra (raw_formula non-empty means real constraints exist)
-    if (lasso_->loop.raw_formula.empty() && lasso_->loop.isTrue()) {
+    if (lasso_.loop.raw_formula.empty() && lasso_.loop.isTrue()) {
         if (verbose)
             std::cout << "\n  Loop is 'true' → trivial fixpoint (any state loops forever)" << std::endl;
         proof.status = AnalysisResult::NON_TERMINATING;
@@ -65,7 +69,7 @@ AnalysisResult FixpointTechnique::analyze() {
 
     solver_->push();
 
-    if (!lasso_->hasNoStem()) {
+    if (!lasso_.hasNoStem()) {
         if (verbose)
             std::cout << "\n[1/3] Ajout des contraintes du stem..." << std::endl;
         addStemConstraints();
@@ -118,8 +122,8 @@ AnalysisResult FixpointTechnique::analyze() {
 void FixpointTechnique::addStemConstraints()
 {
     // Use raw formula directly when available (avoids linearization blowup).
-    if (!lasso_->stem.raw_formula.empty()) {
-        solver_->addAssertion(lasso_->stem.raw_formula);
+    if (!lasso_.stem.raw_formula.empty()) {
+        solver_->addAssertion(lasso_.stem.raw_formula);
         if (VERBOSITY == VerbosityLevel::VERBOSE)
             std::cout << "    Stem: raw formula asserted" << std::endl;
         return;
@@ -130,7 +134,7 @@ void FixpointTechnique::addStemConstraints()
     // Collecter les contraintes par polyèdre (DNF)
     std::vector<std::vector<std::string>> poly_constraints;
 
-    for (const auto& poly : lasso_->stem.polyhedra) {
+    for (const auto& poly : lasso_.stem.polyhedra) {
         std::vector<std::string> clause_constraints;
 
         for (const auto& ineq : poly) {
@@ -197,8 +201,8 @@ void FixpointTechnique::addStemConstraints()
 void FixpointTechnique::addLoopConstraints()
 {
     // Use raw formula directly when available (avoids linearization blowup).
-    if (!lasso_->loop.raw_formula.empty()) {
-        solver_->addAssertion(lasso_->loop.raw_formula);
+    if (!lasso_.loop.raw_formula.empty()) {
+        solver_->addAssertion(lasso_.loop.raw_formula);
         if (VERBOSITY == VerbosityLevel::VERBOSE)
             std::cout << "    Loop: raw formula asserted" << std::endl;
         return;
@@ -209,7 +213,7 @@ void FixpointTechnique::addLoopConstraints()
     // Collecter les contraintes par polyèdre (DNF)
     std::vector<std::vector<std::string>> poly_constraints;
 
-    for (const auto& poly : lasso_->loop.polyhedra) {
+    for (const auto& poly : lasso_.loop.polyhedra) {
         std::vector<std::string> clause_constraints;
 
         std::ostringstream lhs;
@@ -291,8 +295,8 @@ void FixpointTechnique::addFixpointConstraints()
     int constraint_count = 0;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
 
-    for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
-        std::string ssa_out = lasso_->loop.getSSAVar(var_prog, true);
+    for (const auto& [var_prog, ssa_in] : lasso_.loop.var_to_ssa_in) {
+        std::string ssa_out = lasso_.loop.getSSAVar(var_prog, true);
 
         // Ignorer les contraintes triviales (variable inchangée)
         if (ssa_in == ssa_out) continue;
@@ -327,9 +331,9 @@ std::map<std::string, double> FixpointTechnique::extractFixpoint()
     if (verbose)
         std::cout << "\n  Point fixe trouvé:" << std::endl;
     
-    for (const auto& [var_prog, ssa_in] : lasso_->loop.var_to_ssa_in) {
-        auto it = lasso_->var_sorts.find(var_prog);
-        if (it != lasso_->var_sorts.end() && it->second.find("Array") != std::string::npos)
+    for (const auto& [var_prog, ssa_in] : lasso_.loop.var_to_ssa_in) {
+        auto it = lasso_.var_sorts.find(var_prog);
+        if (it != lasso_.var_sorts.end() && it->second.find("Array") != std::string::npos)
             continue;
         double value = solver_->getValue(ssa_in);
         fixpoint[ssa_in] = value;
@@ -346,5 +350,5 @@ std::map<std::string, double> FixpointTechnique::extractFixpoint()
 // ============================================================================
 
 bool FixpointTechnique::validateConfiguration() const {
-    return initialized_ && lasso_ != nullptr;
+    return initialized_;
 }

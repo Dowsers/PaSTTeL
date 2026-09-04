@@ -22,7 +22,17 @@
  *
  * phi_decr_0        : f_0(x) - f_0(x') > delta_0                         (1 atom, no escape)
  * phi_decr_i (i>=1) : f_i(x) - f_i(x') > delta_i  OR  f_{i-1}(x) > 0     (2-atom disjunction)
- * phi_bound         : f_{k-1}(x) >= 0                                    (last phase only, non-strict like NestedTemplate)
+ * phi_bound         : OR_i f_i(x) > 0, over EVERY phase i=0..k-1          (k-atom disjunction, all strict)
+ *
+ * phi_bound matches Ultimate LassoRanker's MultiphaseTemplate exactly (its
+ * own doc comment states the same "\/_i f_i(x) > 0" over all phases, not
+ * just the last one -- verified against
+ * lassoranker/termination/templates/MultiphaseTemplate.java). Asserting only
+ * f_{k-1}(x) >= 0 (an earlier, incorrect version of this template) leaves no
+ * conclusion to refute at states where every f_i(x) <= 0 simultaneously,
+ * which made Motzkin's certificate search spuriously UNSAT even for
+ * textbook multiphase instances (e.g. Ultimate's own 3Phase.bpl, authored by
+ * one of LassoRanker's own creators) that this template should solve.
  *
  * Soundness sketch: f_0 decreases every step with no exception, so it
  * eventually drops <=0 and stays there forever (monotonic). That permanently
