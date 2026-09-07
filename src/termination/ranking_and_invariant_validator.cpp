@@ -1196,16 +1196,26 @@ RankingAndInvariantValidator::validateMultiphase(
     res.rf_decreasing_check = dec_ok;
     if (!dec_ok) { res.error_message = "multiphase decrease violated"; return res; }
 
-    // borne : f_{k-1}(x) >= 0     [contre-exemple : f_{k-1}(x) < 0]
+    // borne : OR_i f_i(x) > 0, over EVERY phase -- matches
+    // MultiphaseTemplate::getConstraintsBounded() (fixed to mirror Ultimate
+    // LassoRanker's MultiphaseTemplate.java exactly: phi_bound is a
+    // disjunction over all phases, not just the last one -- checking only
+    // f_{k-1}(x) >= 0 here rejected genuinely valid witnesses where f_{k-1}
+    // goes negative in a state an EARLIER phase is still positive in, which
+    // is fine under the real formula).
+    // [contre-exemple : AND_i f_i(x) <= 0, every phase simultaneously non-positive]
     {
         solver->push();
         addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion("(< " + buildRFFormula(C.back(), lasso, false) + " 0)");
+        std::vector<std::string> ce;
+        for (int i = 0; i < k; ++i)
+            ce.push_back("(<= " + buildRFFormula(C[i], lasso, false) + " 0)");
+        solver->addAssertion(smtAnd(ce));
         bool sat = solver->checkSat();
         solver->pop();
         res.rf_bounded_check = !sat;
     }
-    if (!res.rf_bounded_check) { res.error_message = "multiphase last phase not bounded (f_{k-1}(x) < 0 possible)"; return res; }
+    if (!res.rf_bounded_check) { res.error_message = "multiphase bound violated: every phase can be simultaneously <= 0"; return res; }
 
     res.is_valid = true;
     return res;
