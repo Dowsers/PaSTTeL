@@ -84,9 +84,22 @@ void LassoProgram::declareSolverContext(SMTSolverInterface* solver, bool lineari
         declareTransitionVars(stem);
     declareTransitionVars(loop);
 
-    // 5. Déclarer les variables d'abstraction de fonctions et ajouter les assertions
+    // 5. Déclarer les variables d'abstraction de fonctions et ajouter les assertions.
+    // Two passes, not one combined declare-then-assert per entry: one
+    // abstraction's original_call can reference ANOTHER abstraction's
+    // fresh_var -- e.g. a generic FormulaLinearizer abstraction
+    // (arr__select__N = (select arr__ite__M idx), registered via
+    // storeAbstractionsToLasso()) referencing an ArrayHandler-minted aux var
+    // (arr__ite__M, registered separately and LATER in this same vector, via
+    // getAuxVarNames() in json_trace_parser.cpp). A single per-entry
+    // declare-then-assert pass would try to parse arr__select__N's assertion
+    // -- which mentions arr__ite__M -- before arr__ite__M has been declared
+    // at all, throwing "Unknown atom in SMT-LIB2 expression". Declaring every
+    // variable first removes any dependency on registration order.
     for (const auto& abs : function_abstractions) {
         solver->declareVariable(abs.fresh_var, abs.sort);
+    }
+    for (const auto& abs : function_abstractions) {
         if (!abs.original_call.empty()) {
             // Standard abstraction: equality assertion (= fresh_var original_call)
             std::string assertion = "(= " + abs.fresh_var + " " + abs.original_call + ")";

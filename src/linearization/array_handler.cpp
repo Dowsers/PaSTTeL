@@ -491,6 +491,169 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
 }
 
 // ============================================================================
+// MULTI-DIMENSIONAL INDEX TUPLES -- matches Ultimate's MultiDimensionalSelect/
+// MultiDimensionalStore/IndexAnalyzer: always compare the FULL index tuple of
+// a multi-dimensional array access, never one dimension in isolation.
+// ============================================================================
+
+void ArrayHandler::extractReadTuple(
+    const std::string& expr, std::string& base, std::vector<std::string>& indices)
+{
+    std::string cur = trim(expr);
+    std::vector<std::string> rev_indices;
+    while (cur.size() > 1 && cur[0] == '(') {
+        auto tokens = splitSExpr(cur);
+        if (tokens.size() == 3 && tokens[0] == "select") {
+            rev_indices.push_back(tokens[2]);
+            cur = trim(tokens[1]);
+        } else {
+            break;
+        }
+    }
+    base = cur;
+    indices.assign(rev_indices.rbegin(), rev_indices.rend());
+}
+
+void ArrayHandler::extractWriteTuple(
+    const std::string& expr, std::string& base,
+    std::vector<std::string>& indices, std::vector<std::string>& value_at_depth)
+{
+    indices.clear();
+    value_at_depth.clear();
+    std::string trimmed = trim(expr);
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.size() != 4 || tokens[0] != "store") {
+        base = "";
+        return;
+    }
+    base = trim(tokens[1]);
+    indices.push_back(tokens[2]);
+    std::string remainder = tokens[3];
+    value_at_depth.push_back(remainder);
+
+    while (true) {
+        std::string rem_trimmed = trim(remainder);
+        if (rem_trimmed.size() <= 6 || rem_trimmed.substr(0, 6) != "(store") break;
+        auto rem_tokens = splitSExpr(rem_trimmed);
+        if (rem_tokens.size() != 4 || rem_tokens[0] != "store") break;
+
+        // isCompatibleSelect: the inner store's own array operand must be
+        // exactly "base selected at every index collected so far" -- i.e.
+        // this genuinely is "the row/cell just read, being rewritten one
+        // dimension deeper", not an unrelated nested store that happens to
+        // sit textually inside this one.
+        std::string expected = base;
+        for (const auto& idx : indices) expected = "(select " + expected + " " + idx + ")";
+        if (trim(rem_tokens[1]) != expected) break;
+
+        indices.push_back(rem_tokens[2]);
+        remainder = rem_tokens[3];
+        value_at_depth.push_back(remainder);
+    }
+}
+
+ArrayHandler::IndexRelation ArrayHandler::compareIndexTuples(
+    const std::vector<std::string>& t1, const std::vector<std::string>& t2,
+    const std::string& context) const
+{
+    size_t n = std::min(t1.size(), t2.size());
+    bool any_unknown = false;
+    for (size_t i = 0; i < n; ++i) {
+        IndexRelation rel = classifyIndices(t1[i], t2[i], context);
+        if (rel == IndexRelation::NOT_EQUAL) return IndexRelation::NOT_EQUAL;
+        if (rel == IndexRelation::UNKNOWN) any_unknown = true;
+    }
+    return any_unknown ? IndexRelation::UNKNOWN : IndexRelation::EQUAL;
+}
+
+std::string ArrayHandler::resolveMultiDimSelect(
+    const std::string& store_chain_expr, const std::vector<std::string>& read_indices,
+    const std::string& context, std::vector<std::string>& extra) const
+{
+    std::ostringstream key_stream;
+    key_stream << store_chain_expr;
+    for (const auto& idx : read_indices) key_stream << '\x01' << idx;
+    std::string cache_key = key_stream.str();
+    auto cached = m_array_resolution_cache.find(cache_key);
+    if (cached != m_array_resolution_cache.end()) {
+        return cached->second;
+    }
+
+    std::string write_base;
+    std::vector<std::string> write_indices;
+    std::vector<std::string> value_at_depth;
+    extractWriteTuple(store_chain_expr, write_base, write_indices, value_at_depth);
+
+    auto rebuildSelectChain = [](const std::string& arr,
+                                  const std::vector<std::string>& idxs) {
+        std::string built = arr;
+        for (const auto& idx : idxs) built = "(select " + built + " " + idx + ")";
+        return built;
+    };
+
+    if (write_indices.empty()) {
+        // Not actually a multi-dim store after all -- fall back to the plain
+        // recursive walk (which will just rebuild-and-recurse on children).
+        std::string result = simplifySelectStore(
+            rebuildSelectChain(store_chain_expr, read_indices), context, extra);
+        m_array_resolution_cache[cache_key] = result;
+        return result;
+    }
+
+    size_t n = std::min(write_indices.size(), read_indices.size());
+    std::vector<std::string> write_prefix(write_indices.begin(), write_indices.begin() + n);
+    std::vector<std::string> read_prefix(read_indices.begin(), read_indices.begin() + n);
+    IndexRelation rel = compareIndexTuples(write_prefix, read_prefix, context);
+
+    // Any read indices beyond the compared prefix still need to be applied
+    // on top of whatever we resolve the prefix to (e.g. the write only went
+    // 1 dimension deep -- a whole-row store -- while the read wants 2).
+    auto applyRemainingReads = [&](std::string value) {
+        for (size_t i = n; i < read_indices.size(); ++i) {
+            value = simplifySelectStore("(select " + value + " " + read_indices[i] + ")", context, extra);
+        }
+        return value;
+    };
+
+    std::string result;
+    if (rel == IndexRelation::EQUAL) {
+        result = applyRemainingReads(value_at_depth[n - 1]);
+    } else if (rel == IndexRelation::NOT_EQUAL) {
+        result = simplifySelectStore(rebuildSelectChain(write_base, read_indices), context, extra);
+    } else {
+        std::string other = simplifySelectStore(rebuildSelectChain(write_base, read_indices), context, extra);
+
+        // Sort of "write_base peeled n dimensions" -- correct regardless of
+        // whether the write went deeper (a store never changes an array's
+        // sort, only its values) or shallower (value_at_depth[n-1] IS that
+        // sort already, by peeling n times from the base).
+        std::string aux_sort = computeSort(write_base);
+        for (size_t i = 0; i < n; ++i) aux_sort = peelArrayDimension(aux_sort);
+        std::string aux = freshAuxVar(aux_sort);
+
+        std::ostringstream guard_eq, guard_neq;
+        guard_eq << "(and";
+        guard_neq << "(or";
+        for (size_t i = 0; i < n; ++i) {
+            guard_eq << " " << eq(write_prefix[i], read_prefix[i]);
+            guard_neq << " " << neq(write_prefix[i], read_prefix[i]);
+        }
+        guard_eq << ")";
+        guard_neq << ")";
+
+        extra.push_back("(or " + guard_neq.str() + " "
+                         + buildArrayEqualityAtom(aux, value_at_depth[n - 1], context, extra) + ")");
+        extra.push_back("(or " + guard_eq.str() + " "
+                         + buildArrayEqualityAtom(aux, other, context, extra) + ")");
+
+        result = applyRemainingReads(aux);
+    }
+
+    m_array_resolution_cache[cache_key] = result;
+    return result;
+}
+
+// ============================================================================
 // READ-OVER-WRITE : (select (store arr idx val) j)
 //   classifyIndices(idx, j) == EQUAL     -> val
 //   classifyIndices(idx, j) == NOT_EQUAL -> (select arr j)
@@ -506,6 +669,25 @@ std::string ArrayHandler::simplifySelectStore(
 
     auto tokens = splitSExpr(trimmed);
     if (tokens.empty()) return trimmed;
+
+    // Multi-dimensional read-over-write: check whether this is genuinely
+    // "(select (select ... (store ...)) ...)" -- 2+ reads stacked on a store
+    // chain -- BEFORE recursing into children. Once the inner select has
+    // already been bottom-up-simplified (e.g. to a plain aux var name), the
+    // outer select can no longer see that its array operand used to be a
+    // store at all, so this must be checked on the raw text first. See
+    // resolveMultiDimSelect() for why single-dimension comparison is wrong
+    // here.
+    if (tokens[0] == "select" && tokens.size() == 3) {
+        std::string read_base;
+        std::vector<std::string> read_indices;
+        extractReadTuple(trimmed, read_base, read_indices);
+        std::string read_base_trimmed = trim(read_base);
+        if (read_indices.size() > 1 &&
+            read_base_trimmed.size() > 6 && read_base_trimmed.substr(0, 6) == "(store") {
+            return resolveMultiDimSelect(read_base_trimmed, read_indices, context, extra);
+        }
+    }
 
     // Recurse on all children first (bottom-up)
     std::vector<std::string> simplified;

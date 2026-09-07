@@ -355,6 +355,71 @@ private:
                                         std::vector<std::string>& extra) const;
 
     /**
+     * @brief Extracts the full multi-dimensional read index tuple from a
+     * chain of nested selects `(select (select ... base i1) i2) ... iN)`,
+     * matching Ultimate LassoRanker's MultiDimensionalSelect: walks from the
+     * outermost select inward, collecting indices in natural [i1, ..., iN]
+     * order (i1 = innermost/first dimension). `base` is whatever remains
+     * once no more top-level selects can be peeled -- the array variable, or
+     * a `(store ...)` chain if this read sits directly over a write.
+     */
+    static void extractReadTuple(const std::string& expr, std::string& base,
+                                  std::vector<std::string>& indices);
+
+    /**
+     * @brief Extracts the full multi-dimensional write index tuple + value
+     * from a nested store chain, matching Ultimate's MultiDimensionalStore:
+     * `(store arr i1 (store (select arr i1) i2 (store (select (select arr
+     * i1) i2) i3 ... val)))` is a single write to arr[i1][i2][i3] := val.
+     * Peels one store per iteration, but only continues past the first if
+     * the inner store's OWN array operand is exactly "(select ... (select
+     * base indices-so-far) ...)" -- i.e. genuinely the row/cell just read
+     * before being rewritten (Ultimate's isCompatibleSelect check) --
+     * degrading gracefully (stopping early) for anything else, rather than
+     * assuming every nested store belongs to the same multi-dim write.
+     * `value_at_depth[k]` is the value once indices[0..k] (k+1 dimensions)
+     * have been applied -- not just the final value -- so a caller comparing
+     * against a shallower read tuple than the full write depth still gets
+     * the right (possibly still array-sorted) intermediate value, not the
+     * final scalar.
+     */
+    static void extractWriteTuple(const std::string& expr, std::string& base,
+                                   std::vector<std::string>& indices,
+                                   std::vector<std::string>& value_at_depth);
+
+    /**
+     * @brief Component-wise index-tuple relation (Ultimate's IndexAnalyzer
+     * applied to a whole ArrayIndex, not one dimension): NOT_EQUAL if any
+     * component (up to min(t1.size(), t2.size())) is provably distinct,
+     * EQUAL only if every one of those components is provably equal,
+     * UNKNOWN otherwise.
+     */
+    IndexRelation compareIndexTuples(const std::vector<std::string>& t1,
+                                      const std::vector<std::string>& t2,
+                                      const std::string& context) const;
+
+    /**
+     * @brief Resolves `(select store_chain_expr read_indices[0]) ...
+     * read_indices[N-1])` -- a read applying 2+ indices on top of whatever
+     * store_chain_expr resolves to -- by comparing the FULL index tuples
+     * (see compareIndexTuples()), not one dimension at a time. This is what
+     * actually fixes the bug the single-dimension path had: comparing only
+     * the outermost index against a multi-dimensional store (Ultimate's
+     * #memory_int base->offset heap model) could only ever classify THAT one
+     * dimension, so an UNKNOWN verdict minted an aux var standing for "the
+     * row" -- still array-sorted, since only one of the array's dimensions
+     * had been peeled -- which then leaked into code expecting a scalar
+     * term. Comparing the whole tuple at once means any aux var minted here
+     * is exactly the dereferenced element sort, never an intermediate array.
+     * Memoized like simplifySelectStore()/evaluateStoreAtIndex() -- see
+     * m_array_resolution_cache.
+     */
+    std::string resolveMultiDimSelect(const std::string& store_chain_expr,
+                                       const std::vector<std::string>& read_indices,
+                                       const std::string& context,
+                                       std::vector<std::string>& extra) const;
+
+    /**
      * Simplifie recursivement (select (store arr idx val) j) par read-over-write.
      * `context` is the whole enclosing formula, used for index classification.
      * `extra` accumulates guarded disjunctions needed for UNKNOWN relations.

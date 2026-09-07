@@ -78,7 +78,6 @@ CASES = [
     ("examples/test_array_chain_triple_unknown.json",			"NON-TERMINATING", "both"),
     ("examples/test_array_scoping_unrelated_indices.json",		"TERMINATING",     "both"),
     ("examples/test_array_scoping_two_arrays.json",			"TERMINATING",     "both"),
-    ("examples/test_fixpoint_array_state_real_4bitcounter.json",	"UNKNOWN",         "both"),
     ("examples/test_fixpoint_array_state_change.json",			"TERMINATING",     "both"),
     ("examples/test_geometric_array_select_real_commoncell.json",	"TERMINATING",      "both"),
     ("examples/test_array_promotion_noninvariant_index.json",		"UNKNOWN",         "both"),
@@ -121,6 +120,17 @@ Z3_ONLY_CASES = [
     # the same solver cancellation-responsiveness gap noted elsewhere this
     # session, unrelated to this file specifically.
     ("examples/CookSeeZuleger_2013TACAS_Fig7b_unknown.json",             "UNKNOWN",         "both"),
+
+    # test_fixpoint_array_state_real_4bitcounter.json: FixpointTechnique
+    # genuinely completes (it never linearizes) and correctly reports
+    # UNKNOWN on its own -- but under cvc5 the OTHER (linearizing) techniques
+    # can take long enough on this instance that cvc5 doesn't respond to
+    # cancellation before the process gets killed, returning no output at
+    # all instead of a clean UNKNOWN. Observed flaky: passes some runs,
+    # empty-output-fails others, depending on timing/system load -- the same
+    # solver cancellation-responsiveness gap as CookSeeZuleger above, not a
+    # logic bug (z3 passes reliably). z3-only avoids the flakiness.
+    ("examples/test_fixpoint_array_state_real_4bitcounter.json",         "UNKNOWN",         "both"),
 ]
 
 
@@ -175,9 +185,8 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "nested",        "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
-    # isolated single-template check.
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "multiphase",    "z3"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "multiphase",    "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
