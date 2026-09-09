@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 #include <chrono>
+#include <cstdio>
+#include <unistd.h>
 
 #include "pasttel.h"
 #include "parser/json_trace_parser.h"
@@ -338,17 +340,18 @@ SMTSolverInterface* createSMTSolver() {
 }
 
 AnalysisReport runAnalysis(LassoProgram& lasso) {
-    PortfolioOrchestrator orchestrator(CPUS);
+
+    PortfolioOrchestrator* orchestrator = new PortfolioOrchestrator(CPUS);
 
     // Non-termination techniques
     if (MODE == NONTERMINATION || MODE == BOTH) {
-        orchestrator.addTechnique(std::make_unique<FixpointTechnique>(createSMTSolver()));
+        orchestrator->addTechnique(std::make_unique<FixpointTechnique>(createSMTSolver()));
         if(LINEAR_MODE == LINEAR){
-            orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
                 GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::LINEAR}));
         }
         else{
-            orchestrator.addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<GeometricTechnique>(createSMTSolver(),
                 GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
         }
     }
@@ -358,24 +361,24 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
     // cancelled by whichever technique wins the portfolio race first.
     if (MODE == TERMINATION || MODE == BOTH) {
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "affine")
-            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "AffineTemplate", configs));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "nested")
-            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "NestedTemplate", configs, 2, 5));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "lexicographic")
-            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "LexicographicTemplate", configs, 2, 5));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "multiphase")
-            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "MultiphaseTemplate", configs, 2, 5));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "piecewise")
-            orchestrator.addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "PiecewiseTemplate", configs, 2, 5));
     }
 
-    orchestrator.solve(lasso);
-    return orchestrator.join(TIMELIMIT);
+    orchestrator->solve(lasso);
+    return orchestrator->join(TIMELIMIT);
 }
 
 // ============================================================================
@@ -435,5 +438,8 @@ int main(int argc, char** argv) {
 
     // Print the analysis report
     printAnalysisReport(report);
-    return 0;
+
+    std::cout.flush();
+    fflush(stdout);
+    _exit(0);
 }

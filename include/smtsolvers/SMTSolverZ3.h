@@ -2,6 +2,7 @@
 #define SMT_SOLVER_Z3_H
 
 #include <z3++.h>
+#include <atomic>
 #include <memory>
 #include <string>
 #include <map>
@@ -44,8 +45,10 @@ private:
     // Options
     bool m_verbose;
 
-    // Set to true by interrupt() to silently ignore subsequent Z3 operations
-    bool m_interrupted;
+    // Set to true by interrupt() to silently ignore subsequent Z3 operations.
+    // Atomic: interrupt() is called from another thread, so a plain bool
+    // here would be a data race (confirmed by ThreadSanitizer).
+    std::atomic<bool> m_interrupted;
     
 public:
     /**

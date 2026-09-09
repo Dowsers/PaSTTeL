@@ -116,6 +116,9 @@ void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
                 " (" + std::to_string(elapsed_ms) + " ms)");
 
             cancelTechniques(i, verbose);
+            // Wake join()'s wait now instead of leaving it blocked until
+            // every losing technique finishes or the full time limit elapses.
+            pool_->signalEarlyExit();
 
             std::lock_guard<std::mutex> lock(mutex_);
             final_result_ = proof;
@@ -181,7 +184,9 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
     if (timelimit_seconds > 0) {
         auto deadline = std::chrono::steady_clock::now()
                     + std::chrono::seconds(timelimit_seconds);
-        timed_out = !pool_->waitUntil(deadline);
+        bool all_done = pool_->waitUntil(deadline);
+        // Early return via signalEarlyExit() (a winner) isn't a timeout.
+        timed_out = !all_done && !conclusive_found_.load();
     } else {
         pool_->waitAll();
     }
@@ -191,12 +196,18 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
         log(verbose, "\n=== Time limit reached — cancelling remaining techniques ===");
         stop_early_.store(true);
         cancelTechniques(techniques_.size(), verbose);
-        pool_->waitAll();
     }
 
-    if (conclusive_found_.load())
-        pool_->killAll();  // result found: kill threads immediately (don't wait for init())
-    pool_.reset();
+    // Winner found or giving up on timeout: stop waiting for stragglers
+    // instead of blocking on them cooperatively noticing cancel().
+    if (conclusive_found_.load() || timed_out) {
+        pool_->killAll();
+        // Leaked, not reset(): a detached thread may still be mid-flight
+        // and touch the pool, so freeing it here would be a use-after-free.
+        pool_.release();
+    } else {
+        pool_.reset();
+    }
 
     if (!conclusive_found_.load()) {
         log(verbose, timed_out

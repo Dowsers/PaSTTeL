@@ -3,10 +3,14 @@
 
 #include <sstream>
 #include <atomic>
+#include <memory>
 
 #include "transition.h"
 #include "smtsolvers/SMTSolverInterface.h"
 #include "utiles.h"
+
+// Defined in lasso_program.cpp.
+struct LinearizationCache;
 
 
 // Structure pour une constante déclarée
@@ -78,8 +82,11 @@ public:
     // Applies rewriting + linearization to raw_formula → populates polyhedra.
     // No-op if already linearized.
     // cancel_flag: forwarded to JsonTraceParser::parseToLasso so the calling
-    // technique's own cancellation flag reaches the deeply nested.
+    // technique's own cancellation flag reaches the deeply nested preprocessing.
     // Optional: nullptr (default) means never cancel.
+    //
+    // Computed at most once and shared across every copy of this object
+    // (see m_linearization_cache) instead of each copy redoing the work.
     LassoProgram linearize(const std::atomic<bool>* cancel_flag = nullptr);
 
     /**
@@ -131,6 +138,10 @@ public:
         }
         return mask;
     }
+
+private:
+    // Shared, lazily-computed linearize() result -- see linearize().
+    std::shared_ptr<LinearizationCache> m_linearization_cache;
 };
 
 #endif // __LASSO_PROGRAM_H

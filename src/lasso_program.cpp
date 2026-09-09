@@ -1,12 +1,21 @@
 #include <iostream>
+#include <mutex>
 
 #include "lasso_program.h"
 #include "utiles.h"
 #include "parser/json_trace_parser.h"
 
+// See LassoProgram::m_linearization_cache.
+struct LinearizationCache {
+    std::once_flag once;
+    std::shared_ptr<LassoProgram> result;
+    std::exception_ptr error;
+};
+
 // Constructeur par défaut
 LassoProgram::LassoProgram()
     : input_file("")
+    , m_linearization_cache(std::make_shared<LinearizationCache>())
     {
     // stem et loop sont automatiquement initialisés par leurs constructeurs
     // stem commence comme "true" (pas de contraintes)
@@ -16,9 +25,25 @@ LassoProgram::LassoProgram()
 LassoProgram LassoProgram::linearize(const std::atomic<bool>* cancel_flag) {
     if (is_linearized)
         return *this;
-    is_linearized = true;
 
-    return JsonTraceParser::parseToLasso(input_file, true, cancel_flag);
+    if (!m_linearization_cache) {
+        // Shouldn't normally happen; falls back to an unshared cache.
+        m_linearization_cache = std::make_shared<LinearizationCache>();
+    }
+
+    std::call_once(m_linearization_cache->once, [&]() {
+        try {
+            m_linearization_cache->result = std::make_shared<LassoProgram>(
+                JsonTraceParser::parseToLasso(input_file, true, cancel_flag));
+        } catch (...) {
+            m_linearization_cache->error = std::current_exception();
+        }
+    });
+
+    if (m_linearization_cache->error) {
+        std::rethrow_exception(m_linearization_cache->error);
+    }
+    return *m_linearization_cache->result;
 }
 
 void LassoProgram::declareSolverContext(SMTSolverInterface* solver, bool linearized) const {

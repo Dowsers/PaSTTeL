@@ -7,7 +7,6 @@
 #include <queue>
 #include <thread>
 #include <vector>
-#include <pthread.h>
 
 // Simple fixed-size thread pool with a FIFO task queue.
 // Tasks are dispatched in enqueue order; with n_threads == 1
@@ -16,10 +15,8 @@ class ThreadPool {
 public:
     explicit ThreadPool(size_t n_threads) {
         workers_.reserve(n_threads);
-        pthreads_.reserve(n_threads);
         for (size_t i = 0; i < n_threads; ++i) {
             workers_.emplace_back(&ThreadPool::workerLoop, this);
-            pthreads_.push_back(workers_.back().native_handle());
         }
     }
 
@@ -47,20 +44,33 @@ public:
     // Block until all enqueued tasks have completed.
     void waitAll() {
         std::unique_lock<std::mutex> lock(mutex_);
-        done_cv_.wait(lock, [this] { return pending_ == 0; });
+        done_cv_.wait(lock, [this] { return pending_ == 0 || early_exit_; });
     }
 
-    // Block until all tasks complete or the deadline is reached.
-    // Returns true if all tasks finished, false on timeout.
+    // Block until all tasks complete, signalEarlyExit() is called, or the
+    // deadline is reached. Returns true only if all tasks finished.
     template<typename Clock, typename Duration>
     bool waitUntil(const std::chrono::time_point<Clock, Duration>& deadline) {
         std::unique_lock<std::mutex> lock(mutex_);
-        return done_cv_.wait_until(lock, deadline, [this] { return pending_ == 0; });
+        done_cv_.wait_until(lock, deadline, [this] { return pending_ == 0 || early_exit_; });
+        return pending_ == 0;
     }
 
-    // Cancel all worker threads immediately via pthread_cancel + detach.
-    // Threads are killed at the next cancellation point (alloc, IO, syscall).
-    // After this call the pool is dead: do not enqueue or wait.
+    // Wakes a blocked waitAll()/waitUntil() without requiring every task to
+    // finish, so a caller can follow up with killAll() immediately.
+    void signalEarlyExit() {
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            early_exit_ = true;
+        }
+        done_cv_.notify_all();
+    }
+
+    // Detaches every worker (no pthread_cancel: force-unwinding a thread
+    // mid-way through a non-cancel-safe C library, e.g. Z3's internals, can
+    // corrupt its state and crash). Detached threads may keep running in
+    // the background; the caller must make the whole process exit promptly
+    // (see pasttel.cpp's _exit()) rather than rely on them stopping.
     void killAll() {
         killed_ = true;
         {
@@ -69,8 +79,6 @@ public:
             stop_ = true;
         }
         task_cv_.notify_all();
-        for (pthread_t tid : pthreads_)
-            pthread_cancel(tid);
         for (auto& w : workers_)
             if (w.joinable()) w.detach();
     }
@@ -100,13 +108,13 @@ private:
     }
 
     std::vector<std::thread>          workers_;
-    std::vector<pthread_t>            pthreads_;
     std::queue<std::function<void()>> tasks_;
     std::mutex                        mutex_;
     std::condition_variable           task_cv_;
     std::condition_variable           done_cv_;
     bool                              stop_    = false;
     bool                              killed_  = false;
+    bool                              early_exit_ = false;
     int                               pending_ = 0;
 };
 
