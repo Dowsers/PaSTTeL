@@ -92,6 +92,10 @@ CASES = [
     ("examples/array/arr_GasCake02_nonterm.json",                       "NON-TERMINATING", "both",        CPUS),
     ("examples/array/arr_NonTermination3_nonterm.json",                 "NON-TERMINATING", "both",        CPUS),
     ("examples/array/arr_printf_nonterm.json",                          "NON-TERMINATING", "both",        CPUS),
+    # Regression guard for distributeAND's insertIfMinimal (DNF absorption/
+    # subsumption): was UNKNOWN before the fix (Cartesian-product blowup from
+    # ArrayHandler's own index-equality guards), resolves in ~2s after.
+    ("examples/array/arr_add_first_alloca_term.json",                   "TERMINATING",     "both",        CPUS),
 ]
 
 
@@ -353,6 +357,25 @@ ARRAY_HANDLER_CASES = [
     ("examples/test_fixpoint_array_state_change.json",
      "(and (< arrcell__A__i__in 5) "
      "(and (<= arrcell__A__i__out (+ arrcell__A__i__in 1)) (>= arrcell__A__i__out (+ arrcell__A__i__in 1))))"),
+    # Store-equality (A' = (store A idx val)) with a compound index (idx =
+    # j*4+k, not a bare variable) -- collectIndicesForIdentity() used to only
+    # accept bare-atom candidates, so buildArrayEqualityAtom() fell back to a
+    # scalar eq() on a still array-sorted store term, rejected by SMTParser.
+    ("examples/test_array_store_equality_compound_index.json",
+     "(and (> v_n_2 0) "
+     "(and (<= (select v_A_3 (+ (* v_j_2 4) v_k_2)) 7) (>= (select v_A_3 (+ (* v_j_2 4) v_k_2)) 7)) "
+     "(= v_x_1 (select v_A_3 (+ (* v_j_2 4) v_k_2))) (= v_n_3 (- v_n_2 v_x_1)))"),
+    # A' = (store B j (select A' j)): the only candidate index (j) is
+    # tautological, leaving no non-tautological candidate to case over --
+    # same eq()-on-array-sort fallback bug as above, different trigger.
+    ("examples/test_array_store_equality_self_referential_tautology.json",
+     "(and (> v_n_2 0) true (= v_x_1 arrcell__A__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
+    # Some raw traces pre-split an array store-equality into
+    # "(and (<= A' (store A j 7)) (>= A' (store A j 7)))" instead of a literal
+    # "(= A' (store A j 7))" -- expandSingleConjunct only matched the latter.
+    ("examples/test_array_store_equality_presplit_le_ge.json",
+     "(and (> v_n_2 0) (and (<= arrcell__A__j__out 7) (>= arrcell__A__j__out 7)) "
+     "(= v_x_1 arrcell__A__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
 ]
 
 

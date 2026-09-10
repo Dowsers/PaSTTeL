@@ -798,12 +798,46 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         }
     }
 
+    // 4b. Bridge the stem's final SSA state into the loop's first transition
+    // (see ArrayHandler::setStemBackgroundContext()) -- e.g. two pointers
+    // being distinct because they're separate malloc results is otherwise
+    // invisible while processing the loop. Restricted to a single-transition
+    // stem: for a longer chain we don't know which SSA state precedes the
+    // loop without replaying LinearTransition::buildFromLines()'s own
+    // composition, and an incorrect bridging equality can make
+    // classifyIndices reach a wrong verdict, not just miss an optimization.
+    if (array_handler_raw && stem_lines.size() == 1 &&
+        j.contains("loop") && j["loop"].is_array() && !j["loop"].empty() &&
+        j["loop"][0].contains("in_vars")) {
+        auto loop_in_vars = parseVarsMapping(j["loop"][0]["in_vars"]);
+        std::ostringstream bridge;
+        bridge << "(and " << stem_lines[0].formula;
+        bool any_bridge = false;
+        for (const auto& [prog_var, loop_in_ssa] : loop_in_vars) {
+            auto stem_out_it = stem_lines[0].out_vars.find(prog_var);
+            if (stem_out_it != stem_lines[0].out_vars.end() && stem_out_it->second != loop_in_ssa) {
+                bridge << " (= " << stem_out_it->second << " " << loop_in_ssa << ")";
+                any_bridge = true;
+            }
+        }
+        bridge << ")";
+        if (any_bridge) {
+            array_handler_raw->setStemBackgroundContext(bridge.str());
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "ArrayHandler: stem background context set for the loop's first transition"
+                          << std::endl;
+            }
+        }
+    }
+
     // 5. Parse LOOP transitions
     std::vector<UltimateTransitionLine> loop_lines;
     if (j.contains("loop") && j["loop"].is_array()) {
         for (const auto& trans_json : j["loop"]) {
             loop_lines.push_back(parseTransition(trans_json, linearizer.get(), rewriter, linearize,
                                                   &lasso.var_sorts, array_handler_raw, cancel_flag));
+            // Only the loop's first transition actually follows the stem.
+            if (array_handler_raw) array_handler_raw->setStemBackgroundContext("");
         }
     }
 

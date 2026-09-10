@@ -152,8 +152,13 @@ std::set<std::string> ArrayHandler::collectIndicesForIdentity(
     if ((tokens[0] == "select" && tokens.size() == 3) ||
         (tokens[0] == "store" && tokens.size() == 4)) {
         auto identity = computeArrayIdentity(tokens[1]);
+        // A compound index (e.g. "(+ (* j 4) offset)", the norm in this
+        // pointer-arithmetic encoding) is as valid a candidate as a bare atom
+        // -- classifyIndices()/evaluateStoreAtIndex() handle arbitrary
+        // expressions. Excluding them starved buildArrayEqualityAtom()'s
+        // candidates on any offset-indexed access.
         if (identity.first == array_base && identity.second == dimension
-            && !tokens[2].empty() && tokens[2][0] != '(') {
+            && !tokens[2].empty()) {
             result.insert(tokens[2]);
         }
     }
@@ -182,6 +187,11 @@ std::string ArrayHandler::buildArrayEqualityAtom(
     // semantic reason.
     auto identity = computeArrayIdentity(rhs_expr);
     std::set<std::string> candidates = collectIndicesForIdentity(context, identity.first, identity.second);
+    // rhs_expr itself must be scanned too: when its base is a freshly-minted
+    // aux var, context (the original formula) never mentions it, so the
+    // store's own index would otherwise never become a candidate.
+    std::set<std::string> self_candidates = collectIndicesForIdentity(rhs_expr, identity.first, identity.second);
+    candidates.insert(self_candidates.begin(), self_candidates.end());
 
     std::vector<std::string> parts;
     for (const auto& idx : candidates) {
@@ -191,7 +201,12 @@ std::string ArrayHandler::buildArrayEqualityAtom(
         parts.push_back(buildArrayEqualityAtom(new_lhs, value, context, extra));
     }
 
-    if (parts.empty()) return eq(lhs_expr, rhs_expr);  // no concrete indices to case over
+    // No non-tautological candidate to case over. Unlike the scalar branch
+    // above, eq(lhs_expr, rhs_expr) is never valid here: rhs_expr is already
+    // array-sorted, and eq() emits a scalar <=/>= pair SMTParser would
+    // reject. Dropping the constraint is sound (if weaker): no observed
+    // index tells lhs_expr and rhs_expr apart.
+    if (parts.empty()) return "true";
     if (parts.size() == 1) return parts[0];
 
     std::ostringstream oss;
@@ -343,6 +358,8 @@ bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::stri
     std::set<std::string> scalars, arrays;
     collectIdentifiers(context, scalars, arrays);
     collectIdentifiers(extra_assertion, scalars, arrays);
+    if (!m_stem_background_context.empty())
+        collectIdentifiers(m_stem_background_context, scalars, arrays);
 
     SMTSolverZ3 solver(false);
     // Declare each identifier with its most reliable sort. A declared program-
@@ -363,6 +380,7 @@ bool ArrayHandler::isSatisfiableWith(const std::string& context, const std::stri
 
     std::string ctx = SExprUtils::trim(context);
     if (!ctx.empty() && ctx != "true") solver.addAssertion(ctx);
+    if (!m_stem_background_context.empty()) solver.addAssertion(m_stem_background_context);
     solver.addAssertion(extra_assertion);
     return solver.checkSat();
 }
@@ -409,7 +427,6 @@ ArrayHandler::IndexRelation ArrayHandler::classifyIndices(
         bool neq_possible = isSatisfiableWith(context, "(not (= " + idx1 + " " + idx2 + "))");
         result = neq_possible ? IndexRelation::UNKNOWN : IndexRelation::EQUAL;
     }
-
     m_index_relation_cache[cache_key] = result;
     return result;
 }
@@ -774,6 +791,33 @@ std::string ArrayHandler::expandStoreEqualities(
     auto tokens = splitSExpr(trimmed);
     if (tokens.empty()) return trimmed;
 
+    // Some raw traces already pre-split array equalities into "(and (<= a b)
+    // (>= a b))" before PaSTTeL sees them (RewriteEquality only does this
+    // split AFTER array elimination, to avoid exactly this case). Recognize
+    // it here too, or a store nested in "a"/"b" survives unexpanded: the
+    // generic "and" recursion below would visit "<=" and ">=" independently,
+    // neither of which matches expandSingleConjunct's literal "=" check.
+    if (tokens[0] == "and" && tokens.size() == 3) {
+        auto lhs_tokens = splitSExpr(trim(tokens[1]));
+        auto rhs_tokens = splitSExpr(trim(tokens[2]));
+        bool is_le_ge = lhs_tokens.size() == 3 && rhs_tokens.size() == 3
+            && lhs_tokens[0] == "<=" && rhs_tokens[0] == ">="
+            && lhs_tokens[1] == rhs_tokens[1] && lhs_tokens[2] == rhs_tokens[2];
+        bool is_ge_le = lhs_tokens.size() == 3 && rhs_tokens.size() == 3
+            && lhs_tokens[0] == ">=" && rhs_tokens[0] == "<="
+            && lhs_tokens[1] == rhs_tokens[1] && lhs_tokens[2] == rhs_tokens[2];
+        if (is_le_ge || is_ge_le) {
+            auto expanded = expandSingleConjunct(
+                "(= " + lhs_tokens[1] + " " + lhs_tokens[2] + ")", context, extra);
+            if (expanded.size() == 1) return expanded[0];
+            std::ostringstream result;
+            result << "(and";
+            for (const auto& c : expanded) result << " " << c;
+            result << ")";
+            return result.str();
+        }
+    }
+
     // Recurse through the whole boolean structure, not just a top-level
     // "and" -- a store-equality routinely lives inside an "or" branch (an
     // if/else in the source) or under a "not", and would otherwise never be
@@ -875,7 +919,11 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
     }
 
     if (result.empty()) {
-        return {conjunct};
+        // Same reasoning as buildArrayEqualityAtom's identical fallback:
+        // returning "(= arr_new store_expr)" untouched would later be split
+        // by RewriteEquality into a scalar <=/>= pair SMTParser rejects on
+        // an Array operand. Dropping the constraint is sound (if weaker).
+        return {"true"};
     }
 
     return result;

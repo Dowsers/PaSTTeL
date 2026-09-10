@@ -143,6 +143,29 @@ public:
                                       const std::map<std::string, std::string>& out_vars) const;
 
     /**
+     * @brief Extra facts classifyIndices()'s SMT probes should treat as known
+     * true on top of the current transition -- the stem's own formula plus
+     * bridging equalities connecting the stem's final SSA state to the
+     * loop's first SSA state.
+     *
+     * preprocessFormula() resets its SMT context to the current transition's
+     * own formula only (m_current_context), so a fact established in the
+     * stem -- e.g. two pointers being distinct malloc results -- is invisible
+     * while processing the loop, even though the pointers are loop-invariant.
+     * Kept separate from m_current_context (also used to scope candidate
+     * indices for the transition being linearized) so this only feeds
+     * classifyIndices' satisfiability probes.
+     *
+     * Only call with bridging equalities known correct for the transition
+     * about to be processed (see json_trace_parser.cpp's call site) -- an
+     * incorrect one can make classifyIndices reach an unsound verdict, not
+     * just miss an optimization.
+     */
+    void setStemBackgroundContext(const std::string& context) const {
+        m_stem_background_context = context;
+    }
+
+    /**
      * @brief Array cells promoted by the last preprocessFormula() call(s)
      * (cumulative across every transition this instance has processed, like
      * getAuxVarNames() -- callers must filter to the ones actually referenced
@@ -261,6 +284,11 @@ private:
     // The current transition formula (set by preprocessFormula), used as the
     // SMT context for isIndexLoopInvariant()'s classifyIndices() probes.
     mutable std::string m_current_context;
+
+    // Extra background facts for classifyIndices()'s SMT probes -- see
+    // setStemBackgroundContext(). Unlike m_current_context, not reset by
+    // preprocessFormula(): meant to survive from the stem into the loop.
+    mutable std::string m_stem_background_context;
 
     // classifyIndices() memoization for the current preprocessFormula() call
     // -- cleared whenever m_current_context changes (a fresh transition means

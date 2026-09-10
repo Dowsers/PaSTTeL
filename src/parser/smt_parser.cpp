@@ -1,12 +1,19 @@
 #include <regex>
 #include <iostream>
 #include <stdexcept>
+#include <set>
+#include <algorithm>
 
 #include "parser/smt_parser.h"
 #include "nla_handling.h"
 #include "utiles.h"
 
 extern VerbosityLevel VERBOSITY;
+
+// See definitions further below (near distributeAND) for the doc comments.
+static void insertIfMinimal(std::vector<std::vector<LinearInequality>>& polyhedra,
+                             std::vector<std::set<std::string>>& keys,
+                             std::vector<LinearInequality>&& combined);
 
 DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula,
                                          const std::atomic<bool>* cancel_flag) {
@@ -79,11 +86,13 @@ DNFFormula SMTParser::parseFormulaToDNF(const std::string& smtFormula,
 
     // OR
     if (op == "or") {
+        // Filtered here too, not just inside distributeAND: a redundant OR
+        // branch would otherwise carry that bloat into every later AND.
+        std::vector<std::set<std::string>> keys;
         for (size_t i = 1; i < tokens.size(); ++i) {
             DNFFormula operand = parseFormulaToDNF(tokens[i], cancel_flag);
-            result.polyhedra.insert(result.polyhedra.end(),
-                                    operand.polyhedra.begin(),
-                                    operand.polyhedra.end());
+            for (auto& poly : operand.polyhedra)
+                insertIfMinimal(result.polyhedra, keys, std::move(poly));
         }
         return result;
     }
@@ -213,6 +222,51 @@ static void checkCancellation(const std::atomic<bool>* cancel_flag) {
     }
 }
 
+// Order-independent key for a conjunct: the set of its constraints' SMT-LIB2
+// text. Two conjuncts with the same constraints in any order get the same
+// key, for insertIfMinimal()'s duplicate/subsumption detection below.
+static std::set<std::string> conjunctKey(const std::vector<LinearInequality>& poly) {
+    std::set<std::string> key;
+    for (const auto& ineq : poly) key.insert(ineq.toSMTLib2());
+    return key;
+}
+
+// Inserts `combined` unless it's redundant within the disjunction: if an
+// already-kept polyhedron's constraints are a SUBSET of `combined`'s, that
+// one is weaker/more general and already implies it ("A OR B" with
+// constraints(A) subset-of constraints(B) simplifies to just "A"). Evicts the
+// reverse case symmetrically. Mirrors Ultimate XnfTransformer's
+// XJunctionPosetMinimalElements. Fused into construction (per Cartesian-
+// product combination, not a post-pass) so a redundant conjunct never
+// compounds through the NEXT operand's round -- that cross-operand
+// compounding is what turns a handful of `or`s into thousands of polyhedra.
+static void insertIfMinimal(std::vector<std::vector<LinearInequality>>& polyhedra,
+                             std::vector<std::set<std::string>>& keys,
+                             std::vector<LinearInequality>&& combined) {
+    std::set<std::string> new_key = conjunctKey(combined);
+    for (const auto& existing_key : keys) {
+        if (std::includes(new_key.begin(), new_key.end(),
+                           existing_key.begin(), existing_key.end())) {
+            return;  // dominated by an already-kept, more general polyhedron
+        }
+    }
+    size_t write = 0;
+    for (size_t read = 0; read < keys.size(); ++read) {
+        bool dominated_by_new = std::includes(keys[read].begin(), keys[read].end(),
+                                               new_key.begin(), new_key.end());
+        if (dominated_by_new) continue;  // evict: `combined` is more general
+        if (read != write) {
+            polyhedra[write] = std::move(polyhedra[read]);
+            keys[write] = std::move(keys[read]);
+        }
+        ++write;
+    }
+    polyhedra.resize(write);
+    keys.resize(write);
+    polyhedra.push_back(std::move(combined));
+    keys.push_back(std::move(new_key));
+}
+
 DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands,
                                      const std::atomic<bool>* cancel_flag) {
     if (operands.empty()) {
@@ -228,6 +282,7 @@ DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands,
     for (size_t i = 1; i < operands.size(); ++i) {
         checkCancellation(cancel_flag);
         DNFFormula new_result;
+        std::vector<std::set<std::string>> new_keys;
 
         size_t combos_since_check = 0;
         for (const auto& poly1 : result.polyhedra) {
@@ -245,7 +300,7 @@ DNFFormula SMTParser::distributeAND(const std::vector<DNFFormula>& operands,
                 std::vector<LinearInequality> combined = poly1;
                 combined.insert(combined.end(), poly2.begin(), poly2.end());
                 if (!isTriviallyUnsat(combined))
-                    new_result.polyhedra.push_back(combined);
+                    insertIfMinimal(new_result.polyhedra, new_keys, std::move(combined));
             }
         }
 
