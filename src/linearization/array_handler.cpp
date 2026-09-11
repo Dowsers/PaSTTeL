@@ -170,6 +170,39 @@ std::set<std::string> ArrayHandler::collectIndicesForIdentity(
     return result;
 }
 
+std::set<std::vector<std::string>> ArrayHandler::collectFullIndexTuplesForIdentity(
+    const std::string& formula, const std::string& array_base, size_t full_depth) const
+{
+    std::set<std::vector<std::string>> result;
+    std::string trimmed = trim(formula);
+    if (trimmed.empty() || trimmed[0] != '(') return result;
+
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return result;
+
+    if (tokens[0] == "select" && tokens.size() == 3) {
+        std::string base;
+        std::vector<std::string> idxs;
+        extractReadTuple(trimmed, base, idxs);
+        if (idxs.size() == full_depth && resolveArrayBase(trim(base)) == array_base) {
+            result.insert(idxs);
+        }
+    } else if (tokens[0] == "store" && tokens.size() == 4) {
+        std::string base;
+        std::vector<std::string> idxs, vals;
+        extractWriteTuple(trimmed, base, idxs, vals);
+        if (idxs.size() == full_depth && resolveArrayBase(trim(base)) == array_base) {
+            result.insert(idxs);
+        }
+    }
+
+    for (size_t i = 1; i < tokens.size(); ++i) {
+        auto sub = collectFullIndexTuplesForIdentity(tokens[i], array_base, full_depth);
+        result.insert(sub.begin(), sub.end());
+    }
+    return result;
+}
+
 std::string ArrayHandler::buildArrayEqualityAtom(
     const std::string& lhs_expr, const std::string& rhs_expr,
     const std::string& context, std::vector<std::string>& extra) const
@@ -897,16 +930,28 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         m_array_equiv_base[arr_new] = store_identity.first;
     }
 
-    // Only case over indices this array is actually accessed at, at dimension
-    // 0, anywhere in the formula -- see buildArrayEqualityAtom()'s comment.
-    std::set<std::string> all_indices =
-        collectIndicesForIdentity(context, resolveArrayBase(arr_new), 0);
+    // Case over the FULL index tuple this array's cells are read at, not
+    // one dimension at a time -- pooling per dimension can cross-
+    // contaminate two unrelated cells' index components (see
+    // collectFullIndexTuplesForIdentity()). store_expr is scanned too, not
+    // just context, same reasoning as buildArrayEqualityAtom's self-scan.
+    size_t full_depth = 0;
+    {
+        std::string s = computeSort(store_expr);
+        while (isArraySort(s)) { s = peelArrayDimension(s); ++full_depth; }
+    }
+    std::string array_base = resolveArrayBase(arr_new);
+    std::set<std::vector<std::string>> tuples =
+        collectFullIndexTuplesForIdentity(context, array_base, full_depth);
+    auto self_tuples = collectFullIndexTuplesForIdentity(store_expr, array_base, full_depth);
+    tuples.insert(self_tuples.begin(), self_tuples.end());
 
-    // For each concrete index, generate (= (select arr_new idx) evaluated_value)
+    // For each concrete index tuple, generate (= (select ... arr_new t) evaluated_value)
     std::vector<std::string> result;
-    for (const auto& idx : all_indices) {
-        std::string value = evaluateStoreAtIndex(store_expr, idx, context, extra);
-        std::string new_select = "(select " + arr_new + " " + idx + ")";
+    for (const auto& tuple : tuples) {
+        std::string value = resolveMultiDimSelect(store_expr, tuple, context, extra);
+        std::string new_select = arr_new;
+        for (const auto& idx : tuple) new_select = "(select " + new_select + " " + idx + ")";
 
         // Skip tautologies (value == the select on same array at same index)
         if (value == new_select) continue;

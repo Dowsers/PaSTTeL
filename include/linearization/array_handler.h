@@ -363,6 +363,18 @@ private:
                                                       int dimension) const;
 
     /**
+     * @brief All FULL index tuples (exactly `full_depth` components) used to
+     * access `array_base`'s cells anywhere in `formula`. Unlike
+     * collectIndicesForIdentity(), which pools each dimension independently
+     * (and can therefore pair an outer index from one access with an inner
+     * index from an unrelated one), this walks each select/store chain from
+     * its own root (extractReadTuple()/extractWriteTuple()), so a collected
+     * tuple is always the one that actually occurred together in the source.
+     */
+    std::set<std::vector<std::string>> collectFullIndexTuplesForIdentity(
+        const std::string& formula, const std::string& array_base, size_t full_depth) const;
+
+    /**
      * @brief Builds an equality atom `lhs_expr = rhs_expr`, decomposing
      * recursively (one "(select lhs_expr idx)" / evaluateStoreAtIndex(rhs,
      * idx) pair per index) as long as rhs_expr's sort is still array-valued
