@@ -966,12 +966,33 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
     }
 
     if (rebuilt[0] == "select" && rebuilt.size() == 3) {
-        const std::string& base_ssa = rebuilt[1];
+        std::string base_ssa = rebuilt[1];
         const std::string& index_ssa = rebuilt[2];
-        bool base_is_plain = !base_ssa.empty() && base_ssa[0] != '(';
         bool index_is_plain = !index_ssa.empty() && index_ssa[0] != '(';
 
+        // Peel one more level for a 2D access -- "(select (select ARR I) J)",
+        // the standard base+offset heap-array-of-arrays encoding (e.g.
+        // #memory_int). The inner select is never itself promoted (its
+        // result is still array-valued, a "row", not a scalar -- the
+        // elem_sort check below fails for it), so it survives bottom-up
+        // recursion as exactly this shape; detect it here instead of only
+        // ever matching a single-level "(select ARR I)".
+        std::vector<std::string> index_ssas;
+        if (index_is_plain && isIndexLoopInvariant(index_ssa) &&
+            !base_ssa.empty() && base_ssa[0] == '(') {
+            auto base_tokens = splitSExpr(base_ssa);
+            if (base_tokens.size() == 3 && base_tokens[0] == "select" &&
+                !base_tokens[1].empty() && base_tokens[1][0] != '(' &&
+                !base_tokens[2].empty() && base_tokens[2][0] != '(' &&
+                isIndexLoopInvariant(base_tokens[2])) {
+                index_ssas.push_back(base_tokens[2]);
+                base_ssa = base_tokens[1];
+            }
+        }
+        bool base_is_plain = !base_ssa.empty() && base_ssa[0] != '(';
+
         if (base_is_plain && index_is_plain && isIndexLoopInvariant(index_ssa)) {
+            index_ssas.push_back(index_ssa);
             // Two array kinds are promotable (Ultimate treats both uniformly):
             //  - a MUTATED array (distinct in/out SSA): the cell is loop-carried,
             //    its value differs in/out -> distinct in_ssa/out_ssa, the read
@@ -988,9 +1009,10 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                 const std::string& array_prog_var =
                     array_mutated ? side_it->second.first : invarr_it->second;
 
-                std::string elem_sort = peelArrayDimension(computeSort(base_ssa));
+                std::string elem_sort = computeSort(base_ssa);
+                for (size_t i = 0; i < index_ssas.size(); ++i) elem_sort = peelArrayDimension(elem_sort);
                 if (elem_sort == "Int" || elem_sort == "Real") {
-                    // Key by the index's PROGRAM VARIABLE, not its SSA name, so
+                    // Key by each index's PROGRAM VARIABLE, not its SSA name, so
                     // the SAME cell a[k] read in the stem (index SSA v_k_9) and in
                     // the loop (index SSA v_k_10) maps to ONE cell variable --
                     // this is Ultimate's array/index representative keying. Keying
@@ -998,15 +1020,19 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                     // and let GeometricTechnique pick different values in stem and
                     // loop, ignoring a stem constraint like `a[k] >= 1` and
                     // fabricating non-termination (the "CommonCellVariable" case).
-                    auto idx_pv_it = m_ssa_to_prog_var.find(index_ssa);
-                    std::string index_rep =
-                        idx_pv_it != m_ssa_to_prog_var.end() ? idx_pv_it->second : index_ssa;
-                    std::string key = array_prog_var + "@" + index_rep;
+                    std::vector<std::string> index_reps;
+                    for (const auto& idx : index_ssas) {
+                        auto idx_pv_it = m_ssa_to_prog_var.find(idx);
+                        index_reps.push_back(idx_pv_it != m_ssa_to_prog_var.end() ? idx_pv_it->second : idx);
+                    }
+                    std::string key = array_prog_var;
+                    for (const auto& r : index_reps) key += "@" + r;
                     auto cell_it = m_promoted_cell_index.find(key);
                     size_t idx_in_vec;
                     if (cell_it == m_promoted_cell_index.end()) {
                         PromotedCell cell;
-                        cell.pseudo_var = "arrcell__" + array_prog_var + "__" + index_rep;
+                        cell.pseudo_var = "arrcell__" + array_prog_var;
+                        for (const auto& r : index_reps) cell.pseudo_var += "__" + r;
                         if (array_constant) {
                             // Loop-invariant cell: one name for both sides.
                             cell.in_ssa = cell.out_ssa = cell.pseudo_var + "__inv";
@@ -1016,8 +1042,8 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
                         }
                         cell.sort = elem_sort;
                         cell.array_name = array_prog_var;
-                        cell.index_ssa = index_ssa;
-                        cell.index_display.push_back(index_rep);
+                        cell.index_ssas = index_ssas;
+                        cell.index_display = index_reps;
                         m_promoted_cells.push_back(cell);
                         idx_in_vec = m_promoted_cells.size() - 1;
                         m_promoted_cell_index[key] = idx_in_vec;
@@ -1070,9 +1096,11 @@ std::vector<std::string> ArrayHandler::buildPromotedCellCongruence(
             for (size_t b = a + 1; b < cells.size(); ++b) {
                 const PromotedCell* ca = cells[a];
                 const PromotedCell* cb = cells[b];
-                // Distinct PromotedCells always have distinct index SSA (the
-                // (array,index) key dedups), so this is a genuine index pair.
-                IndexRelation rel = classifyIndices(ca->index_ssa, cb->index_ssa, context);
+                // Distinct PromotedCells always have distinct index tuples (the
+                // (array,index...) key dedups), so this is a genuine index pair.
+                // Full-tuple comparison (see compareIndexTuples()), not one
+                // dimension at a time -- cells differ if ANY component does.
+                IndexRelation rel = compareIndexTuples(ca->index_ssas, cb->index_ssas, context);
                 if (rel == IndexRelation::NOT_EQUAL) continue;
 
                 if (rel == IndexRelation::EQUAL) {
@@ -1081,9 +1109,15 @@ std::vector<std::string> ArrayHandler::buildPromotedCellCongruence(
                     atoms.push_back(eq(ca->in_ssa, cb->in_ssa));
                     atoms.push_back(eq(ca->out_ssa, cb->out_ssa));
                 } else {  // UNKNOWN -> guarded Ackermann implication, per side.
-                    atoms.push_back("(or " + neq(ca->index_ssa, cb->index_ssa)
+                    std::ostringstream any_dim_neq;
+                    any_dim_neq << "(or";
+                    size_t n = std::min(ca->index_ssas.size(), cb->index_ssas.size());
+                    for (size_t i = 0; i < n; ++i)
+                        any_dim_neq << " " << neq(ca->index_ssas[i], cb->index_ssas[i]);
+                    any_dim_neq << ")";
+                    atoms.push_back("(or " + any_dim_neq.str()
                                     + " " + eq(ca->in_ssa, cb->in_ssa) + ")");
-                    atoms.push_back("(or " + neq(ca->index_ssa, cb->index_ssa)
+                    atoms.push_back("(or " + any_dim_neq.str()
                                     + " " + eq(ca->out_ssa, cb->out_ssa) + ")");
                 }
             }

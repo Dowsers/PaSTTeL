@@ -115,15 +115,10 @@ public:
 
         // Structured display info, kept separate from pseudo_var's flat name
         // so a reader (e.g. LassoProgram::prettyVarName()) can render it as
-        // "A[i]" instead of the raw internal identifier. index_display has
-        // exactly one entry today (depth-1 promotion only); it's a vector,
-        // not a single string, so a future multi-dimensional promotion
-        // (A[i][j]) needs no change here or in any reader of this struct --
-        // only promoteInvariantArrayCells() itself would need to populate
-        // more than one entry.
+        // "A[i]" instead of the raw internal identifier.
         std::string array_name;                  // e.g. "A" -- program-var level, not an SSA name
-        std::string index_ssa;                   // e.g. "v_i_2" -- the (invariant) index SSA term
-        std::vector<std::string> index_display;   // e.g. {"i"} -- readable index name(s)
+        std::vector<std::string> index_ssas;      // e.g. {"v_i_2"} or {"v_base_7","v_off_3"}
+        std::vector<std::string> index_display;   // e.g. {"i"} -- readable index name(s), same length as index_ssas
     };
 
     /**

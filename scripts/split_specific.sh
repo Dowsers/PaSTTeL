@@ -5,7 +5,13 @@
 # OTHERS recoit les fichiers n'appartenant a aucune des 8 classes principales.
 #
 # Classes :
-#   UNKNOWN_LOOP     — Loop TransFormula: N/A (loop feasibility: UNKNOWN)  [mv]
+#   UNKNOWN_LOOP     — Loop TransFormula: N/A (loop feasibility: UNKNOWN),
+#                       ou Stem/Loop TransFormula: ERROR (...) — recalcul de
+#                       debug (computeStemTF/computeLoopTF, appele apres coup
+#                       rien que pour le rapport .txt) annule/en echec :
+#                       la TransFormula brute n'est pas fiable en mode
+#                       "normal", meme si Ultimate a bel et bien trouve un
+#                       verdict via la lasso deja linearisee en interne  [mv]
 #   BOOLEAN_OP       — au moins une variable de type Bool
 #   ARRAY_OP         — au moins une variable de type Array (simple ou imbrique)
 #   REAL_VARS        — au moins une variable de type Real
@@ -46,6 +52,15 @@ mapfile -t FILES < <(find . -maxdepth 2 -path './lasso_traces_*/*.txt' -name 'la
 total=${#FILES[@]}
 echo "Classifying $total files..."
 
+if [ "$total" -eq 0 ]; then
+    echo ""
+    echo "=== Classification terminee ==="
+    for cls in "${CLASSES[@]}"; do
+        printf "  %-20s : 0 fichier(s)\n" "$cls"
+    done
+    exit 0
+fi
+
 # Awk lit chaque fichier une seule fois et emet les classes applicables sur stdout.
 # Format de sortie : "CLASSE\tchemin/relatif"
 # UNKNOWN_LOOP est emis en premier et marque "skip" pour les autres classes.
@@ -71,6 +86,14 @@ FNR == 1 {
 }
 
 /^Loop TransFormula: N\/A \(loop feasibility: UNKNOWN\)/ {
+    unknown_loop = 1
+}
+
+
+/^Stem TransFormula: ERROR/ {
+    unknown_loop = 1
+}
+/^Loop TransFormula: ERROR/ {
     unknown_loop = 1
 }
 

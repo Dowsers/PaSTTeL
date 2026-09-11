@@ -96,6 +96,11 @@ CASES = [
     # subsumption): was UNKNOWN before the fix (Cartesian-product blowup from
     # ArrayHandler's own index-equality guards), resolves in ~2s after.
     ("examples/array/arr_add_first_alloca_term.json",                   "TERMINATING",     "both",        CPUS),
+    # Regression guard for promoteInvariantArrayCells()'s 2D extension: was
+    # UNKNOWN (previously in Z3_ONLY_CASES, citing cvc5 flakiness), now
+    # resolves cleanly on both solvers once the real ranking variable --
+    # a nested (select (select #memory_int base) offset) read -- is exposed.
+    ("examples/test_fixpoint_array_state_real_4bitcounter.json",        "TERMINATING",     "both",        CPUS),
 ]
 
 
@@ -124,17 +129,6 @@ Z3_ONLY_CASES = [
     # the same solver cancellation-responsiveness gap noted elsewhere this
     # session, unrelated to this file specifically.
     ("examples/CookSeeZuleger_2013TACAS_Fig7b_unknown.json",             "UNKNOWN",         "both"),
-
-    # test_fixpoint_array_state_real_4bitcounter.json: FixpointTechnique
-    # genuinely completes (it never linearizes) and correctly reports
-    # UNKNOWN on its own -- but under cvc5 the OTHER (linearizing) techniques
-    # can take long enough on this instance that cvc5 doesn't respond to
-    # cancellation before the process gets killed, returning no output at
-    # all instead of a clean UNKNOWN. Observed flaky: passes some runs,
-    # empty-output-fails others, depending on timing/system load -- the same
-    # solver cancellation-responsiveness gap as CookSeeZuleger above, not a
-    # logic bug (z3 passes reliably). z3-only avoids the flakiness.
-    ("examples/test_fixpoint_array_state_real_4bitcounter.json",         "UNKNOWN",         "both"),
 ]
 
 
@@ -333,22 +327,22 @@ ARRAY_HANDLER_CASES = [
      "(or (and (<= v_n_2 v_p_2) (>= v_n_2 v_p_2)) (and (<= arr__ite__2 arr__ite__1) (>= arr__ite__2 arr__ite__1))))"),
     ("examples/test_array_nested_store_equality_2d.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) "
-     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4)) "
-     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(and (<= arrcell__A__i__j__out 4) (>= arrcell__A__i__j__out 4)) "
+     "(= v_x_1 arrcell__A__i__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_nested_store_equality_or.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) (= v_i_2 1) "
      "(or (and (= v_i_2 1) "
-     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4))) "
+     "(and (<= arrcell__A__i__j__out 4) (>= arrcell__A__i__j__out 4))) "
      "(and (= v_i_2 2) (= v_A_3 v_A_2))) "
-     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(= v_x_1 arrcell__A__i__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_nested_store_equality_3d.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) (> v_k_2 v_j_2) "
      "(and (<= (select (select (select v_A_3 v_i_2) v_j_2) v_k_2) 5) (>= (select (select (select v_A_3 v_i_2) v_j_2) v_k_2) 5)) "
      "(= v_x_1 (select (select (select v_A_3 v_i_2) v_j_2) v_k_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_scoping_unrelated_indices.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) (> v_m_2 v_k_2) "
-     "(and (<= (select (select v_A_3 v_i_2) v_j_2) 4) (>= (select (select v_A_3 v_i_2) v_j_2) 4)) "
-     "(= v_x_1 (select (select v_A_3 v_i_2) v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))"),
+     "(and (<= arrcell__A__i__j__out 4) (>= arrcell__A__i__j__out 4)) "
+     "(= v_x_1 arrcell__A__i__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_scoping_two_arrays.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) "
      "(and (<= arrcell__A__i__out 4) (>= arrcell__A__i__out 4)) "
