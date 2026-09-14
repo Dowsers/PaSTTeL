@@ -101,6 +101,26 @@ CASES = [
     # resolves cleanly on both solvers once the real ranking variable --
     # a nested (select (select #memory_int base) offset) read -- is exposed.
     ("examples/test_fixpoint_array_state_real_4bitcounter.json",        "TERMINATING",     "both",        CPUS),
+    # Regression guard for the stem-bridge let-inlining fix: 4 malloc'd
+    # pointers' freshness was unprovable (raw "(let ((.cse0 ...)) ...)" text
+    # fed straight to the identifier-collecting SMT probe) -- was UNKNOWN
+    # (timeout) before, resolves in well under 1s after.
+    ("examples/array/arr_a06_alloca_malloc_freshness_term.json",        "TERMINATING",     "both",        CPUS),
+    # Regression guard for the read-only promoted-cell frame-condition fix
+    # (json_trace_parser.cpp's in/out propagation): a cell read but never
+    # written in a transition got an unconstrained fresh out-SSA instead of
+    # being frame-preserved -- was UNKNOWN (timeout) before, TERMINATING after.
+    ("examples/array/arr_gcd1_alloca_frame_preserved_term.json",        "TERMINATING",     "both",        CPUS),
+    # Regression guard for one-sided program variables (only in_vars or only
+    # out_vars in a transition) being invisible to setInvariantIndexCandidates()
+    # and loopPhantomVarMask()'s "_fresh_" check colliding with
+    # connectStemToLoop()'s unrelated rename -- was UNKNOWN before, TERMINATING after.
+    ("examples/array/arr_gcd1_alloca_onesided_var_term.json",           "TERMINATING",     "both",        CPUS),
+    # Regression guard for the whole-array-equality drop in expandSingleConjunct
+    # (Ultimate's "old_#memory_int = #memory_int" call-boundary convention,
+    # surviving unrecognized into a bogus LinearInequality): needs -c > 1 to
+    # actually reach the multiphase certificate this depends on.
+    ("examples/array/arr_flag_alloca_wholearray_eq_term.json",          "TERMINATING",     "both",        CPUS),
 ]
 
 
@@ -154,6 +174,11 @@ VAL_CASES = [
     ("examples/array/arr_GasCake02_nonterm.json",                       "NON-TERMINATING", "both", CPUS),
     ("examples/array/arr_NonTermination3_nonterm.json",                 "NON-TERMINATING", "both", CPUS),
     ("examples/array/arr_printf_nonterm.json",                          "NON-TERMINATING", "both", CPUS),
+    # Regression guard for the validator crash on a whole-array equality: its
+    # multiphase certificate needs promoted-cell coefficients this fix exposes,
+    # and re-asserting the stem's own polyhedra during validation used to hit
+    # Z3's "-" on two Arrays (an assertion abort, not a catchable error).
+    ("examples/array/arr_flag_alloca_wholearray_eq_term.json",          "TERMINATING",     "both", CPUS),
 ]
 
 

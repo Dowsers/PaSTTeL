@@ -127,13 +127,19 @@ public:
      * having any bearing on real program behavior.
      */
     std::vector<bool> loopPhantomVarMask() const {
+        // ensureMapping()'s own naming only -- not connectStemToLoop()'s
+        // unrelated "_loop_fresh_N" collision rename, a real variable.
+        auto is_ensure_mapping_fresh = [](const std::string& ssa) {
+            return ssa.find("_fresh_loop_") != std::string::npos ||
+                   ssa.find("_fresh_stem_") != std::string::npos;
+        };
         std::vector<bool> mask(program_vars.size(), false);
         for (size_t j = 0; j < program_vars.size(); ++j) {
             const auto& var = program_vars[j];
             auto it_in = loop.var_to_ssa_in.find(var);
             auto it_out = loop.var_to_ssa_out.find(var);
-            bool in_fresh  = (it_in  == loop.var_to_ssa_in.end())  || (it_in->second.find("_fresh_")  != std::string::npos);
-            bool out_fresh = (it_out == loop.var_to_ssa_out.end()) || (it_out->second.find("_fresh_") != std::string::npos);
+            bool in_fresh  = (it_in  == loop.var_to_ssa_in.end())  || is_ensure_mapping_fresh(it_in->second);
+            bool out_fresh = (it_out == loop.var_to_ssa_out.end()) || is_ensure_mapping_fresh(it_out->second);
             mask[j] = in_fresh || out_fresh;
         }
         return mask;

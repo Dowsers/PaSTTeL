@@ -810,8 +810,17 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
         j.contains("loop") && j["loop"].is_array() && !j["loop"].empty() &&
         j["loop"][0].contains("in_vars")) {
         auto loop_in_vars = parseVarsMapping(j["loop"][0]["in_vars"]);
+        // Raw json, not stem_lines[0].formula: once array-cell promotion
+        // fires on the stem, that field is already rewritten into arrcell__
+        // pseudo-variables, losing the store-chain structure Z3 needs to
+        // re-derive pointer freshness during the loop's classifyIndices
+        // probes. Let-inlined like every other formula consumer, since
+        // collectIdentifiers() has no notion of "let" scoping.
+        std::string raw_stem_text = j["stem"][0].contains("formula") ?
+            j["stem"][0]["formula"].get<std::string>() : stem_lines[0].formula;
+        std::string stem_formula_no_let = RewriteLet().rewrite(raw_stem_text);
         std::ostringstream bridge;
-        bridge << "(and " << stem_lines[0].formula;
+        bridge << "(and " << stem_formula_no_let;
         bool any_bridge = false;
         for (const auto& [prog_var, loop_in_ssa] : loop_in_vars) {
             auto stem_out_it = stem_lines[0].out_vars.find(prog_var);
@@ -1290,10 +1299,14 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
                 if (array_handler && trans.formula.find("select") != std::string::npos) {
                     bool any_promoted = false;
                     for (const auto& cell : array_handler->getPromotedCells()) {
-                        if (lin_result.preprocessed_formula.find(cell.in_ssa) != std::string::npos ||
-                            lin_result.preprocessed_formula.find(cell.out_ssa) != std::string::npos) {
+                        bool has_in = lin_result.preprocessed_formula.find(cell.in_ssa) != std::string::npos;
+                        bool has_out = lin_result.preprocessed_formula.find(cell.out_ssa) != std::string::npos;
+                        if (has_in || has_out) {
                             trans.in_vars[cell.pseudo_var] = cell.in_ssa;
-                            trans.out_vars[cell.pseudo_var] = cell.out_ssa;
+                            // Read but never written here -- frame-preserved. Mapping to
+                            // cell.out_ssa (undefined by any assertion) would leave it
+                            // unconstrained via ensureMapping's fresh-havoc fallback.
+                            trans.out_vars[cell.pseudo_var] = has_out ? cell.out_ssa : cell.in_ssa;
                             any_promoted = true;
                         }
                     }

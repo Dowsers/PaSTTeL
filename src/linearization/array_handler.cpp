@@ -115,6 +115,22 @@ void ArrayHandler::setInvariantIndexCandidates(
         m_scalar_partner[in_ssa] = out_ssa;
         m_scalar_partner[out_ssa] = in_ssa;
     }
+
+    // One-sided vars (skipped above, no in/out pair) still need a known
+    // program-variable identity and count as loop-invariant -- SSA assigns
+    // them exactly once here, so promoteInvariantArrayCells() can use them.
+    for (const auto& [prog_var, ssa] : in_vars) {
+        m_ssa_to_prog_var.emplace(ssa, prog_var);
+    }
+    for (const auto& [prog_var, ssa] : out_vars) {
+        m_ssa_to_prog_var.emplace(ssa, prog_var);
+    }
+    for (const auto& [prog_var, in_ssa] : in_vars) {
+        if (out_vars.find(prog_var) == out_vars.end()) m_invariant_index_ssa.insert(in_ssa);
+    }
+    for (const auto& [prog_var, out_ssa] : out_vars) {
+        if (in_vars.find(prog_var) == in_vars.end()) m_invariant_index_ssa.insert(out_ssa);
+    }
 }
 
 std::pair<std::string, int> ArrayHandler::computeArrayIdentity(const std::string& expr) const {
@@ -602,6 +618,84 @@ void ArrayHandler::extractWriteTuple(
     }
 }
 
+void ArrayHandler::collectSequentialWriteTuples(
+    const std::string& expr,
+    std::vector<std::pair<std::vector<std::string>, std::string>>& out) const
+{
+    std::string cur = trim(expr);
+    while (true) {
+        auto tokens = splitSExpr(cur);
+        if (tokens.size() != 4 || tokens[0] != "store") break;
+
+        std::string row_base = trim(tokens[1]);
+        std::string row_identity = computeArrayIdentity(row_base).first;
+        std::vector<std::string> indices;
+        indices.push_back(tokens[2]);
+        std::string value = trim(tokens[3]);
+
+        while (true) {
+            auto vtoks = splitSExpr(value);
+            if (vtoks.size() != 4 || vtoks[0] != "store") break;
+            auto sel = splitSExpr(trim(vtoks[1]));
+            if (sel.size() != 3 || sel[0] != "select") break;
+            if (computeArrayIdentity(sel[1]).first != row_identity) break;
+            if (trim(sel[2]) != indices.back()) break;
+            indices.push_back(vtoks[2]);
+            value = trim(vtoks[3]);
+        }
+        out.push_back({indices, value});
+        cur = row_base;  // sibling stores live in the "array" operand
+    }
+}
+
+std::string ArrayHandler::preferKnownSsaForLiteralIndex(
+    const std::string& idx, const std::string& context,
+    const std::string& sibling_prog_var) const
+{
+    if (idx.empty()) return idx;
+    bool is_numeric = std::all_of(idx.begin(), idx.end(), [](unsigned char c) {
+        return std::isdigit(c) != 0 || c == '-';
+    });
+    if (!is_numeric) return idx;
+
+    std::string sibling_prefix;
+    if (!sibling_prog_var.empty()) {
+        auto pos = sibling_prog_var.rfind('.');
+        sibling_prefix = (pos == std::string::npos) ? sibling_prog_var : sibling_prog_var.substr(0, pos);
+    }
+    if (sibling_prefix.empty()) return idx;
+
+    std::string trimmed = trim(context);
+    if (trimmed.empty() || trimmed[0] != '(') return idx;
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return idx;
+
+    if (tokens[0] == "and" || tokens[0] == "or") {
+        for (size_t i = 1; i < tokens.size(); ++i) {
+            std::string found = preferKnownSsaForLiteralIndex(idx, tokens[i], sibling_prog_var);
+            if (found != idx) return found;
+        }
+        return idx;
+    }
+    if (tokens[0] == "not" && tokens.size() == 2) {
+        return preferKnownSsaForLiteralIndex(idx, tokens[1], sibling_prog_var);
+    }
+    if (tokens[0] == "=" && tokens.size() == 3) {
+        auto matches = [&](const std::string& candidate) -> bool {
+            if (candidate.empty() || candidate[0] == '(') return false;
+            auto it = m_ssa_to_prog_var.find(candidate);
+            if (it == m_ssa_to_prog_var.end()) return false;
+            auto pos = it->second.rfind('.');
+            std::string prefix = (pos == std::string::npos) ? it->second : it->second.substr(0, pos);
+            return prefix == sibling_prefix;
+        };
+        std::string a = trim(tokens[1]), b = trim(tokens[2]);
+        if (b == idx && matches(a)) return a;
+        if (a == idx && matches(b)) return b;
+    }
+    return idx;
+}
+
 ArrayHandler::IndexRelation ArrayHandler::compareIndexTuples(
     const std::vector<std::string>& t1, const std::vector<std::string>& t2,
     const std::string& context) const
@@ -817,7 +911,12 @@ std::string ArrayHandler::expandStoreEqualities(
     const std::string& formula, const std::string& context, std::vector<std::string>& extra) const
 {
     std::string trimmed = trim(formula);
-    if (trimmed.empty() || trimmed[0] != '(' || trimmed.find("store") == std::string::npos) {
+    if (trimmed.empty() || trimmed[0] != '(') {
+        return formula;
+    }
+    // Also let a bare "(= A B)" through (see expandSingleConjunct's
+    // whole-array-equality check), not just formulas containing "store".
+    if (trimmed.find("store") == std::string::npos && trimmed.rfind("(= ", 0) != 0) {
         return formula;
     }
 
@@ -904,6 +1003,15 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         arr_new = tokens[2];
         store_expr = tokens[1];
     } else {
+        // Whole-array equality, no store on either side (e.g. Ultimate's
+        // "old_#memory_int = #memory_int" snapshot convention). Nothing to
+        // decompose; left alone it reaches LinearInequality as "(- arrA
+        // arrB)", which crashes Z3. Sound to drop.
+        if (!tokens[1].empty() && tokens[1][0] != '(' &&
+            !tokens[2].empty() && tokens[2][0] != '(' &&
+            isArraySort(getKnownSort(tokens[1])) && isArraySort(getKnownSort(tokens[2]))) {
+            return {"true"};
+        }
         return {conjunct};
     }
 
@@ -945,6 +1053,26 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         collectFullIndexTuplesForIdentity(context, array_base, full_depth);
     auto self_tuples = collectFullIndexTuplesForIdentity(store_expr, array_base, full_depth);
     tuples.insert(self_tuples.begin(), self_tuples.end());
+
+    // Also expose cells written but never read back here (missed by
+    // collectFullIndexTuplesForIdentity, which only sees select occurrences).
+    std::vector<std::pair<std::vector<std::string>, std::string>> write_sites;
+    collectSequentialWriteTuples(store_expr, write_sites);
+    for (const auto& [idx_tuple, value] : write_sites) {
+        (void)value;
+        if (idx_tuple.size() != full_depth) continue;
+        std::string base_prog_var;
+        {
+            auto it = m_ssa_to_prog_var.find(idx_tuple[0]);
+            if (it != m_ssa_to_prog_var.end()) base_prog_var = it->second;
+        }
+        std::vector<std::string> normalized;
+        normalized.reserve(idx_tuple.size());
+        for (const auto& idx : idx_tuple) {
+            normalized.push_back(preferKnownSsaForLiteralIndex(idx, context, base_prog_var));
+        }
+        tuples.insert(std::move(normalized));
+    }
 
     // For each concrete index tuple, generate (= (select ... arr_new t) evaluated_value)
     std::vector<std::string> result;

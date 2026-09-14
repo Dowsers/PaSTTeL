@@ -422,6 +422,24 @@ private:
                                    std::vector<std::string>& indices,
                                    std::vector<std::string>& value_at_depth);
 
+    // Every write-index tuple in a store chain, paired with its final value.
+    // Lets expandSingleConjunct() promote a cell that's written but never
+    // read back in this transition (e.g. a flag set in the stem, only read
+    // by the loop), which its normal index pool would otherwise miss.
+    void collectSequentialWriteTuples(
+        const std::string& expr,
+        std::vector<std::pair<std::vector<std::string>, std::string>>& out) const;
+
+    // If `idx` is a numeric literal, prefer a same-formula variable proven
+    // equal to it (e.g. an offset "0" vs. a var elsewhere asserted "= 0"),
+    // so promoteInvariantArrayCells()'s program-variable keying unifies the
+    // cell across transitions instead of minting two. `sibling_prog_var`
+    // (this tuple's own base var) scopes the match to its own "<cvar>.base"/
+    // "<cvar>.offset" family, since the same literal is often shared by
+    // unrelated cells' offsets.
+    std::string preferKnownSsaForLiteralIndex(const std::string& idx, const std::string& context,
+                                               const std::string& sibling_prog_var) const;
+
     /**
      * @brief Component-wise index-tuple relation (Ultimate's IndexAnalyzer
      * applied to a whole ArrayIndex, not one dimension): NOT_EQUAL if any
