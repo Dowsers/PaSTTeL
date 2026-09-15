@@ -4,9 +4,12 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
 
 #include "lasso_program.h"
 #include "smtsolvers/SMTSolverInterface.h"
+#include "termination/ranking_function.h"
+#include "termination/supporting_invariant.h"
 
 /**
  * @brief Verdict d'analyse retourné par analyze()
@@ -29,8 +32,26 @@ struct ProofCertificate {
     std::string proof_details;
     double execution_time_ms = 0.0;
 
-    std::map<std::string, Rational> rf_witness;        // terminaison : coefficients RF
-    std::map<std::string, double>  nt_witness_state;  // non-terminaison : état témoin
+    // Legacy, flattened fields (rf_witness = component [0] only, nt_witness_state
+    // = lossy double cast) -- kept for printAnalysisReport() and the benchmark
+    // script; prefer the structured fields below for anything else.
+    std::map<std::string, Rational> rf_witness;
+    std::map<std::string, double>  nt_witness_state;
+
+    // Structured termination witness (status == TERMINATING): one component per
+    // phase, guards (PiecewiseTemplate only), supporting invariants.
+    std::vector<RankingFunction> ranking_functions;
+    std::vector<RankingFunction> guards;
+    std::vector<SupportingInvariant> supporting_invariants;
+
+    // Structured non-termination witness (status == NON_TERMINATING), exact
+    // Rational -- x_init, x_honda, GEVs/lambdas/nus (Leike & Heizmann, TACAS
+    // 2018). FixpointTechnique only populates nt_state_honda.
+    std::map<std::string, Rational> nt_state_init;
+    std::map<std::string, Rational> nt_state_honda;
+    std::vector<std::map<std::string, Rational>> nt_eigenvectors;
+    std::vector<Rational> nt_lambdas;
+    std::vector<Rational> nt_nus;
 
     ProofCertificate() = default;
 

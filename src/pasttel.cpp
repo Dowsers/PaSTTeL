@@ -10,6 +10,7 @@
 #include "nontermination/geometric_technique.h"
 #include "smtsolvers/SMTSolverZ3.h"
 #include "smtsolvers/SMTSolverCVC5.h"
+#include "report_json.h"
 
 
 
@@ -29,6 +30,7 @@ bool USE_RF_VALIDATOR = false;
 std::string ONLY_TEMPLATE = "";
 bool verbose = false;
 LinearMode LINEAR_MODE = LINEAR;
+bool JSON_OUTPUT = false;
 
 // Configurations par défaut pour les templates de ranking
 std::vector<TemplateConfig> configs = {
@@ -58,10 +60,16 @@ void printHelp(const char* programName) {
                 << "  -only <affine|nested|lexicographic|multiphase|piecewise>\n"
                 << "                                     Restrict the termination portfolio to a single\n"
                 << "                                     ranking template (default: run all)\n"
+                << "  -o <text|json>                     Output format (default: text). json emits the full\n"
+                << "                                     structured AnalysisReport (winner + all_results,\n"
+                << "                                     exact Rational witnesses) on stdout instead of the\n"
+                << "                                     human-readable report -- meant for a caller that\n"
+                << "                                     parses the result programmatically.\n"
                 << "  -h, --help                         Show this help message\n"
                 << "\nExamples:\n"
                 << "  " << programName << " -a terminate -s z3 -c 4 -t 300 input.json\n"
-                << "  " << programName << " -a both -s cvc5 -v input.json\n";
+                << "  " << programName << " -a both -s cvc5 -v input.json\n"
+                << "  " << programName << " -a both -o json input.json\n";
 }
 
 
@@ -148,6 +156,15 @@ std::string setParameters(int argc, char** argv) {
             }
             else {
                 std::cerr << "Error: Invalid -mode '" << val << "'. See --help.\n";
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        else if (arg == "-o" && i + 1 < args.size()) {
+            std::string val = args[++i];
+            if (val == "text")      JSON_OUTPUT = false;
+            else if (val == "json") JSON_OUTPUT = true;
+            else {
+                std::cerr << "Error: Invalid -o format '" << val << "'. See --help.\n";
                 std::exit(EXIT_FAILURE);
             }
         }
@@ -400,8 +417,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // for debugging: print the parsed lasso
-    if (verbose) {
+    // for debugging: print the parsed lasso (skipped in JSON mode: would corrupt stdout)
+    if (verbose && !JSON_OUTPUT) {
         for(auto& v : lasso.program_vars)
             std::cout << "Program vars: " << v << " ";
         std::cout<< "\n=== RAW STEM ===\n";
@@ -437,7 +454,11 @@ int main(int argc, char** argv) {
             total_end - total_start).count());
 
     // Print the analysis report
-    printAnalysisReport(report);
+    if (JSON_OUTPUT) {
+        std::cout << reportToJson(report).dump(2) << std::endl;
+    } else {
+        printAnalysisReport(report);
+    }
 
     std::cout.flush();
     fflush(stdout);

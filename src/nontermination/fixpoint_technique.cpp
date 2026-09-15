@@ -94,7 +94,9 @@ AnalysisResult FixpointTechnique::analyze() {
         if (verbose)
             std::cout << "    SAT - Point fixe trouvé!" << std::endl;
         proof.status = AnalysisResult::NON_TERMINATING;
-        proof.nt_witness_state = extractFixpoint();
+        const auto fixpoint = extractFixpoint();
+        proof.nt_state_honda = fixpoint;             // structured, exact (0 GEV: no init/eigenvectors/lambdas/nus)
+        proof.nt_witness_state = rationalMapToDouble(fixpoint);  // legacy, lossy
         proof.description = "Fixpoint found: Infinite loop with fixpoint state";
         if (verbose){
             std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
@@ -323,24 +325,24 @@ void FixpointTechnique::addFixpointConstraints()
 // EXTRACTION DES RÉSULTATS
 // ============================================================================
 
-std::map<std::string, double> FixpointTechnique::extractFixpoint()
+std::map<std::string, Rational> FixpointTechnique::extractFixpoint()
 {
-    std::map<std::string, double> fixpoint;
+    std::map<std::string, Rational> fixpoint;
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-    
+
     if (verbose)
         std::cout << "\n  Point fixe trouvé:" << std::endl;
-    
+
     for (const auto& [var_prog, ssa_in] : lasso_.loop.var_to_ssa_in) {
         auto it = lasso_.var_sorts.find(var_prog);
         if (it != lasso_.var_sorts.end() && it->second.find("Array") != std::string::npos)
             continue;
-        double value = solver_->getValue(ssa_in);
-        fixpoint[ssa_in] = value;
+        Rational value = solver_->getRationalValue2(ssa_in);
+        fixpoint[var_prog] = value;
         if (verbose)
-            std::cout << "    • " << ssa_in << " = " << value << std::endl;
+            std::cout << "    • " << var_prog << " = " << value.toString() << std::endl;
     }
-    
+
     return fixpoint;
 }
 

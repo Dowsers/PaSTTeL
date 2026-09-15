@@ -119,6 +119,17 @@ AnalysisResult RankingBasedTechnique::analyze() {
             bool found = tryTemplateConfiguration(template_name_, config, nc, verbosity);
 
             if (found) {
+                // Another technique already won and cancelled us mid-solve: the
+                // certificate below is moot, and a still-running technique isn't
+                // actually joined by PortfolioOrchestrator (see its pool_.release()
+                // comment) -- so skip the now-heavier copy instead of racing the
+                // winning thread's own heap traffic for nothing.
+                if (cancelled_.load()) {
+                    proof.description = "Cancelled after a proof was found (result discarded)";
+                    proof_ = proof;
+                    return proof_.status;
+                }
+
                 proof.status = AnalysisResult::TERMINATING;
                 proof.description = "Termination proof found with " + template_name_ + config.description;
 
@@ -155,7 +166,10 @@ AnalysisResult RankingBasedTechnique::analyze() {
                     }
                 }
 
-                proof.rf_witness = rankfunctions_comp[0].coefficients;
+                proof.rf_witness = rankfunctions_comp[0].coefficients;  // legacy, component 0 only
+                proof.ranking_functions = rankfunctions_comp;
+                proof.guards = last_synthesizer_->getTerminationArgument().guards;
+                proof.supporting_invariants = sis;
                 proof_ = proof;
                 return proof_.status;
             }

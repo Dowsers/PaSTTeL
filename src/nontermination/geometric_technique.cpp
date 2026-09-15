@@ -155,10 +155,12 @@ AnalysisResult GeometricTechnique::analyze() {
 bool GeometricTechnique::isFixpoint() const {
 
     // Fixpoint si tous les eigenvectors sont nuls ou tous les lambdas sont nuls
+    // (comparaison exacte maintenant que state_init/eigenvectors/lambdas sont
+    // des Rational -- plus besoin d'une tolérance epsilon).
     bool all_gevs_zero = true;
     for (const auto& gev : eigenvectors) {
         for (const auto& [var, val] : gev) {
-            if (std::abs(val) > 1e-9) {
+            if (!val.isZero()) {
                 all_gevs_zero = false;
                 break;
             }
@@ -167,8 +169,8 @@ bool GeometricTechnique::isFixpoint() const {
     }
 
     bool all_lambdas_zero = true;
-    for (double lambda : lambdas) {
-        if (std::abs(lambda) > 1e-9) {
+    for (const Rational& lambda : lambdas) {
+        if (!lambda.isZero()) {
             all_lambdas_zero = false;
             break;
         }
@@ -863,38 +865,38 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     lambdas.clear();
     nus.clear();
 
-    // Extraire x₀
+    // Extraire x₀ (Rational exact -- cf. commentaire sur state_init dans le .h)
     for (const auto& var : lasso_.program_vars) {
         std::string init_var = "x0_" + var;
-        state_init[var] = solver_->getValue(init_var);
+        state_init[var] = solver_->getRationalValue2(init_var);
     }
 
     // Extraire x₁
     for (const auto& var : lasso_.program_vars) {
         std::string honda_var = "x1_" + var;
-        state_honda[var] = solver_->getValue(honda_var);
+        state_honda[var] = solver_->getRationalValue2(honda_var);
     }
 
     // Extraire eigenvectors
     for (int i = 0; i < effective_num_gevs; ++i) {
-        std::map<std::string, double> gev;
+        std::map<std::string, Rational> gev;
         for (const auto& var : lasso_.program_vars) {
             std::string gev_var = "v" + std::to_string(i) + "_" + var;
-            gev[var] = solver_->getValue(gev_var);
+            gev[var] = solver_->getRationalValue2(gev_var);
         }
         eigenvectors.push_back(gev);
     }
 
     // Extraire eigenvalues
-    // En mode LINEAR : lambda est fixé à 1, pas de variable SMT → pousser 1.0 directement
+    // En mode LINEAR : lambda est fixé à 1, pas de variable SMT → pousser 1 directement
     const bool linear_mode_extract = (settings_.analysis_type ==
         GeometricNonTerminationSettings::AnalysisType::LINEAR);
     for (int i = 0; i < effective_num_gevs; ++i) {
         if (linear_mode_extract) {
-            lambdas.push_back(1.0);
+            lambdas.push_back(Rational::ONE());
         } else {
             std::string lambda_var = "lambda_" + std::to_string(i);
-            lambdas.push_back(solver_->getValue(lambda_var));
+            lambdas.push_back(solver_->getRationalValue2(lambda_var));
         }
     }
 
@@ -909,11 +911,17 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     // Déterminer le type de résultat
     if (isFixpoint()) {
         result.description = "Fixpoint with infinite repetition";
-        result.nt_witness_state = state_honda;
     } else {
         result.description = "Geometric unbounded execution found";
-        result.nt_witness_state = state_honda;
     }
+    result.nt_witness_state = rationalMapToDouble(state_honda);  // legacy, lossy
+
+    // Champs structurés exacts (voir ProofCertificate dans analysis_technique_interface.h)
+    result.nt_state_init = state_init;
+    result.nt_state_honda = state_honda;
+    result.nt_eigenvectors = eigenvectors;
+    result.nt_lambdas = lambdas;
+    result.nt_nus = nus;
 
     // Construire la preuve détaillée
     std::ostringstream proof;
@@ -921,14 +929,14 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     bool first = true;
     for (const auto& [var, val] : state_init) {
         if (!first) proof << ", ";
-        proof << var << "=" << val;
+        proof << var << "=" << val.toString();
         first = false;
     }
     proof << "},\nx1={";
     first = true;
     for (const auto& [var, val] : state_honda) {
         if (!first) proof << ", ";
-        proof << var << "=" << val;
+        proof << var << "=" << val.toString();
         first = false;
     }
     proof << "},\n";
@@ -937,16 +945,16 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
         first = true;
         for (const auto& [var, val] : eigenvectors[i]) {
             if (!first) proof << ", ";
-            proof << var << "=" << val;
+            proof << var << "=" << val.toString();
             first = false;
         }
-        proof << "}, L" << i << "=" << lambdas[i];
+        proof << "}, L" << i << "=" << lambdas[i].toString();
         proof << "\n";
     }
     if (nus.size() > 0) {
-        proof << "nu" << 0 << "=" << nus[0];
+        proof << "nu" << 0 << "=" << nus[0].toString();
         for (size_t i = 1; i < nus.size(); ++i) {
-            proof << ", nu" << i << "=" << nus[i];
+            proof << ", nu" << i << "=" << nus[i].toString();
         }
     }
     result.proof_details = proof.str();
@@ -954,24 +962,24 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     if (verbose) {
         std::cout << "\n  Initial state (x0):" << std::endl;
         for (const auto& [var, val] : state_init) {
-            std::cout << "    " << var << " = " << val << std::endl;
+            std::cout << "    " << var << " = " << val.toString() << std::endl;
         }
 
         std::cout << "\n  Honda state (x1):" << std::endl;
         for (const auto& [var, val] : state_honda) {
-            std::cout << "    " << var << " = " << val << std::endl;
+            std::cout << "    " << var << " = " << val.toString() << std::endl;
         }
 
         for (int i = 0; i < effective_num_gevs; ++i) {
             std::cout << "\n  Eigenvector y" << i << ":" << std::endl;
             for (const auto& [var, val] : eigenvectors[i]) {
-                std::cout << "    v" << i << "_" << var << " = " << val << std::endl;
+                std::cout << "    v" << i << "_" << var << " = " << val.toString() << std::endl;
             }
-            std::cout << "  Eigenvalue lambda_" << i << ": " << lambdas[i] << std::endl;
+            std::cout << "  Eigenvalue lambda_" << i << ": " << lambdas[i].toString() << std::endl;
         }
 
         for (size_t i = 0; i < nus.size(); ++i) {
-            std::cout << "  Nilpotent nu_" << i << ": " << nus[i] << std::endl;
+            std::cout << "  Nilpotent nu_" << i << ": " << nus[i].toString() << std::endl;
         }
     }
 

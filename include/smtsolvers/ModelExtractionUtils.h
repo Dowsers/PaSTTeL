@@ -305,6 +305,19 @@ inline Rational const2Rational(const std::shared_ptr<Term> &t)
 }
 
 // ============================================================
+// Rational -> double (lossy, display-only -- legacy ProofCertificate fields)
+// ============================================================
+inline double rationalToDouble(const Rational& r) {
+    return r.num.convert_to<double>() / r.den.convert_to<double>();
+}
+
+inline std::map<std::string, double> rationalMapToDouble(const std::map<std::string, Rational>& m) {
+    std::map<std::string, double> out;
+    for (const auto& [k, v] : m) out[k] = rationalToDouble(v);
+    return out;
+}
+
+// ============================================================
 // getGcd
 // ============================================================
 inline Rational getGcd(const std::map<std::string, Rational> &assignment)

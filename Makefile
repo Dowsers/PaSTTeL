@@ -3,7 +3,7 @@
 # ========================
 
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude
+CXXFLAGS := -std=c++17 -Wall -Wextra -Iinclude -MMD -MP
 LDFLAGS := -pthread
 
 # ========================
@@ -66,6 +66,7 @@ COMMON_SRCS := \
 	$(SRC_DIR)/nontermination/fixpoint_technique.cpp \
 	$(SRC_DIR)/nontermination/geometric_technique.cpp \
 	$(SRC_DIR)/portfolio_orchestrator.cpp \
+	$(SRC_DIR)/report_json.cpp \
 	$(SRC_DIR)/termination/supporting_invariant_generator.cpp \
 	$(SRC_DIR)/termination/generic_termination_synthesizer.cpp \
 	$(SRC_DIR)/termination/affine_function_generator.cpp \
@@ -142,5 +143,13 @@ test: $(TESTS)
 
 # Nettoyage
 clean:
-	rm -rf $(COMMON_OBJS) $(TEST_OBJS) $(TESTS) $(MAIN_OBJ) $(MAIN) $(BIN_DIR)
+	rm -rf $(COMMON_OBJS) $(TEST_OBJS) $(TESTS) $(MAIN_OBJ) $(MAIN) $(BIN_DIR) $(DEPS)
+
+# ========================
+# Dépendances d'en-têtes (générées par -MMD -MP) : sans ça, un .cpp dont seul
+# un .h inclus a changé n'est pas recompilé par un `make` incrémental, ce qui
+# peut lier des .o d'ABI incohérente (crash silencieux).
+# ========================
+DEPS := $(COMMON_OBJS:.o=.d) $(MAIN_OBJ:.o=.d) $(TEST_OBJS:.o=.d)
+-include $(DEPS)
 

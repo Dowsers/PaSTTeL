@@ -73,8 +73,11 @@ private:
     
     /**
      * @brief Extrait les valeurs du point fixe depuis le modèle SAT
+     *
+     * Clé par variable de programme (comme GeometricTechnique::state_honda),
+     * pas par nom SSA.
      */
-    std::map<std::string, double> extractFixpoint();
+    std::map<std::string, Rational> extractFixpoint();
 };
 
 #endif // FIXPOINT_TECHNIQUE_H

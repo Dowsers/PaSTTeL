@@ -121,12 +121,13 @@ private:
     // equality on the raw formula rather than an eigen-recurrence).
     bool has_unmodeled_array_mutation_ = false;
 
-    // Résultats extraits
-    std::map<std::string, double> state_init;                // État initial x₀
-    std::map<std::string, double> state_honda;               // État honda x₁
-    std::vector<std::map<std::string, double>> eigenvectors; // Vecteurs propres (GEVs) y₁..yₙ
-    std::vector<double> lambdas;                             // Valeurs propres λ₁..λₙ
-    std::vector<double> nus;                                 // Composantes nilpotentes ν₁..νₙ₋₁
+    // Résultats extraits -- Rational exact (les contraintes de rayon sont des
+    // égalités, un témoin en double risquerait de ne pas les satisfaire).
+    std::map<std::string, Rational> state_init;                // État initial x₀
+    std::map<std::string, Rational> state_honda;               // État honda x₁
+    std::vector<std::map<std::string, Rational>> eigenvectors; // Vecteurs propres (GEVs) y₁..yₙ
+    std::vector<Rational> lambdas;                              // Valeurs propres λ₁..λₙ
+    std::vector<Rational> nus;                                  // Composantes nilpotentes ν₁..νₙ₋₁
 
     /**
      * @brief Encode les contraintes pour un GNTA avec n GEVs
