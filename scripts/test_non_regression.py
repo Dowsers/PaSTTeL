@@ -121,6 +121,26 @@ CASES = [
     # surviving unrecognized into a bogus LinearInequality): needs -c > 1 to
     # actually reach the multiphase certificate this depends on.
     ("examples/array/arr_flag_alloca_wholearray_eq_term.json",          "TERMINATING",     "both",        CPUS),
+    # Regression guard for a bare "(= a c)" equality between two DIFFERENT,
+    # actively-read arrays (not the harmless snapshot-alias case above): was
+    # dropped with no bookkeeping, so a[2]/c[2] became independent scalars and
+    # GeometricTechnique fabricated NON-TERMINATING (a=0,c=2 at the honda
+    # state, violating the discarded a=c). Fixed via m_true_array_equiv +
+    # resolveTrueArrayEquiv in promoteInvariantArrayCells -- was
+    # NON-TERMINATING before, TERMINATING after (matches Ultimate).
+    ("examples/array/arr_SyntaxSupportArrays20_direct_array_equality_term.json", "TERMINATING", "both", CPUS),
+    # Regression guard for buildPromotedCellCongruence()'s single-transition
+    # scope: an array read via index `x` in the stem and via `r#ptr` in the
+    # loop, with only `x == r#ptr` asserted, are two cells that never
+    # co-occur in one transition's own formula, so the per-transition
+    # congruence pass never compares them -- GeometricTechnique picked
+    # inconsistent values across the stem/loop seam and fabricated
+    # NON-TERMINATING. Fixed via buildGlobalPromotedCellCongruence(), a
+    # second pass after connectStemToLoop() pairing only stem-exclusive with
+    # loop-exclusive cells. Was NON-TERMINATING before, UNKNOWN (safe --
+    # Ultimate proves TERMINATING, PaSTTeL doesn't find that proof yet, but
+    # no longer claims the wrong verdict) after.
+    ("examples/array/arr_IndexEqualityInvisibleForMapElimination_cross_seam.json", "UNKNOWN", "both", CPUS),
 ]
 
 
@@ -210,8 +230,8 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "z3"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN", "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "nested",        "z3"),

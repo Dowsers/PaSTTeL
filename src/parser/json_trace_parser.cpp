@@ -900,6 +900,19 @@ LassoProgram JsonTraceParser::parseToLasso(const std::string& filename, bool lin
     // 7. Connect STEM->LOOP
     connectStemToLoop(lasso);
 
+    // 7a. Cross-transition promoted-cell congruence: preprocessFormula()'s
+    // per-transition congruence pass never compares a cell promoted in the
+    // stem against one promoted in the loop. Must run after connectStemToLoop()
+    // so both sides share SSA names for any stem-to-loop-carried variable.
+    // See ArrayHandler::buildGlobalPromotedCellCongruence().
+    if (array_handler_raw) {
+        auto congruence = array_handler_raw->buildGlobalPromotedCellCongruence(
+            lasso.stem.raw_formula, lasso.loop.raw_formula);
+        for (const auto& atom : congruence) {
+            lasso.axioms.push_back({atom, "cross-transition promoted-cell congruence"});
+        }
+    }
+
     // 7b0. Remove variables that appear in neither stem nor loop.
     removeDeadVariables(lasso);
 

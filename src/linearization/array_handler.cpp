@@ -77,15 +77,27 @@ std::string ArrayHandler::resolveArrayBase(const std::string& name) const {
     }
 }
 
+std::string ArrayHandler::resolveTrueArrayEquiv(const std::string& name) const {
+    std::string current = trim(name);
+    std::set<std::string> seen;
+    while (true) {
+        auto it = m_true_array_equiv.find(current);
+        if (it == m_true_array_equiv.end()) return current;
+        if (!seen.insert(current).second) return current;  // cycle guard
+        current = it->second;
+    }
+}
+
 void ArrayHandler::setInvariantIndexCandidates(
     const std::map<std::string, std::string>& in_vars,
     const std::map<std::string, std::string>& out_vars) const
 {
-    m_invariant_index_ssa.clear();
-    m_array_ssa_side.clear();
-    m_ssa_to_prog_var.clear();
-    m_invariant_array_ssa.clear();
-    m_scalar_partner.clear();
+    // Accumulate across every transition of the lasso instead of resetting
+    // per call: SSA names are unique per generation, so entries from
+    // different transitions never collide. A role learned in the stem (e.g.
+    // "this array is invariant here") must stay visible while processing the
+    // loop, and vice versa -- mirrors Ultimate's MapEliminator, which builds
+    // this bookkeeping once over stem+loop together and never resets it.
     for (const auto& [prog_var, in_ssa] : in_vars) {
         auto out_it = out_vars.find(prog_var);
         if (out_it == out_vars.end()) continue;
@@ -494,6 +506,7 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     // A fresh context invalidates every previously memoized verdict.
     m_index_relation_cache.clear();
     m_array_resolution_cache.clear();
+    m_true_equiv_congruence.clear();
 
     // Nothing to do if there's neither a store to eliminate nor a select to
     // possibly promote (see promoteInvariantArrayCells()).
@@ -529,6 +542,17 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     // apparaitre la valeur "out" comme un select litteral, via son propre
     // scoping d'indices par (array, dimension) -- voir collectIndicesForIdentity().
     result = promoteInvariantArrayCells(result);
+
+    // Etape 3b : deux cellules promues qu'une egalite directe entre tableaux
+    // (m_true_array_equiv) identifie comme la meme valeur, decouvertes en
+    // etape 3 -- voir promoteInvariantArrayCells().
+    if (!m_true_equiv_congruence.empty()) {
+        std::ostringstream oss;
+        oss << "(and " << result;
+        for (const auto& c : m_true_equiv_congruence) oss << " " << c;
+        oss << ")";
+        result = oss.str();
+    }
 
     // Etape 4 : congruence fonctionnelle entre cellules promues d'un meme
     // tableau dont les indices sont (prouvablement) egaux -- sinon deux
@@ -1004,12 +1028,19 @@ std::vector<std::string> ArrayHandler::expandSingleConjunct(
         store_expr = tokens[1];
     } else {
         // Whole-array equality, no store on either side (e.g. Ultimate's
-        // "old_#memory_int = #memory_int" snapshot convention). Nothing to
-        // decompose; left alone it reaches LinearInequality as "(- arrA
-        // arrB)", which crashes Z3. Sound to drop.
+        // "old_#memory_int = #memory_int" snapshot convention). Left alone
+        // it reaches LinearInequality as "(- arrA arrB)", which crashes Z3.
+        // Record it in m_true_array_equiv, not m_array_equiv_base (which
+        // relates two SSA states of the SAME array via a store, a different
+        // relationship): promoteInvariantArrayCells() uses this to merge the
+        // two arrays' cells at shared indices, making the equality hold by
+        // construction, so the atom itself is safe to drop.
         if (!tokens[1].empty() && tokens[1][0] != '(' &&
             !tokens[2].empty() && tokens[2][0] != '(' &&
             isArraySort(getKnownSort(tokens[1])) && isArraySort(getKnownSort(tokens[2]))) {
+            if (m_true_array_equiv.find(tokens[2]) == m_true_array_equiv.end()) {
+                m_true_array_equiv[tokens[2]] = tokens[1];
+            }
             return {"true"};
         }
         return {conjunct};
@@ -1166,68 +1197,84 @@ std::string ArrayHandler::promoteInvariantArrayCells(const std::string& expr) co
 
         if (base_is_plain && index_is_plain && isIndexLoopInvariant(index_ssa)) {
             index_ssas.push_back(index_ssa);
-            // Two array kinds are promotable (Ultimate treats both uniformly):
-            //  - a MUTATED array (distinct in/out SSA): the cell is loop-carried,
-            //    its value differs in/out -> distinct in_ssa/out_ssa, the read
-            //    resolves to whichever side this SSA version is;
-            //  - an UNCHANGED array (in-SSA == out-SSA) read at a loop-invariant
-            //    index: the cell is a loop CONSTANT -> a single in==out scalar,
-            //    the ranking-usable variable for a bound like `#length[base]`.
-            auto side_it = m_array_ssa_side.find(base_ssa);
-            auto invarr_it = m_invariant_array_ssa.find(base_ssa);
-            bool array_mutated  = (side_it  != m_array_ssa_side.end());
-            bool array_constant = (invarr_it != m_invariant_array_ssa.end());
 
-            if (array_mutated || array_constant) {
-                const std::string& array_prog_var =
-                    array_mutated ? side_it->second.first : invarr_it->second;
+            std::string elem_sort = computeSort(base_ssa);
+            for (size_t i = 0; i < index_ssas.size(); ++i) elem_sort = peelArrayDimension(elem_sort);
 
-                std::string elem_sort = computeSort(base_ssa);
-                for (size_t i = 0; i < index_ssas.size(); ++i) elem_sort = peelArrayDimension(elem_sort);
-                if (elem_sort == "Int" || elem_sort == "Real") {
-                    // Key by each index's PROGRAM VARIABLE, not its SSA name, so
-                    // the SAME cell a[k] read in the stem (index SSA v_k_9) and in
-                    // the loop (index SSA v_k_10) maps to ONE cell variable --
-                    // this is Ultimate's array/index representative keying. Keying
-                    // by raw SSA would split a[k] into two independent variables
-                    // and let GeometricTechnique pick different values in stem and
-                    // loop, ignoring a stem constraint like `a[k] >= 1` and
-                    // fabricating non-termination (the "CommonCellVariable" case).
-                    std::vector<std::string> index_reps;
-                    for (const auto& idx : index_ssas) {
-                        auto idx_pv_it = m_ssa_to_prog_var.find(idx);
-                        index_reps.push_back(idx_pv_it != m_ssa_to_prog_var.end() ? idx_pv_it->second : idx);
-                    }
-                    std::string key = array_prog_var;
-                    for (const auto& r : index_reps) key += "@" + r;
-                    auto cell_it = m_promoted_cell_index.find(key);
-                    size_t idx_in_vec;
-                    if (cell_it == m_promoted_cell_index.end()) {
-                        PromotedCell cell;
-                        cell.pseudo_var = "arrcell__" + array_prog_var;
-                        for (const auto& r : index_reps) cell.pseudo_var += "__" + r;
-                        if (array_constant) {
-                            // Loop-invariant cell: one name for both sides.
-                            cell.in_ssa = cell.out_ssa = cell.pseudo_var + "__inv";
-                        } else {
-                            cell.in_ssa = cell.pseudo_var + "__in";
-                            cell.out_ssa = cell.pseudo_var + "__out";
-                        }
-                        cell.sort = elem_sort;
-                        cell.array_name = array_prog_var;
-                        cell.index_ssas = index_ssas;
-                        cell.index_display = index_reps;
-                        m_promoted_cells.push_back(cell);
-                        idx_in_vec = m_promoted_cells.size() - 1;
-                        m_promoted_cell_index[key] = idx_in_vec;
+            // Key by each index's PROGRAM VARIABLE, not its SSA name, so the
+            // SAME cell a[k] read in the stem (index SSA v_k_9) and in the
+            // loop (index SSA v_k_10) maps to ONE cell variable -- this is
+            // Ultimate's array/index representative keying. Keying by raw
+            // SSA would split a[k] into two independent variables and let
+            // GeometricTechnique pick different values in stem and loop,
+            // ignoring a stem constraint like `a[k] >= 1` and fabricating
+            // non-termination (the "CommonCellVariable" case).
+            std::vector<std::string> index_reps;
+            for (const auto& idx : index_ssas) {
+                auto idx_pv_it = m_ssa_to_prog_var.find(idx);
+                index_reps.push_back(idx_pv_it != m_ssa_to_prog_var.end() ? idx_pv_it->second : idx);
+            }
+
+            // Get-or-create the promoted cell for `array_ssa` at these
+            // indices, classified as mutated (distinct in/out SSA) or
+            // constant (loop-invariant array, one in==out scalar -- a
+            // ranking-usable variable for a bound like `#length[base]`).
+            // Returns "" if array_ssa isn't a known mutated/constant array
+            // or the element sort isn't Int/Real.
+            auto getOrCreateCell = [&](const std::string& array_ssa) -> std::string {
+                auto side_it = m_array_ssa_side.find(array_ssa);
+                auto invarr_it = m_invariant_array_ssa.find(array_ssa);
+                bool mutated  = (side_it  != m_array_ssa_side.end());
+                bool constant = (invarr_it != m_invariant_array_ssa.end());
+                if (!mutated && !constant) return "";
+                if (elem_sort != "Int" && elem_sort != "Real") return "";
+
+                const std::string& array_prog_var = mutated ? side_it->second.first : invarr_it->second;
+                std::string key = array_prog_var;
+                for (const auto& r : index_reps) key += "@" + r;
+                auto cell_it = m_promoted_cell_index.find(key);
+                size_t idx_in_vec;
+                if (cell_it == m_promoted_cell_index.end()) {
+                    PromotedCell cell;
+                    cell.pseudo_var = "arrcell__" + array_prog_var;
+                    for (const auto& r : index_reps) cell.pseudo_var += "__" + r;
+                    if (constant) {
+                        cell.in_ssa = cell.out_ssa = cell.pseudo_var + "__inv";
                     } else {
-                        idx_in_vec = cell_it->second;
+                        cell.in_ssa = cell.pseudo_var + "__in";
+                        cell.out_ssa = cell.pseudo_var + "__out";
                     }
-                    const PromotedCell& cell = m_promoted_cells[idx_in_vec];
-                    // Constant cell: in_ssa == out_ssa, so side is irrelevant.
-                    bool is_in_side = array_mutated ? side_it->second.second : true;
-                    return is_in_side ? cell.in_ssa : cell.out_ssa;
+                    cell.sort = elem_sort;
+                    cell.array_name = array_prog_var;
+                    cell.index_ssas = index_ssas;
+                    cell.index_display = index_reps;
+                    m_promoted_cells.push_back(cell);
+                    idx_in_vec = m_promoted_cells.size() - 1;
+                    m_promoted_cell_index[key] = idx_in_vec;
+                } else {
+                    idx_in_vec = cell_it->second;
                 }
+                const PromotedCell& cell = m_promoted_cells[idx_in_vec];
+                bool is_in_side = mutated ? side_it->second.second : true;  // constant: side irrelevant
+                return is_in_side ? cell.in_ssa : cell.out_ssa;
+            };
+
+            std::string natural = getOrCreateCell(base_ssa);
+            if (!natural.empty()) {
+                // A bare "(= a c)" equality registers c -> a in
+                // m_true_array_equiv. Get the equivalent array's own cell
+                // separately rather than resolving base_ssa itself: c and a
+                // can be mutated/constant independently, so merging the keys
+                // would wrongly fold one array's in/out role into the other's
+                // cell. Assert the equality directly instead when they differ.
+                std::string true_equiv_base = resolveTrueArrayEquiv(base_ssa);
+                if (true_equiv_base != base_ssa) {
+                    std::string equiv = getOrCreateCell(true_equiv_base);
+                    if (!equiv.empty() && equiv != natural) {
+                        m_true_equiv_congruence.push_back(eq(natural, equiv));
+                    }
+                }
+                return natural;
             }
         }
     }
@@ -1297,6 +1344,44 @@ std::vector<std::string> ArrayHandler::buildPromotedCellCongruence(
         }
     }
 
+    return atoms;
+}
+
+std::vector<std::string> ArrayHandler::buildGlobalPromotedCellCongruence(
+    const std::string& stem_formula, const std::string& loop_formula) const
+{
+    std::string joint_context = "(and " + stem_formula + " " + loop_formula + ")";
+    m_current_context = joint_context;
+    m_index_relation_cache.clear();
+    m_array_resolution_cache.clear();
+
+    std::map<std::string, std::vector<const PromotedCell*>> stem_only_by_array, loop_only_by_array;
+    for (const auto& cell : m_promoted_cells) {
+        bool in_stem = stem_formula.find(cell.in_ssa) != std::string::npos ||
+                       stem_formula.find(cell.out_ssa) != std::string::npos;
+        bool in_loop = loop_formula.find(cell.in_ssa) != std::string::npos ||
+                       loop_formula.find(cell.out_ssa) != std::string::npos;
+        if (in_stem && !in_loop) stem_only_by_array[cell.array_name].push_back(&cell);
+        else if (in_loop && !in_stem) loop_only_by_array[cell.array_name].push_back(&cell);
+    }
+
+    std::vector<std::string> atoms;
+    for (const auto& [array_name, stem_cells] : stem_only_by_array) {
+        auto it = loop_only_by_array.find(array_name);
+        if (it == loop_only_by_array.end()) continue;
+        for (const auto* ca : stem_cells) {
+            for (const auto* cb : it->second) {
+                // EQUAL only: unlike buildPromotedCellCongruence(), an UNKNOWN
+                // guard here would be speculative (nothing in the program
+                // compares these indices) and blows up the search space on
+                // heap-model programs with many same-array pointer bases.
+                IndexRelation rel = compareIndexTuples(ca->index_ssas, cb->index_ssas, joint_context);
+                if (rel != IndexRelation::EQUAL) continue;
+                atoms.push_back(eq(ca->in_ssa, cb->in_ssa));
+                atoms.push_back(eq(ca->out_ssa, cb->out_ssa));
+            }
+        }
+    }
     return atoms;
 }
 

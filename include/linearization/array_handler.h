@@ -175,6 +175,21 @@ public:
     const std::vector<PromotedCell>& getPromotedCells() const { return m_promoted_cells; }
 
     /**
+     * @brief Congruence between promoted cells minted on different
+     * transitions (e.g. index `x` in the stem vs `r#ptr` in the loop, with
+     * only `x == r#ptr` asserted) -- buildPromotedCellCongruence() only
+     * compares cells within one transition's own formula, so such a pair is
+     * never checked there.
+     *
+     * Pairs only a stem-EXCLUSIVE cell with a loop-EXCLUSIVE cell of the same
+     * array; cells referenced on both sides are already covered by the
+     * per-transition pass. Call once, after connectStemToLoop() has aligned
+     * stem/loop SSA names. Returns extra conjuncts for LassoProgram::axioms.
+     */
+    std::vector<std::string> buildGlobalPromotedCellCongruence(
+        const std::string& stem_formula, const std::string& loop_formula) const;
+
+    /**
      * @brief Decides whether idx1==idx2 given the constraints in `context`,
      * via real SMT queries against a throwaway solver -- never assumes
      * syntactic difference means semantic difference.
@@ -243,6 +258,14 @@ private:
     // name -> the array expression it was defined from (e.g. "A'" -> "A" once
     // "A' = (store A ...)" has been seen). See resolveArrayBase().
     mutable std::map<std::string, std::string> m_array_equiv_base;
+
+    // name -> array asserted the literal same array via a bare "(= a c)"
+    // equality (no store on either side). Deliberately separate from
+    // m_array_equiv_base: that map can relate two DIFFERENT SSA states of
+    // one array (a store's target to its source), which must stay distinct
+    // for promotion's in/out bookkeeping; this one only ever relates two
+    // truly-interchangeable arrays. See resolveTrueArrayEquiv().
+    mutable std::map<std::string, std::string> m_true_array_equiv;
 
     // SSA names provably unchanged across the current transition (in == out
     // for some program var) -- only such a name is safe as a promotable
@@ -315,6 +338,12 @@ private:
     mutable std::vector<PromotedCell> m_promoted_cells;
     mutable std::map<std::string, size_t> m_promoted_cell_index;
 
+    // Equality atoms between two promoted cells found to be the same value
+    // via m_true_array_equiv (see promoteInvariantArrayCells()), appended to
+    // the formula in preprocessFormula(). Cleared per preprocessFormula()
+    // call like m_created_aux_vars's "extra" list, not accumulated.
+    mutable std::vector<std::string> m_true_equiv_congruence;
+
     /**
      * @brief Sort of the array-valued expression `expr` (a variable name, or
      * a `(select ...)`/`(store ...)` expression -- select peels one
@@ -338,6 +367,15 @@ private:
      * ("A'") returns whatever A itself resolves to.
      */
     std::string resolveArrayBase(const std::string& name) const;
+
+    /**
+     * @brief Same chase as resolveArrayBase(), but over m_true_array_equiv
+     * (bare array-to-array equalities only). Used by
+     * promoteInvariantArrayCells() to merge cells of two truly-equal arrays
+     * -- deliberately not resolveArrayBase(), see m_true_array_equiv's
+     * comment for why the two must stay separate.
+     */
+    std::string resolveTrueArrayEquiv(const std::string& name) const;
 
     /**
      * @brief (base array, dimension depth) that `expr` refers to: 0 if expr
