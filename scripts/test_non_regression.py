@@ -374,11 +374,14 @@ ARRAY_HANDLER_CASES = [
      "(and (> v_n_2 0) (> v_j_2 v_i_2) "
      "(and (<= arrcell__A__i__j__out 4) (>= arrcell__A__i__j__out 4)) "
      "(= v_x_1 arrcell__A__i__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
+    # "v_A_3 = v_A_2" (no store) is now decomposed per-cell, not left as a
+    # raw whole-array atom -- see expandBareArrayEqualities().
     ("examples/test_array_nested_store_equality_or.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) (= v_i_2 1) "
      "(or (and (= v_i_2 1) "
      "(and (<= arrcell__A__i__j__out 4) (>= arrcell__A__i__j__out 4))) "
-     "(and (= v_i_2 2) (= v_A_3 v_A_2))) "
+     "(and (= v_i_2 2) "
+     "(and (<= arrcell__A__i__j__out arrcell__A__i__j__in) (>= arrcell__A__i__j__out arrcell__A__i__j__in)))) "
      "(= v_x_1 arrcell__A__i__j__out) (= v_n_3 (- v_n_2 v_x_1)))"),
     ("examples/test_array_nested_store_equality_3d.json",
      "(and (> v_n_2 0) (> v_j_2 v_i_2) (> v_k_2 v_j_2) "

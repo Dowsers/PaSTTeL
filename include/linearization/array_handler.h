@@ -38,6 +38,11 @@
  * referencing an intermediate array variable (`A' = store(A,i,v)` in one
  * edge, `select A' j` in another) -- that indirection isn't traced back to
  * its defining store and the read is abstracted as opaque instead.
+ *
+ * Unlike Ultimate's MapEliminator, index candidates are NOT unioned across
+ * stem and loop (see arr_IndexEqualityInvisibleForMapElimination_cross_seam.json):
+ * widening classifyIndices()'s per-pair SMT probing to that scope measured
+ * as a severe slowdown on array-heavy instances.
  */
 class ArrayHandler : public NonLinearTermHandler {
 public:
@@ -359,6 +364,20 @@ private:
 
     /** True if `sort` is "(Array ...)" -- i.e. still has dimensions left to peel. */
     bool isArraySort(const std::string& sort) const;
+
+    /**
+     * @brief Expands a bare whole-array equality "(= a b)" (no store on
+     * either side) into per-index select equalities via
+     * buildArrayEqualityAtom(), substituted in place wherever it occurs --
+     * including inside an "or"/"not". Matches Ultimate MapEliminator's
+     * replaceArrayEquality(): substituting in place, not merging identity
+     * globally, is what stays sound under a disjunct. Runs before
+     * expandStoreEqualities(), whose entry gate never recurses into a
+     * store-free "and"/"or" branch.
+     */
+    std::string expandBareArrayEqualities(const std::string& formula,
+                                           const std::string& context,
+                                           std::vector<std::string>& extra) const;
 
     /**
      * @brief Follows m_array_equiv_base until reaching a name nothing else

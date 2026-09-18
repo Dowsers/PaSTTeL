@@ -496,6 +496,43 @@ ArrayHandler::IndexRelation ArrayHandler::classifyIndices(
 // PREPROCESSING : point d'entree
 // ============================================================================
 
+std::string ArrayHandler::expandBareArrayEqualities(
+    const std::string& formula, const std::string& context, std::vector<std::string>& extra) const
+{
+    std::string trimmed = trim(formula);
+    if (trimmed.empty() || trimmed[0] != '(') return formula;
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return trimmed;
+
+    // Recurse through "or" too: substituting in place (not a global merge)
+    // stays sound inside a disjunct, matching Ultimate's
+    // MapEliminator.replaceArrayEquality().
+    if (tokens[0] == "and" || tokens[0] == "or") {
+        std::ostringstream oss;
+        oss << "(" << tokens[0];
+        for (size_t i = 1; i < tokens.size(); ++i) {
+            oss << " " << expandBareArrayEqualities(tokens[i], context, extra);
+        }
+        oss << ")";
+        return oss.str();
+    }
+    if (tokens[0] == "not" && tokens.size() == 2) {
+        return "(not " + expandBareArrayEqualities(tokens[1], context, extra) + ")";
+    }
+
+    if (tokens.size() == 3 && tokens[0] == "=" &&
+        !tokens[1].empty() && tokens[1][0] != '(' &&
+        !tokens[2].empty() && tokens[2][0] != '(') {
+        // Only one side need have a known array sort: SMT well-typedness
+        // forces the other to match, and a call-boundary snapshot name
+        // (e.g. "old_#memory_int") is never covered by setVarSorts().
+        if (isArraySort(getKnownSort(tokens[1])) || isArraySort(getKnownSort(tokens[2]))) {
+            return buildArrayEqualityAtom(tokens[1], tokens[2], context, extra);
+        }
+    }
+    return trimmed;
+}
+
 std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     std::string trimmed = trim(formula);
     if (trimmed.empty() || trimmed == "true") return formula;
@@ -508,19 +545,30 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     m_array_resolution_cache.clear();
     m_true_equiv_congruence.clear();
 
+    // Note: m_created_aux_vars accumulates across ALL transitions handled by
+    // this instance (stem + loop share one ArrayHandler) -- never cleared here.
+    std::vector<std::string> extra;
+
+    // Before the store/select fast-path below: a bare array equality often
+    // has neither. See expandBareArrayEqualities().
+    trimmed = expandBareArrayEqualities(trimmed, trimmed, extra);
+
     // Nothing to do if there's neither a store to eliminate nor a select to
     // possibly promote (see promoteInvariantArrayCells()).
     if (trimmed.find("store") == std::string::npos &&
-        trimmed.find("select") == std::string::npos) return formula;
+        trimmed.find("select") == std::string::npos) {
+        if (extra.empty()) return trimmed;
+        std::ostringstream oss;
+        oss << "(and " << trimmed;
+        for (const auto& e : extra) oss << " " << e;
+        oss << ")";
+        return oss.str();
+    }
 
     bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
     if (verbose) {
         std::cout << "  [ArrayHandler] Preprocessing store expressions..." << std::endl;
     }
-
-    // Note: m_created_aux_vars accumulates across ALL transitions handled by
-    // this instance (stem + loop share one ArrayHandler) -- never cleared here.
-    std::vector<std::string> extra;
 
     // Etape 1 : simplifier (select (store ...) ...) par read-over-write
     std::string result = simplifySelectStore(trimmed, trimmed, extra);

@@ -1309,7 +1309,8 @@ UltimateTransitionLine JsonTraceParser::parseTransition(
                 // across every transition this ArrayHandler has processed, so
                 // filter to the ones this transition's own preprocessed text
                 // actually references.
-                if (array_handler && trans.formula.find("select") != std::string::npos) {
+                if (array_handler && (trans.formula.find("select") != std::string::npos ||
+                                       trans.formula.find("store") != std::string::npos)) {
                     bool any_promoted = false;
                     for (const auto& cell : array_handler->getPromotedCells()) {
                         bool has_in = lin_result.preprocessed_formula.find(cell.in_ssa) != std::string::npos;
