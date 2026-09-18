@@ -335,7 +335,8 @@ std::map<std::string, Rational> FixpointTechnique::extractFixpoint()
 
     for (const auto& [var_prog, ssa_in] : lasso_.loop.var_to_ssa_in) {
         auto it = lasso_.var_sorts.find(var_prog);
-        if (it != lasso_.var_sorts.end() && it->second.find("Array") != std::string::npos)
+        if (it != lasso_.var_sorts.end() &&
+            (it->second.find("Array") != std::string::npos || it->second == "Bool"))
             continue;
         Rational value = solver_->getRationalValue2(ssa_in);
         fixpoint[var_prog] = value;

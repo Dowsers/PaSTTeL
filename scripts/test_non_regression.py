@@ -30,6 +30,10 @@ CASES = [
     ("examples/test_unbounded_counter.json",                            "NON-TERMINATING", "both"),
   # ("examples/test_geometric_doubling.json",                           "NON-TERMINATING", "both"),
     ("examples/nonterminate_booleans.json",                             "NON-TERMINATING", "both"),
+    # loop="true" over a Bool-only program var: FixpointTechnique's
+    # extractFixpoint() used to call getRationalValue2() on B unconditionally,
+    # throwing on Z3's non-numeral Bool model value.
+    ("examples/bool_trivial_loop_true_nonterm.json",                    "NON-TERMINATING", "both"),
     ("examples/test_ranking_func_with_two_variables_non_terminating.json", "NON-TERMINATING", "both"),
     ("examples/test_with_div_mod.json",                                 "TERMINATING",     "both",        CPUS),
     ("examples/test_with_div_mod_mult.json",                            "TERMINATING",     "both",        CPUS),
