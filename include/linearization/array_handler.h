@@ -304,6 +304,11 @@ private:
     // body) -- the semantic index invariance Ultimate's IndexAnalyzer gives.
     mutable std::map<std::string, std::string> m_scalar_partner;
 
+    // Index candidates shared across an equivalence class of arrays related
+    // by "=" (directly, or via a store), keyed by "base\x01dimension" -- see
+    // computeArrayEqualityClasses().
+    mutable std::map<std::string, std::set<std::string>> m_array_class_indices;
+
     // The current transition formula (set by preprocessFormula), used as the
     // SMT context for isIndexLoopInvariant()'s classifyIndices() probes.
     mutable std::string m_current_context;
@@ -409,6 +414,25 @@ private:
      * for no semantic reason.
      */
     std::pair<std::string, int> computeArrayIdentity(const std::string& expr) const;
+
+    /**
+     * @brief Populates m_array_class_indices: every "(= X Y)" anywhere in
+     * `formula` relates X's and Y's base arrays (peeled through any store,
+     * like Ultimate's ArrayWrite) when both are known array-sorted. Related
+     * pairs are merged into equivalence classes (union-find); every member
+     * of a class is assigned the union of indices directly observed (via
+     * collectIndicesForIdentity()) for any one of them. Matches Ultimate
+     * MapEliminationPreAnalysis.findAllIndices()'s mRelatedArays union-find:
+     * an array that is only ever equated to another, never itself
+     * selected/stored, still needs that other array's indices. Called once
+     * at the top of preprocessFormula(), before any equality is decomposed.
+     */
+    void computeArrayEqualityClasses(const std::string& formula) const;
+
+    /** Collects (base1, base2) pairs for computeArrayEqualityClasses(). */
+    void collectArrayEqualityPairs(
+        const std::string& formula,
+        std::vector<std::pair<std::string, std::string>>& pairs) const;
 
     /**
      * @brief All indices used to access exactly (array_base, dimension)

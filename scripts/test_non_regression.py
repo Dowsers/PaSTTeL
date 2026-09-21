@@ -203,6 +203,12 @@ VAL_CASES = [
     # and re-asserting the stem's own polyhedra during validation used to hit
     # Z3's "-" on two Arrays (an assertion abort, not a catchable error).
     ("examples/array/arr_flag_alloca_wholearray_eq_term.json",          "TERMINATING",     "both", CPUS),
+    # Regression guard for the array-equality-class union-find: "d = b_9"
+    # (b_9 defined by a store on a different SSA name) used to find no
+    # observed index for b_9 and drop to "true", disconnecting d's guard
+    # from b's actual decrease and causing a spurious NON-TERMINATING verdict.
+    ("examples/array/arr_SyntaxSupportArrays20_equality_class_term.json", "TERMINATING",    "both", CPUS),
+    ("examples/array/arr_BugOldVars03_equality_class_term.json",         "TERMINATING",     "both", CPUS),
 ]
 
 

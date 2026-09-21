@@ -2,6 +2,7 @@
 #include <iostream>
 #include <atomic>
 #include <cctype>
+#include <functional>
 
 #include "linearization/array_handler.h"
 #include "smtsolvers/SMTSolverZ3.h"
@@ -198,6 +199,73 @@ std::set<std::string> ArrayHandler::collectIndicesForIdentity(
     return result;
 }
 
+void ArrayHandler::collectArrayEqualityPairs(
+    const std::string& formula, std::vector<std::pair<std::string, std::string>>& pairs) const
+{
+    std::string trimmed = trim(formula);
+    if (trimmed.empty() || trimmed[0] != '(') return;
+    auto tokens = splitSExpr(trimmed);
+    if (tokens.empty()) return;
+
+    if (tokens[0] == "and" || tokens[0] == "or") {
+        for (size_t i = 1; i < tokens.size(); ++i) collectArrayEqualityPairs(tokens[i], pairs);
+        return;
+    }
+    if (tokens[0] == "not" && tokens.size() == 2) {
+        collectArrayEqualityPairs(tokens[1], pairs);
+        return;
+    }
+    if (tokens.size() == 3 && tokens[0] == "=") {
+        auto id1 = computeArrayIdentity(tokens[1]);
+        auto id2 = computeArrayIdentity(tokens[2]);
+        if (id1 != id2 &&
+            isArraySort(getKnownSort(id1.first)) && isArraySort(getKnownSort(id2.first))) {
+            pairs.emplace_back(id1.first + "\x01" + std::to_string(id1.second),
+                                id2.first + "\x01" + std::to_string(id2.second));
+        }
+    }
+}
+
+void ArrayHandler::computeArrayEqualityClasses(const std::string& formula) const {
+    m_array_class_indices.clear();
+    std::vector<std::pair<std::string, std::string>> pairs;
+    collectArrayEqualityPairs(formula, pairs);
+    if (pairs.empty()) return;
+
+    std::map<std::string, std::string> parent;
+    std::function<std::string(std::string)> find = [&](std::string x) {
+        auto it = parent.find(x);
+        while (it != parent.end() && it->second != x) {
+            x = it->second;
+            it = parent.find(x);
+        }
+        return x;
+    };
+    auto ensure = [&](const std::string& x) { parent.emplace(x, x); };
+    auto unite = [&](const std::string& a, const std::string& b) {
+        ensure(a);
+        ensure(b);
+        std::string ra = find(a), rb = find(b);
+        if (ra != rb) parent[ra] = rb;
+    };
+    for (const auto& [a, b] : pairs) unite(a, b);
+
+    std::map<std::string, std::vector<std::string>> groups;
+    for (const auto& [member, _] : parent) groups[find(member)].push_back(member);
+
+    for (const auto& [root, members] : groups) {
+        std::set<std::string> merged;
+        for (const auto& member : members) {
+            size_t sep = member.find('\x01');
+            std::string base = member.substr(0, sep);
+            int dimension = std::stoi(member.substr(sep + 1));
+            auto idxs = collectIndicesForIdentity(formula, base, dimension);
+            merged.insert(idxs.begin(), idxs.end());
+        }
+        for (const auto& member : members) m_array_class_indices[member] = merged;
+    }
+}
+
 std::set<std::vector<std::string>> ArrayHandler::collectFullIndexTuplesForIdentity(
     const std::string& formula, const std::string& array_base, size_t full_depth) const
 {
@@ -253,6 +321,12 @@ std::string ArrayHandler::buildArrayEqualityAtom(
     // store's own index would otherwise never become a candidate.
     std::set<std::string> self_candidates = collectIndicesForIdentity(rhs_expr, identity.first, identity.second);
     candidates.insert(self_candidates.begin(), self_candidates.end());
+    // Indices shared via this array's "=" equivalence class (see
+    // computeArrayEqualityClasses()).
+    auto class_it = m_array_class_indices.find(identity.first + "\x01" + std::to_string(identity.second));
+    if (class_it != m_array_class_indices.end()) {
+        candidates.insert(class_it->second.begin(), class_it->second.end());
+    }
 
     std::vector<std::string> parts;
     for (const auto& idx : candidates) {
@@ -548,6 +622,10 @@ std::string ArrayHandler::preprocessFormula(const std::string& formula) const {
     // Note: m_created_aux_vars accumulates across ALL transitions handled by
     // this instance (stem + loop share one ArrayHandler) -- never cleared here.
     std::vector<std::string> extra;
+
+    // Before anything else: share index candidates across arrays related
+    // by "=" (see computeArrayEqualityClasses()).
+    computeArrayEqualityClasses(trimmed);
 
     // Before the store/select fast-path below: a bare array equality often
     // has neither. See expandBareArrayEqualities().
