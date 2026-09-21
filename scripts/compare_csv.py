@@ -30,6 +30,7 @@ The "Result Code" column is used to colour points:
 
 import argparse
 import csv
+import html
 import json
 import os
 import sys
@@ -63,6 +64,18 @@ def _parse_float(s: str) -> float | None:
         return None
 
 
+def _short_name(name: str) -> str:
+    """Trim a full trace path down to "CATEGORY/name/trace_N" for display."""
+    marker = "/lasso_traces/"
+    idx = name.rfind(marker)
+    short = name[idx + len(marker):] if idx != -1 else name
+    short = short.replace("lasso_traces_", "")
+    short = short.replace("lasso_trace_", "trace_")
+    if short.endswith(".txt"):
+        short = short[:-4]
+    return short
+
+
 def _verdict(row: dict) -> str:
     """Return TERMINATING / NONTERMINATING / UNKNOWN from a CSV row."""
     # Prefer explicit PaSTTeL Status column
@@ -73,6 +86,36 @@ def _verdict(row: dict) -> str:
     if code in ("TERMINATING", "NONTERMINATING"):
         return code
     return "UNKNOWN"
+
+
+def _unsolved_table_html(interesting: list, status_x: dict, status_y: dict,
+                          solved_x: set, solved_y: set,
+                          label_x: str, label_y: str) -> str:
+    """One HTML table, one row per instance unsolved on at least one side."""
+    if not interesting:
+        return "<p>No unsolved instances.</p>"
+
+    def _cell(status: str) -> str:
+        color = {"TIMEOUT": "orange", "UNKNOWN": "#888"}.get(status, "green")
+        return f'<td style="text-align:center; color:{color};">{status}</td>'
+
+    rows = []
+    for n in interesting:
+        sx = status_x.get(n, "solved" if n in solved_x else "-")
+        sy = status_y.get(n, "solved" if n in solved_y else "-")
+        rows.append(
+            f"<tr><td>{html.escape(_short_name(n))}</td>{_cell(sx)}{_cell(sy)}</tr>"
+        )
+    return f"""
+<table border="1" cellpadding="6" cellspacing="0"
+       style="border-collapse:collapse; font-family:monospace; font-size:0.85em; margin-bottom:20px;">
+<thead style="background:#f0f0f0;">
+  <tr><th>Trace</th><th>{html.escape(label_x)}</th><th>{html.escape(label_y)}</th></tr>
+</thead>
+<tbody>
+{"".join(rows)}
+</tbody>
+</table>"""
 
 
 def _plotly_script_tag() -> str:
@@ -101,6 +144,7 @@ def compare_and_plot(
     log_scale: bool,
 ) -> None:
     par2_ms = timeout_s * 2 * 1000.0
+    timeout_ms = timeout_s * 1000.0
 
     rows_x = _load_csv(csv_x)
     rows_y = _load_csv(csv_y)
@@ -117,6 +161,14 @@ def compare_and_plot(
     red_x,    red_y,    red_labels    = [], [], []
 
     n_skipped = 0
+
+    # Per-file breakdown: an UNKNOWN verdict is a "timeout" when its own time
+    # is missing or at/over --timeout, otherwise it's a genuine "no proof
+    # found within budget" unknown. Solved sets feed the combined-coverage
+    # (union/intersection) count.
+    timeout_names_x, timeout_names_y = [], []
+    unknown_names_x, unknown_names_y = [], []
+    solved_x, solved_y = set(), set()
 
     for name in common_keys:
         rx = rows_x[name]
@@ -136,6 +188,21 @@ def compare_and_plot(
 
         tx_raw = _parse_float(rx.get(col_x, "-"))
         ty_raw = _parse_float(ry.get(col_y, "-"))
+
+        # Only rows with an established ground truth (Result Code TERMINATING/
+        # NONTERMINATING) were ever meant to be attempted -- a "Result Code"
+        # of UNKNOWN means no ground truth exists at all, not that PaSTTeL
+        # timed out on it.
+        if code in ("TERMINATING", "NONTERMINATING"):
+            if vx in ("TERMINATING", "NONTERMINATING"):
+                solved_x.add(name)
+            elif vx == "UNKNOWN":
+                (timeout_names_x if tx_raw is None or tx_raw >= timeout_ms else unknown_names_x).append(name)
+
+            if vy in ("TERMINATING", "NONTERMINATING"):
+                solved_y.add(name)
+            elif vy == "UNKNOWN":
+                (timeout_names_y if ty_raw is None or ty_raw >= timeout_ms else unknown_names_y).append(name)
 
         # Need at least the X value to plot
         if tx_raw is None:
@@ -214,6 +281,48 @@ def compare_and_plot(
         print(r)
     print(sep + "\n")
 
+    # ── Combined coverage ────────────────────────────────────────────────────
+    resolved_union = solved_x | solved_y
+    resolved_both  = solved_x & solved_y
+    resolved_only_x = solved_x - solved_y
+    resolved_only_y = solved_y - solved_x
+
+    cov_hdr = f"{'Category':<40}  {'Count':>6}"
+    cov_sep = "-" * len(cov_hdr)
+    print(f"{cov_sep}\n{cov_hdr}\n{cov_sep}")
+    print(f"{'Resolved by '+label_x+' only':<40}  {len(resolved_only_x):>6}")
+    print(f"{'Resolved by '+label_y+' only':<40}  {len(resolved_only_y):>6}")
+    print(f"{'Resolved by both':<40}  {len(resolved_both):>6}")
+    print(f"{'Resolved by either (cumulative total)':<40}  {len(resolved_union):>6}")
+    print(cov_sep + "\n")
+
+    # ── Per-instance timeout/unknown table ──────────────────────────────────
+    # One row per instance that isn't solved on at least one side (an
+    # instance solved by both never appears here) -- avoids dumping the same
+    # long trace name up to four times across separate lists.
+    status_x = {n: "TIMEOUT" for n in timeout_names_x}
+    status_x.update({n: "UNKNOWN" for n in unknown_names_x})
+    status_y = {n: "TIMEOUT" for n in timeout_names_y}
+    status_y.update({n: "UNKNOWN" for n in unknown_names_y})
+
+    interesting = sorted(set(status_x) | set(status_y), key=_short_name)
+    if interesting:
+        name_w = min(max(len(_short_name(n)) for n in interesting), 90)
+        row_hdr = f"{'Trace':<{name_w}}  {label_x:>10}  {label_y:>10}"
+        row_sep = "-" * len(row_hdr)
+        print(f"Unsolved instances ({len(interesting)}):")
+        print(f"{row_sep}\n{row_hdr}\n{row_sep}")
+        for n in interesting:
+            sx = status_x.get(n, "solved" if n in solved_x else "-")
+            sy = status_y.get(n, "solved" if n in solved_y else "-")
+            print(f"{_short_name(n):<{name_w}}  {sx:>10}  {sy:>10}")
+        print(row_sep + "\n")
+    else:
+        print("Unsolved instances (0): none\n")
+
+    unsolved_table_html = _unsolved_table_html(
+        interesting, status_x, status_y, solved_x, solved_y, label_x, label_y)
+
     summary_html = f"""
 <h3>Summary</h3>
 <table border="1" cellpadding="6" cellspacing="0"
@@ -254,7 +363,23 @@ def compare_and_plot(
     <td style="text-align:right;">—</td><td style="text-align:right;">—</td>
   </tr>
 </tbody>
-</table>"""
+</table>
+
+<h3>Combined coverage</h3>
+<table border="1" cellpadding="6" cellspacing="0"
+       style="border-collapse:collapse; font-family:monospace; margin-bottom:20px;">
+<thead style="background:#f0f0f0;"><tr><th>Category</th><th>Count</th></tr></thead>
+<tbody>
+  <tr><td>Resolved by {label_x} only</td><td style="text-align:right;">{len(resolved_only_x)}</td></tr>
+  <tr><td>Resolved by {label_y} only</td><td style="text-align:right;">{len(resolved_only_y)}</td></tr>
+  <tr><td>Resolved by both</td><td style="text-align:right;">{len(resolved_both)}</td></tr>
+  <tr style="font-weight:bold;"><td>Resolved by either (cumulative total)</td><td style="text-align:right;">{len(resolved_union)}</td></tr>
+</tbody>
+</table>
+
+<h3>Unsolved instances ({len(interesting)})</h3>
+{unsolved_table_html}
+"""
 
     # ── Plotly HTML ───────────────────────────────────────────────────────────
     max_val = max(max(all_x), max(all_y))

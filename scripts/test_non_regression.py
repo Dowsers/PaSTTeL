@@ -145,6 +145,19 @@ CASES = [
     # Ultimate proves TERMINATING, PaSTTeL doesn't find that proof yet, but
     # no longer claims the wrong verdict) after.
     ("examples/array/arr_IndexEqualityInvisibleForMapElimination_cross_seam.json", "UNKNOWN", "both", CPUS),
+    # Regression guard for promoting a one-sided (in-only or out-only)
+    # array's cells: setInvariantIndexCandidates() used to populate
+    # m_invariant_array_ssa only for vars declared on BOTH sides, so a[i]/a[j]
+    # (a and j one-sided in the stem) never got promoted, losing the stem's
+    # "a[i] >= 2" bound (via i=j) that the loop's own decrease relies on.
+    ("examples/array/arr_BugMapElimination03_onesided_cell_term.json",   "TERMINATING",     "both",        CPUS),
+    # Regression guard for the soundness edge of the fix above: an "old_#..."
+    # var (Ultimate's call-boundary snapshot, one-sided by construction) must
+    # stay excluded from promotion -- it's scoped to one procedure activation,
+    # not real loop-carried state. Promoting it once gave GeometricTechnique
+    # an unconstrained free variable per iteration and produced a spurious
+    # NON-TERMINATING verdict (ground truth: TERMINATING).
+    ("examples/array/arr_recursified_nested1_old_snapshot_unknown.json", "UNKNOWN",         "both",        CPUS),
 ]
 
 

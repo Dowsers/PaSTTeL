@@ -132,6 +132,10 @@ void ArrayHandler::setInvariantIndexCandidates(
     // One-sided vars (skipped above, no in/out pair) still need a known
     // program-variable identity and count as loop-invariant -- SSA assigns
     // them exactly once here, so promoteInvariantArrayCells() can use them.
+    // An array that's one-sided has only one SSA value in this transition
+    // (e.g. an out-only array never written here, just read -- the earlier
+    // paired loop's `array_ssa_side`/`invariant_array_ssa` never sees it),
+    // so it's promotable the same as the in==out case above.
     for (const auto& [prog_var, ssa] : in_vars) {
         m_ssa_to_prog_var.emplace(ssa, prog_var);
     }
@@ -139,10 +143,30 @@ void ArrayHandler::setInvariantIndexCandidates(
         m_ssa_to_prog_var.emplace(ssa, prog_var);
     }
     for (const auto& [prog_var, in_ssa] : in_vars) {
-        if (out_vars.find(prog_var) == out_vars.end()) m_invariant_index_ssa.insert(in_ssa);
+        if (out_vars.find(prog_var) == out_vars.end()) {
+            m_invariant_index_ssa.insert(in_ssa);
+            // "old_#..." is Ultimate's call-boundary snapshot convention: a
+            // value scoped to this one procedure activation, not a real
+            // loop-carried program variable. One-sided precisely because it's
+            // never the "before" state of anything -- promoting it as if it
+            // were loop-invariant would hand GeometricTechnique a fresh, truly
+            // unconstrained "variable" every iteration (each iteration is a
+            // different activation with its own independent snapshot), enough
+            // slack to fabricate a spurious geometric non-termination witness.
+            auto sort_it = m_var_sorts.find(prog_var);
+            if (sort_it != m_var_sorts.end() && isArraySort(sort_it->second)
+                && prog_var.find("old_#") == std::string::npos)
+                m_invariant_array_ssa.emplace(in_ssa, prog_var);
+        }
     }
     for (const auto& [prog_var, out_ssa] : out_vars) {
-        if (in_vars.find(prog_var) == in_vars.end()) m_invariant_index_ssa.insert(out_ssa);
+        if (in_vars.find(prog_var) == in_vars.end()) {
+            m_invariant_index_ssa.insert(out_ssa);
+            auto sort_it = m_var_sorts.find(prog_var);
+            if (sort_it != m_var_sorts.end() && isArraySort(sort_it->second)
+                && prog_var.find("old_#") == std::string::npos)
+                m_invariant_array_ssa.emplace(out_ssa, prog_var);
+        }
     }
 }
 

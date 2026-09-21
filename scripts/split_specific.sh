@@ -20,7 +20,11 @@
 #                       (autre que Int, Real, Bool, (Array...))
 #   SI_ARRAYS        — "Array index supporting invariants" non vides
 #   ALL_INT_VARS     — toutes les variables sont Int, aucune signature de fonction
-#   OTHERS           — aucune des classes ci-dessus
+#   OTHERS           — aucune des classes ci-dessus, y compris un Array dont le
+#                       type d'element final (apres avoir depouille tous les
+#                       niveaux d'imbrication) n'est pas Int/Real/Bool (ex.
+#                       "(Array Int ref)") -- pas un type pasttel supporte,
+#                       ne doit pas atterrir dans ARRAY_OP
 #
 # Usage : lancer depuis le dossier racine du benchmark contenant les lasso_traces_*/
 
@@ -65,6 +69,19 @@ fi
 # Format de sortie : "CLASSE\tchemin/relatif"
 # UNKNOWN_LOOP est emis en premier et marque "skip" pour les autres classes.
 awk '
+function array_leaf_type(t) {
+    # Peels every "(Array <indexsort> " wrapper (and its matching trailing
+    # ")") to reach the innermost element sort, e.g. "(Array Int (Array Int
+    # ref))" -> "ref". Assumes a single-token index sort ("Int" in practice
+    # for every trace seen), matching the rest of this script pragmatic,
+    # not fully general, sort parsing.
+    while (t ~ /^\(Array /) {
+        sub(/^\(Array [^ ]+ /, "", t)
+        sub(/\)$/, "", t)
+    }
+    return t
+}
+
 FNR == 1 {
     # New file: reset state
     file = FILENAME
@@ -74,8 +91,9 @@ FNR == 1 {
     in_fsig      = 0
     in_si_header = 0
 
-    has_bool     = 0
-    has_array    = 0
+    has_bool            = 0
+    has_array           = 0
+    has_bad_array_elem  = 0
     has_real     = 0
     has_undef    = 0
     has_fsig     = 0
@@ -107,8 +125,12 @@ in_vars && /:[[:space:]]+[^[:space:]]/ {
     gsub(/[[:space:]]+$/, "", typ)
     any_var = 1
 
-    if      (typ == "Bool")      { has_bool  = 1; all_int = 0 }
-    else if (typ ~ /^\(Array/)   { has_array = 1; all_int = 0 }
+    if (typ == "Bool")      { has_bool  = 1; all_int = 0 }
+    else if (typ ~ /^\(Array/) {
+        has_array = 1; all_int = 0
+        leaf = array_leaf_type(typ)
+        if (leaf != "Int" && leaf != "Real" && leaf != "Bool") has_bad_array_elem = 1
+    }
     else if (typ == "Real")      { has_real  = 1; all_int = 0 }
     else if (typ != "Int")       { has_undef = 1; all_int = 0 }
 }
@@ -122,6 +144,11 @@ ENDFILE {
     # UNKNOWN_LOOP : deplace, ne participe pas aux autres classes
     if (unknown_loop) {
         print "UNKNOWN_LOOP\t" file
+    } else if (has_array && has_bad_array_elem) {
+        # An array whose (possibly nested) element sort isn'"'"'t Int/Real/Bool
+        # (e.g. "(Array Int ref)") isn'"'"'t a type pasttel supports at all --
+        # must not be swept into ARRAY_OP just because it syntactically is one.
+        print "OTHERS\t" file
     } else if (has_array) {
         # Arrays + quoi que ce soit => ARRAY_OP uniquement
         print "ARRAY_OP\t" file
