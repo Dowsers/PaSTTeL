@@ -69,7 +69,24 @@ void GeometricTechnique::cancel() {
 // ============================================================================
 // SYNTHÈSE PRINCIPALE
 //
-// Recherche géométrique avec n GEVs, composantes nilpotentes,
+// Recherche géométrique incrémentale: n = 1, 2, ..., settings_.num_gevs,
+// arrêt au premier SAT. Le nombre de GEVs effectivement requis par un témoin
+// de non-terminaison donné est presque toujours inférieur à settings_.num_gevs
+// (souvent 1); encoder directement avec num_gevs fixe produit un certificat où
+// les GEVs superflus sont des vecteurs nuls, ce qu'aucune étape ultérieure ne
+// retire -- report_json.cpp les sérialise tels quels dans nt_eigenvectors.
+// Ceci a une conséquence côté consommateur: PasttelResultMapper (Ultimate)
+// exige nt_nus.size() == nt_eigenvectors.size() - 1 (un GeometricNonTermination
+// Argument avec N GEVs a N-1 composantes nilpotentes, cf. sa javadoc), et
+// PaSTTeL ne peuple actuellement jamais nt_nus (extraction commentée dans
+// extractGNTA, la valeur de nu n'étant même pas une variable SMT interrogeable
+// en mode LINEAR -- voir buildRayConstraintsForPoly). Avec num_gevs=3 fixe, ce
+// mismatch (3 != 0+1) est systématique et rend tout certificat de cette
+// technique non mappable dès qu'il est trouvé. Chercher le nombre minimal de
+// GEVs élimine le cas le plus courant (témoin à 1 seul rayon, nt_nus.size()==0
+// == nt_eigenvectors.size()-1 == 0, qui passe la vérification côté Ultimate
+// sans changement là-bas) sans toucher à l'extraction de nu, qui reste
+// nécessaire pour les témoins authentiquement multi-GEV.
 //
 // Le fixpoint (GEV=0) est géré séparément par FixpointTechnique.
 // ============================================================================
@@ -104,45 +121,55 @@ AnalysisResult GeometricTechnique::analyze() {
         std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
 
         std::cout << "\n  Settings:" << std::endl;
-        std::cout << "    • Number of GEVs: " << settings_.num_gevs << std::endl;
+        std::cout << "    • Max number of GEVs: " << settings_.num_gevs << std::endl;
         std::cout << "    • Allow bounded: " << (settings_.allow_bounded ? "yes" : "no") << std::endl;
         std::cout << "    • Nilpotent components: " << (settings_.nilpotent_components ? "yes" : "no") << std::endl;
     }
 
-    solver_->push();
-
-    if (verbose)
-        std::cout << "\n[1/4] Declaring SMT variables..." << std::endl;
-    declareVariables(settings_.num_gevs);
-
-    if (verbose)
-        std::cout << "\n[2/4] Encoding constraints..." << std::endl;
-    encodeConstraints(settings_.num_gevs);
-
-    if (verbose)
-        std::cout << "\n[3/4] Checking satisfiability..." << std::endl;
-    bool sat = solver_->checkSat();
-
-    if (sat) {
+    bool sat = false;
+    for (int n = 1; n <= settings_.num_gevs && !cancelled_.load(); n++) {
         if (verbose)
-            std::cout << "    SAT - Geometric nontermination argument found!" << std::endl;
+            std::cout << "\n--- Trying " << n << " GEV(s) ---" << std::endl;
+
+        solver_->push();
 
         if (verbose)
-            std::cout << "\n[4/4] Extracting GNTA..." << std::endl;
-        proof = extractGNTA(settings_.num_gevs);
+            std::cout << "[1/4] Declaring SMT variables..." << std::endl;
+        declareVariables(n);
 
-        if (verbose) {
-            std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-            std::cout << "║  NON-TERMINATION PROVED (Geometric)                  ║" << std::endl;
-            std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+        if (verbose)
+            std::cout << "[2/4] Encoding constraints..." << std::endl;
+        encodeConstraints(n);
+
+        if (verbose)
+            std::cout << "[3/4] Checking satisfiability..." << std::endl;
+        sat = solver_->checkSat();
+
+        if (sat) {
+            if (verbose) {
+                std::cout << "    SAT - Geometric nontermination argument found with " << n << " GEV(s)"
+                           << std::endl;
+                std::cout << "[4/4] Extracting GNTA..." << std::endl;
+            }
+            proof = extractGNTA(n);
+
+            if (verbose) {
+                std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
+                std::cout << "║  NON-TERMINATION PROVED (Geometric)                  ║" << std::endl;
+                std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
+            }
+            solver_->pop();
+            break;
         }
-    } else {
+
         if (verbose)
-            std::cout << "    UNSAT - No geometric nontermination argument found" << std::endl;
-        proof.description = "No geometric nontermination argument found";
+            std::cout << "    UNSAT - No geometric nontermination argument with " << n << " GEV(s)" << std::endl;
+        solver_->pop();
     }
 
-    solver_->pop();
+    if (!sat) {
+        proof.description = "No geometric nontermination argument found";
+    }
 
     proof_ = proof;
     return proof_.status;
