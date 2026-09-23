@@ -372,6 +372,7 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
                 GeometricNonTerminationSettings{NUM_GEVS, true, true, GeometricNonTerminationSettings::AnalysisType::NONLINEAR}));
         }
     }
+    
 
     // Termination techniques -- -only restricts this to a single template,
     // so that its own certificate decides the result instead of being
@@ -382,13 +383,13 @@ AnalysisReport runAnalysis(LassoProgram& lasso) {
                 "AffineTemplate", configs));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "nested")
             orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-                "NestedTemplate", configs, 2, 5));
-        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "lexicographic")
-            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-                "LexicographicTemplate", configs, 2, 5));
+                "NestedTemplate", configs, 2, 4));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "multiphase")
             orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
-                "MultiphaseTemplate", configs, 2, 5));
+                "MultiphaseTemplate", configs, 2, 4));
+        if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "lexicographic")
+            orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
+                "LexicographicTemplate", configs, 2, 4));
         if (ONLY_TEMPLATE.empty() || ONLY_TEMPLATE == "piecewise")
             orchestrator->addTechnique(std::make_unique<RankingBasedTechnique>(createSMTSolver(),
                 "PiecewiseTemplate", configs, 2, 5));
