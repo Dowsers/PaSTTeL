@@ -98,35 +98,48 @@ void PortfolioOrchestrator::runTechnique(size_t i, const LassoProgram& lasso)
     proof.technique_name    = name;
     proof.execution_time_ms = elapsed_ms;
 
-    // Store result (mutex only needed here and for final_result_)
+    // Record the result and, if it is the first conclusive one, publish it as
+    // the winner -- both under mutex_, which join() snapshots under too. The
+    // winner must be completely written before signalEarlyExit() below wakes
+    // join(): signalling first let join() copy final_result_ while this thread
+    // was still assigning it, yielding a winner whose leading fields (status,
+    // technique_name, ...) were set but whose certificate (rf_witness,
+    // ranking_functions, ...) was still empty, or an UNKNOWN winner despite a
+    // conclusive technique.
+    bool won = false;
     {
         std::lock_guard<std::mutex> lock(mutex_);
+        if (closed_) return;
         all_results_.push_back(proof);
+        if (proof.isConclusive() && !conclusive_found_.load()) {
+            conclusive_found_.store(true);
+            stop_early_.store(true);
+            final_result_ = proof;
+            won = true;
+        }
     }
 
-    if (proof.isConclusive()) {
-        // atomic exchange: only the first conclusive result wins
-        bool expected = false;
-        if (conclusive_found_.compare_exchange_strong(expected, true)) {
-            stop_early_.store(true);
-
-            log(verbose, "[" + name + "] Conclusive: " +
-                (verdict == AnalysisResult::TERMINATING
-                    ? "TERMINATING" : "NON-TERMINATING") +
-                " (" + std::to_string(elapsed_ms) + " ms)");
-
-            cancelTechniques(i, verbose);
-            // Wake join()'s wait now instead of leaving it blocked until
-            // every losing technique finishes or the full time limit elapses.
-            pool_->signalEarlyExit();
-
-            std::lock_guard<std::mutex> lock(mutex_);
-            final_result_ = proof;
-        }
-    } else {
+    if (!proof.isConclusive()) {
         log(verbose, "[" + name + "] No conclusive result (" +
             std::to_string(elapsed_ms) + " ms)");
+        return;
     }
+    if (!won) return;
+
+    log(verbose, "[" + name + "] Conclusive: " +
+        (verdict == AnalysisResult::TERMINATING
+            ? "TERMINATING" : "NON-TERMINATING") +
+        " (" + std::to_string(elapsed_ms) + " ms)");
+
+    cancelTechniques(i, verbose);
+
+    // Wake join()'s wait now instead of leaving it blocked until every losing
+    // technique finishes or the full time limit elapses. Under mutex_ and only
+    // if join() hasn't closed the report yet: once it has (e.g. it timed out
+    // concurrently), it may already have released pool_.
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!closed_)
+        pool_->signalEarlyExit();
 }
 
 
@@ -149,6 +162,7 @@ void PortfolioOrchestrator::solve(LassoProgram& lasso)
 {
     all_results_.clear();
     final_result_ = {};
+    closed_ = false;
     conclusive_found_.store(false);
     stop_early_.store(false);
 
@@ -179,17 +193,31 @@ void PortfolioOrchestrator::solve(LassoProgram& lasso)
 AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
 {
     const bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-    bool timed_out = false;
+    bool all_done = true;
 
     if (timelimit_seconds > 0) {
         auto deadline = std::chrono::steady_clock::now()
                     + std::chrono::seconds(timelimit_seconds);
-        bool all_done = pool_->waitUntil(deadline);
-        // Early return via signalEarlyExit() (a winner) isn't a timeout.
-        timed_out = !all_done && !conclusive_found_.load();
+        all_done = pool_->waitUntil(deadline);
     } else {
         pool_->waitAll();
     }
+
+    // Snapshot the results and close the report, under the lock runTechnique()
+    // publishes them with (see there): from here on, a technique finishing late
+    // no longer writes all_results_/final_result_ nor touches pool_.
+    AnalysisReport report;
+    bool init_exception_is_timeout;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        closed_ = true;
+        report.winner      = final_result_;
+        report.all_results = all_results_;
+        init_exception_is_timeout = init_exception_is_timeout_;
+    }
+    const bool conclusive = report.winner.isConclusive();
+    // Early return via signalEarlyExit() (a winner) isn't a timeout.
+    const bool timed_out = !all_done && !conclusive;
 
     // Cancel remaining techniques on timeout
     if (timed_out) {
@@ -200,7 +228,7 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
 
     // Winner found or giving up on timeout: stop waiting for stragglers
     // instead of blocking on them cooperatively noticing cancel().
-    if (conclusive_found_.load() || timed_out) {
+    if (conclusive || timed_out) {
         pool_->killAll();
         // Leaked, not reset(): a detached thread may still be mid-flight
         // and touch the pool, so freeing it here would be a use-after-free.
@@ -209,32 +237,24 @@ AnalysisReport PortfolioOrchestrator::join(int timelimit_seconds)
         pool_.reset();
     }
 
-    if (!conclusive_found_.load()) {
+    if (!conclusive) {
         log(verbose, timed_out
             ? "\n=== Time limit reached — result: UNKNOWN ==="
             : "\n=== All techniques completed — result: UNKNOWN ===");
-        final_result_.technique_name = "None";
-        final_result_.description    = timed_out
+        report.winner.technique_name = "None";
+        report.winner.description    = timed_out
             ? "Time limit reached"
             : "No proof found by any technique";
     }
 
-    // Build report
-    AnalysisReport report;
-    report.winner = final_result_;
-
-    for (const auto& r : all_results_) {
-        report.all_results.push_back(r);
-    }
-
-    if (final_result_.status == AnalysisResult::TERMINATING) {
+    if (report.winner.status == AnalysisResult::TERMINATING) {
         report.overall_result       = "TERMINATING";
-        report.terminating_time_ms  = final_result_.execution_time_ms;
-    } else if (final_result_.status == AnalysisResult::NON_TERMINATING) {
+        report.terminating_time_ms  = report.winner.execution_time_ms;
+    } else if (report.winner.status == AnalysisResult::NON_TERMINATING) {
         report.overall_result         = "NON-TERMINATING";
-        report.nonterminating_time_ms = final_result_.execution_time_ms;
-    } else if (all_results_.empty() && had_init_exception_.load()) {
-        report.overall_result = init_exception_is_timeout_ ? "TIMEOUT" : "NOT SUPPORTED";
+        report.nonterminating_time_ms = report.winner.execution_time_ms;
+    } else if (report.all_results.empty() && had_init_exception_.load()) {
+        report.overall_result = init_exception_is_timeout ? "TIMEOUT" : "NOT SUPPORTED";
     }
 
     for (const auto& t : techniques_)

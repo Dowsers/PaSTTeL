@@ -89,9 +89,14 @@ private:
     // ── Per-solve state ────────────────────────────────────────
     std::unique_ptr<ThreadPool>  pool_;
 
-    mutable std::mutex           mutex_;        // guards all_results_, final_result_, and log output
+    mutable std::mutex           mutex_;        // guards all_results_, final_result_, closed_, and log output
     std::vector<ProofCertificate> all_results_;
     ProofCertificate              final_result_;
+    // Set by join() once it has snapshotted all_results_/final_result_ into its
+    // report. A technique still running afterwards (killAll() detaches, it does
+    // not stop threads) must neither write those nor touch pool_, which join()
+    // releases right after.
+    bool                          closed_ = false;
 
     std::atomic<bool>             conclusive_found_{false};
     std::atomic<bool> stop_early_{false};          // conclusive_found_ OU timeout
