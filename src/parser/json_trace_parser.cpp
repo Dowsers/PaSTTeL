@@ -162,20 +162,43 @@ void connectStemToLoop(LassoProgram& lasso) {
     // Fix: rename the colliding loop_out SSA to a fresh name
     {
         int collision_counter = 0;
-        // Collect the set of stem_out SSA names for O(1) lookup.
-        std::set<std::string> stem_out_ssas;
-        for (const auto& [_, ssa] : lasso.stem.var_to_ssa_out)
-            stem_out_ssas.insert(ssa);
+        // Map each stem_out SSA name to the program variable it belongs to.
+        // Two DIFFERENT program variables sharing an SSA name is always a
+        // genuine collision (rename needed). The SAME program variable
+        // having the SAME SSA name in stem_out and loop_out is safe to leave
+        // shared ONLY when the loop provably never touches it itself
+        // (loop_in == loop_out, "unmutated" below) -- e.g. an array cell
+        // RewriteArrays2 promoted to a single replacement variable. Name
+        // equality alone is not enough: it's a coincidence of whatever tool
+        // produced this lasso, not a semantic guarantee -- a variable the
+        // loop DOES reassign can just as easily reuse the stem's SSA string
+        // for its own, unrelated, end-of-first-iteration value, forcing two
+        // genuinely different quantities onto one Z3 symbol and making the
+        // whole stem+loop conjunction spuriously UNSAT. Renaming when it
+        // isn't needed desyncs loop_out (renamed) from loop_in/raw_formula
+        // occurrences that removeDeadVariables() then prunes as dead against
+        // the now-rewritten formula, while some consumer (e.g.
+        // RankingAndInvariantValidator's re-declared solver) still expects
+        // the original, now-undeclared name -- an "Unknown atom in SMT-LIB2
+        // expression" exception during -val revalidation.
+        std::map<std::string, std::string> stem_out_ssa_owner;
+        for (const auto& [var_prog, ssa] : lasso.stem.var_to_ssa_out)
+            stem_out_ssa_owner[ssa] = var_prog;
 
         // out_rename: old_ssa → fresh  (applied to loop polyhedra/formula)
         // For unmutated vars (loop_in == loop_out == colliding ssa), we rename
         // both in and out to the same fresh name so identity detection still works.
         std::map<std::string, std::string> out_rename;
         for (auto& [var_prog, ssa_out_loop] : lasso.loop.var_to_ssa_out) {
-            if (stem_out_ssas.count(ssa_out_loop)) {
-                auto it_in = lasso.loop.var_to_ssa_in.find(var_prog);
-                bool unmutated = (it_in != lasso.loop.var_to_ssa_in.end() &&
-                                  it_in->second == ssa_out_loop);
+            auto owner_it = stem_out_ssa_owner.find(ssa_out_loop);
+            if (owner_it == stem_out_ssa_owner.end()) continue;
+
+            auto it_in = lasso.loop.var_to_ssa_in.find(var_prog);
+            bool unmutated = (it_in != lasso.loop.var_to_ssa_in.end() &&
+                              it_in->second == ssa_out_loop);
+            bool same_owner = (owner_it->second == var_prog);
+
+            if (!(same_owner && unmutated)) {
                 std::string fresh = "v_" + var_prog + "_loop_fresh_"
                                     + std::to_string(collision_counter++);
                 if (VERBOSITY == VerbosityLevel::VERBOSE)

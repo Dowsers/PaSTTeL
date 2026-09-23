@@ -58,6 +58,14 @@ CASES = [
     ("examples/test_nonterminate_fixpoint_real.json",                   "NON-TERMINATING", "both"),
     ("examples/BugOldVars03_1.json",                   			"TERMINATING",     "both",        CPUS),
     ("examples/only_termination_Ackermann_true-termination1_affine.json","TERMINATING",    "both",        CPUS),
+    # Regression guard for connectStemToLoop's SSA-collision rename: stem_out
+    # and loop_out happen to share one SSA name for "warn", a variable the
+    # loop DOES reassign (loop_in != loop_out), so leaving it unrenamed
+    # forced two different program points onto one solver symbol and made
+    # the whole stem+loop conjunction spuriously UNSAT -- Fixpoint/GNTA found
+    # nothing, and AffineTemplate slipped through with a trivial f(x)=0. Was
+    # TERMINATING (wrong) before requiring loop_in==loop_out to skip the
+    # rename, NON-TERMINATING (correct, via GNTA) after.
     ("examples/noInlineTest_nonterminate_GNTA.json",			"NON-TERMINATING", "both", 	  CPUS),
     ("examples/terminate_in_out_ssa_inconsistency_CountTillBound.json", "TERMINATING",     "both",        CPUS),    
     ("examples/unused_variables_tqli.t2.json", 				"TERMINATING",     "both",        CPUS),    
@@ -201,6 +209,10 @@ VAL_CASES = [
     ("examples/test_nested_template_terminating.json",                  "TERMINATING",     "both", CPUS),
     ("examples/test_simple_counter.json",                               "TERMINATING",     "both", CPUS),
     ("examples/DivMinus2_no-overflow_term.json",                        "TERMINATING",     "both", CPUS),
+    # Same SSA-collision regression as the CASES entry above, run with -val
+    # too: the collision's "Unknown atom in SMT-LIB2 expression" failure mode
+    # specifically hits RankingAndInvariantValidator's re-declared solver.
+    ("examples/noInlineTest_nonterminate_GNTA.json",                    "NON-TERMINATING", "both", CPUS),
     # Array lassos (cell-scalar encoding) — TERM validated, NT unaffected by -val.
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",           "TERMINATING",     "both", CPUS),
     ("examples/array/arr_CookSeeZuleger_Fig3_2Dcell_term.json",         "TERMINATING",     "both", CPUS),
@@ -253,7 +265,7 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN", "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "cvc5"),
