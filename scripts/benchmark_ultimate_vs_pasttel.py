@@ -457,6 +457,24 @@ def parse_preprocessed_linear_trace_section(lines, start_idx):
     return stem_data, loop_data
 
 
+def distinct_template_runs_ms(content):
+    """Termination-analysis time of the distinct template runs (ms), or None.
+
+    LassoCheck re-appends its cumulative benchmark list after each template, so
+    the dump repeats earlier runs (same template, same ns) and over-counts them
+    in 'Termination analysis'. A (template, ns) pair is one real run; per-component
+    runs (partitioner=ON) differ in ns and are kept.
+    """
+    sections = content.split("--- TERMINATION ANALYSIS BENCHMARKS")
+    if len(sections) < 2:
+        return None
+    section = sections[-1].split("\n---", 1)[0]
+    runs = re.findall(r'\[\d+\] Template:\s+(\S+).*?Time:\s+(\d+) ns', section)
+    if not runs:
+        return None
+    return sum(int(ns) for _, ns in dict.fromkeys(runs)) / 1e6
+
+
 def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
     """Parse an Ultimate lasso trace .txt file.
 
@@ -651,6 +669,13 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
         if m:
             nontermination_time_ms = float(normalize_european_float(m.group(1)))
 
+    real_term_ms = distinct_template_runs_ms(content)
+    if real_term_ms is not None:
+        if abs(real_term_ms - termination_time_ms) > 0.01:
+            print(f"  Termination time: {real_term_ms:.2f} ms "
+                  f"(dump total {termination_time_ms:.2f} ms counted repeated runs)")
+        termination_time_ms = real_term_ms
+
     # --- Parse timing and algorithm ---
     time_ms = 0.0
     algo = "-"
@@ -665,30 +690,17 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
                 if m:
                     time_ms = float(normalize_european_float(m.group(1)))
                     break
-            # Fallback to Total LassoRanker time if nontermination time not found
+            # Fallback to the LassoRanker time if nontermination time not found
             if time_ms == 0.0:
-                for line in lines:
-                    m = re.search(r'Total LassoRanker time:\s+([\d,]+)\s*ms', line)
-                    if m:
-                        time_ms = float(normalize_european_float(m.group(1)))
-                        break
+                time_ms = termination_time_ms + nontermination_time_ms
         elif nonterm_argument_type == "InfiniteFixpointRepetitionWithExecution" or fixpoint_check_result == "YES":
             algo = "Fixpoint"
             time_ms = fixpoint_time_ms
         else:
-            # Unknown nontermination type, use total LassoRanker time
-            for line in lines:
-                m = re.search(r'Total LassoRanker time:\s+([\d,]+)\s*ms', line)
-                if m:
-                    time_ms = float(normalize_european_float(m.group(1)))
-                    break
+            # Unknown nontermination type, use the LassoRanker time
+            time_ms = termination_time_ms + nontermination_time_ms
     elif result == "TERMINATING":
-        # Get total termination analysis time
-        for line in lines:
-            m = re.search(r'Total termination analysis time:\s+([\d,]+)\s*ms', line)
-            if m:
-                time_ms = float(normalize_european_float(m.group(1)))
-                break
+        time_ms = termination_time_ms
 	# Find which template succeeded
         for line in lines:
             # [\w\-]+ captures both simple names ("affine") and
@@ -860,7 +872,7 @@ def run_pasttel(json_path, pasttel_bin, cpus=2, timeout_s=600, strat="terminate"
         algo:          winning technique name
         fixpoint_ms / gnta_ms / affine_ms / nested_ms: individual strategy times (-1 = not run)
     """
-    cmd = [pasttel_bin, "-a", strat, "-c", str(cpus), "-s", solver, json_path]
+    cmd = [pasttel_bin, "-a", strat, "-c", str(cpus), "-s", solver, json_path, "-val"]
 
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
@@ -990,6 +1002,19 @@ def determine_result_code(ultimate, pasttel):
     if pasttel["result"] != "UNKNOWN":
         return pasttel["result"]
     return "UNKNOWN"
+
+
+def ulr_baseline_ms(ultimate, result_code):
+    """Sequential ULR time up to and including the winning strategy, or None.
+
+    Ultimate stops at the first conclusive strategy and only logs what ran, so the
+    sum of all logged times is the cumulative time whatever the order (fixed or
+    shuffled): strategies after the winner contribute 0.
+    """
+    if result_code not in ("TERMINATING", "NONTERMINATING"):
+        return None
+    return (ultimate["fixpoint_time_ms"] + ultimate["nontermination_time_ms"]
+            + ultimate["termination_time_ms"])
 
 
 def determine_algo(ultimate, pasttel):
@@ -1681,19 +1706,7 @@ def main():
             p_status = "UNKNOWN"
 
         # ULR-Baseline: cumulative sequential ULR time up to (and including) the winner.
-        # Order: Fixpoint → Nontermination → Termination
-        u_algo_lower = ultimate["algo"].strip().lower()
-        fix_ms   = ultimate['fixpoint_time_ms']
-        term_ms  = ultimate['termination_time_ms']
-        nonterm_ms = ultimate['nontermination_time_ms']
-        if result_code == "NONTERMINATING" and "fixpoint" in u_algo_lower:
-            baseline_ms = fix_ms
-        elif result_code == "NONTERMINATING":
-            baseline_ms = fix_ms + nonterm_ms
-        elif result_code == "TERMINATING":
-            baseline_ms = fix_ms + nonterm_ms + term_ms
-        else:
-            baseline_ms = None
+        baseline_ms = ulr_baseline_ms(ultimate, result_code)
 
         row = {
             "Trace Name":          trace_file,
