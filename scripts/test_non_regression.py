@@ -228,6 +228,12 @@ VAL_CASES = [
     # and re-asserting the stem's own polyhedra during validation used to hit
     # Z3's "-" on two Arrays (an assertion abort, not a catchable error).
     ("examples/array/arr_flag_alloca_wholearray_eq_term.json",          "TERMINATING",     "both", CPUS),
+    # Regression guard: real Ultimate dumps can omit a formula-only array-cell
+    # variable from aux_vars, leaving it undeclared ("Unknown atom in
+    # SMT-LIB2 expression"). Was UNKNOWN under -val, TERMINATING after.
+    ("examples/array/arr_a01_alloca_false_no_overflow_undeclared_auxarray_term.json", "TERMINATING", "both", CPUS),
+    ("examples/array/arr_a01_alloca_undeclared_auxarray_term.json",                   "TERMINATING", "both", CPUS),
+    ("examples/array/arr_a01_alloca_true_termination_undeclared_auxarray_term.json",  "TERMINATING", "both", CPUS),
     # Regression guard for the array-equality-class union-find: "d = b_9"
     # (b_9 defined by a store on a different SSA name) used to find no
     # observed index for b_9 and drop to "true", disconnecting d's guard
@@ -265,7 +271,7 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",        "terminate", "piecewise",     "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "cvc5"),

@@ -1,6 +1,7 @@
 #ifndef SEXPR_UTILS_H
 #define SEXPR_UTILS_H
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -56,6 +57,16 @@ std::string trim(const std::string& s);
  * Does NOT match: "x", "(+ x 1)", ""
  */
 bool isNumericLiteral(const std::string& s);
+
+/**
+ * Collect every leaf atom in operand position of an S-expression -- i.e.
+ * every symbol that is never a parenthesized form's head. No keyword list:
+ * a head is skipped whatever it is, so this works for any SMT-LIB2 dialect.
+ *
+ * `expr` must be free of `let` bindings (see RewriteLet::rewrite) first, or
+ * a bound local name is wrongly collected as free.
+ */
+void collectLeafAtoms(const std::string& expr, std::set<std::string>& out);
 
 } // namespace SExprUtils
 

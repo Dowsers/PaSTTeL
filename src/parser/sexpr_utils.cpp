@@ -128,4 +128,23 @@ bool isNumericLiteral(const std::string& s) {
     return i == trimmed.size();
 }
 
+void collectLeafAtoms(const std::string& expr, std::set<std::string>& out) {
+    std::string trimmed = trim(expr);
+    if (trimmed.empty()) return;
+
+    if (trimmed.front() == '(') {
+        auto tokens = splitSExpr(trimmed);
+        // tokens[0] is the form's head (operator/function symbol) -- never a
+        // variable reference, regardless of what it is.
+        for (size_t i = 1; i < tokens.size(); ++i)
+            collectLeafAtoms(tokens[i], out);
+        return;
+    }
+
+    if (isNumericLiteral(trimmed) || trimmed == "true" || trimmed == "false")
+        return;
+
+    out.insert(trimmed);
+}
+
 } // namespace SExprUtils

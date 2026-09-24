@@ -476,35 +476,63 @@ void addFreeAuxVariables(LassoProgram& lasso,
     for (const auto& abs : lasso.function_abstractions) {
         already_declared.insert(abs.fresh_var);
     }
-    auto registerFreeVars = [&](const std::vector<UltimateTransitionLine>& lines) {
-        for (const auto& line : lines) {
-            for (const auto& fv : line.free_vars) {
-                if (already_declared.insert(fv).second) {
-                    // A free var can be array-typed -- e.g. a local variable
-                    // only ever named via an "A' = (store A i v)" equality,
-                    // never an in/out var, so setVarSorts() never covered it.
-                    // ArrayHandler learns exactly this case while eliminating
-                    // stores (see expandSingleConjunct); consult it instead
-                    // of defaulting straight to "Int".
-                    std::string sort = "Int";
-                    if (array_handler_raw) {
-                        std::string known = array_handler_raw->getKnownSort(fv);
-                        if (!known.empty()) sort = known;
-                    }
-                    FunctionAbstraction abs;
-                    abs.fresh_var = fv;
-                    abs.sort = sort;
-                    abs.original_call = "";
-                    lasso.function_abstractions.push_back(abs);
-                    if (VERBOSITY == VerbosityLevel::VERBOSE) {
-                        std::cout << "  Free aux var declared: " << fv << " (" << sort << ")" << std::endl;
-                    }
-                }
+
+    auto registerVar = [&](const std::string& fv) {
+        if (already_declared.insert(fv).second) {
+            // A free var can be array-typed -- e.g. a local variable
+            // only ever named via an "A' = (store A i v)" equality,
+            // never an in/out var, so setVarSorts() never covered it.
+            // ArrayHandler learns exactly this case while eliminating
+            // stores (see expandSingleConjunct); consult it instead
+            // of defaulting straight to "Int".
+            std::string sort = "Int";
+            if (array_handler_raw) {
+                std::string known = array_handler_raw->getKnownSort(fv);
+                if (!known.empty()) sort = known;
+            }
+            FunctionAbstraction abs;
+            abs.fresh_var = fv;
+            abs.sort = sort;
+            abs.original_call = "";
+            lasso.function_abstractions.push_back(abs);
+            if (VERBOSITY == VerbosityLevel::VERBOSE) {
+                std::cout << "  Free aux var declared: " << fv << " (" << sort << ")" << std::endl;
             }
         }
     };
+
+    auto registerFreeVars = [&](const std::vector<UltimateTransitionLine>& lines) {
+        for (const auto& line : lines)
+            for (const auto& fv : line.free_vars)
+                registerVar(fv);
+    };
     registerFreeVars(stem_lines);
     registerFreeVars(loop_lines);
+
+    // aux_vars can be incomplete (seen on real Ultimate dumps: a formula-only
+    // array-cell replacement variable, missing from aux_vars, left undeclared
+    // for anything re-serializing the formula as text). Recompute free vars
+    // from the formula itself instead of trusting that field.
+    auto registerFormulaLeaves = [&](const LinearTransition& trans) {
+        if (trans.raw_formula.empty()) return;
+        std::string let_free = RewriteLet().rewrite(trans.raw_formula);
+        std::set<std::string> leaves;
+        SExprUtils::collectLeafAtoms(let_free, leaves);
+        for (const auto& leaf : leaves) {
+            if (trans.var_to_ssa_in.count(leaf) || trans.var_to_ssa_out.count(leaf))
+                continue;  // program var name itself, not its SSA value -- never a real atom
+            bool is_declared_ssa = false;
+            for (const auto& [_, ssa] : trans.var_to_ssa_in)
+                if (ssa == leaf) { is_declared_ssa = true; break; }
+            if (!is_declared_ssa)
+                for (const auto& [_, ssa] : trans.var_to_ssa_out)
+                    if (ssa == leaf) { is_declared_ssa = true; break; }
+            if (!is_declared_ssa)
+                registerVar(leaf);
+        }
+    };
+    registerFormulaLeaves(lasso.stem);
+    registerFormulaLeaves(lasso.loop);
 }
 
 
