@@ -8,7 +8,30 @@
 
 extern VerbosityLevel VERBOSITY;
 
+// Builds `prefix + var + suffix` as one SMT-LIB2 atom. If `var` itself needs
+// quoting (contains a character outside the plain unquoted-symbol set --
+// e.g. Ultimate's "v_rep(select ...)_1" convention), gluing a prefix/suffix
+// directly onto it would let it re-parse as a function application instead
+// of one atom (e.g. "x1_v_rep(select ...)_1" reads as "x1_v_rep" applied to
+// "(select ...)"). Declaration and lookup key variables by this exact
+// string, so every construction site must go through here consistently.
+static bool needsSmtQuoting(const std::string& s) {
+    for (char c : s) {
+        if (c == '(' || c == ')' || c == '[' || c == ']' || c == ',' ||
+            std::isspace(static_cast<unsigned char>(c)))
+            return true;
+    }
+    return false;
+}
 
+static std::string prefixedVar(const std::string& prefix, const std::string& var,
+                                const std::string& suffix = "") {
+    if (!needsSmtQuoting(var)) return prefix + var + suffix;
+    std::string bare = var;
+    if (bare.size() >= 2 && bare.front() == '|' && bare.back() == '|')
+        bare = bare.substr(1, bare.size() - 2);
+    return "|" + prefix + bare + suffix + "|";
+}
 
 // ============================================================================
 // CONSTRUCTEUR
@@ -223,7 +246,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
 
     // Variables d'état initial (x₀)
     for (const auto& var : lasso_.program_vars) {
-        std::string init_var = "x0_" + var;
+        std::string init_var = prefixedVar("x0_", var);
         if (!solver_->variableExists(init_var)) {
             solver_->declareVariable(init_var, sort);
         }
@@ -231,7 +254,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
 
     // Variables d'état honda (x₁)
     for (const auto& var : lasso_.program_vars) {
-        std::string honda_var = "x1_" + var;
+        std::string honda_var = prefixedVar("x1_", var);
         if (!solver_->variableExists(honda_var)) {
             solver_->declareVariable(honda_var, sort);
         }
@@ -240,7 +263,7 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
     // Eigenvectors (yᵢ) pour i = 0..n-1
     for (int i = 0; i < effective_num_gevs; ++i) {
         for (const auto& var : lasso_.program_vars) {
-            std::string gev_var = "v" + std::to_string(i) + "_" + var;
+            std::string gev_var = prefixedVar("v" + std::to_string(i) + "_", var);
             if (!solver_->variableExists(gev_var)) {
                 solver_->declareVariable(gev_var, sort);
             }
@@ -351,15 +374,16 @@ void GeometricTechnique::addStemConstraints()
                     }
 
                     if (is_input && is_output) {
-                        std::string smt_var = is_input ? "x0_" + prog_var : "x1_" + prog_var;
+                        std::string smt_var = is_input ? prefixedVar("x0_", prog_var) : prefixedVar("x1_", prog_var);
                         lhs << " (* " << formatNumber(coef.constant) << " " << smt_var << ")";
                         has_terms = true;
-                        identity_assertions.push_back("(= x0_" + prog_var + " x1_" + prog_var + ")");
+                        identity_assertions.push_back(
+                            "(= " + prefixedVar("x0_", prog_var) + " " + prefixedVar("x1_", prog_var) + ")");
                     } else if (is_output) {
-                        lhs << " (* " << coef.constant << " x1_" << prog_var << ")";
+                        lhs << " (* " << coef.constant << " " << prefixedVar("x1_", prog_var) << ")";
                         has_terms = true;
                     } else if (is_input) {
-                        lhs << " (* " << coef.constant << " x0_" << prog_var << ")";
+                        lhs << " (* " << coef.constant << " " << prefixedVar("x0_", prog_var) << ")";
                         has_terms = true;
                     } else {
                         // Variable auxiliaire : déclarer comme variable SMT libre
@@ -475,11 +499,11 @@ void GeometricTechnique::addIdentityVariableConstraints(int effective_num_gevs)
     for (const auto& var : identity_vars) {
         std::ostringstream sum;
         if (effective_num_gevs == 1) {
-            sum << "v0_" << var;
+            sum << prefixedVar("v0_", var);
         } else {
             sum << "(+";
             for (int i = 0; i < effective_num_gevs; ++i) {
-                sum << " v" << i << "_" << var;
+                sum << " " << prefixedVar("v" + std::to_string(i) + "_", var);
             }
             sum << ")";
         }
@@ -500,11 +524,11 @@ void GeometricTechnique::addIdentityVariableConstraints(int effective_num_gevs)
         bool use_nilpotent = settings_.nilpotent_components && has_next;
 
         for (const auto& var : identity_vars) {
-            std::string gev_var = "v" + std::to_string(gev_idx) + "_" + var;
+            std::string gev_var = prefixedVar("v" + std::to_string(gev_idx) + "_", var);
 
             std::string output_expr;
             if (use_nilpotent) {
-                std::string next_gev_var = "v" + std::to_string(gev_idx + 1) + "_" + var;
+                std::string next_gev_var = prefixedVar("v" + std::to_string(gev_idx + 1) + "_", var);
                 if (linear_mode) {
                     // λ=1, nu ∈ {0,1} : v_i_x = v_i_x + nu * v_{i+1}_x
                     // Pour une identity var, les ray constraints se neutralisent
@@ -581,21 +605,21 @@ std::vector<std::string> GeometricTechnique::buildFirstIterConstraintsForPoly(
             }
 
             if (is_input && is_output) {
-                lhs << " (* " << formatNumber(coef.constant) << " x1_" << prog_var << ")";
+                lhs << " (* " << formatNumber(coef.constant) << " " << prefixedVar("x1_", prog_var) << ")";
                 has_terms = true;
             } else if (is_output) {
                 std::ostringstream sum;
-                sum << "(+ x1_" << prog_var;
+                sum << "(+ " << prefixedVar("x1_", prog_var);
                 for (int i = 0; i < effective_num_gevs; ++i)
-                    sum << " v" << i << "_" << prog_var;
+                    sum << " " << prefixedVar("v" + std::to_string(i) + "_", prog_var);
                 sum << ")";
                 lhs << " (* " << formatNumber(coef.constant) << " " << sum.str() << ")";
                 has_terms = true;
             } else if (is_input) {
-                lhs << " (* " << coef.constant << " x1_" << prog_var << ")";
+                lhs << " (* " << coef.constant << " " << prefixedVar("x1_", prog_var) << ")";
                 has_terms = true;
             } else {
-                std::string iter_var = var + "__gnta_iter";
+                std::string iter_var = prefixedVar("", var, "__gnta_iter");
                 if (!solver_->variableExists(iter_var))
                     solver_->declareVariable(iter_var, "Int");
                 lhs << " (* " << coef.constant << " " << iter_var << ")";
@@ -655,13 +679,13 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
                 }
 
                 if (is_input && is_output) {
-                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    std::string gev_var = prefixedVar("v" + std::to_string(gev_idx) + "_", prog_var);
                     lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
                     has_terms = true;
                 } else if (is_output) {
-                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    std::string gev_var = prefixedVar("v" + std::to_string(gev_idx) + "_", prog_var);
                     if (use_nilpotent) {
-                        std::string next_gev = "v" + std::to_string(gev_idx + 1) + "_" + prog_var;
+                        std::string next_gev = prefixedVar("v" + std::to_string(gev_idx + 1) + "_", prog_var);
                         if (linear_mode) {
                             // nu ∈ {0,1} enumerated as concrete constants
                             if (nu_enum == 0)
@@ -687,11 +711,11 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
                     }
                     has_terms = true;
                 } else if (is_input) {
-                    std::string gev_var = "v" + std::to_string(gev_idx) + "_" + prog_var;
+                    std::string gev_var = prefixedVar("v" + std::to_string(gev_idx) + "_", prog_var);
                     lhs << " (* " << formatNumber(coef.constant) << " " << gev_var << ")";
                     has_terms = true;
                 } else {
-                    std::string ray_var = var + "__gnta_ray_" + std::to_string(gev_idx);
+                    std::string ray_var = prefixedVar("", var, "__gnta_ray_" + std::to_string(gev_idx));
                     if (!solver_->variableExists(ray_var))
                         solver_->declareVariable(ray_var, "Int");
                     lhs << " (* " << coef.constant << " " << ray_var << ")";
@@ -839,7 +863,7 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(int effective_num_
         v_nonzero << "(or";
         for (int i = 0; i < effective_num_gevs; ++i) {
             for (const auto& var : lasso_.program_vars) {
-                v_nonzero << " (not (= v" << i << "_" << var << " " << zero << "))";
+                v_nonzero << " (not (= " << prefixedVar("v" + std::to_string(i) + "_", var) << " " << zero << "))";
             }
         }
         v_nonzero << ")";
@@ -894,13 +918,13 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
 
     // Extraire x₀ (Rational exact -- cf. commentaire sur state_init dans le .h)
     for (const auto& var : lasso_.program_vars) {
-        std::string init_var = "x0_" + var;
+        std::string init_var = prefixedVar("x0_", var);
         state_init[var] = solver_->getRationalValue2(init_var);
     }
 
     // Extraire x₁
     for (const auto& var : lasso_.program_vars) {
-        std::string honda_var = "x1_" + var;
+        std::string honda_var = prefixedVar("x1_", var);
         state_honda[var] = solver_->getRationalValue2(honda_var);
     }
 
@@ -908,7 +932,7 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
     for (int i = 0; i < effective_num_gevs; ++i) {
         std::map<std::string, Rational> gev;
         for (const auto& var : lasso_.program_vars) {
-            std::string gev_var = "v" + std::to_string(i) + "_" + var;
+            std::string gev_var = prefixedVar("v" + std::to_string(i) + "_", var);
             gev[var] = solver_->getRationalValue2(gev_var);
         }
         eigenvectors.push_back(gev);
