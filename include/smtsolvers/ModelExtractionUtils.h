@@ -149,14 +149,6 @@ struct Rational
         else
             return toStringBigInt(num) + "/" + toStringBigInt(den);
     }
-
-    std::string toSMTLibString() const
-    {
-        if (den == 1)
-            return toStringBigInt(num);
-        else
-            return "(div " + toStringBigInt(num) + " " + toStringBigInt(den) + ")";
-    }
 };
 
 struct Term

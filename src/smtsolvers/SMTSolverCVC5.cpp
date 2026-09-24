@@ -230,14 +230,16 @@ void SMTSolverCVC5::addAssertion(const std::string& assertion) {
 // ============================================================================
 
 bool SMTSolverCVC5::checkSat() {
-    if (m_interrupted.load(std::memory_order_relaxed)) return false;
+    return checkSatResult() == SatResult::SAT;
+}
+
+SatResult SMTSolverCVC5::checkSatResult() {
+    if (m_interrupted.load(std::memory_order_relaxed)) return SatResult::UNKNOWN;
     if (m_verbose) {
         std::cout << "[CVC5] Vérification de la satisfiabilité..." << std::endl;
     }
 
     cvc5::Result result = m_solver.checkSat();
-
-    bool is_sat = result.isSat();
 
     if (m_verbose) {
         std::cout << "[CVC5] Résultat: ";
@@ -250,7 +252,9 @@ bool SMTSolverCVC5::checkSat() {
         }
     }
 
-    return is_sat;
+    if (result.isSat()) return SatResult::SAT;
+    if (result.isUnsat()) return SatResult::UNSAT;
+    return SatResult::UNKNOWN;
 }
 
 // ============================================================================

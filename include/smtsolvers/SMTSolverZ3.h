@@ -104,9 +104,10 @@ public:
     
     /**
      * @brief Vérifie la satisfiabilité
-     * @return true si SAT, false si UNSAT
+     * @return true si SAT, false sinon (UNSAT, unknown, interruption)
      */
     bool checkSat() override;
+    SatResult checkSatResult() override;
     
     /**
      * @brief Récupère la valeur d'une variable dans le modèle

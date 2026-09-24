@@ -270,8 +270,13 @@ void SMTSolverZ3::addAssertion(const std::string &assertion)
 
 bool SMTSolverZ3::checkSat()
 {
+    return checkSatResult() == SatResult::SAT;
+}
+
+SatResult SMTSolverZ3::checkSatResult()
+{
     if (m_interrupted)
-        return false;
+        return SatResult::UNKNOWN;
 
     if (m_verbose)
     {
@@ -287,10 +292,8 @@ bool SMTSolverZ3::checkSat()
     {
         if (m_verbose)
             std::cout << "[Z3] CheckSat interrompu" << std::endl;
-        return false;
+        return SatResult::UNKNOWN;
     }
-
-    bool is_sat = (result == z3::sat);
 
     if (m_verbose)
     {
@@ -310,7 +313,9 @@ bool SMTSolverZ3::checkSat()
         }
     }
 
-    return is_sat;
+    if (result == z3::sat) return SatResult::SAT;
+    if (result == z3::unsat) return SatResult::UNSAT;
+    return SatResult::UNKNOWN;
 }
 
 // ============================================================================

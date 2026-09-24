@@ -10,13 +10,11 @@
 #include "smtsolvers/SMTSolverInterface.h"
 
 /**
- * Validateur post-synthèse pour les arguments de termination
- * 
- * Implémente la validation :
- * 1. Vérifications triviales rapides (isFalse, isTrue)
- * 2. Vérifications SMT lourdes (initiation, consécution, décroissance)
- * 
- * Cette validation est ESSENTIELLE pour rejeter les faux positifs du SMT.
+ * Validateur post-synthèse des arguments de terminaison (option -val).
+ *
+ * Revérifie chaque obligation du template contre le lasso : une obligation
+ * vaut ssi (loop ∧ SI(x) ∧ ¬obligation) est prouvé UNSAT, loop et stem étant
+ * la disjonction de leurs polyèdres. Voir le bloc PRIMITIVES du .cpp.
  */
 class RankingAndInvariantValidator {
 public:
@@ -28,13 +26,7 @@ public:
         bool is_valid;
         std::string error_message;
 
-        // Vérifications triviales (RAPIDES)
-        bool is_false_check;      // SI trivialement faux ?
-        bool is_true_check;       // SI trivialement vrai ?
-
-        // Vérifications SMT (LOURDES)
-        bool initiation_check;    // stem → SI(x') ?
-        bool compatible_check;
+        bool initiation_check;    // stem → SI(x') ? (sans stem : SI partout)
         bool consecution_check;   // SI(x) ∧ loop → SI(x') ?
     };
     
@@ -46,11 +38,10 @@ public:
         std::string error_message;
 
         // Résultats pour la ranking function
-        bool rf_non_trivial_check;
         bool rf_bounded_check;
         bool rf_decreasing_check;
 
-        // Résultats pour les SI
+        // Résultats pour les SI (un SI non prouvé est écarté, pas bloquant)
         bool all_si_valid;
         std::vector<SIValidationResult> si_results;
     };
@@ -71,10 +62,9 @@ public:
         bool all_si_valid;
         std::vector<SIValidationResult> si_results;
 
-        // Par composant : non-trivialité, bounded (dernier seul), décroissance nested
+        // Par composant : décroissance nested (la borne ne porte que sur le dernier)
         struct ComponentResult {
             int index;
-            bool non_trivial_check;
             bool nested_decrease_check;  // fi(x)-fi(x')+f_{i-1}(x)>=0, ou f0-f0'>=delta
         };
         std::vector<ComponentResult> component_results;
@@ -82,13 +72,8 @@ public:
     };
 
     /**
-     * Valide un argument de termination complet
-     *
-     * @param ranking_function La fonction de ranking synthétisée
-     * @param supporting_invariants Les SI synthétisés
-     * @param lasso Le programme lasso
-     * @param solver Le solveur SMT
-     * @return Résultat de validation détaillé
+     * Valide un argument produit par AffineTemplate (exactement 1 composante) :
+     *   δ > 0,  loop ∧ SI ⇒ f(x) >= 0,  loop ∧ SI ⇒ f(x) - f(x') >= δ
      */
     ValidationResult validate(
         const TerminationArgument& argument,
@@ -99,10 +84,9 @@ public:
      * Valide un argument de termination produit par NestedTemplate
      *
      * Vérifie la sémantique nested :
-     *   - f0(x) - f0(x') >= delta
+     *   - δ > 0 et f0(x) - f0(x') >= δ
      *   - fi(x) - fi(x') + f_{i-1}(x) >= 0  pour i > 0
      *   - f_{k-1}(x) >= 0  (borne)
-     *   - Validité des SI (initiation, consécution, compatibilité)
      */
     NestedValidationResult validateNested(
         const TerminationArgument& argument,
@@ -111,7 +95,7 @@ public:
 
     /**
      * Valide un argument produit par LexicographicTemplate (k composantes).
-     * Sémantique (cf. LexicographicTemplate) :
+     * Sémantique (cf. LexicographicTemplate), avec δi > 0 :
      *   - bound_i      : loop ∧ SI ⇒ fi(x) > 0            (toutes les composantes)
      *   - consec_i<k-1 : loop ∧ SI ⇒ fi(x') ≤ fi(x) ∨ ∃ j<i : fj(x)-fj(x') > dj
      *   - decrement    : loop ∧ SI ⇒ ∃ i : fi(x)-fi(x') > di
@@ -123,10 +107,10 @@ public:
 
     /**
      * Valide un argument produit par MultiphaseTemplate (k phases).
-     * Sémantique (cf. MultiphaseTemplate) :
+     * Sémantique (cf. MultiphaseTemplate), avec δi > 0 :
      *   - decr_0      : loop ∧ SI ⇒ f0(x)-f0(x') > δ0
      *   - decr_i≥1    : loop ∧ SI ⇒ fi(x)-fi(x') > δi ∨ f_{i-1}(x) > 0
-     *   - bound       : loop ∧ SI ⇒ f_{k-1}(x) ≥ 0
+     *   - bound       : loop ∧ SI ⇒ ∨_i fi(x) > 0
      */
     ValidationResult validateMultiphase(
         const TerminationArgument& argument,
@@ -134,12 +118,12 @@ public:
         SMTSolverInterface* solver);
 
     /**
-     * Valide (partiellement) un argument produit par PiecewiseTemplate.
-     * Les gardes h_i ne sont pas exposées dans le TerminationArgument, donc les
-     * conditions phi_bound_i / phi_decr_i / phi_exhaustive (qui référencent h_i)
-     * ne peuvent PAS être vérifiées ici. On valide donc uniquement les SI
-     * (initiation/consécution) et la non-trivialité des f_i, et on ACCEPTE avec
-     * un avertissement (jamais de rejet sur une condition non vérifiée).
+     * Valide un argument produit par PiecewiseTemplate (morceau i actif en x
+     * ssi h_i(x) >= 0 ; une garde par morceau, sinon rejet), avec δi > 0 :
+     *   - bound_i      : loop ∧ SI ∧ h_i(x) >= 0 ⇒ f_i(x) >= 0
+     *   - decrease_i,j : loop ∧ SI ∧ h_i(x) >= 0 ∧ h_j(x') >= 0 ⇒ f_i(x) - f_j(x') >= δi
+     *                    (toute paire de morceaux, comme Ultimate)
+     *   - exhaustive   : loop ∧ SI ⇒ ∨_i h_i(x) >= 0
      */
     ValidationResult validatePiecewise(
         const TerminationArgument& argument,
@@ -168,75 +152,27 @@ private:
         const LassoProgram& lasso);
 
     // ========================================================================
-    // VÉRIFICATIONS TRIVIALES (RAPIDES) - SUPPORTING INVARIANTS
+    // SUPPORTING INVARIANTS
     // ========================================================================
-    
+
     /**
-     * Vérifie si le SI est trivialement FAUX
-     * 
-     * SI de la forme: c >= 0 (non-strict) ou c > 0 (strict)
-     * - Non-strict: FAUX si c < 0
-     * - Strict:     FAUX si c <= 0
-     */
-    bool checkSIIsFalse(
-        const SupportingInvariant& si) const;
-    
-    /**
-     * Vérifie si le SI est trivialement VRAI
-     * 
-     * SI de la forme: c >= 0 (non-strict) ou c > 0 (strict)
-     * - Non-strict: VRAI si c >= 0
-     * - Strict:     VRAI si c > 0
-     */
-    bool checkSIIsTrue(
-        const SupportingInvariant& si) const;
-    
-    /**
-     * Vérifie si le SI a au moins un coefficient de variable non-nul
-     */
-    bool checkSINonTriviality(
-        const SupportingInvariant& si) const;
-    
-    // ========================================================================
-    // VÉRIFICATIONS SMT (LOURDES) - SUPPORTING INVARIANTS
-    // ========================================================================
-    
-    /**
-     * Vérifie l'initiation : stem(x, x') → SI(x')
-     * 
-     * Cherche un contre-exemple où stem(x, x') ∧ ¬SI(x') est SAT
-     * Si UNSAT → le stem établit bien le SI
+     * Initiation : stem(x, x') ∧ ¬SI(x') UNSAT ; sans stem, ¬SI(x) UNSAT
+     * (l'état honda est arbitraire). `why` explique un échec.
      */
     bool checkSIInitiation(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver);
-    
-    /**
-     * Vérifie que le SI est compatible avec le loop guard.
-     * Un SI incompatible avec le loop guard est "vacuously valid" :
-     * la consécution est vraie car SI(x) ∧ loop_guard(x) est toujours UNSAT.
-     * 
-     * Exemple : SI: x <= -1, loop_guard: x >= 0
-     * → SI ∧ loop_guard est UNSAT → consécution vacuously true → REJECT
-     * 
-     * @return true si SI ∧ loop_guard est SAT (compatible)
-     */
-    bool checkSICompatibleWithLoop(
-        const SupportingInvariant& si,
-        const LassoProgram& lasso,
-        SMTSolverInterface* solver);
+        SMTSolverInterface* solver,
+        std::string& why);
 
     /**
-     * Vérifie la consécution : SI(x) ∧ loop(x, x') → SI(x')
-     * 
-     * Cherche un contre-exemple où SI(x) ∧ loop(x, x') ∧ ¬SI(x') est SAT
-     * Si UNSAT → le SI est inductif
+     * Consécution : SI(x) ∧ loop(x, x') ∧ ¬SI(x') UNSAT. `why` explique un échec.
      */
     bool checkSIConsecution(
         const SupportingInvariant& si,
         const LassoProgram& lasso,
-        SMTSolverInterface* solver);
+        SMTSolverInterface* solver,
+        std::string& why);
     
     /**
      * Valide un seul SI (avec toutes les vérifications)
@@ -248,9 +184,9 @@ private:
         SMTSolverInterface* solver);
 
     /**
-     * Valide tous les SI d'un argument (partage validate / validateNested).
-     * Remplit `si_results_out`, peuple `valid_sis` (SI non-triviaux prouvés
-     * inductifs), et renvoie false ssi un SI est trivialement FAUX.
+     * Valide tous les SI d'un argument. Remplit `si_results_out`, peuple
+     * `valid_sis` (SI prouvés : initiation et consécution), et renvoie true
+     * ssi tous les SI sont prouvés.
      */
     bool validateAllSupportingInvariants(
         const std::vector<SupportingInvariant>& sis,
@@ -259,33 +195,37 @@ private:
         std::vector<SIValidationResult>& si_results_out);
     
     // ========================================================================
-    // VÉRIFICATIONS - RANKING FUNCTION
+    // RANKING FUNCTIONS
     // ========================================================================
-    
-    /**
-     * Vérifie que la RF a au moins un coefficient non-nul
-     */
-    bool checkRFNonTriviality(
-        const RankingFunction& rf) const;
-    
-    /**
-     * Vérifie que f(x) >= 0 dans la garde du loop
-     */
-    bool checkRFBounded(
-        const RankingFunction& rf,
-        const std::vector<SupportingInvariant>& supporting_invariants,
+
+    // f_i(x) sur les in-vars du loop, f_i(x') sur ses out-vars, en expressions
+    // linéaires exactes (défini dans le .cpp).
+    struct LoopTerms;
+
+    static bool buildLoopTerms(
         const LassoProgram& lasso,
-        SMTSolverInterface* solver);
-    
-    /**
-     * Vérifie que f(x) - f(x') >= δ dans le loop
-     */
-    bool checkRFDecreasing(
-        const RankingFunction& rf,
-        const std::vector<SupportingInvariant>& supporting_invariants,
+        const std::vector<RankingFunction>& fs,
+        LoopTerms& terms,
+        std::string& why);
+
+    // [loop comme disjonction de ses polyèdres, SI valides évalués en x]
+    std::vector<std::string> loopContext(const LassoProgram& lasso) const;
+
+    // true ssi loopContext ∧ counterexample est prouvé UNSAT.
+    bool holdsOnLoop(
+        const LassoProgram& lasso,
+        const std::string& counterexample,
+        SMTSolverInterface* solver) const;
+
+    // Préambule commun à tous les templates (forme, δ > 0, SI, termes) ;
+    // false = argument déjà rejeté.
+    bool prepare(
+        const TerminationArgument& argument,
         const LassoProgram& lasso,
         SMTSolverInterface* solver,
-        Rational delta);
+        const char* template_name,
+        ValidationResult& res,
+        LoopTerms& terms);
 };
 
 #endif // RANKING_AND_INVARIANT_VALIDATOR_H

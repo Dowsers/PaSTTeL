@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <set>
 #include <sstream>
 
 #include "termination/ranking_and_invariant_validator.h"
@@ -7,243 +8,241 @@
 
 extern VerbosityLevel VERBOSITY;
 
+// ============================================================================
+// PRIMITIVES
+//
+// An obligation holds on the loop iff (loop ∧ valid SIs(x) ∧ ¬obligation) is
+// proven UNSAT, where
+//   - loop is the disjunction of the polyhedra of the loop transition;
+//   - SAT and inconclusive answers (unknown, timeout, interruption) fail;
+//   - a non-zero coefficient on a name that is not a program variable, or that
+//     has no SSA name on the evaluated side, rejects the certificate;
+//   - terms are linear expressions with exact rational coefficients; an atom
+//     (op e 0) is emitted with e scaled by the lcm of its denominators.
+// ============================================================================
+
+namespace {
+
+std::string smtAnd(const std::vector<std::string>& atoms) {
+    if (atoms.empty()) return "true";
+    if (atoms.size() == 1) return atoms[0];
+    std::ostringstream o;
+    o << "(and";
+    for (const auto& a : atoms) o << " " << a;
+    o << ")";
+    return o.str();
+}
+
+std::string smtOr(const std::vector<std::string>& atoms) {
+    if (atoms.empty()) return "false";
+    if (atoms.size() == 1) return atoms[0];
+    std::ostringstream o;
+    o << "(or";
+    for (const auto& a : atoms) o << " " << a;
+    o << ")";
+    return o.str();
+}
+
+std::string transitionFormula(const LinearTransition& t) {
+    std::vector<std::string> disjuncts;
+    for (const auto& poly : t.polyhedra) {
+        std::vector<std::string> atoms;
+        for (const auto& ineq : poly) atoms.push_back(ineq.toSMTLib2());
+        disjuncts.push_back(smtAnd(atoms));
+    }
+    return smtOr(disjuncts);
+}
+
+// sum_s coeffs[s] * s + constant, s ranging over SSA names.
+struct LinExpr {
+    std::map<std::string, Rational> coeffs;
+    Rational constant;
+};
+
+LinExpr operator+(LinExpr a, const LinExpr& b) {
+    for (const auto& [s, c] : b.coeffs) a.coeffs[s] = a.coeffs[s].add(c);
+    a.constant = a.constant.add(b.constant);
+    return a;
+}
+
+LinExpr operator-(LinExpr a, const LinExpr& b) {
+    for (const auto& [s, c] : b.coeffs) a.coeffs[s] = a.coeffs[s].sub(c);
+    a.constant = a.constant.sub(b.constant);
+    return a;
+}
+
+LinExpr operator-(LinExpr a, const Rational& c) {
+    a.constant = a.constant.sub(c);
+    return a;
+}
+
+// (op e 0), e multiplied by the lcm of its denominators (> 0, so the relation
+// is unchanged).
+std::string atom(const char* op, const LinExpr& e) {
+    BigInt l = e.constant.den;
+    for (const auto& [s, c] : e.coeffs) l = l / Rational::gcd_ll(l, c.den) * c.den;
+    auto numeral = [&l](const Rational& r) {
+        const BigInt n = r.num * (l / r.den);
+        return n < 0 ? "(- " + toStringBigInt(-n) + ")" : toStringBigInt(n);
+    };
+    std::vector<std::string> parts;
+    for (const auto& [s, c] : e.coeffs)
+        if (!c.isZero()) parts.push_back("(* " + numeral(c) + " " + s + ")");
+    if (!e.constant.isZero() || parts.empty()) parts.push_back(numeral(e.constant));
+    std::ostringstream o;
+    o << "(" << op << " ";
+    if (parts.size() == 1) {
+        o << parts[0];
+    } else {
+        o << "(+";
+        for (const auto& t : parts) o << " " << t;
+        o << ")";
+    }
+    o << " 0)";
+    return o.str();
+}
+
+// sum_v c_v * ssa(v) + constant, over the lasso's program variables.
+bool linearTerm(const LassoProgram& lasso,
+                const std::map<std::string, Rational>& coefficients,
+                const Rational& constant,
+                const std::map<std::string, std::string>& ssa,
+                LinExpr& out, std::string& why) {
+    const std::set<std::string> program_vars(lasso.program_vars.begin(), lasso.program_vars.end());
+    out = LinExpr{{}, constant};
+    for (const auto& [var, coef] : coefficients) {
+        if (coef.isZero()) continue;
+        if (!program_vars.count(var)) {
+            why = "coefficient on '" + var + "', which is not a program variable of the lasso";
+            return false;
+        }
+        auto it = ssa.find(var);
+        if (it == ssa.end()) {
+            why = "no SSA name for '" + var + "' on the side of the transition it is evaluated on";
+            return false;
+        }
+        out.coeffs[it->second] = out.coeffs[it->second].add(coef);
+    }
+    return true;
+}
+
+// true iff the conjunction of `assertions` is proven UNSAT.
+bool provenUnsat(SMTSolverInterface* solver, const std::vector<std::string>& assertions) {
+    solver->push();
+    for (const auto& a : assertions) solver->addAssertion(a);
+    const SatResult r = solver->checkSatResult();
+    solver->pop();
+    return r == SatResult::UNSAT;
+}
+
+bool allDeltasPositive(const std::vector<RankingFunction>& fs) {
+    for (const auto& f : fs)
+        if (!(f.delta > 0)) return false;
+    return true;
+}
+
+}  // namespace
+
+struct RankingAndInvariantValidator::LoopTerms {
+    std::vector<LinExpr> in, out;
+};
+
+bool RankingAndInvariantValidator::buildLoopTerms(
+    const LassoProgram& lasso, const std::vector<RankingFunction>& fs,
+    LoopTerms& terms, std::string& why) {
+    terms.in.clear();
+    terms.out.clear();
+    for (const auto& f : fs) {
+        LinExpr tin, tout;
+        if (!linearTerm(lasso, f.coefficients, f.constant, lasso.loop.var_to_ssa_in, tin, why) ||
+            !linearTerm(lasso, f.coefficients, f.constant, lasso.loop.var_to_ssa_out, tout, why))
+            return false;
+        terms.in.push_back(tin);
+        terms.out.push_back(tout);
+    }
+    return true;
+}
 
 // ============================================================================
-// CONSTRUCTEUR
+// CONSTRUCTEUR / CONTEXTE
 // ============================================================================
 
 RankingAndInvariantValidator::RankingAndInvariantValidator() {
 }
 
-// ============================================================================
-// VALIDATION PRINCIPALE
-// ============================================================================
-
-RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validate(
-    const TerminationArgument& argument,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    const RankingFunction& ranking_function = argument.ranking_functions[0];
-    const std::vector<SupportingInvariant>& supporting_invariants = argument.supporting_invariants;
-
-    ValidationResult result;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-    result.is_valid = false;
-    result.all_si_valid = false;
-    
-    if(verbose) {
-        std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║    VALIDATION POST-SYNTHÈSE                          ║" << std::endl;
-        std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-    }
-    // ========================================================================
-    // PARTIE 1 : VALIDATION DE LA FONCTION DE RANKING
-    // ========================================================================
-
-    registerProgramVariablesToSolver(solver, lasso);
-
-    if(verbose) {
-        std::cout << "\n╭─ Fonction de Ranking ─────────────────────────────────╮" << std::endl;
-        // Étape 1.1 : Non-trivialité
-        std::cout << "[1/3] Vérification de la non-trivialité..." << std::endl;
-    }
-    result.rf_non_trivial_check = checkRFNonTriviality(ranking_function);
-    
-    if (!result.rf_non_trivial_check) {
-        result.error_message = "Ranking function est triviale (tous les coefficients nuls)";
-        if(verbose) {
-            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
-            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-        }
-        return result;
-    }
-    if(verbose) {
-        std::cout << "  ✅ OK : Au moins un coefficient non-nul" << std::endl;
-
-        // Étape 1.2 : Bounded
-        std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 dans le loop)..." << std::endl;
-    }
-
-
-    if(verbose) {
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    // ========================================================================
-    // PARTIE 2 : VALIDATION DES SUPPORTING INVARIANTS
-    // ========================================================================
-
-        std::cout << "╭─ Supporting Invariants ───────────────────────────────╮" << std::endl;
-        std::cout << "  Nombre de SI synthétisés : " << supporting_invariants.size() << std::endl;
-    }
-
-    if (supporting_invariants.empty()) {
-        if(verbose)
-            std::cout << "  ℹ️  Aucun SI synthétisé" << std::endl;
-        result.all_si_valid = true;  // Vacuously true
-    } else {
-        // Compteurs pour statistiques
-        int num_trivial_true = 0;
-        int num_trivial_false = 0;
-        int num_non_trivial = 0;
-        int num_valid_non_trivial = 0;
-
-        for (size_t i = 0; i < supporting_invariants.size(); ++i) {
-            if(verbose)
-                std::cout << "\n  ┌─ SI #" << i << " ────────────────────────────────────┐" << std::endl;
-            SIValidationResult si_result = validateSingleSI(i, supporting_invariants[i], lasso, solver);
-            result.si_results.push_back(si_result);
-
-            // Comptabiliser les résultats
-            if (si_result.is_false_check) {
-                num_trivial_false++;
-                if(verbose)
-                    std::cout << "  │ !  TRIVIAL FALSE" << std::endl;
-            } else if (si_result.is_true_check) {
-                num_trivial_true++;
-                if(verbose)
-                    std::cout << "  │ ✅ TRIVIAL TRUE" << std::endl;
-            } else {
-                num_non_trivial++;
-                if (si_result.is_valid) {
-                    num_valid_non_trivial++;
-                    valid_sis.push_back(supporting_invariants[i]);
-                    if(verbose)
-                        std::cout << "  │ ✅ VALIDE (non-trivial)" << std::endl;
-                } else {
-                    if(verbose)
-                        std::cout << "  │ ❌ INVALIDE : " << si_result.error_message << std::endl;
-                }
-            }
-
-            if(verbose) {
-                std::cout << "  │   • isFalse()      : " << (si_result.is_false_check ? "❌ FAUX" : "✅") << std::endl;
-                std::cout << "  │   • isTrue()       : " << (si_result.is_true_check ? "✅ VRAI" : "➖") << std::endl;
-
-                if (!si_result.is_false_check && !si_result.is_true_check) {
-                    std::cout << "  │   • Initiation     : " << (si_result.initiation_check ? "✅" : "❌") << std::endl;
-                    std::cout << "  │   • Compatible     : " << (si_result.compatible_check ? "✅" : "❌") << std::endl;
-                    std::cout << "  │   • Consécution    : " << (si_result.consecution_check ? "✅" : "❌") << std::endl;
-                }
-
-                std::cout << "  └─────────────────────────────────────────────────┘" << std::endl;
-            }
-        }
-
-        if(verbose) {
-            std::cout << "\n    Statistiques SI :" << std::endl;
-            std::cout << "     • Triviaux TRUE  : " << num_trivial_true << " (filtrés)" << std::endl;
-            std::cout << "     • Triviaux FALSE : " << num_trivial_false << " (rejetés)" << std::endl;
-            std::cout << "     • Non-triviaux   : " << num_non_trivial << std::endl;
-            std::cout << "     • Valides (non-t): " << num_valid_non_trivial << std::endl;
-        }
-
-        if (num_trivial_false > 0) {
-            result.all_si_valid = false;
-            if(verbose)
-                std::cout << "\n  ❌ Échec : " << num_trivial_false << " SI trivialement FAUX" << std::endl;
-        } else {
-            // Tous les SI non-triviaux invalides sont ignorés :
-            // on retente la décroissance RF avec seulement les valid_sis
-            result.all_si_valid = true;
-            if(verbose) {
-                if (num_trivial_true > 0)
-                    std::cout << "\n  ✅ SI triviale(s) TRUE acceptée(s)" << std::endl;
-                if (num_valid_non_trivial > 0)
-                    std::cout << "\n  ✅ " << num_valid_non_trivial << "/" << num_non_trivial
-                            << " SI non-triviaux valides" << std::endl;
-                if (num_valid_non_trivial == 0 && num_trivial_true == 0)
-                    std::cout << "\n  ℹ️  Aucun SI valide — vérification RF sans SI" << std::endl;
-            }
-        }
-    }
-    if(verbose)
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    result.is_valid = true;
-    // TODO: bug somehwere
-
-    // ========================================================================
-    // PARTIE 3 : VÉRIFICATION RF BOUNDED + DECREASING avec les SI valides
-    // ========================================================================
-
-    if(verbose) {
-        std::cout << "╭─ RF bounded + décroissante (avec " << valid_sis.size() << " SI valide(s)) ─╮" << std::endl;
-        std::cout << "[2/3] Vérification bounded (f(x) ≥ 0 sous les SI)..." << std::endl;
-    }
-
-    result.rf_bounded_check = checkRFBounded(
-        ranking_function, valid_sis, lasso, solver);
-
-    if (!result.rf_bounded_check) {
-        result.error_message = "Ranking function n'est pas bornée : f(x) < 0 possible";
-        if(verbose) {
-            std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
-            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-        }
-    } else {
-        if(verbose) {
-            std::cout << "  ✅ OK : f(x) ≥ 0 sous les SI" << std::endl;
-            std::cout << "[3/3] Vérification decreasing (f(x) - f(x') ≥ δ)..." << std::endl;
-        }
-
-        result.rf_decreasing_check = checkRFDecreasing(
-            ranking_function, valid_sis, lasso, solver, ranking_function.delta);
-
-        if (!result.rf_decreasing_check) {
-            result.error_message = "Ranking function ne décroît pas strictement (même sans SI invalides)";
-            if(verbose) {
-                std::cout << "  ❌ ÉCHEC : " << result.error_message << std::endl;
-                std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-            }
-        } else if(verbose) {
-            std::cout << "  ✅ OK : f(x) - f(x') ≥ " << ranking_function.delta.toString() << std::endl;
-            std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-        }
-    }
-
-    // ========================================================================
-    // RÉSULTAT FINAL
-    // ========================================================================
-
-    result.is_valid = result.all_si_valid
-                && result.rf_non_trivial_check
-                && result.rf_bounded_check
-                && result.rf_decreasing_check;
-    if(verbose) {
-        if (result.is_valid) {
-            std::cout << "╔═══════════════════════════════════════════════════════╗" << std::endl;
-            std::cout << "║  ✅ VALIDATION RÉUSSIE !                             ║" << std::endl;
-            std::cout << "║     Argument de termination VALIDE                   ║" << std::endl;
-            std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-        } else if (!result.all_si_valid) {
-            result.error_message = "Un ou plusieurs Supporting Invariants sont invalides";
-            std::cout << "╔═══════════════════════════════════════════════════════╗" << std::endl;
-            std::cout << "║  ❌ VALIDATION ÉCHOUÉE                               ║" << std::endl;
-            if(!result.error_message.empty())
-            std::cout << "║     " << result.error_message << std::string(10, ' ') << "║" << std::endl;
-            std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-        }
-    }
-
-    return result;
-}
-
-// ============================================================================
-// ENREGISTREMENT DES VARIABLES INPUT ET OUTPUT DU PROGRAMME
-// ============================================================================
-
 void RankingAndInvariantValidator::registerProgramVariablesToSolver(
     SMTSolverInterface* solver,
     const LassoProgram& lasso) {
-
     lasso.declareSolverContext(solver, true);
 }
 
+std::vector<std::string> RankingAndInvariantValidator::loopContext(const LassoProgram& lasso) const {
+    std::vector<std::string> ctx{transitionFormula(lasso.loop)};
+    for (const auto& si : valid_sis) {
+        LinExpr t;
+        std::string why;
+        // valid_sis only holds invariants whose terms were already built
+        // successfully by validateSingleSI.
+        linearTerm(lasso, si.coefficients, si.constant, lasso.loop.var_to_ssa_in, t, why);
+        ctx.push_back(atom(si.is_strict ? ">" : ">=", t));
+    }
+    return ctx;
+}
+
+bool RankingAndInvariantValidator::holdsOnLoop(const LassoProgram& lasso,
+                                               const std::string& counterexample,
+                                               SMTSolverInterface* solver) const {
+    std::vector<std::string> q = loopContext(lasso);
+    q.push_back(counterexample);
+    return provenUnsat(solver, q);
+}
 
 // ============================================================================
-// VALIDATION D'UN SEUL SI
+// SUPPORTING INVARIANTS
 // ============================================================================
+
+// Initiation : SI(honda) doit valoir pour tout état honda atteignable.
+//   - avec stem : stem(x0, x1) ∧ ¬SI(x1) UNSAT, x1 = out-vars du stem ;
+//   - sans stem : l'état honda est arbitraire, donc ¬SI(x) UNSAT sur les
+//     in-vars du loop.
+bool RankingAndInvariantValidator::checkSIInitiation(
+    const SupportingInvariant& si, const LassoProgram& lasso,
+    SMTSolverInterface* solver, std::string& why)
+{
+    const bool no_stem = lasso.hasNoStem();
+    const auto& honda_ssa = no_stem ? lasso.loop.var_to_ssa_in : lasso.stem.var_to_ssa_out;
+    LinExpr t;
+    if (!linearTerm(lasso, si.coefficients, si.constant, honda_ssa, t, why)) return false;
+    std::vector<std::string> q;
+    if (!no_stem) q.push_back(transitionFormula(lasso.stem));
+    q.push_back(atom(si.is_strict ? "<=" : "<", t));
+    if (!provenUnsat(solver, q)) {
+        why = no_stem ? "no stem: SI must hold in every state, and does not"
+                      : "stem does not imply SI";
+        return false;
+    }
+    return true;
+}
+
+// Consécution : SI(x) ∧ loop(x, x') ∧ ¬SI(x') UNSAT.
+bool RankingAndInvariantValidator::checkSIConsecution(
+    const SupportingInvariant& si, const LassoProgram& lasso,
+    SMTSolverInterface* solver, std::string& why)
+{
+    LinExpr tin, tout;
+    if (!linearTerm(lasso, si.coefficients, si.constant, lasso.loop.var_to_ssa_in, tin, why) ||
+        !linearTerm(lasso, si.coefficients, si.constant, lasso.loop.var_to_ssa_out, tout, why))
+        return false;
+    const std::vector<std::string> q{
+        atom(si.is_strict ? ">" : ">=", tin),
+        transitionFormula(lasso.loop),
+        atom(si.is_strict ? "<=" : "<", tout)};
+    if (!provenUnsat(solver, q)) {
+        why = "SI is not inductive over the loop";
+        return false;
+    }
+    return true;
+}
 
 RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::validateSingleSI(
     int si_index,
@@ -254,448 +253,290 @@ RankingAndInvariantValidator::SIValidationResult RankingAndInvariantValidator::v
     SIValidationResult result;
     result.si_index = si_index;
     result.is_valid = false;
-    result.is_false_check = false;
-    result.is_true_check = false;
     result.initiation_check = false;
     result.consecution_check = false;
-    
-    // ========================================================================
-    // ÉTAPE 1 : VÉRIFICATIONS TRIVIALES
-    // ========================================================================
-    
-    // 1.1 : Vérifier si le SI est trivialement FAUX
-    result.is_false_check = checkSIIsFalse(si);
-    if (result.is_false_check) {
-        result.error_message = "SI est trivialement FAUX (isFalse() == true)";
-        return result;
-    }
-    
-    // 1.2 : Vérifier si le SI est trivialement VRAI (on l'ignore alors)
-    result.is_true_check = checkSIIsTrue(si);
-    if (result.is_true_check) {
-        // SI trivial "true" → on l'accepte mais on ne fait pas de checks SMT
-        result.is_valid = true;
-        result.initiation_check = true;
-        result.consecution_check = true;
-        return result;
-    }
-    
-    // 1.3 : Vérifier la non-trivialité (au moins un coefficient de variable non-nul)
-    bool non_trivial = checkSINonTriviality(si);
 
-    if (!non_trivial) {
-        result.error_message = "SI a seulement une constante (pas de variables)";
-        // Note: ce cas devrait être couvert par isFalse() ou isTrue()
+    std::string why;
+    result.initiation_check = checkSIInitiation(si, lasso, solver, why);
+    if (!result.initiation_check) {
+        result.error_message = "initiation failed: " + why;
         return result;
     }
-    
-    // ========================================================================
-    // ÉTAPE 2 : VÉRIFICATIONS SMT - Seulement si pas trivial
-    // ========================================================================
-    
-    // 2.1 : Initiation (si pas de stem, on skip)
-    if (!lasso.hasNoStem()) {
-        result.initiation_check = checkSIInitiation(si, lasso, solver);
+    result.consecution_check = checkSIConsecution(si, lasso, solver, why);
+    if (!result.consecution_check) {
+        result.error_message = "consecution failed: " + why;
+        return result;
+    }
+    result.is_valid = true;
+    return result;
+}
 
-        if (!result.initiation_check) {
-            result.error_message = "Échec initiation : stem n'implique pas SI";
+// Remplit valid_sis avec les SI prouvés (initiation + consécution). Un SI non
+// prouvé est seulement écarté : les obligations du ranking sont alors
+// vérifiées sans lui, ce qui reste sain.
+bool RankingAndInvariantValidator::validateAllSupportingInvariants(
+    const std::vector<SupportingInvariant>& sis,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver,
+    std::vector<SIValidationResult>& si_results_out)
+{
+    const bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
+    valid_sis.clear();
+    si_results_out.clear();
+    bool all_valid = true;
+    for (size_t i = 0; i < sis.size(); ++i) {
+        SIValidationResult r = validateSingleSI(static_cast<int>(i), sis[i], lasso, solver);
+        si_results_out.push_back(r);
+        if (r.is_valid) valid_sis.push_back(sis[i]);
+        else all_valid = false;
+        if (verbose)
+            std::cout << "  SI #" << i << ": "
+                      << (r.is_valid ? "valid" : "not proven, ignored (" + r.error_message + ")")
+                      << std::endl;
+    }
+    return all_valid;
+}
+
+// ============================================================================
+// RANKING FUNCTIONS
+// ============================================================================
+
+// Préambule commun à tous les templates : forme, deltas, contexte du solver,
+// SI, termes. Renvoie false (avec res.error_message) si l'argument est déjà
+// rejeté.
+bool RankingAndInvariantValidator::prepare(
+    const TerminationArgument& argument, const LassoProgram& lasso,
+    SMTSolverInterface* solver, const char* template_name,
+    ValidationResult& res, LoopTerms& terms)
+{
+    res.is_valid = false;
+    res.rf_bounded_check = false;
+    res.rf_decreasing_check = false;
+    res.all_si_valid = false;
+    const auto& C = argument.ranking_functions;
+    if (C.empty()) {
+        res.error_message = std::string(template_name) + ": no component";
+        return false;
+    }
+    if (!allDeltasPositive(C)) {
+        res.error_message = std::string(template_name) + ": a delta is not > 0";
+        return false;
+    }
+    registerProgramVariablesToSolver(solver, lasso);
+    res.all_si_valid = validateAllSupportingInvariants(argument.supporting_invariants, lasso, solver, res.si_results);
+    std::string why;
+    if (!buildLoopTerms(lasso, C, terms, why)) {
+        res.error_message = why;
+        return false;
+    }
+    return true;
+}
+
+// ============================================================================
+// AFFINE  --  δ > 0,  f(x) >= 0,  f(x) - f(x') >= δ
+// ============================================================================
+
+RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validate(
+    const TerminationArgument& argument,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver)
+{
+    ValidationResult res;
+    LoopTerms T;
+    if (argument.ranking_functions.size() != 1) {
+        res.is_valid = res.rf_bounded_check = res.rf_decreasing_check = false;
+        res.all_si_valid = false;
+        res.error_message = "Affine: expected exactly one component, got "
+                            + std::to_string(argument.ranking_functions.size());
+        return res;
+    }
+    if (!prepare(argument, lasso, solver, "Affine", res, T)) return res;
+    const Rational& delta = argument.ranking_functions[0].delta;
+
+    res.rf_bounded_check = holdsOnLoop(lasso, atom("<", T.in[0]), solver);
+    if (!res.rf_bounded_check) { res.error_message = "f(x) >= 0 not proven on the loop"; return res; }
+
+    res.rf_decreasing_check = holdsOnLoop(lasso, atom("<", T.in[0] - T.out[0] - delta), solver);
+    if (!res.rf_decreasing_check) { res.error_message = "f(x) - f(x') >= delta not proven on the loop"; return res; }
+
+    res.is_valid = true;
+    return res;
+}
+
+// ============================================================================
+// NESTED  --  δ > 0,  f0(x) - f0(x') >= δ,
+//             fi(x) - fi(x') + f_{i-1}(x) >= 0 (i > 0),  f_{k-1}(x) >= 0
+// ============================================================================
+
+RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidator::validateNested(
+    const TerminationArgument& argument,
+    const LassoProgram& lasso,
+    SMTSolverInterface* solver)
+{
+    NestedValidationResult result;
+    result.is_valid = false;
+    result.all_si_valid = false;
+    result.last_component_bounded_check = false;
+
+    ValidationResult pre;
+    LoopTerms T;
+    const bool prepared = prepare(argument, lasso, solver, "Nested", pre, T);
+    result.all_si_valid = pre.all_si_valid;
+    result.si_results = pre.si_results;
+    const auto& C = argument.ranking_functions;
+    for (int i = 0; i < static_cast<int>(C.size()); ++i)
+        result.component_results.push_back({i, false});
+    if (!prepared) { result.error_message = pre.error_message; return result; }
+
+    const int k = static_cast<int>(C.size());
+    const Rational& delta = C[0].delta;
+    for (int i = 0; i < k; ++i) {
+        const std::string ce = (i == 0)
+            ? atom("<", T.in[0] - T.out[0] - delta)
+            : atom("<", T.in[i] - T.out[i] + T.in[i - 1]);
+        result.component_results[i].nested_decrease_check = holdsOnLoop(lasso, ce, solver);
+        if (!result.component_results[i].nested_decrease_check) {
+            result.error_message = "nested decrease not proven for component " + std::to_string(i);
             return result;
         }
-    } else {
-        // Pas de stem → initiation vacuously true
-        result.initiation_check = true;
     }
-
-    // 2.2 : Compatibilité avec loop guard (vérifier pas vacuously valid)
-    result.compatible_check = checkSICompatibleWithLoop(si, lasso, solver);
-
-    if (!result.compatible_check) {
-        result.error_message = "SI incompatible avec loop guard (vacuously valid)";
+    result.last_component_bounded_check = holdsOnLoop(lasso, atom("<", T.in[k - 1]), solver);
+    if (!result.last_component_bounded_check) {
+        result.error_message = "f_{k-1}(x) >= 0 not proven on the loop";
         return result;
     }
-
-    // 2.3 : Consécution
-    result.consecution_check = checkSIConsecution(si, lasso, solver);
-
-    if (!result.consecution_check) {
-        result.error_message = "Échec consécution : SI n'est pas inductif";
-        return result;
-    }
-    
-    // Tout est OK !
     result.is_valid = true;
     return result;
 }
 
 // ============================================================================
-// VÉRIFICATIONS TRIVIALES (RAPIDES) - SUPPORTING INVARIANTS
+// LEXICOGRAPHIC  --  δi > 0,  fi(x) > 0 (tout i),
+//   consec_i (i < k-1) : fi(x') <= fi(x)  ∨  ∃ j < i : fj(x) - fj(x') > δj,
+//   decrement          : ∃ i : fi(x) - fi(x') > δi
 // ============================================================================
 
-bool RankingAndInvariantValidator::checkSIIsFalse(
-    const SupportingInvariant& si) const
-{
-    // SI est trivialement FAUX si :
-    // - Pas de variables (seulement une constante c)
-    // - Non-strict (>=) : c < 0
-    // - Strict (>)      : c <= 0
-    
-    bool has_variables = false;
-    for (const auto& [var, coef] : si.coefficients) {
-        if (!coef.isZero()) {
-            has_variables = true;
-            break;
-        }
-    }
-
-    if (has_variables) {
-        return false;
-    }
-
-    bool c_neg = (si.constant.numerator() < BigInt(0));
-    bool c_zero = si.constant.isZero();
-    if (si.is_strict) {
-        return c_neg || c_zero;   // c <= 0
-    } else {
-        return c_neg;             // c < 0
-    }
-}
-
-bool RankingAndInvariantValidator::checkSIIsTrue(
-    const SupportingInvariant& si) const
-{
-    bool has_variables = false;
-    for (const auto& [var, coef] : si.coefficients) {
-        if (!coef.isZero()) {
-            has_variables = true;
-            break;
-        }
-    }
-
-    if (has_variables) {
-        return false;
-    }
-
-    bool c_pos = (!si.constant.isZero() && si.constant.numerator() > BigInt(0));
-    bool c_zero = si.constant.isZero();
-    if (si.is_strict) {
-        return c_pos;             // c > 0
-    } else {
-        return c_pos || c_zero;   // c >= 0
-    }
-}
-
-bool RankingAndInvariantValidator::checkSINonTriviality(
-    const SupportingInvariant& si) const
-{
-    for (const auto& [var, coef] : si.coefficients) {
-        if (!coef.isZero()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-// ============================================================================
-// VÉRIFICATIONS SMT - SUPPORTING INVARIANTS
-// ============================================================================
-
-// Cherche un contre-exemple où stem(x, x') ∧ ¬SI(x') est SAT
-bool RankingAndInvariantValidator::checkSIInitiation(
-    const SupportingInvariant& si,
+RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validateLexicographic(
+    const TerminationArgument& argument,
     const LassoProgram& lasso,
     SMTSolverInterface* solver)
 {
-    solver->push();
-    
-    // Ajouter les contraintes du stem
-    for (const auto& poly : lasso.stem.polyhedra) {
-        for (const auto& ineq : poly) {
-            std::string smt_constraint = ineq.toSMTLib2();
-            solver->addAssertion(smt_constraint);
-        }
+    ValidationResult res;
+    LoopTerms T;
+    if (!prepare(argument, lasso, solver, "Lexicographic", res, T)) return res;
+    const auto& C = argument.ranking_functions;
+    const int k = static_cast<int>(C.size());
+    auto notDecreased = [&](int j) {
+        return atom("<=", T.in[j] - T.out[j] - C[j].delta);
+    };
+
+    res.rf_bounded_check = true;
+    for (int i = 0; i < k && res.rf_bounded_check; ++i)
+        res.rf_bounded_check = holdsOnLoop(lasso, atom("<=", T.in[i]), solver);
+    if (!res.rf_bounded_check) { res.error_message = "lexicographic bound fi(x) > 0 not proven"; return res; }
+
+    res.rf_decreasing_check = true;
+    for (int i = 0; i + 1 < k && res.rf_decreasing_check; ++i) {
+        std::vector<std::string> ce{atom(">", T.out[i] - T.in[i])};
+        for (int j = 0; j < i; ++j) ce.push_back(notDecreased(j));
+        res.rf_decreasing_check = holdsOnLoop(lasso, smtAnd(ce), solver);
     }
-    
-    // Construire ¬SI(x') : SI évalué sur les out_vars du stem (= in_vars du loop)
-    std::ostringstream neg_si;
-    neg_si << "(" << (si.is_strict ? "<=" : "<") << " (+";
-
-    bool has_terms = false;
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && !it->second.isZero()) {
-            neg_si << " (* " << it->second.toSMTLibString() << " " << lasso.stem.getSSAVar(prog_var, true) << ")";
-            has_terms = true;
-        }
+    if (res.rf_decreasing_check) {
+        std::vector<std::string> ce;
+        for (int i = 0; i < k; ++i) ce.push_back(notDecreased(i));
+        res.rf_decreasing_check = holdsOnLoop(lasso, smtAnd(ce), solver);
     }
+    if (!res.rf_decreasing_check) { res.error_message = "lexicographic consecution/decrement not proven"; return res; }
 
-    if (!si.constant.isZero() || !has_terms) {
-        neg_si << " " << si.constant.toSMTLibString();
-    }
-    
-    neg_si << ") 0)";
-    solver->addAssertion(neg_si.str());
-    bool sat = solver->checkSat();
-    
-    solver->pop();
-    return !sat;  // Valide si UNSAT
-}
-
-// Cherche un contre-exemple où SI(x) ∧ loop(x, x') ∧ ¬SI(x') est SAT
-bool RankingAndInvariantValidator::checkSIConsecution(
-    const SupportingInvariant& si,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    solver->push();
-    
-    std::ostringstream si_x;
-    si_x << "(" << (si.is_strict ? ">" : ">=") << " (+";
-    
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && !it->second.isZero()) {
-            si_x << " (* " << it->second.toSMTLibString() << " " << lasso.loop.getSSAVar(prog_var, false) << ")";
-        }
-    }
-
-    si_x << " " << si.constant.toSMTLibString() << ") 0)";
-    if (VERBOSITY == VerbosityLevel::VERBOSE)
-        std::cout << si_x.str() << std::endl;
-    solver->addAssertion(si_x.str());
-
-    // Ajouter les contraintes du loop
-    for (const auto& poly : lasso.loop.polyhedra) {
-        for (const auto& ineq : poly) {
-            std::string smt_constraint = ineq.toSMTLib2();
-            solver->addAssertion(smt_constraint);
-        }
-    }
-
-    // Ajouter ¬SI(x') avec out_vars de loop
-    std::ostringstream neg_si_xprime;
-    neg_si_xprime << "(" << (si.is_strict ? "<=" : "<") << " (+";
-
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && !it->second.isZero()) {
-            neg_si_xprime << " (* " << it->second.toSMTLibString() << " " << lasso.loop.getSSAVar(prog_var, true) << ")";
-        }
-    }
-
-    neg_si_xprime << " " << si.constant.toSMTLibString() << ") 0)";
-    solver->addAssertion(neg_si_xprime.str());
-    
-    bool sat = solver->checkSat();
-    
-    solver->pop();
-    return !sat;
-}
-
-bool RankingAndInvariantValidator::checkSICompatibleWithLoop(
-    const SupportingInvariant& si,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    solver->push();
-    
-    // Construire SI(x) avec les variables d'entrée du loop
-    std::ostringstream si_x;
-    si_x << "(" << (si.is_strict ? ">" : ">=") << " (+";
-    
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = si.coefficients.find(prog_var);
-        if (it != si.coefficients.end() && !it->second.isZero()) {
-            si_x << " (* " << it->second.toSMTLibString() << " "
-                << lasso.loop.getSSAVar(prog_var, false) << ")";
-        }
-    }
-    si_x << " " << si.constant.toSMTLibString() << ") 0)";
-    
-    // Ajouter SI(x)
-    solver->addAssertion(si_x.str());
-
-    // Ajouter UNIQUEMENT le loop guard (pas les updates)
-    // On veut vérifier : ∃x. loop_guard(x) ∧ SI(x)
-
-    for (const auto& poly : lasso.loop.polyhedra) {
-        int i = 0;
-        for (const auto& ineq : poly) {
-
-            // Ne prendre que les contraintes sur les variables d'entrée
-            // (pas les contraintes d'égalité entre in et out)
-            bool is_guard = true;
-            for (const auto& [var_prog, ssa_out] : lasso.loop.var_to_ssa_out) {
-                AffineTerm coef = ineq.getCoefficient(ssa_out);
-                if ( !coef.isZero() ) {
-                    is_guard = false;
-                    break;
-                }
-            }
-            if (is_guard) {
-                std::string smt_constraint = ineq.toSMTLib2();
-                solver->addAssertion(smt_constraint);
-            }
-            i++;
-        }
-    }
-    bool sat = solver->checkSat();
-    
-    solver->pop();
-    return sat;  // Valide si SAT (compatible)
+    res.is_valid = true;
+    return res;
 }
 
 // ============================================================================
-// VÉRIFICATIONS - RANKING FUNCTION
+// MULTIPHASE  --  δi > 0,  f0(x) - f0(x') > δ0,
+//   fi(x) - fi(x') > δi  ∨  f_{i-1}(x) > 0  (i > 0),   ∨_i fi(x) > 0
 // ============================================================================
 
-bool RankingAndInvariantValidator::checkRFNonTriviality(
-    const RankingFunction& rf) const
-{
-    for (const auto& [var, rational] : rf.coefficients) {
-        if (!rational.isZero()){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool RankingAndInvariantValidator::checkRFBounded(
-    const RankingFunction& rf,
-    const std::vector<SupportingInvariant>& supporting_invariants,
+RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validateMultiphase(
+    const TerminationArgument& argument,
     const LassoProgram& lasso,
     SMTSolverInterface* solver)
 {
-    solver->push();
+    ValidationResult res;
+    LoopTerms T;
+    if (!prepare(argument, lasso, solver, "Multiphase", res, T)) return res;
+    const auto& C = argument.ranking_functions;
+    const int k = static_cast<int>(C.size());
 
-    // Ajouter les contraintes du loop
-    for (const auto& poly : lasso.loop.polyhedra) {
-        for (const auto& ineq : poly) {
-            solver->addAssertion(ineq.toSMTLib2());
-        }
+    res.rf_decreasing_check = true;
+    for (int i = 0; i < k && res.rf_decreasing_check; ++i) {
+        const std::string not_decr = atom("<=", T.in[i] - T.out[i] - C[i].delta);
+        const std::string ce = (i == 0) ? not_decr : smtAnd({not_decr, atom("<=", T.in[i - 1])});
+        res.rf_decreasing_check = holdsOnLoop(lasso, ce, solver);
     }
+    if (!res.rf_decreasing_check) { res.error_message = "multiphase decrease not proven"; return res; }
 
-    // Conditionner par les SI : SI(x) => f(x) >= 0
-    for (const auto& si : supporting_invariants) {
-        std::ostringstream si_formula;
-        si_formula << "(";
-        si_formula << (si.is_strict ? ">" : ">=");
-        si_formula << " (+";
-        for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-            const std::string& prog_var = lasso.program_vars[i];
-            auto it = si.coefficients.find(prog_var);
-            auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (it != si.coefficients.end() && !it->second.isZero() &&
-                var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << it->second.toSMTLibString() << " " << var_ssa_in->second << ")";
-            }
-        }
-        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
-        solver->addAssertion(si_formula.str());
-    }
+    std::vector<std::string> ce;
+    for (int i = 0; i < k; ++i) ce.push_back(atom("<=", T.in[i]));
+    res.rf_bounded_check = holdsOnLoop(lasso, smtAnd(ce), solver);
+    if (!res.rf_bounded_check) { res.error_message = "multiphase bound (some fi(x) > 0) not proven"; return res; }
 
-    // Chercher f(x) < 0
-    std::ostringstream f_negative;
-    f_negative << "(< (+";
-
-    for (const auto& [var, rational] : rf.coefficients) {
-        if (!rational.isZero()) {
-            f_negative << " (* " << rational.toSMTLibString() << " " << lasso.loop.getSSAVar(var, false) << ")";
-        }
-    }
-
-    f_negative << " " << rf.constant.toSMTLibString() << ") 0)";
-
-    solver->addAssertion(f_negative.str());
-
-    bool sat = solver->checkSat();
-    
-    solver->pop();
-    return !sat;
+    res.is_valid = true;
+    return res;
 }
 
-bool RankingAndInvariantValidator::checkRFDecreasing(
-    const RankingFunction& rf,
-    const std::vector<SupportingInvariant>& supporting_invariants,
+// ============================================================================
+// PIECEWISE  --  morceau i actif en x ssi h_i(x) >= 0 ; δi > 0,
+//   bound_i      : h_i(x) >= 0  ⇒  f_i(x) >= 0,
+//   decrease_i,j : h_i(x) >= 0 ∧ h_j(x') >= 0  ⇒  f_i(x) - f_j(x') >= δi,
+//   exhaustive   : ∨_i h_i(x) >= 0.
+// La décroissance porte sur toute paire (i, j), comme dans Ultimate
+// (PiecewiseTemplate). Une garde par morceau, sinon rejet.
+// ============================================================================
+
+RankingAndInvariantValidator::ValidationResult RankingAndInvariantValidator::validatePiecewise(
+    const TerminationArgument& argument,
     const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    Rational delta)
+    SMTSolverInterface* solver)
 {
-    solver->push();
-
-    // Ajouter les contraintes du loop
-    for (const auto& poly : lasso.loop.polyhedra) {
-        for (const auto& ineq : poly) {
-            solver->addAssertion(ineq.toSMTLib2());
-        }
+    ValidationResult res;
+    const auto& C = argument.ranking_functions;
+    const auto& H = argument.guards;
+    if (H.size() != C.size()) {
+        res.is_valid = res.rf_bounded_check = res.rf_decreasing_check = false;
+        res.all_si_valid = false;
+        res.error_message = "Piecewise: " + std::to_string(H.size()) + " guards for "
+                            + std::to_string(C.size()) + " pieces";
+        return res;
     }
+    LoopTerms T;
+    if (!prepare(argument, lasso, solver, "Piecewise", res, T)) return res;
+    LoopTerms G;
+    std::string why;
+    if (!buildLoopTerms(lasso, H, G, why)) { res.error_message = why; return res; }
+    const int k = static_cast<int>(C.size());
 
-    // La décroissance est conditionnée par les SI: SI(x) => f(x) - f(x') >= δ
-    for (const auto& si : supporting_invariants) {
-        std::ostringstream si_formula;
-        si_formula << "(";
-        si_formula << (si.is_strict ? ">" : ">=");
-        si_formula << " (+";
-        
-        // Ajouter les termes des variables (utiliser in_vars du loop)
-        for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-            const std::string& prog_var = lasso.program_vars[i];
-            auto it = si.coefficients.find(prog_var);
-            auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (it != si.coefficients.end() && !it->second.isZero() &&
-                var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << it->second.toSMTLibString() << " " << var_ssa_in->second << ")";
-            }
-        }
+    res.rf_bounded_check = true;
+    for (int i = 0; i < k && res.rf_bounded_check; ++i)
+        res.rf_bounded_check = holdsOnLoop(
+            lasso, smtAnd({atom(">=", G.in[i]), atom("<", T.in[i])}), solver);
+    if (!res.rf_bounded_check) { res.error_message = "piecewise bound (h_i >= 0 => f_i >= 0) not proven"; return res; }
 
-        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
-        solver->addAssertion(si_formula.str());
-    }
+    res.rf_decreasing_check = true;
+    for (int i = 0; i < k && res.rf_decreasing_check; ++i)
+        for (int j = 0; j < k && res.rf_decreasing_check; ++j)
+            res.rf_decreasing_check = holdsOnLoop(lasso, smtAnd({
+                atom(">=", G.in[i]),
+                atom(">=", G.out[j]),
+                atom("<", T.in[i] - T.out[j] - C[i].delta)}), solver);
+    if (!res.rf_decreasing_check) { res.error_message = "piecewise decrease across pieces not proven"; return res; }
 
-    // Construire f(x) avec in_vars
-    std::ostringstream f_x;
-    f_x << "(+";
-    
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = rf.coefficients.find(prog_var);
-        auto var_ssa_in = lasso.loop.var_to_ssa_in.find(prog_var);
-        if (it != rf.coefficients.end() && !(it->second.isZero())  && var_ssa_in != lasso.loop.var_to_ssa_in.end()) {
-            // Utiliser in_vars du loop pour f(x)
-            f_x << " (* " << it->second.toSMTLibString() << " " << var_ssa_in->second << ")";
-        }
-    }
+    std::vector<std::string> ce;
+    for (int i = 0; i < k; ++i) ce.push_back(atom("<", G.in[i]));
+    res.rf_decreasing_check = holdsOnLoop(lasso, smtAnd(ce), solver);
+    if (!res.rf_decreasing_check) { res.error_message = "piecewise exhaustiveness (some h_i >= 0) not proven"; return res; }
 
-    f_x << " " << rf.constant.toSMTLibString() << ")";
-    
-    // Construire f(x') avec out_vars
-    std::ostringstream f_x_prime;
-    f_x_prime << "(+";
-    
-    for (size_t i = 0; i < lasso.program_vars.size(); ++i) {
-        const std::string& prog_var = lasso.program_vars[i];
-        auto it = rf.coefficients.find(prog_var);
-        auto var_ssa_out = lasso.loop.var_to_ssa_out.find(prog_var);
-        if (it != rf.coefficients.end() && !(it->second.isZero()) && var_ssa_out != lasso.loop.var_to_ssa_out.end()) {
-            // Utiliser out_vars du loop pour f(x')
-            f_x_prime << " (* " << it->second.toSMTLibString() << " " << var_ssa_out->second << ")";
-        }
-    }
-    f_x_prime << " " << rf.constant.toSMTLibString() << ")";
-
-    // Chercher contre-exemple : f(x) - f(x') < δ
-    std::ostringstream decrease_check;
-    decrease_check << "(< (- " << f_x.str() << " " << f_x_prime.str() << ") " << delta.toSMTLibString() << ")";
-
-    solver->addAssertion(decrease_check.str());
-
-    bool sat = solver->checkSat();
-    
-    solver->pop();
-    return !sat;
+    res.is_valid = true;
+    return res;
 }
 
 // ============================================================================
@@ -704,648 +545,33 @@ bool RankingAndInvariantValidator::checkRFDecreasing(
 
 void RankingAndInvariantValidator::printValidationResult(const ValidationResult& result) const
 {
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║    RÉSUMÉ DE VALIDATION                             ║" << std::endl;
-    std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-    
-    std::cout << "\n  Statut global : "
-            << (result.is_valid ? "✅ VALIDE" : "❌ INVALIDE") << std::endl;
-    
-    std::cout << "\n  ┌─ Fonction de Ranking ─────────────┐" << std::endl;
-    std::cout << "  │ Non-trivialité : "
-            << (result.rf_non_trivial_check ? "✅" : "❌") << std::endl;
-    std::cout << "  │ Bounded        : "
-            << (result.rf_bounded_check ? "✅" : "❌") << std::endl;
-    std::cout << "  │ Decreasing     : "
-            << (result.rf_decreasing_check ? "✅" : "❌") << std::endl;
-    std::cout << "  └────────────────────────────────────┘" << std::endl;
-    
-    std::cout << "\n  ┌─ Supporting Invariants ────────────┐" << std::endl;
-    std::cout << "  │ Nombre total : " << result.si_results.size() << std::endl;
-    std::cout << "  │ Tous valides : " << (result.all_si_valid ? "✅" : "❌") << std::endl;
-    
+    std::cout << "\n  Validation : " << (result.is_valid ? "VALID" : "INVALID") << std::endl;
+    std::cout << "    bounded=" << (result.rf_bounded_check ? "OK" : "FAIL")
+              << "  decreasing=" << (result.rf_decreasing_check ? "OK" : "FAIL")
+              << "  SI=" << (result.all_si_valid ? "OK" : "FAIL") << std::endl;
     for (const auto& si_res : result.si_results) {
-        std::cout << "  │ ─ SI #" << si_res.si_index << " : "
-                << (si_res.is_valid ? "✅" : "❌");
-        if (si_res.is_false_check) {
-            std::cout << " (FAUX)";
-        } else if (si_res.is_true_check) {
-            std::cout << " (VRAI)";
-        }
+        std::cout << "    SI #" << si_res.si_index << " : " << (si_res.is_valid ? "OK" : "FAIL");
+        if (!si_res.is_valid) std::cout << " (" << si_res.error_message << ")";
         std::cout << std::endl;
     }
-    
-    std::cout << "  └────────────────────────────────────┘" << std::endl;
-    
-    if (!result.is_valid && !result.error_message.empty()) {
-        std::cout << "\n  !  Erreur : " << result.error_message << std::endl;
-    }
-
-    std::cout << std::endl;
+    if (!result.is_valid && !result.error_message.empty())
+        std::cout << "    Error: " << result.error_message << std::endl;
 }
-
-// ============================================================================
-// VALIDATION NESTED TEMPLATE
-// ============================================================================
-
-// Construit la formule SMT pour fi(x) avec les variables in du loop
-static std::string buildRFFormula(
-    const RankingFunction& rf,
-    const LassoProgram& lasso,
-    bool use_out_vars)
-{
-    std::ostringstream f;
-    f << "(+";
-    for (const auto& prog_var : lasso.program_vars) {
-        auto coef_it = rf.coefficients.find(prog_var);
-        if (coef_it == rf.coefficients.end() || coef_it->second.isZero()) continue;
-        const auto& ssa_map = use_out_vars
-            ? lasso.loop.var_to_ssa_out
-            : lasso.loop.var_to_ssa_in;
-        auto ssa_it = ssa_map.find(prog_var);
-        if (ssa_it == ssa_map.end()) continue;
-        f << " (* " << coef_it->second.toSMTLibString() << " " << ssa_it->second << ")";
-    }
-    f << " " << rf.constant.toSMTLibString() << ")";
-    return f.str();
-}
-
-// Ajoute les contraintes du loop et des SI valides sur le solver (dans un push)
-static void addLoopAndSIConstraints(
-    const LassoProgram& lasso,
-    const std::vector<SupportingInvariant>& valid_sis,
-    SMTSolverInterface* solver)
-{
-    for (const auto& poly : lasso.loop.polyhedra) {
-        for (const auto& ineq : poly) {
-            solver->addAssertion(ineq.toSMTLib2());
-        }
-    }
-    for (const auto& si : valid_sis) {
-        std::ostringstream si_formula;
-        si_formula << "(" << (si.is_strict ? ">" : ">=") << " (+";
-        for (const auto& prog_var : lasso.program_vars) {
-            auto coef_it = si.coefficients.find(prog_var);
-            auto ssa_it = lasso.loop.var_to_ssa_in.find(prog_var);
-            if (coef_it != si.coefficients.end() && !coef_it->second.isZero() &&
-                ssa_it != lasso.loop.var_to_ssa_in.end()) {
-                si_formula << " (* " << coef_it->second.toSMTLibString() << " " << ssa_it->second << ")";
-            }
-        }
-        si_formula << " " << si.constant.toSMTLibString() << ") 0)";
-        solver->addAssertion(si_formula.str());
-    }
-}
-
-RankingAndInvariantValidator::NestedValidationResult RankingAndInvariantValidator::validateNested(
-    const TerminationArgument& argument,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    const auto& components = argument.ranking_functions;
-    const auto& supporting_invariants = argument.supporting_invariants;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    NestedValidationResult result;
-    result.is_valid = false;
-    result.all_si_valid = false;
-    result.last_component_bounded_check = false;
-
-    if (components.empty()) {
-        result.error_message = "NestedTemplate: no components";
-        return result;
-    }
-
-    if (verbose) {
-        std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║    VALIDATION POST-SYNTHESE (NestedTemplate)         ║" << std::endl;
-        std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-    }
-
-    registerProgramVariablesToSolver(solver, lasso);
-
-    // ========================================================================
-    // PARTIE 1 : VALIDATION DES SUPPORTING INVARIANTS
-    // ========================================================================
-
-    if (verbose) {
-        std::cout << "\n╭─ Supporting Invariants ───────────────────────────────╮" << std::endl;
-        std::cout << "  Nombre de SI : " << supporting_invariants.size() << std::endl;
-    }
-
-    // Reuse valid_sis member (reset first)
-    valid_sis.clear();
-
-    if (supporting_invariants.empty()) {
-        result.all_si_valid = true;
-    } else {
-        int num_trivial_false = 0;
-        int num_trivial_true = 0;
-        int num_non_trivial = 0;
-        int num_valid_non_trivial = 0;
-
-        for (size_t i = 0; i < supporting_invariants.size(); ++i) {
-            SIValidationResult si_result = validateSingleSI(i, supporting_invariants[i], lasso, solver);
-            result.si_results.push_back(si_result);
-
-            if (si_result.is_false_check) {
-                num_trivial_false++;
-            } else if (si_result.is_true_check) {
-                num_trivial_true++;
-            } else {
-                num_non_trivial++;
-                if (si_result.is_valid) {
-                    num_valid_non_trivial++;
-                    valid_sis.push_back(supporting_invariants[i]);
-                }
-            }
-        }
-
-        if (num_trivial_false > 0) {
-            result.all_si_valid = false;
-            result.error_message = "One or more SI are trivially false";
-            if (verbose)
-                std::cout << "  FAIL: " << num_trivial_false << " trivially false SI" << std::endl;
-        } else {
-            result.all_si_valid = true;
-        }
-
-        if (verbose) {
-            std::cout << "    Trivial TRUE : " << num_trivial_true << std::endl;
-            std::cout << "    Trivial FALSE: " << num_trivial_false << std::endl;
-            std::cout << "    Non-trivial valid: " << num_valid_non_trivial
-                    << "/" << num_non_trivial << std::endl;
-        }
-    }
-
-    if (verbose)
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    if (!result.all_si_valid)
-        return result;
-
-    // ========================================================================
-    // PARTIE 2 : NON-TRIVIALITE DES COMPOSANTS
-    // ========================================================================
-
-    if (verbose)
-        std::cout << "╭─ Components non-triviality ───────────────────────────╮" << std::endl;
-
-    bool all_non_trivial = true;
-    for (int i = 0; i < static_cast<int>(components.size()); ++i) {
-        NestedValidationResult::ComponentResult cr;
-        cr.index = i;
-        cr.non_trivial_check = checkRFNonTriviality(components[i]);
-        cr.nested_decrease_check = false;
-        result.component_results.push_back(cr);
-        if (!cr.non_trivial_check) {
-            all_non_trivial = false;
-            if (verbose)
-                std::cout << "  FAIL: component f" << i << " is trivial (all-zero coefficients)" << std::endl;
-        } else if (verbose) {
-            std::cout << "  OK: component f" << i << " is non-trivial" << std::endl;
-        }
-    }
-
-    if (verbose)
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    if (!all_non_trivial) {
-        result.error_message = "One or more nested components are trivial";
-        return result;
-    }
-    
-
-    // ========================================================================
-    // PARTIE 3 : CONDITION DE DECROISSANCE NESTED
-    //
-    //   i=0 : f0(x) - f0(x') >= delta   (cherche contre-exemple: diff < delta)
-    //   i>0 : fi(x) - fi(x') + f_{i-1}(x) >= 0  (contre-exemple: sum < 0)
-    // ========================================================================
-
-
-
-    if (verbose)
-        std::cout << "╭─ Nested decrease conditions ──────────────────────────╮" << std::endl;
-
-    Rational delta = components[0].delta;
-    bool all_decrease_ok = true;
-
-
-
-    result.is_valid = true;
-    // TODO: check for bugs
-    
-    for (int i = 0; i < static_cast<int>(components.size()); ++i) {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-
-        std::string fi_x  = buildRFFormula(components[i], lasso, false);
-        std::string fi_xp = buildRFFormula(components[i], lasso, true);
-
-        std::string decrease_formula;
-        if (i == 0) {
-            // f0(x) - f0(x') < delta
-            std::ostringstream oss;
-            oss << "(< (- " << fi_x << " " << fi_xp << ") " << delta.toSMTLibString() << ")";
-            decrease_formula = oss.str();
-        } else {
-            // fi(x) - fi(x') + f_{i-1}(x) < 0
-            std::string fi_prev_x = buildRFFormula(components[i - 1], lasso, false);
-            decrease_formula = "(< (+ (- " + fi_x + " " + fi_xp + ") " + fi_prev_x + ") 0)";
-        }
-
-        solver->addAssertion(decrease_formula);
-        bool sat = solver->checkSat();
-
-        solver->pop();
-
-        result.component_results[i].nested_decrease_check = !sat;
-        if (sat) {
-            all_decrease_ok = false;
-            if (verbose) {
-                if (i == 0)
-                    std::cout << "  FAIL: f0(x) - f0(x') >= " << delta.toSMTLibString() << " violated" << std::endl;
-                else
-                    std::cout << "  FAIL: f" << i << "(x) - f" << i
-                            << "(x') + f" << (i-1) << "(x) >= 0 violated" << std::endl;
-            }
-        } else if (verbose) {
-            if (i == 0)
-                std::cout << "  OK: f0(x) - f0(x') >= " << delta.toSMTLibString() << std::endl;
-            else
-                std::cout << "  OK: f" << i << "(x) - f" << i
-                        << "(x') + f" << (i-1) << "(x) >= 0" << std::endl;
-        }
-    }
-
-    if (verbose)
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    if (!all_decrease_ok) {
-        result.error_message = "Nested decrease condition violated";
-        return result;
-    }
-
-    // ========================================================================
-    // PARTIE 4 : BORNE — f_{k-1}(x) >= 0
-    // ========================================================================
-
-    if (verbose)
-        std::cout << "╭─ Bounded: f_{k-1}(x) >= 0 ───────────────────────────╮" << std::endl;
-
-    {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-
-        const RankingFunction& last = components.back();
-        std::string flast_x = buildRFFormula(last, lasso, false);
-        // cherche contre-exemple: f_{k-1}(x) < 0
-        solver->addAssertion("(< " + flast_x + " 0)");
-        bool sat = solver->checkSat();
-
-        solver->pop();
-        result.last_component_bounded_check = !sat;
-
-        if (verbose) {
-            int k = static_cast<int>(components.size());
-            std::cout << "  " << (result.last_component_bounded_check ? "OK" : "FAIL")
-                    << ": f" << (k-1) << "(x) >= 0"
-                    << (result.last_component_bounded_check ? "" : " violated") << std::endl;
-        }
-    }
-
-    if (verbose)
-        std::cout << "╰───────────────────────────────────────────────────────╯\n" << std::endl;
-
-    if (!result.last_component_bounded_check) {
-        result.error_message = "Last nested component is not bounded (f_{k-1}(x) < 0 possible)";
-        return result;
-    }
-
-    result.is_valid = true;
-    return result;
-}
-
-// ============================================================================
-// HELPERS PARTAGÉS + VALIDATION LEX / MULTIPHASE / PIECEWISE
-// ============================================================================
-
-// Conjonction SMT-LIB robuste (>=1 atome) : évite le cas dégénéré (and X).
-static std::string smtAnd(const std::vector<std::string>& atoms) {
-    if (atoms.empty()) return "true";
-    if (atoms.size() == 1) return atoms[0];
-    std::ostringstream o;
-    o << "(and";
-    for (const auto& a : atoms) o << " " << a;
-    o << ")";
-    return o.str();
-}
-
-bool RankingAndInvariantValidator::validateAllSupportingInvariants(
-    const std::vector<SupportingInvariant>& sis,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver,
-    std::vector<SIValidationResult>& si_results_out)
-{
-    valid_sis.clear();
-    si_results_out.clear();
-    if (sis.empty()) return true;
-
-    int num_trivial_false = 0;
-    for (size_t i = 0; i < sis.size(); ++i) {
-        SIValidationResult r = validateSingleSI(static_cast<int>(i), sis[i], lasso, solver);
-        si_results_out.push_back(r);
-        if (r.is_false_check) {
-            ++num_trivial_false;
-        } else if (!r.is_true_check && r.is_valid) {
-            valid_sis.push_back(sis[i]);   // non-trivial and proven inductive
-        }
-    }
-    // A trivially-true SI is a tautology (safe to drop); only a trivially-FALSE
-    // SI (or, implicitly, a needed but non-inductive one) endangers soundness.
-    return num_trivial_false == 0;
-}
-
-RankingAndInvariantValidator::ValidationResult
-RankingAndInvariantValidator::validateLexicographic(
-    const TerminationArgument& argument,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    const auto& C = argument.ranking_functions;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    ValidationResult res;
-    res.is_valid = false;
-    res.rf_non_trivial_check = false;
-    res.rf_bounded_check = false;
-    res.rf_decreasing_check = false;
-    res.all_si_valid = false;
-
-    if (C.empty()) { res.error_message = "Lexicographic: no components"; return res; }
-
-    registerProgramVariablesToSolver(solver, lasso);
-    res.all_si_valid = validateAllSupportingInvariants(
-        argument.supporting_invariants, lasso, solver, res.si_results);
-    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
-
-    res.rf_non_trivial_check = true;
-    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
-    if (!res.rf_non_trivial_check) { res.error_message = "a lexicographic component is trivial"; return res; }
-
-    const int k = static_cast<int>(C.size());
-
-    // (1) borne : loop ∧ SI ⇒ fi(x) > 0     [contre-exemple : fi(x) <= 0]
-    bool bounded_ok = true;
-    for (int i = 0; i < k; ++i) {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion("(<= " + buildRFFormula(C[i], lasso, false) + " 0)");
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { bounded_ok = false; if (verbose) std::cout << "  FAIL bound: f" << i << "(x) > 0 violated" << std::endl; }
-    }
-    res.rf_bounded_check = bounded_ok;
-    if (!bounded_ok) { res.error_message = "lexicographic bound fi(x) > 0 violated"; return res; }
-
-    // (2) consécution i=0..k-2 : fi(x') <= fi(x)  ∨  ∃ j<i : fj(x)-fj(x') > dj
-    //     contre-exemple : fi(x') > fi(x)  ∧  ∀ j<i : fj(x)-fj(x') <= dj
-    bool dec_ok = true;
-    for (int i = 0; i + 1 < k; ++i) {
-        std::vector<std::string> ce;
-        ce.push_back("(> " + buildRFFormula(C[i], lasso, true) + " " + buildRFFormula(C[i], lasso, false) + ")");
-        for (int j = 0; j < i; ++j)
-            ce.push_back("(<= (- " + buildRFFormula(C[j], lasso, false) + " " + buildRFFormula(C[j], lasso, true)
-                         + ") " + C[j].delta.toSMTLibString() + ")");
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(smtAnd(ce));
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL consec: component " << i << std::endl; }
-    }
-
-    // (3) décrément : ∃ i : fi(x)-fi(x') > di
-    //     contre-exemple : ∀ i : fi(x)-fi(x') <= di
-    {
-        std::vector<std::string> ce;
-        for (int i = 0; i < k; ++i)
-            ce.push_back("(<= (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
-                         + ") " + C[i].delta.toSMTLibString() + ")");
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(smtAnd(ce));
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL decrement: no component strictly decreases" << std::endl; }
-    }
-    res.rf_decreasing_check = dec_ok;
-    if (!dec_ok) { res.error_message = "lexicographic decrease/consecution violated"; return res; }
-
-    res.is_valid = true;
-    return res;
-}
-
-RankingAndInvariantValidator::ValidationResult
-RankingAndInvariantValidator::validateMultiphase(
-    const TerminationArgument& argument,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    const auto& C = argument.ranking_functions;
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    ValidationResult res;
-    res.is_valid = false;
-    res.rf_non_trivial_check = false;
-    res.rf_bounded_check = false;
-    res.rf_decreasing_check = false;
-    res.all_si_valid = false;
-
-    if (C.empty()) { res.error_message = "Multiphase: no phases"; return res; }
-
-    registerProgramVariablesToSolver(solver, lasso);
-    res.all_si_valid = validateAllSupportingInvariants(
-        argument.supporting_invariants, lasso, solver, res.si_results);
-    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
-
-    res.rf_non_trivial_check = true;
-    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
-    if (!res.rf_non_trivial_check) { res.error_message = "a multiphase phase is trivial"; return res; }
-
-    const int k = static_cast<int>(C.size());
-
-    // décroissance de phase :
-    //   phase 0   : f0(x)-f0(x') > δ0
-    //   phase i>=1: fi(x)-fi(x') > δi  ∨  f_{i-1}(x) > 0
-    bool dec_ok = true;
-    for (int i = 0; i < k; ++i) {
-        std::string decr = "(<= (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
-                           + ") " + C[i].delta.toSMTLibString() + ")";   // contre-ex de fi(x)-fi(x') > δi
-        std::string ce = (i == 0)
-            ? decr
-            : smtAnd({decr, "(<= " + buildRFFormula(C[i - 1], lasso, false) + " 0)"});  // ∧ f_{i-1}(x) <= 0
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(ce);
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL phase decrease: phase " << i << std::endl; }
-    }
-    res.rf_decreasing_check = dec_ok;
-    if (!dec_ok) { res.error_message = "multiphase decrease violated"; return res; }
-
-    // borne : OR_i f_i(x) > 0, over EVERY phase -- matches
-    // MultiphaseTemplate::getConstraintsBounded() (fixed to mirror Ultimate
-    // LassoRanker's MultiphaseTemplate.java exactly: phi_bound is a
-    // disjunction over all phases, not just the last one -- checking only
-    // f_{k-1}(x) >= 0 here rejected genuinely valid witnesses where f_{k-1}
-    // goes negative in a state an EARLIER phase is still positive in, which
-    // is fine under the real formula).
-    // [contre-exemple : AND_i f_i(x) <= 0, every phase simultaneously non-positive]
-    {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        std::vector<std::string> ce;
-        for (int i = 0; i < k; ++i)
-            ce.push_back("(<= " + buildRFFormula(C[i], lasso, false) + " 0)");
-        solver->addAssertion(smtAnd(ce));
-        bool sat = solver->checkSat();
-        solver->pop();
-        res.rf_bounded_check = !sat;
-    }
-    if (!res.rf_bounded_check) { res.error_message = "multiphase bound violated: every phase can be simultaneously <= 0"; return res; }
-
-    res.is_valid = true;
-    return res;
-}
-
-RankingAndInvariantValidator::ValidationResult
-RankingAndInvariantValidator::validatePiecewise(
-    const TerminationArgument& argument,
-    const LassoProgram& lasso,
-    SMTSolverInterface* solver)
-{
-    const auto& C = argument.ranking_functions;   // fonctions locales f_i
-    const auto& H = argument.guards;               // gardes h_i (morceau i actif si h_i(x) >= 0)
-    bool verbose = (VERBOSITY == VerbosityLevel::VERBOSE);
-
-    ValidationResult res;
-    res.is_valid = false;
-    res.rf_non_trivial_check = false;
-    res.rf_bounded_check = false;
-    res.rf_decreasing_check = false;
-    res.all_si_valid = false;
-
-    if (C.empty()) { res.error_message = "Piecewise: no pieces"; return res; }
-
-    registerProgramVariablesToSolver(solver, lasso);
-    res.all_si_valid = validateAllSupportingInvariants(
-        argument.supporting_invariants, lasso, solver, res.si_results);
-    if (!res.all_si_valid) { res.error_message = "invalid supporting invariants (trivially false)"; return res; }
-
-    res.rf_non_trivial_check = true;
-    for (const auto& c : C) if (!checkRFNonTriviality(c)) { res.rf_non_trivial_check = false; break; }
-    if (!res.rf_non_trivial_check) { res.error_message = "a piecewise piece is trivial"; return res; }
-
-    // Sans les gardes on ne peut pas vérifier les conditions dépendantes de h_i :
-    // on accepte (jamais de rejet sur du non-vérifié) avec un avertissement.
-    if (H.size() != C.size()) {
-        std::cout << "  [validator] WARNING: Piecewise guards unavailable (have "
-                  << H.size() << " guards for " << C.size()
-                  << " pieces); checked SI + non-triviality only." << std::endl;
-        res.error_message = "piecewise: guards unavailable — h_i conditions unchecked";
-        res.is_valid = true;
-        return res;
-    }
-
-    const int k = static_cast<int>(C.size());
-
-    // phi_bound_i : h_i(x) < 0  ∨  f_i(x) >= 0    [contre-ex : h_i(x) >= 0 ∧ f_i(x) < 0]
-    bool bounded_ok = true;
-    for (int i = 0; i < k; ++i) {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(smtAnd({
-            "(>= " + buildRFFormula(H[i], lasso, false) + " 0)",
-            "(< "  + buildRFFormula(C[i], lasso, false) + " 0)"}));
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { bounded_ok = false; if (verbose) std::cout << "  FAIL bound: piece " << i << " (h_i>=0 ∧ f_i<0)" << std::endl; }
-    }
-    res.rf_bounded_check = bounded_ok;
-    if (!bounded_ok) { res.error_message = "piecewise bound (h_i>=0 ⇒ f_i>=0) violated"; return res; }
-
-    // phi_decr_i : h_i(x) < 0  ∨  f_i(x)-f_i(x') >= δi
-    //   [contre-ex : h_i(x) >= 0 ∧ f_i(x)-f_i(x') < δi]
-    bool dec_ok = true;
-    for (int i = 0; i < k; ++i) {
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(smtAnd({
-            "(>= " + buildRFFormula(H[i], lasso, false) + " 0)",
-            "(< (- " + buildRFFormula(C[i], lasso, false) + " " + buildRFFormula(C[i], lasso, true)
-                + ") " + C[i].delta.toSMTLibString() + ")"}));
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL decrease: piece " << i << std::endl; }
-    }
-
-    // phi_exhaustive : ⋁_i h_i(x) >= 0     [contre-ex : ⋀_i h_i(x) < 0]
-    {
-        std::vector<std::string> ce;
-        for (int i = 0; i < k; ++i)
-            ce.push_back("(< " + buildRFFormula(H[i], lasso, false) + " 0)");
-        solver->push();
-        addLoopAndSIConstraints(lasso, valid_sis, solver);
-        solver->addAssertion(smtAnd(ce));
-        bool sat = solver->checkSat();
-        solver->pop();
-        if (sat) { dec_ok = false; if (verbose) std::cout << "  FAIL exhaustive: a transition lands in no piece" << std::endl; }
-    }
-    res.rf_decreasing_check = dec_ok;
-    if (!dec_ok) { res.error_message = "piecewise decrease/exhaustiveness violated"; return res; }
-
-    res.is_valid = true;
-    return res;
-}
-
-// ============================================================================
-// AFFICHAGE NESTED
-// ============================================================================
 
 void RankingAndInvariantValidator::printNestedValidationResult(
     const NestedValidationResult& result) const
 {
-    std::cout << "\n╔═══════════════════════════════════════════════════════╗" << std::endl;
-    std::cout << "║    NESTED VALIDATION SUMMARY                         ║" << std::endl;
-    std::cout << "╚═══════════════════════════════════════════════════════╝" << std::endl;
-
-    std::cout << "\n  Global status : "
-            << (result.is_valid ? "OK VALID" : "FAIL INVALID") << std::endl;
-
-    std::cout << "\n  SI valid : " << (result.all_si_valid ? "OK" : "FAIL") << std::endl;
+    std::cout << "\n  Nested validation : " << (result.is_valid ? "VALID" : "INVALID") << std::endl;
+    std::cout << "    SI=" << (result.all_si_valid ? "OK" : "FAIL") << std::endl;
     for (const auto& si_res : result.si_results) {
-        std::cout << "    SI #" << si_res.si_index << " : "
-                << (si_res.is_valid ? "OK" : "FAIL");
-        if (si_res.is_false_check)       std::cout << " (trivially false)";
-        else if (si_res.is_true_check)   std::cout << " (trivially true)";
+        std::cout << "    SI #" << si_res.si_index << " : " << (si_res.is_valid ? "OK" : "FAIL");
+        if (!si_res.is_valid) std::cout << " (" << si_res.error_message << ")";
         std::cout << std::endl;
     }
-
-    std::cout << "\n  Components :" << std::endl;
-    for (const auto& cr : result.component_results) {
+    for (const auto& cr : result.component_results)
         std::cout << "    f" << cr.index
-                << "  non-trivial=" << (cr.non_trivial_check ? "OK" : "FAIL")
-                << "  decrease=" << (cr.nested_decrease_check ? "OK" : "FAIL")
-                << std::endl;
-    }
-    std::cout << "  Bounded (last component) : "
-            << (result.last_component_bounded_check ? "OK" : "FAIL") << std::endl;
-
+                  << "  decrease=" << (cr.nested_decrease_check ? "OK" : "FAIL") << std::endl;
+    std::cout << "    bounded (last component)=" << (result.last_component_bounded_check ? "OK" : "FAIL") << std::endl;
     if (!result.is_valid && !result.error_message.empty())
-        std::cout << "\n  Error: " << result.error_message << std::endl;
-
-    std::cout << std::endl;
+        std::cout << "    Error: " << result.error_message << std::endl;
 }

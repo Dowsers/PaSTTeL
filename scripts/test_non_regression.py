@@ -266,26 +266,26 @@ ONLY_VAL_CASES = [
     ("examples/array/arr_a05_alloca_term.json",               "TERMINATING", "terminate", "affine",        "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "affine",        "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "nested",        "z3"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",     "terminate", "nested",        "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "nested",        "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "lexicographic", "cvc5"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "z3"),
     ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "multiphase",    "cvc5"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",        "terminate", "piecewise",     "z3"),
-    ("examples/array/arr_a05_alloca_term.json",                "UNKNOWN",	  "terminate", "piecewise",     "cvc5"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "piecewise",     "z3"),
+    ("examples/array/arr_a05_alloca_term.json",                "TERMINATING", "terminate", "piecewise",     "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "affine",        "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "nested",        "z3"),
-    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "nested",        "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "nested",        "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "lexicographic", "z3"),
-    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "lexicographic", "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "lexicographic", "cvc5"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "multiphase",    "z3"),
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "multiphase",    "cvc5"),
     # The concrete instance the phantom-var exploit was found on (see the
     # module-level comment above): PiecewiseTemplate alone, z3, WAS able to
     # find a certificate here -- it just used to be an unsound one.
     ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "piecewise",     "z3"),
-    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "UNKNOWN",     "terminate", "piecewise",     "cvc5"),
+    ("examples/array/arr_Arrays01_equiv_const_idx_term.json",  "TERMINATING", "terminate", "piecewise",     "cvc5"),
 
     # Isolated-template lock-in for the phi_bound fix itself: MultiphaseTemplate
     # alone, -val-checked, must still prove Ultimate's own canonical 3-phase
@@ -646,7 +646,7 @@ GeometricArraySkipTests = type(
 
 SI_CERTIFICATE_CASES = [
     ("examples/test_variable_decrease.json",
-     ["Supporting invariants:", "[0] y - 2 >= 0", "[1] 1 >= 0"]),
+     ["Supporting invariants:", "[0] y - 2 >= 0"]),
 ]
 
 

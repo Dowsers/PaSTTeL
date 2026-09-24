@@ -9,6 +9,8 @@
 
 #include "ModelExtractionUtils.h"
 
+enum class SatResult { SAT, UNSAT, UNKNOWN };
+
 // Interface pour solveur SMT
 class SMTSolverInterface {
 public:
@@ -17,7 +19,10 @@ public:
     virtual void push() = 0;
     virtual void pop() = 0;
     virtual void addAssertion(const std::string& assertion) = 0;
+    // true ssi SAT (UNSAT, unknown, interruption, exception : false).
     virtual bool checkSat() = 0;
+    // UNKNOWN : unknown, interruption ou exception du solveur.
+    virtual SatResult checkSatResult() = 0;
     virtual double getValue(const std::string& var) = 0;
 
     /**

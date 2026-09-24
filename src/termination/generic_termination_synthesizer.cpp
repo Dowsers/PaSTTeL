@@ -600,9 +600,9 @@ void GenericTerminationSynthesizer::extractResults()
 
     termination_argument_.supporting_invariants.clear();
 
-    // Extraire les SI de chaque SIG local (un par template_part).
-    // local_sigs_[p * num_template_parts + m] : on itere sur m (template_parts)
-    // en prenant p=0 (premier poly_loop, representatif).
+    // SI de tous les SIG locaux local_sigs_[p * num_template_parts + m] : le
+    // contexte Motzkin (poly_loop p, template_part m) utilise ceux de son SIG.
+    // Doublons et tautologies omis.
     if (local_sigs_.empty()) {
         if (verbose)
             std::cout << "╰───────────────────────────────────────────╯\n" << std::endl;
@@ -616,10 +616,21 @@ void GenericTerminationSynthesizer::extractResults()
     if (verbose)
         std::cout << "\n   Supporting Invariants (from " << num_template_parts_ex << " template parts):" << std::endl;
 
-    for (int m = 0; m < num_template_parts_ex; ++m) {
-        // SIG representatif : poly=0, template_part=m
-        int sig_idx = 0 * num_template_parts_ex + m;
-        if (sig_idx >= static_cast<int>(local_sigs_.size())) break;
+    auto isTautology = [](const SupportingInvariant& si) {
+        for (const auto& [var, coef] : si.coefficients)
+            if (!coef.isZero()) return false;
+        return si.is_strict ? si.constant > 0 : si.constant >= 0;
+    };
+    auto alreadyExported = [this](const SupportingInvariant& si) {
+        for (const auto& other : termination_argument_.supporting_invariants)
+            if (other.is_strict == si.is_strict && other.constant == si.constant
+                && other.coefficients == si.coefficients)
+                return true;
+        return false;
+    };
+
+    for (int sig_idx = 0; sig_idx < static_cast<int>(local_sigs_.size()); ++sig_idx) {
+        const int m = sig_idx % num_template_parts_ex;
         const auto& sig = local_sigs_[sig_idx];
 
         int num_si = sig->getNumSI();
@@ -651,9 +662,11 @@ void GenericTerminationSynthesizer::extractResults()
             }
 
             if (verbose) {
-                std::cout << "   [part " << m << "] -> " << si.toString(lasso_.program_vars);
+                std::cout << "   [poly " << sig_idx / num_template_parts_ex << ", part " << m << "] -> "
+                          << si.toString(lasso_.program_vars);
                 std::cout << " " << (si.is_strict ? ">" : ">=") << " 0" << std::endl;
             }
+            if (isTautology(si) || alreadyExported(si)) continue;
             termination_argument_.supporting_invariants.push_back(si);
         }
     }
