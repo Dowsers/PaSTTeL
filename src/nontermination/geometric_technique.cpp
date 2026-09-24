@@ -92,24 +92,8 @@ void GeometricTechnique::cancel() {
 // ============================================================================
 // SYNTHÈSE PRINCIPALE
 //
-// Recherche géométrique incrémentale: n = 1, 2, ..., settings_.num_gevs,
-// arrêt au premier SAT. Le nombre de GEVs effectivement requis par un témoin
-// de non-terminaison donné est presque toujours inférieur à settings_.num_gevs
-// (souvent 1); encoder directement avec num_gevs fixe produit un certificat où
-// les GEVs superflus sont des vecteurs nuls, ce qu'aucune étape ultérieure ne
-// retire -- report_json.cpp les sérialise tels quels dans nt_eigenvectors.
-// Ceci a une conséquence côté consommateur: PasttelResultMapper (Ultimate)
-// exige nt_nus.size() == nt_eigenvectors.size() - 1 (un GeometricNonTermination
-// Argument avec N GEVs a N-1 composantes nilpotentes, cf. sa javadoc), et
-// PaSTTeL ne peuple actuellement jamais nt_nus (extraction commentée dans
-// extractGNTA, la valeur de nu n'étant même pas une variable SMT interrogeable
-// en mode LINEAR -- voir buildRayConstraintsForPoly). Avec num_gevs=3 fixe, ce
-// mismatch (3 != 0+1) est systématique et rend tout certificat de cette
-// technique non mappable dès qu'il est trouvé. Chercher le nombre minimal de
-// GEVs élimine le cas le plus courant (témoin à 1 seul rayon, nt_nus.size()==0
-// == nt_eigenvectors.size()-1 == 0, qui passe la vérification côté Ultimate
-// sans changement là-bas) sans toucher à l'extraction de nu, qui reste
-// nécessaire pour les témoins authentiquement multi-GEV.
+// Recherche incrémentale : n = 1, 2, ..., settings_.num_gevs, arrêt au premier
+// SAT, donc certificat avec le nombre minimal de GEVs.
 //
 // Le fixpoint (GEV=0) est géré séparément par FixpointTechnique.
 // ============================================================================
@@ -281,16 +265,15 @@ void GeometricTechnique::declareVariables(int effective_num_gevs)
         }
     }
 
-    // Composantes nilpotentes (νᵢ) pour i = 0..n-2
-    // mGEVs.size() == nus.size() + 1
-    // if (settings_.nilpotent_components && effective_num_gevs >= 2) {
-    //     for (int i = 0; i < effective_num_gevs - 1; ++i) {
-    //         std::string nu_var = "nu_" + std::to_string(i);
-    //         if (!solver_->variableExists(nu_var)) {
-    //             solver_->declareVariable(nu_var, sort);
-    //         }
-    //     }
-    // }
+    // Composantes nilpotentes νᵢ, i = 0..n-2, dans tous les modes : n GEVs ont
+    // n-1 composantes (NonTerminationArgumentSynthesizer d'Ultimate). En mode
+    // LINEAR, chaque branche de buildRayConstraintsForPoly fixe νᵢ à une constante.
+    for (int i = 0; i < effective_num_gevs - 1; ++i) {
+        std::string nu_var = "nu_" + std::to_string(i);
+        if (!solver_->variableExists(nu_var)) {
+            solver_->declareVariable(nu_var, sort);
+        }
+    }
 
     if (verbose) {
         std::cout << "    Declared variables for " << lasso_.program_vars.size()
@@ -735,6 +718,12 @@ std::vector<std::vector<std::string>> GeometricTechnique::buildRayConstraintsFor
                 branch.push_back(c.str());
             }
         }
+        // Branche énumérée : nu_i fixé à la valeur qu'elle suppose.
+        if (nu_enum >= 0) {
+            const std::string nu_value = lasso_.integer_mode
+                ? std::to_string(nu_enum) : std::to_string(nu_enum) + ".0";
+            branch.push_back("(= nu_" + std::to_string(gev_idx) + " " + nu_value + ")");
+        }
         all_branches.push_back(branch);
     }
     return all_branches;
@@ -874,25 +863,23 @@ void GeometricTechnique::addEigenvalueAndNilpotentConstraints(int effective_num_
             std::cout << "      Forced at least one GEV != 0" << std::endl;
     }
 
-    // Contraintes sur les composantes nilpotentes
-    // if (effective_num_gevs >= 2) {
-    //     for (int i = 0; i < effective_num_gevs - 1; ++i) {
-    //         std::string nu_var = "nu_" + std::to_string(i);
+    // Contraintes sur les composantes nilpotentes (cf. t3 dans Ultimate)
+    for (int i = 0; i < effective_num_gevs - 1; ++i) {
+        std::string nu_var = "nu_" + std::to_string(i);
 
-    //         if (settings_.nilpotent_components) {
-    //             // νᵢ ∈ {0, 1}
-    //             solver_->addAssertion("(or (= " + nu_var + " " + zero + ") (= " + nu_var + " " + one + "))");
-    //             if (verbose)
-    //                 std::cout << "      nu_" << i << " in {0, 1}" << std::endl;
-    //         } else {
-    //             // νᵢ = 0
-    //             solver_->addAssertion("(= " + nu_var + " " + zero + ")");
-    //             if (verbose)
-    //                 std::cout << "      nu_" << i << " = " << zero << std::endl;
-    //         }
-    //         constraint_count++;
-    //     }
-    // }
+        if (settings_.nilpotent_components) {
+            // νᵢ ∈ {0, 1}
+            solver_->addAssertion("(or (= " + nu_var + " " + zero + ") (= " + nu_var + " " + one + "))");
+            if (verbose)
+                std::cout << "      nu_" << i << " in {0, 1}" << std::endl;
+        } else {
+            // νᵢ = 0
+            solver_->addAssertion("(= " + nu_var + " " + zero + ")");
+            if (verbose)
+                std::cout << "      nu_" << i << " = " << zero << std::endl;
+        }
+        constraint_count++;
+    }
 
     if (verbose)
         std::cout << "      Added " << constraint_count << " eigenvalue/nilpotent constraints" << std::endl;
@@ -951,13 +938,11 @@ ProofCertificate GeometricTechnique::extractGNTA(int effective_num_gevs)
         }
     }
 
-    // Extraire composantes nilpotentes
-    // if (settings_.nilpotent_components && effective_num_gevs >= 2) {
-    //     for (int i = 0; i < effective_num_gevs - 1; ++i) {
-    //         std::string nu_var = "nu_" + std::to_string(i);
-    //         nus.push_back(solver_->getValue(nu_var));
-    //     }
-    // }
+    // Extraire composantes nilpotentes (n-1 valeurs, comme extractArgument dans Ultimate)
+    for (int i = 0; i < effective_num_gevs - 1; ++i) {
+        std::string nu_var = "nu_" + std::to_string(i);
+        nus.push_back(solver_->getRationalValue2(nu_var));
+    }
 
     // Déterminer le type de résultat
     if (isFixpoint()) {
