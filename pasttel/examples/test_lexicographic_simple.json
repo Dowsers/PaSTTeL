@@ -1,0 +1,44 @@
+{
+  "program_vars": [
+    "x",
+    "y"
+  ],
+  "var_types": {
+    "x": "Int",
+    "y": "Int"
+  },
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_x_1 5) (= v_y_1 3))",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x", "y"]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L2",
+      "formula": "(and (> v_x_2 0) (> v_y_2 0) (= v_x_3 (- v_x_2 1)) (= v_y_3 (- v_y_2 1)))",
+      "in_vars": {
+        "x": "v_x_2",
+        "y": "v_y_2"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x", "y"]
+    }
+  ]
+}

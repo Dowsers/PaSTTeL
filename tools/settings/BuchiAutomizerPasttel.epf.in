@@ -1,0 +1,48 @@
+#PaSTTeL-enabled BuchiAutomizer settings, derived from BuchiAutomizer.epf.
+#
+# TEMPLATE -- do not pass this file to Ultimate directly. The placeholders below
+# are substituted by scripts/run_ulr_vs_upl.sh, which writes the resulting .epf
+# into its output directory. Ultimate resolves none of these paths relative to
+# anything, so they must all be absolute.
+#
+#   @PASTTEL_BIN@      absolute path to the pasttel binary
+#   @PASTTEL_TIMEOUT@  per-lasso PaSTTeL timeout, in seconds
+#   @PASTTEL_CPUS@     cores PaSTTeL may use to race its templates
+#   @DUMP_ENABLED@     true|false -- dumping writes one JSON per lasso and is off
+#                      during timing runs, since the I/O lands inside the very
+#                      interval the UPL-vs-ULR comparison measures
+#   @DUMP_DIR@         directory for those dumps (ignored when dumping is off)
+file_export_version=3.0
+@de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=0.0.1
+\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Use\ external\ solver\ (rank\ synthesis)=true
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Use\ external\ solver\ (GNTA\ synthesis)=true
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/GNTA\ analysis=NONLINEAR
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Rank\ analysis=NONLINEAR
+
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Rank\ synthesis\ backend=PASTTEL
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ binary\ path=@PASTTEL_BIN@
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ timeout\ (seconds)=@PASTTEL_TIMEOUT@
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ number\ of\ CPUs=@PASTTEL_CPUS@
+
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Dump\ SMT\ script\ to\ file=@DUMP_ENABLED@
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/To\ the\ following\ directory=@DUMP_DIR@
+
+#Fri Apr 10 13:03:27 CEST 2015
+\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding=
+file_export_version=3.0
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Rating-Boundary\ (empty\ for\ LBE)=0
+@de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding=0.0.1
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Minimize\ Call\ and\ Return\ Edges=true
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Strategy\ for\ the\ edge\ rating=DISJUNCTIVE_RATING
+
+#Fri Apr 10 13:03:27 CEST 2015
+\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder=
+file_export_version=3.0
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder/Size\ of\ a\ code\ block=SequenceOfStatements
+@de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder=0.0.1
+
+#Sat Mar 15 16:00:32 CET 2014
+file_export_version=3.0
+@UltimateCore=0.0.1
+/instance/UltimateCore/Generate\ benchmark\ results=false

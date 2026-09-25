@@ -1,0 +1,57 @@
+{
+  "program_vars": [
+    "n"
+  ],
+  "var_types": {
+    "n": "Int"
+  },
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(= v_n_1 10)",
+      "in_vars": {
+        "n": "v_n_1"
+      },
+      "out_vars": {
+        "n": "v_n_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "n"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(> v_n_2 0)",
+      "in_vars": {
+        "n": "v_n_2"
+      },
+      "out_vars": {
+        "n": "v_n_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "n"
+      ]
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(= v_n_3 (- v_n_4 1))",
+      "in_vars": {
+        "n": "v_n_4"
+      },
+      "out_vars": {
+        "n": "v_n_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "n"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,519 @@
+# PaSTTeL — ATVA 2026 Artifact
+
+## Description
+
+This artifact accompanies the paper **"PaSTTeL: Parallel analysiS framework for Termination and non-Termination of Lasso programs"** submitted to ATVA 2026.
+
+**PaSTTeL** (Parallel analysiS framework for Termination and non-Termination of Lasso programs) is a C++17 tool that analyses lasso programs (a finite stem followed by an infinite loop) to prove **termination** or **non-termination**. It uses SMT solvers (Z3 4.15.4, CVC5 1.3.3) to synthesise ranking functions and non-termination witnesses, and supports parallelism over multiple CPU cores.
+
+### Claims replicated
+
+The artifact allows reviewers to:
+1. Run P-ULR (PaSTTeL "à la Ultimate LassoRanker") on lasso program instances (JSON format) and observe termination/non-termination results.
+2. Run ULR-Baseline (Ultimate LassoRanker on Ultimate Buchi Automizer) on C/BPL programs to extract lasso traces and observe their termination/non-termination results.
+3. Reproduce the experimental comparison between P-ULR and ULR-Baseline, between Z3 and CVC5  solvers (Tables and Figures in the paper): timing, termination verdicts, and scatter plots.
+
+### Artifact structure
+
+```
+ATVA26_ARTIFACT/
+├── Dockerfile                   — Docker image definition (Ubuntu 24.04, offline build)
+├── docker-compose.yml           — Docker Compose configuration
+├── README                       — This file
+├── LICENSE                      — AGPL-3.0 license
+├── paper.pdf                    — Submitted paper (add before final submission)
+├── package.sh                   — Script to package the final artifact ZIP
+├── scripts/                     — Evaluation scripts (entry points for reviewers)
+│   ├── run_smoke_test.sh        — Quick smoke test (~2-5 min)
+│   ├── run_pasttel_ulr_only.sh  — Run PaSTTeL standalone on JSON instances
+│   ├── run_ultimate_only.sh     — Run Ultimate on C/BPL programs
+│   └── run_full_evaluation.sh  — Full comparison pipeline
+├── benchmarks/
+│   ├── C/                       — ATVA2026 benchmark subset (1,852 .c files)
+│   ├── BPL/                     — ATVA2026 benchmark subset (862 .bpl files)
+│   └── smoke_test/              — 10 representative programs for smoke test
+│       ├── full_programs_c_bpl/ — source programs (.c/.bpl) for Ultimate Buchi Automizer
+│       └── json_lassos_from_full_programs/ — pre-extracted lasso traces (.json) for PaSTTeL
+├── logs/                        — Pre-computed results and data from the paper
+│   ├── result_atva26_sequential_z3.csv        — P-ULR-Seq (Z3) full benchmark CSV
+│   ├── result_atva26_sequential_z3_scatter.html — Fig.6: ULR-Baseline vs P-ULR-Seq (Z3)
+│   ├── result_atva26_sequential_cvc5.csv       — P-ULR-Seq (CVC5) full benchmark CSV
+│   ├── result_atva26_sequential_cvc5_scatter.html — Fig.6: ULR-Baseline vs P-ULR-Seq (CVC5)
+│   ├── result_atva26_parallel4_z3.csv          — P-ULR-Par4 (Z3) full benchmark CSV
+│   ├── result_atva26_parallel4_z3_scatter.html — Fig.6: ULR-Baseline vs P-ULR-Par4 (Z3)
+│   ├── result_atva26_parallel4_cvc5.csv        — P-ULR-Par4 (CVC5) full benchmark CSV
+│   ├── result_atva26_parallel4_cvc5_scatter.html — Fig.6: ULR-Baseline vs P-ULR-Par4 (CVC5)
+│   ├── comparison_par4_z3_cvc5.html   — Fig.7: Z3 vs CVC5 on P-ULR-Par4
+│   ├── output_seq_atva26_z3.log       — Full PaSTTeL log (P-ULR-Seq, Z3)
+│   ├── output_seq_atva26_cvc5.log     — Full PaSTTeL log (P-ULR-Seq, CVC5)
+│   ├── output_para4_atva26_z3.log     — Full PaSTTeL log (P-ULR-Par4, Z3)
+│   ├── output_para4_atva26_cvc5.log   — Full PaSTTeL log (P-ULR-Par4, CVC5)
+│   ├── smoke_test_output.log          — Expected output of the smoke test script
+│   └── lasso_traces/            — Lasso traces extracted from Ultimate Buchi Automizer (used in the paper)
+│       ├── ALL_INT_VARS/        — Integer-only programs
+│       │   └── lasso_traces_<prog>/
+│       │       ├── lasso_trace_X.txt  — ULR format with ULR-Baseline timing
+│       │       └── lasso_trace_X.json — JSON format for P-ULR input
+│       ├── BOOLEAN_OP/          — Programs with boolean variables
+│       └── REAL_VARS/           — Programs with real variables
+├── tools/
+│   ├── UAutomizer-linux/        — Ultimate Buchi Automizer pre-compiled binary
+│   │   └── toolchains/          — Toolchain XML files (BuchiAutomizerC.xml, ...)
+│   └── solvers/                 — Pre-downloaded solver archives (for offline Docker build)
+│       ├── z3-4.15.4-x64-glibc-2.39.zip
+│       └── cvc5-Linux-x86_64-shared.zip
+└── pasttel/                     — PaSTTeL C++ source code (built during Docker build)
+    ├── src/			 — Source code
+    └── examples/                — 53 JSON lasso trace examples for standalone testing
+```
+
+---
+
+## Requirements
+
+- **Platform**: x86-64 Linux (or Linux-compatible Docker host)
+- **Docker**: version ≥ 20.10
+- **RAM**: ≥ 8 GB recommended
+- **Disk**: ≥ 20 GB free (image + benchmarks + outputs)
+- **CPU**: ≥ 4 cores recommended for the full evaluation
+- **Internet**: not required (all dependencies are bundled in the artifact)
+
+---
+
+## Installation
+
+### Option 1 — Load the pre-built Docker image (recommended)
+
+The artifact includes a pre-built Docker image that can be loaded directly without building:
+
+```bash
+docker load --input pasttel-artifact-docker-image.tar.gz
+```
+
+SHA256 of `pasttel-artifact-docker-image.tar.gz`: *(to be filled after generation)*
+
+### Option 2 — Build the Docker image from source (offline)
+
+All solver dependencies (Z3, CVC5) are bundled in `tools/solvers/`. 
+
+```bash
+# From the artifact root directory:
+docker build -t pasttel-artifact .
+```
+
+Expected build time: 5–10 minutes depending on CPU speed. The build automatically
+runs the smoke test as a validation step — if the smoke test fails, the build fails.
+
+### Run the container
+
+```bash
+# Interactive shell (recommended for manual exploration):
+docker run -it --rm \
+    -v "$(pwd)/output:/app/output" \
+    pasttel-artifact
+
+# Or with Docker Compose:
+docker compose up -d
+docker compose exec pasttel bash
+```
+
+The `-v "$(pwd)/output:/app/output"` volume mount makes results accessible on the host in `./output/`.
+
+---
+
+## Smoke Test (~2-5 minutes)
+
+The smoke test runs the full pipeline (Ultimate → lasso trace extraction → PaSTTeL) on 10 small benchmark programs and generates scatter plots. By default, it runs PaSTTeL sequentially (`--cpus 1`) with both Z3 and CVC5. From these 10 programs (.c/.bpl), Ultimate Buchi Automizer evaluates 14 lasso programs that are used for comparing between ULR-Baseline and P-ULR.
+
+```bash
+# Inside the container:
+bash /app/scripts/run_smoke_test.sh
+
+# Optional: increase timeout or use more CPUs
+bash /app/scripts/run_smoke_test.sh --timeout 300 --cpus 2
+```
+
+Outputs in `/app/output/smoke/`:
+- `summary_tables.log` — Displays comparison Tables of the paper (Table.1 and table in Fig.7)
+- `smoke_results_P-ULR-Seq_z3.csv` — Z3 results: comparison table (ULR-Baseline vs P-ULR-Seq timings and verdicts)
+- `smoke_results_P-ULR-Seq_z3_scatter.html/.pdf` — **Fig.6** (paper): ULR-Baseline vs P-ULR-Seq (Z3) scatter plot
+- `smoke_results_P-ULR-Seq_cvc5.csv` — CVC5 results *(not in the paper)*
+- `smoke_z3_vs_cvc5.html/.pdf` — **Fig.7** (paper): Z3 vs CVC5 on P-ULR-Seq
+- `lasso_traces/` — lasso programs (.txt and .json formats) and Ultimate Buchi Automizer logs.
+
+### Expected output
+Expected output of the smoke test script can be found in `/app/logs/smoke_test_output.log`
+
+### Smoke test programs and expected verdicts
+
+The `benchmarks/smoke_test/full_programs_c_bpl/` directory contains the following 10 programs,
+processed by Ultimate Buchi Automizer to extract lasso traces:
+
+| Program                                                      | Type | Lassos | ULR-Baseline verdict(s)                                                                 |
+|--------------------------------------------------------------|------|--------|-----------------------------------------------------------------------------------------|
+| `2Nested-1.c`                                                | C    | 1      | #1 TERMINATING                                                                          |
+| `AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c` | C | 6  | #1 INFEASIBLE · #2–6 TERMINATING                                                        |
+| `java_DivMinus1.c`                                           | C    | 1      | #1 TERMINATING                                                                          |
+| `recursive.c`                                                | C    | 1      | #1 NONTERMINATING                                                                       |
+| `ATVA2013-nonIntegral-real.bpl`                              | BPL  | 1      | #1 NONTERMINATING                                                                       |
+| `Fibonacci.bpl`                                              | BPL  | 1      | #1 NONTERMINATING                                                                       |
+| `Lobnya-Boolean.bpl`                                         | BPL  | 1      | #1 TERMINATING                                                                          |
+| `loopWithBreak.bpl`                                          | BPL  | 1      | #1 TERMINATING                                                                          |
+| `LTL_Coolant_Nonterminating01.bpl`                           | BPL  | 1      | #1 NONTERMINATING                                                                       |
+| `NonterminationDifficult05_ComplexEigenvalues.bpl`           | BPL  | 1      | #1 NONTERMINATING                                                                       |
+
+Pre-extracted lasso traces (`.json`) for these programs are also available in
+`benchmarks/smoke_test/json_lassos_from_full_programs/` and can be used directly with
+`run_pasttel_ulr_only.sh` without re-running Ultimate.
+
+Note: Only lasso programs manipulating integers, booleans and reals are supported by P-ULR
+(categories ALL_INT_VARS, BOOLEAN_OP, REAL_VARS). Programs outside these categories are processed by Ultimate only.
+
+---
+
+## Running P-ULR Standalone
+
+P-ULR takes a single JSON lasso trace as input.
+The main binary is `/app/pasttel/bin/pasttel`. Available options:
+
+```
+Usage: pasttel [options] <filename>
+
+Options:
+  -a <terminate|nonterminate|both>   Set analysis mode (default: both)
+  -t <int>                           Time limit in seconds (default: 6000)
+  -s <z3|cvc5>                       Set SMT solver (default: z3)
+  -q                                 Quiet mode (silence output)
+  -v                                 Verbose mode (more output)
+  -c <int>                           Number of CPUs (default: 1)
+  -nla <overapproximate|underapproximate|none>
+                                     Non-linear arithmetic handling (default: overapproximate)
+  -mode <linear|nonlinear>           Set analysis mode (default: linear)
+  -h, --help                         Show this help message
+```
+
+For example:
+
+```bash
+# Run on a single built-in example (sequential, Z3).
+# P-ULR should return TERMINATING with Affine Template as the winning strategy.
+/app/pasttel/bin/pasttel -a both -s z3 -c 1 \
+    /app/logs/lasso_traces/ALL_INT_VARS/lasso_traces_xor-01.c/lasso_trace_1.json
+```
+
+The obtained output:
+
+```bash
+============================================================
+                    ANALYSIS REPORT                         
+============================================================
+
+--- TERMINATION TECHNIQUES ---
+Technique                          Result         Time (s)    Proof
+--------------------------------------------------------------------------------
+RankingBased(AffineTemplate)       TERMINATING    0.011       main_~x~0
+
+============================================================
+OVERALL RESULT: TERMINATING
+TOTAL TIME: 0.017 s
+TESTED STRATEGIES :
+  - FIXPOINT TIME: 0.002 s
+  - GNTA TIME: 0.003 s
+  - AFFINE TIME: 0.011 s
+  - NESTED TIME: -
+============================================================
+``` 
+
+
+A simplified launcher script is available at `scripts/run_pasttel_ulr_only.sh`:
+
+```bash
+# Run on all built-in examples at /app/pasttel/examples (51 JSON files, ~1 min),
+# sequential mode (cpus=1), Z3 solver.
+# Output log: /app/output/pasttel-ulr/pasttel_ulr_results.log
+bash /app/scripts/run_pasttel_ulr_only.sh
+
+# Run on a specific file:
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/pasttel/examples/test_erc20_simple.json
+
+# Run on pre-extracted lasso traces of the smoke test (directory with .json files):
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/benchmarks/smoke_test/json_lassos_from_full_programs/
+
+# Run on all paper lasso traces of a category (recursive search in lasso_traces_*/ subdirectories):
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/ALL_INT_VARS/
+
+# Available options:
+#   --solver  z3|cvc5                       (default: z3)
+#   --cpus    N                             (default: 1, sequential)
+#   --timeout N                             (default: 600s per instance)
+#   --strat   both|terminate|nonterminate   (default: both)
+#   --output <log>                          (default: /app/output/pasttel_ulr_results.log)
+```
+
+PaSTTeL output format: `TERMINATING`, `NON-TERMINATING`, `TIMEOUT`, or `UNKNOWN`.
+
+---
+
+## Running Ultimate Standalone
+
+```bash
+# Run Ultimate on a directory of C/BPL programs, generate lasso traces:
+bash /app/scripts/run_ultimate_only.sh /app/benchmarks/smoke_test/full_programs_c_bpl/
+
+# Output is in /app/output/ultimate/lasso_traces/ organized by category
+# (ALL_INT_VARS, BOOLEAN_OP, REAL_VARS, ARRAY_OP, ...)
+
+# Custom output directory:
+bash /app/scripts/run_ultimate_only.sh /app/benchmarks/C/ --output /app/output/my_traces/
+```
+
+PaSTTeL supports the categories: `ALL_INT_VARS`, `BOOLEAN_OP`, and `REAL_VARS`.
+
+---
+
+## Full Evaluation
+
+### Full version (several hours, complete ATVA2026 benchmark)
+
+```bash
+bash /app/scripts/run_full_evaluation.sh
+```
+
+Outputs in `/app/output/full/`:
+- `results_P-ULR-Seq_z3.csv` — P-ULR-Seq (Z3): ULR-Baseline vs PaSTTeL timings and verdicts [paper]
+- `results_P-ULR-Par4_z3.csv` — P-ULR-Par4 (Z3, 4 CPUs) [paper]
+- `results_P-ULR-Par4_cvc5.csv` — P-ULR-Par4 (CVC5, 4 CPUs) [paper]
+- `results_P-ULR-Seq_z3_scatter.html/.pdf` — **Fig.6a** (paper): ULR-Baseline vs P-ULR-Seq (Z3)
+- `results_P-ULR-Par4_z3_scatter.html/.pdf` — **Fig.6b** (paper): ULR-Baseline vs P-ULR-Par4 (Z3)
+- `results_P-ULR-Par4_cvc5_scatter.html/.pdf` — **Fig.6c** (paper): ULR-Baseline vs P-ULR-Par4 (CVC5)
+- `full_z3_vs_cvc5.html/.pdf` — **Fig.7** (paper): Z3 vs CVC5 on P-ULR-Par4
+- `summary_tables.log` — Comparison tables (paper)
+- `lasso_traces/` — lasso programs (.txt and .json formats) and Ultimate Buchi Automizer logs
+
+The scatter plot shows Ultimate LassoRanker time (x-axis) vs PaSTTeL time (y-axis). Points are colored by verdict agreement:
+- **Green**: both agree TERMINATING
+- **Blue**: both agree NON-TERMINATING
+- **Orange**: PaSTTeL timeout
+- **Red**: unknown PaSTTeL verdict
+- **Purple**: algorithm not supported by PaSTTeL
+
+### Comparing with paper results
+
+Pre-computed results from the paper are provided in `/app/logs/`. The lasso traces extracted by Ultimate and used in the paper are also provided in
+`/app/logs/lasso_traces/` (categories `ALL_INT_VARS`, `BOOLEAN_OP`, `REAL_VARS`).
+Each subdirectory contains the raw `.txt` traces (Ultimate output) and the converted
+`.json` files (PaSTTeL input), grouped per source program as `lasso_traces_<program>/`.
+
+This allows running P-ULR directly on the paper's exact inputs without re-running Ultimate:
+```bash
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/ALL_INT_VARS/
+```
+
+### Correspondence with paper figures and tables
+
+**Smoke test** (`output/smoke/`):
+
+| Output file                                    | Paper element                                                       |
+|------------------------------------------------|---------------------------------------------------------------------|
+| `summary_tables.log`                           | Table.1 and Fig.7 — P-ULR-Seq vs ULR-Baseline (Z3) — subset [paper] |
+| `smoke_results_P-ULR-Seq_z3.csv`               | Table 1 — P-ULR-Seq vs ULR-Baseline (Z3) — subset [paper]           |
+| `smoke_results_P-ULR-Seq_z3_scatter.html/.pdf` | Figure 6 — ULR-Baseline vs P-ULR-Seq (Z3) — subset [paper]          |
+| `smoke_results_P-ULR-Seq_cvc5.csv`	         | P-ULR-Seq vs ULR-Baseline (CVC5) — subset [not in the paper]        |
+| `smoke_z3_vs_cvc5.html/.pdf`                   | Z3 vs CVC5 on P-ULR-Seq — subset [paper]                            |
+
+**Full evaluation** (`output/full/`):
+
+| Output file                                    | Paper element                                                       |
+|------------------------------------------------|---------------------------------------------------------------------|
+| `results_P-ULR-Seq_z3.csv`                     | Table 1 — P-ULR-Seq vs ULR-Baseline (Z3) [paper]                    |
+| `results_P-ULR-Seq_z3_scatter.html/.pdf`       | Figure 6 — ULR-Baseline vs P-ULR-Seq (Z3) [paper]                   |
+| `results_P-ULR-Par4_z3.csv`                    | Table 1 — P-ULR-Par4 vs ULR-Baseline (Z3) [paper]                   |
+| `results_P-ULR-Par4_z3_scatter.html/.pdf`      | Figure 6 — ULR-Baseline vs P-ULR-Par4 (Z3) [paper]                  |
+| `results_P-ULR-Par4_cvc5.csv`                  | Table 1 — P-ULR-Par4 vs ULR-Baseline (CVC5) [paper]                 |
+| `results_P-ULR-Par4_cvc5_scatter.html/.pdf`    | Figure 6c — ULR-Baseline vs P-ULR-Par4 (CVC5) [not in the paper]    |
+| `full_z3_vs_cvc5.html/.pdf`                    | Figure 7 — Z3 vs CVC5 on P-ULR-Par4 [paper]                         |
+
+**Pre-computed paper results** (`logs/`):
+
+| File                                                 | Paper element                                                  |
+|------------------------------------------------------|----------------------------------------------------------------|
+| `result_atva26_sequential_z3.csv`                    | Table 1 — P-ULR-Seq (Z3), full benchmark [paper]               |
+| `result_atva26_sequential_z3_scatter.html/.pdf`      | Figure 6 — P-ULR-Seq (Z3) scatter [paper]                      |
+| `result_atva26_sequential_cvc5.csv`                  | Table 1 — P-ULR-Seq (CVC5), full benchmark [not in the paper] |
+| `result_atva26_sequential_cvc5_scatter.html/.pdf`    | Figure 6 — P-ULR-Seq (CVC5) scatter [not in the paper]        |
+| `result_atva26_parallel4_z3.csv`                     | Table 1 — P-ULR-Par4 (Z3), full benchmark [paper]              |
+| `result_atva26_parallel4_z3_scatter.html/.pdf`       | None — P-ULR-Par4 (Z3) scatter [paper]                         |
+| `result_atva26_parallel4_cvc5.csv`                   | Figure 7 — P-ULR-Par4 (CVC5), full benchmark [paper]           |
+| `result_atva26_parallel4_cvc5_scatter.html/.pdf`     | None — P-ULR-Par4 (CVC5) scatter [not in the paper]           |
+| `comparison_par4_z3_cvc5.html/.pdf`                  | Figure 7 — Z3 vs CVC5 on P-ULR-Par4 [paper]                    |
+
+---
+
+## CSV Output Format
+
+The results CSV contains the following columns:
+
+| Column                  | Description                                                                    |
+|-------------------------|--------------------------------------------------------------------------------|
+| `Trace Name`            | Path to the lasso trace file                                                   |
+| `Result Code`           | Ultimate LassoRanker verdict: TERMINATING, NONTERMINATING, INFEASIBLE, UNKNOWN |
+| `Fixpoint (ms)`         | Time for fixpoint computation in ULR                                           |
+| `Termination (ms)`      | Time for termination analysis in ULR                                           |
+| `Nontermination (ms)`   | Time for non-termination analysis in ULR                                       |
+| `ULR-Baseline (ms)`     | Total execution time of ULR                                                    |
+| `P-ULR-X`               | Total P-ULR-X execution time (X: Seq, Par2, Par4,...)                          |
+| `PaSTTeL Status`        | PaSTTeL verdict: TERMINATING, NONTERMINATING, TIMEOUT, or NOT SUPPORTED        |
+| `Stem Size`             | Number of stem transitions                                                     |
+| `Loop Size`             | Number of loop transitions                                                     |
+| `Total Size Trace`      | Total transitions                                                              |
+| `Algo`                  | Ranking function template used by ULR-Baseline / P-ULR                         |
+
+
+---
+
+## Resource Requirements
+
+The full benchmark contains programs from the SV-COMP and other competition benchmarks. Running the full evaluation with 600s timeout per instance may take **several hours**. We recommend:
+- Using `run_smoke_test.sh` for initial validation (~5 min)
+- Using `run_full_evaluation.sh` only if sufficient time is available (48 hours on a 4-core machine)
+We used a timeout of 6000s for Ultimate Buchi Automizer to allow it enough time to produce a sufficient number of lasso traces.
+
+The artifact was tested on a machine with:
+- Ubuntu 24.04, x86-64
+- Intel Core i5-14400T (8 cores), 30 GB RAM
+- Z3 4.15.4, CVC5 1.3.3
+
+---
+
+## Reusable Badge
+
+This section describes how to use PaSTTeL outside of the Docker evaluation environment,
+and how to reuse the benchmarks for other research.
+
+### Using PaSTTeL without Docker
+
+#### Requirements
+
+- `g++` with C++17 support (GCC ≥ 9)
+- Java 21 JRE (`openjdk-21-jre-headless`) for Ultimate Buchi Automizer
+- Z3 4.15.4 development headers and shared library (`libz3.so`)
+- CVC5 1.3.3 shared build (`libcvc5.so`, `libcvc5parser.so`, and dependencies)
+- Python 3 with `plotly`, `pandas`, and `matplotlib` (for benchmark scripts)
+
+The solver archives in `tools/solvers/` can be used directly:
+```bash
+# Extract Z3
+unzip tools/solvers/z3-4.15.4-x64-glibc-2.39.zip -d /path/to/solvers
+cd /path/to/solvers/z3-4.15.4-x64-glibc-2.39 && mkdir -p lib && cp bin/lib* lib/ && cd ~
+
+# Extract CVC5
+unzip tools/solvers/cvc5-Linux-x86_64-shared.zip  -d /path/to/solvers
+```
+
+System packages required (Ubuntu 24.04):
+```bash
+apt-get install -y build-essential openjdk-21-jre-headless \
+    python3 python3-plotly python3-pandas python3-matplotlib \ 
+    libboost-dev libedit-dev
+```
+
+#### Building PaSTTeL from source
+
+```bash
+cd pasttel/
+
+# Set paths to Z3 and CVC5 install prefixes
+export PASTTEL=/path/to/solvers/z3-4.15.4-x64-glibc-2.39
+export CVC5_DIR=/path/to/solvers/cvc5-Linux-x86_64-shared
+export LD_LIBRARY_PATH=${PASTTEL}/bin:${CVC5_DIR}/lib:${LD_LIBRARY_PATH}
+
+make -j$(nproc)
+# Binary produced at: pasttel/bin/pasttel
+```
+
+
+#### Running PaSTTeL directly
+
+```bash
+# Run PaSTTeL testsuite
+python3 ./scripts/test_non_regression.py
+``` 
+
+```bash
+# Analyse a single lasso trace (JSON format):
+./bin/pasttel -a both -s z3 pasttel/examples/lasso_trace_1.json
+
+# Options:
+#   -a  both|terminate|nonterminate   analysis mode (default: both)
+#   -s  z3|cvc5                       SMT solver (default: z3)
+#   -c  N                             number of CPU cores (default: 1)
+#   -t  N                             timeout in seconds (default: 6000)
+#   -v                                verbose output
+#   -h                                show help
+```
+
+### Using PaSTTeL as a library
+
+PaSTTeL can also be used as a static library (`bin/libpasttel.a`) in other C++17 projects.
+Build it with:
+
+```bash
+cd pasttel/
+make lib
+```
+
+The entry point is `include/pasttel.h` (`runAnalysis()`). Lasso programs can be loaded from
+a JSON trace file via `JsonTraceParser::parseToLasso()` (see `include/parser/json_trace_parser.h`),
+or constructed directly as a `LassoProgram` instance (see `include/lasso_program.h`) to
+integrate PaSTTeL into a larger verification pipeline without the JSON format.
+
+### Reusing the benchmarks
+
+The `benchmarks/C/` and `benchmarks/BPL/` directories contain programs from SV-COMP and
+competition benchmarks. Extracting lasso traces from these programs requires
+**Ultimate Buchi Automizer**, which in turn requires a custom build of Ultimate.
+
+#### Option A — Use the pre-extracted lasso traces (no Ultimate required)
+
+The lasso traces used in the paper are already available in `logs/lasso_traces/`,
+organised by variable category. They can be used directly as input to PaSTTeL or
+any other tool that accepts the ULR `.txt` format:
+
+```bash
+# Run P-ULR on the paper's exact inputs (no Ultimate needed):
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/ALL_INT_VARS/
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/BOOLEAN_OP/
+bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/REAL_VARS/
+```
+
+#### Option B — Extract new lasso traces with Ultimate (requires building Ultimate)
+
+We modified Ultimate to log lasso traces in a structured format. The modified
+source is included in `tools/ultimate/`. To build it, follow the instructions at
+[https://github.com/ultimate-pa/ultimate](https://github.com/ultimate-pa/ultimate),
+then replace `tools/UAutomizer-linux/` with the newly generated release folder.
+
+Once Ultimate is built and installed, extract lasso traces with:
+
+```bash
+# Run Ultimate Buchi Automizer to generate lasso_trace_*.txt files:
+bash /app/scripts/run_ultimate_only.sh /app/benchmarks/C/ --output /app/output/my_traces/
+
+# Traces are organised by variable category:
+#   ALL_INT_VARS/  — integer-only programs (PaSTTeL supported)
+#   BOOLEAN_OP/    — programs with boolean operations (PaSTTeL supported)
+#   REAL_VARS/     — programs with real variables (PaSTTeL supported)
+#   ARRAY_OP/      — array programs (not supported by PaSTTeL)
+```
+
+The JSON format expected by PaSTTeL can be generated from any `.txt` lasso trace
+via the `benchmark_ultimate_vs_pasttel.py` script.
+
+### Building the Docker image from the Dockerfile
+
+The `Dockerfile` serves as a complete, reproducible specification of the build environment.
+To build the image from scratch (no internet required):
+
+```bash
+docker build -t pasttel-artifact .
+```

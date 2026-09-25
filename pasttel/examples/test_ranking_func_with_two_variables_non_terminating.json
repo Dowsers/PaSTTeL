@@ -1,0 +1,97 @@
+{
+  "program_vars": [
+    "x",
+    "y"
+  ],
+  "var_types": {
+    "x": "Int",
+    "y": "Int"
+  },
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(>= v_x_1 2)",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "x"
+      ]
+    },
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(>= v_y_1 1)",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "y"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L3",
+      "target": "L4",
+      "formula": "(> v_x_2 v_y_2)",
+      "in_vars": {
+        "x": "v_x_2",
+        "y": "v_y_2"
+      },
+      "out_vars": {
+        "x": "v_x_2",
+        "y": "v_y_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L4",
+      "target": "L5",
+      "formula": "(= v_x_3 (- v_x_4 1))",
+      "in_vars": {
+        "x": "v_x_4",
+        "y": "v_y_2"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "x"
+      ]
+    },
+    {
+      "source": "L5",
+      "target": "L3",
+      "formula": "(= v_y_3 (- v_y_4 1))",
+      "in_vars": {
+        "x": "v_x_3",
+        "y": "v_y_4"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "y"
+      ]
+    }
+  ]
+}

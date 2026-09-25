@@ -1,0 +1,74 @@
+{
+  "program_vars": ["n"],
+
+  "var_types": {
+    "n": "Int"
+  },
+
+  "constants": {},
+
+  "array_vars": {
+    "balances": "(Array Int Int)",
+    "addr": "Int"
+  },
+
+  "functions": [],
+  "axioms": [],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_n_1 10) (= v_balances_1 (store v_balances_2 v_addr_1 100)))",
+      "in_vars": {
+        "n": "v_n_1",
+        "balances": "v_balances_2",
+        "addr": "v_addr_1"
+      },
+      "out_vars": {
+        "n": "v_n_1",
+        "balances": "v_balances_1",
+        "addr": "v_addr_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["n", "balances"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(and (> v_n_1 0) (> (select v_balances_1 v_addr_1) 0))",
+      "in_vars": {
+        "n": "v_n_1",
+        "balances": "v_balances_1",
+        "addr": "v_addr_1"
+      },
+      "out_vars": {
+        "n": "v_n_1",
+        "balances": "v_balances_1",
+        "addr": "v_addr_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(and (= v_n_3 (- v_n_4 1)) (= v_balances_3 (store v_balances_4 v_addr_1 (- (select v_balances_4 v_addr_1) 1))))",
+      "in_vars": {
+        "n": "v_n_4",
+        "balances": "v_balances_4",
+        "addr": "v_addr_1"
+      },
+      "out_vars": {
+        "n": "v_n_3",
+        "balances": "v_balances_3",
+        "addr": "v_addr_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["n", "balances"]
+    }
+  ]
+}

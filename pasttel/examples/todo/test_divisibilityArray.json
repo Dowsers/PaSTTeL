@@ -1,0 +1,57 @@
+{
+  "program_vars": [
+    "main_a",
+    "main_i",
+    "main_n"
+  ],
+  "var_types": {
+    "main_a": "(Array Int Int)",
+    "main_i": "Int",
+    "main_n": "Int"
+  },
+  "array_vars": {
+    "main_a": "(Array Int Int)"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (= v_main_a_15 (store v_main_a_16 (* v_main_n_8 4) 23)) (<= 0 v_main_n_8) (= v_main_i_18 0))",
+      "in_vars": {
+        "main_a": "v_main_a_16",
+        "main_n": "v_main_n_8"
+      },
+      "out_vars": {
+        "main_a": "v_main_a_15",
+        "main_n": "v_main_n_8",
+        "main_i": "v_main_i_18"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "main_a",
+        "main_i"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= v_main_i_19 (* v_main_n_9 4)) (not (= 23 (select v_main_a_17 v_main_i_20))) (= (+ v_main_i_20 4) v_main_i_19))",
+      "in_vars": {
+        "main_a": "v_main_a_17",
+        "main_n": "v_main_n_9",
+        "main_i": "v_main_i_20"
+      },
+      "out_vars": {
+        "main_a": "v_main_a_17",
+        "main_n": "v_main_n_9",
+        "main_i": "v_main_i_19"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "main_i"
+      ]
+    }
+  ]
+}

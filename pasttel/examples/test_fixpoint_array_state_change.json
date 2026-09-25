@@ -1,0 +1,7 @@
+{
+  "program_vars": ["i", "A"],
+  "var_types": {"i": "Int", "A": "(Array Int Int)"},
+  "array_vars": {"A": "(Array Int Int)"},
+  "stem": [{"source":"L1","target":"L2","formula":"true","in_vars":{"i":"v_i_1","A":"v_A_1"},"out_vars":{"i":"v_i_1","A":"v_A_1"},"aux_vars":[],"assigned_vars":[]}],
+  "loop": [{"source":"L2","target":"L2","formula":"(and (< (select v_A_2 v_i_2) 5) (= v_A_3 (store v_A_2 v_i_2 (+ (select v_A_2 v_i_2) 1))))","in_vars":{"i":"v_i_2","A":"v_A_2"},"out_vars":{"i":"v_i_2","A":"v_A_3"},"aux_vars":[],"assigned_vars":["A"]}]
+}

@@ -1,0 +1,132 @@
+{
+  "program_vars": ["amount", "sender_balance", "receiver_balance"],
+
+  "var_types": {
+    "amount": "Int",
+    "sender_balance": "Int",
+    "receiver_balance": "Int"
+  },
+
+  "constants": {
+    "null_addr": {
+      "type": "Int",
+      "value": "0"
+    },
+    "sender": {
+      "type": "Int",
+      "value": "1"
+    },
+    "receiver": {
+      "type": "Int",
+      "value": "2"
+    },
+    "MAX_SUPPLY": {
+      "type": "Int",
+      "value": "1000000"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "balanceOf",
+      "signature": "Int Int"
+    }
+  ],
+
+  "axioms": [
+    {
+      "formula": "(forall ((addr Int)) (>= (balanceOf addr) 0))",
+      "description": "All balances are non-negative"
+    },
+    {
+      "formula": "(forall ((addr Int)) (<= (balanceOf addr) MAX_SUPPLY))",
+      "description": "No individual balance exceeds max supply"
+    },
+    {
+      "formula": "(not (= sender receiver))",
+      "description": "Sender and receiver are different addresses"
+    },
+    {
+      "formula": "(not (= sender null_addr))",
+      "description": "Sender is not null"
+    },
+    {
+      "formula": "(not (= receiver null_addr))",
+      "description": "Receiver is not null"
+    }
+  ],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_amount_1 100) (= v_sender_balance_1 500) (= v_receiver_balance_1 200))",
+      "in_vars": {
+        "amount": "v_amount_1",
+        "sender_balance": "v_sender_balance_1",
+        "receiver_balance": "v_receiver_balance_1"
+      },
+      "out_vars": {
+        "amount": "v_amount_1",
+        "sender_balance": "v_sender_balance_1",
+        "receiver_balance": "v_receiver_balance_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["amount", "sender_balance", "receiver_balance"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(and (> v_amount_2 0) (>= v_sender_balance_2 v_amount_2))",
+      "in_vars": {
+        "amount": "v_amount_2",
+        "receiver_balance": "v_receiver_balance_1",
+        "sender_balance": "v_sender_balance_2"
+      },
+      "out_vars": {
+        "amount": "v_amount_2",
+        "receiver_balance": "v_receiver_balance_1",
+        "sender_balance": "v_sender_balance_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L4",
+      "formula": "(and (= v_sender_balance_3 (- v_sender_balance_4 v_amount_3)) (= v_receiver_balance_3 (+ v_receiver_balance_4 v_amount_3)))",
+      "in_vars": {
+        "sender_balance": "v_sender_balance_4",
+        "receiver_balance": "v_receiver_balance_4",
+        "amount": "v_amount_3"
+      },
+      "out_vars": {
+        "sender_balance": "v_sender_balance_3",
+        "receiver_balance": "v_receiver_balance_3",
+        "amount": "v_amount_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["sender_balance", "receiver_balance"]
+    },
+    {
+      "source": "L4",
+      "target": "L2",
+      "formula": "(= v_amount_5 (- v_amount_6 1))",
+      "in_vars": {
+        "sender_balance": "v_sender_balance_3",
+        "receiver_balance": "v_receiver_balance_3",
+        "amount": "v_amount_6"
+      },
+      "out_vars": {
+        "sender_balance": "v_sender_balance_3",
+        "receiver_balance": "v_receiver_balance_3",
+        "amount": "v_amount_5"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["amount"]
+    }
+  ]
+}

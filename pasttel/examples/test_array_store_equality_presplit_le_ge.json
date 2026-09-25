@@ -1,0 +1,7 @@
+{
+  "program_vars": ["n", "j", "A"],
+  "var_types": {"n": "Int", "j": "Int", "A": "(Array Int Int)"},
+  "array_vars": {"A": "(Array Int Int)"},
+  "stem": [{"source":"L1","target":"L2","formula":"true","in_vars":{"n":"v_n_1","j":"v_j_1","A":"v_A_1"},"out_vars":{"n":"v_n_1","j":"v_j_1","A":"v_A_1"},"aux_vars":[],"assigned_vars":[]}],
+  "loop": [{"source":"L2","target":"L2","formula":"(and (> v_n_2 0) (and (<= v_A_3 (store v_A_2 v_j_2 7)) (>= v_A_3 (store v_A_2 v_j_2 7))) (= v_x_1 (select v_A_3 v_j_2)) (= v_n_3 (- v_n_2 v_x_1)))","in_vars":{"n":"v_n_2","j":"v_j_2","A":"v_A_2"},"out_vars":{"n":"v_n_3","j":"v_j_2","A":"v_A_3"},"aux_vars":["v_x_1"],"assigned_vars":["n","A"]}]
+}

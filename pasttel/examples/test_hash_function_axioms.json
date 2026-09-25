@@ -1,0 +1,88 @@
+{
+  "program_vars": ["x", "y"],
+
+  "var_types": {
+    "x": "Int",
+    "y": "Int"
+  },
+
+  "constants": {
+    "null": {
+      "type": "Int",
+      "value": "0"
+    },
+    "MAX_UINT256": {
+      "type": "Int",
+      "value": "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "keccak256",
+      "signature": "Int Int"
+    }
+  ],
+
+  "axioms": [
+    {
+      "formula": "(forall ((a Int) (b Int)) (and (= (keccak256 a) (keccak256 b)) (= a b)))",
+      "description": "Injectivity of keccak256: if hash(a) = hash(b) then a = b"
+    },
+    {
+      "formula": "(forall ((a Int)) (>= (keccak256 a) 0))",
+      "description": "Hash values are non-negative"
+    }
+  ],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_x_1 100) (= v_y_1 0))",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x", "y"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(and (> v_x_1 0) (not (= (keccak256 v_x_1) (keccak256 v_y_1))))",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(and (= v_x_3 (- v_x_4 1)) (= v_y_3 v_y_4))",
+      "in_vars": {
+        "x": "v_x_4",
+        "y": "v_y_4"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x"]
+    }
+  ]
+}

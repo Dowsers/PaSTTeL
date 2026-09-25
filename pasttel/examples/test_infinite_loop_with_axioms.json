@@ -1,0 +1,74 @@
+{
+  "program_vars": ["x", "y"],
+
+  "var_types": {
+    "x": "Int",
+    "y": "Int"
+  },
+
+  "constants": {
+    "BOUND": {
+      "type": "Int",
+      "value": "1000"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "f",
+      "signature": "Int Int"
+    }
+  ],
+
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(and (= v_x_1 0) (= v_y_1 10))",
+      "in_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "out_vars": {
+        "x": "v_x_1",
+        "y": "v_y_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x", "y"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(> v_y_2 0)",
+      "in_vars": {
+      	"x": "v_x_1",
+        "y": "v_y_2"
+      },
+      "out_vars": {
+      	"x": "v_x_1",
+        "y": "v_y_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L3",
+      "target": "L2",
+      "formula": "(and (= v_x_3 (f v_x_4)) (= v_y_3 v_y_4))",
+      "in_vars": {
+        "x": "v_x_4",
+        "y": "v_y_4"
+      },
+      "out_vars": {
+        "x": "v_x_3",
+        "y": "v_y_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["x"]
+    }
+  ]
+}

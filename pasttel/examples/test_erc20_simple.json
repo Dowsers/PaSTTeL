@@ -1,0 +1,92 @@
+{
+  "program_vars": ["balance", "totalSupply"],
+
+  "var_types": {
+    "balance": "Int",
+    "totalSupply": "Int"
+  },
+
+  "constants": {
+    "ERC20": {
+      "type": "Int",
+      "value": "Type identifier for ERC20"
+    },
+    "null_addr": {
+      "type": "Int",
+      "value": "0"
+    }
+  },
+
+  "functions": [
+    {
+      "name": "sum__balances",
+      "signature": "Int Int"
+    },
+    {
+      "name": "DType",
+      "signature": "Int Int"
+    }
+  ],
+
+  "stem": [
+    {
+      "source": "L1",
+      "target": "L2",
+      "formula": "(>= v_balance_1 0)",
+      "in_vars": {
+        "balance": "v_balance_1"
+      },
+      "out_vars": {
+        "balance": "v_balance_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L2",
+      "target": "L3",
+      "formula": "(= v_totalSupply_1 100)",
+      "in_vars": {
+        "totalSupply": "v_totalSupply_1"
+      },
+      "out_vars": {
+        "totalSupply": "v_totalSupply_1"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["totalSupply"]
+    }
+  ],
+
+  "loop": [
+    {
+      "source": "L3",
+      "target": "L4",
+      "formula": "(> v_balance_2 0)",
+      "in_vars": {
+      	"totalSupply": "v_totalSupply_1",
+        "balance": "v_balance_2"
+      },
+      "out_vars": {
+    	"totalSupply": "v_totalSupply_1",
+        "balance": "v_balance_2"
+      },
+      "aux_vars": [],
+      "assigned_vars": []
+    },
+    {
+      "source": "L4",
+      "target": "L3",
+      "formula": "(= v_balance_3 (- v_balance_4 1))",
+      "in_vars": {
+    	"totalSupply": "v_totalSupply_1",
+        "balance": "v_balance_4"
+      },
+      "out_vars": {
+    	"totalSupply": "v_totalSupply_1",
+        "balance": "v_balance_3"
+      },
+      "aux_vars": [],
+      "assigned_vars": ["balance"]
+    }
+  ]
+}

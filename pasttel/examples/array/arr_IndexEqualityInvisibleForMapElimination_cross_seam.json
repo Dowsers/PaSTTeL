@@ -1,0 +1,69 @@
+{
+  "program_vars": [
+    "mem",
+    "r#ptr",
+    "w#ptr",
+    "x",
+    "y"
+  ],
+  "var_types": {
+    "mem": "(Array Int Int)",
+    "r#ptr": "Int",
+    "w#ptr": "Int",
+    "x": "Int",
+    "y": "Int"
+  },
+  "array_vars": {
+    "mem": "(Array Int Int)"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(let ((.cse0 (select v_mem_30 v_y_13))) (and (= v_mem_28 (store (store v_mem_30 v_x_13 1) |v_w#ptr_24| (+ .cse0 1))) (<= (+ v_y_13 1) v_x_13) (= v_x_13 |v_r#ptr_16|) (<= .cse0 99) (= v_y_13 |v_w#ptr_24|)))",
+      "in_vars": {
+        "y": "v_y_13",
+        "x": "v_x_13",
+        "mem": "v_mem_30"
+      },
+      "out_vars": {
+        "y": "v_y_13",
+        "x": "v_x_13",
+        "w#ptr": "|v_w#ptr_24|",
+        "r#ptr": "|v_r#ptr_16|",
+        "mem": "v_mem_28"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "w#ptr",
+        "r#ptr",
+        "mem"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(let ((.cse0 (select v_mem_32 v_y_14))) (and (= v_y_14 |v_w#ptr_26|) (<= .cse0 99) (= (store v_mem_32 |v_w#ptr_26| (+ .cse0 (select v_mem_32 |v_r#ptr_17|))) v_mem_31) (= v_x_14 |v_r#ptr_17|)))",
+      "in_vars": {
+        "y": "v_y_14",
+        "x": "v_x_14",
+        "mem": "v_mem_32"
+      },
+      "out_vars": {
+        "y": "v_y_14",
+        "x": "v_x_14",
+        "w#ptr": "|v_w#ptr_26|",
+        "r#ptr": "|v_r#ptr_17|",
+        "mem": "v_mem_31"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "w#ptr",
+        "r#ptr",
+        "mem"
+      ]
+    }
+  ]
+}
