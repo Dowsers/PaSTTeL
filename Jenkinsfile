@@ -1,17 +1,12 @@
 pipeline {
   agent any
-  triggers { pollSCM('H/5 * * * *') }
-
   stages {
     stage('Checkout') {
       steps {
         checkout([
           $class: 'GitSCM',
-          branches: [[name: '*/main']],
-          userRemoteConfigs: [[
-            url: 'https://github.com/Dowsers/PaSTTeL.git',
-            credentialsId: 'ID_DOWSERS_GITHUB'
-          ]],
+          branches: [[name: env.BRANCH_NAME]],
+          userRemoteConfigs: scm.userRemoteConfigs,
           extensions: [
             [$class: 'CleanBeforeCheckout'],
             [$class: 'CloneOption', noTags: false, shallow: false],
