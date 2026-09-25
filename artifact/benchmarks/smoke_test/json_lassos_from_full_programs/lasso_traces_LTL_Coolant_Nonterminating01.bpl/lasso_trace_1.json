@@ -1,0 +1,56 @@
+{
+  "program_vars": [
+    "main_#t~nondet0",
+    "main_~chainBroken",
+    "main_~limit",
+    "main_~time"
+  ],
+  "var_types": {
+    "main_#t~nondet0": "Int",
+    "main_~chainBroken": "Int",
+    "main_~limit": "Int",
+    "main_~time": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (= v_main_~time_15 0) (= v_main_~chainBroken_11 0) (= 5 v_main_~limit_11))",
+      "in_vars": {},
+      "out_vars": {
+        "main_~limit": "v_main_~limit_11",
+        "main_~time": "v_main_~time_15",
+        "main_~chainBroken": "v_main_~chainBroken_11"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "main_~limit",
+        "main_~time",
+        "main_~chainBroken"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (= (+ v_main_~time_17 1) v_main_~time_16) (not (= v_main_~chainBroken_12 1)) (<= |v_main_#t~nondet0_12| (+ v_main_~limit_12 273)))",
+      "in_vars": {
+        "main_#t~nondet0": "|v_main_#t~nondet0_12|",
+        "main_~limit": "v_main_~limit_12",
+        "main_~time": "v_main_~time_17",
+        "main_~chainBroken": "v_main_~chainBroken_12"
+      },
+      "out_vars": {
+        "main_~limit": "v_main_~limit_12",
+        "main_~time": "v_main_~time_16",
+        "main_~chainBroken": "v_main_~chainBroken_12"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "main_#t~nondet0",
+        "main_~time"
+      ]
+    }
+  ]
+}

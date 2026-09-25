@@ -1,0 +1,59 @@
+{
+  "program_vars": [
+    "ULTIMATE.start_#t~ret2",
+    "main_#t~nondet0",
+    "main_#t~nondet1",
+    "main_~x~0",
+    "main_~y~0"
+  ],
+  "var_types": {
+    "ULTIMATE.start_#t~ret2": "Int",
+    "main_#t~nondet0": "Int",
+    "main_#t~nondet1": "Int",
+    "main_~x~0": "Int",
+    "main_~y~0": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (<= 0 (+ v_main_~y~0_29 65534)) (<= 0 (+ v_main_~x~0_28 2147483648)) (<= v_main_~y~0_29 65534) (<= v_main_~x~0_28 65534))",
+      "in_vars": {},
+      "out_vars": {
+        "ULTIMATE.start_#t~ret2": "|v_ULTIMATE.start_#t~ret2_14|",
+        "main_~x~0": "v_main_~x~0_28",
+        "main_#t~nondet1": "|v_main_#t~nondet1_17|",
+        "main_#t~nondet0": "|v_main_#t~nondet0_17|",
+        "main_~y~0": "v_main_~y~0_29"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "ULTIMATE.start_#t~ret2",
+        "main_~x~0",
+        "main_#t~nondet1",
+        "main_#t~nondet0",
+        "main_~y~0"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 0 v_main_~x~0_30) (= (+ v_main_~x~0_30 v_main_~y~0_31) v_main_~x~0_29) (= v_main_~y~0_31 (+ v_main_~y~0_30 1)))",
+      "in_vars": {
+        "main_~x~0": "v_main_~x~0_30",
+        "main_~y~0": "v_main_~y~0_31"
+      },
+      "out_vars": {
+        "main_~x~0": "v_main_~x~0_29",
+        "main_~y~0": "v_main_~y~0_30"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "main_~x~0",
+        "main_~y~0"
+      ]
+    }
+  ]
+}

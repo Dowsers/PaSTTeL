@@ -1,0 +1,1262 @@
+========================================
+LASSO TRACE REPORT - Iteration #6
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_#t~nondet5                                    : Int
+  main_~x~0                                          : Int
+  main_#t~nondet1                                    : Int
+  main_#t~nondet0                                    : Int
+  main_#t~nondet3                                    : Int
+  main_#t~nondet2                                    : Int
+  main_#t~short6                                     : Bool
+  main_~y~0                                          : Int
+  main_~n~0                                          : Int
+  main_#t~short4                                     : Bool
+  ULTIMATE.start_#t~ret7                             : Int
+  v_main_#t~nondet5_108                              : Int
+  v_main_~x~0_106                                    : Int
+  v_main_#t~nondet1_76                               : Int
+  v_main_#t~nondet0_76                               : Int
+  v_main_#t~nondet3_113                              : Int
+  v_main_#t~nondet2_76                               : Int
+  v_main_~y~0_134                                    : Int
+  v_main_~n~0_88                                     : Int
+  v_ULTIMATE.start_#t~ret7_57                        : Int
+  v_rep~unnamed0~0~true_14                           : Int
+  v_rep~unnamed0~0~false_14                          : Int
+  v_v_rep(ite main_#t~short6 1 0)_10_in_bool_1       : Int
+  v_v_rep(ite main_#t~short4 1 0)_13_in_bool_1       : Int
+  v_main_#t~nondet5_105                              : Int
+  v_main_~x~0_105                                    : Int
+  v_main_#t~nondet1_75                               : Int
+  v_main_#t~nondet0_75                               : Int
+  v_main_#t~nondet3_112                              : Int
+  v_main_#t~nondet2_75                               : Int
+  v_main_~y~0_131                                    : Int
+  v_main_~n~0_86                                     : Int
+  v_ULTIMATE.start_#t~ret7_56                        : Int
+  v_v_rep(ite main_#t~short6 1 0)_10_out_bool_1      : Int
+  v_v_rep(ite main_#t~short4 1 0)_13_out_bool_1      : Int
+  v_main_~y~0_133                                    : Int
+  v_main_~n~0_87                                     : Int
+  v_main_#t~nondet5_109                              : Int
+  v_main_#t~nondet5_107                              : Int
+  v_main_~y~0_132                                    : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (<= 0 (+ v_main_~y~0_155 1)) (<= 0 (+ v_main_~x~0_123 1)) (<= v_main_~n~0_101 2147483647) (<= v_main_~y~0_155 v_main_~n~0_101) (<= v_main_~x~0_123 2147483645))  InVars {}  OutVars{main_#t~nondet5=|v_main_#t~nondet5_146|, main_~x~0=v_main_~x~0_123, main_#t~nondet1=|v_main_#t~nondet1_87|, main_#t~nondet0=|v_main_#t~nondet0_87|, main_#t~nondet3=|v_main_#t~nondet3_145|, main_#t~nondet2=|v_main_#t~nondet2_87|, main_#t~short6=|v_main_#t~short6_172|, main_~y~0=v_main_~y~0_155, main_~n~0=v_main_~n~0_101, main_#t~short4=|v_main_#t~short4_175|, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_65|}  AuxVars[]  AssignedVars[main_#t~nondet5, main_~x~0, main_#t~nondet1, main_#t~nondet0, main_#t~nondet3, main_#t~nondet2, main_#t~short6, main_~y~0, main_~n~0, main_#t~short4, ULTIMATE.start_#t~ret7]
+
+Loop TransFormula:
+Formula: (and (or (< v_main_~y~0_156 (+ 1 v_main_~n~0_102)) (not |v_main_#t~short6_173|)) (= (+ v_main_~y~0_157 1) v_main_~y~0_156) |v_main_#t~short6_175|)  InVars {main_~y~0=v_main_~y~0_157, main_#t~short6=|v_main_#t~short6_175|, main_~n~0=v_main_~n~0_102}  OutVars{main_#t~nondet5=|v_main_#t~nondet5_148|, main_#t~short6=|v_main_#t~short6_173|, main_~y~0=v_main_~y~0_156, main_~n~0=v_main_~n~0_102}  AuxVars[]  AssignedVars[main_#t~nondet5, main_#t~short6, main_~y~0]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,3429
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0638
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,4400
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9306
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,3881
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0430
+
+Stem (linearized):
+  Formula:  (and (<= v_main_~x~0_105 2147483645) (<= v_rep~unnamed0~0~true_14 1) (>= v_rep~unnamed0~0~false_14 0) (<= v_main_~y~0_131 v_main_~n~0_86) (>= v_rep~unnamed0~0~true_14 1) (<= v_rep~unnamed0~0~false_14 0) (<= 0 (+ v_main_~x~0_105 1)) (<= v_main_~n~0_86 2147483647) (<= 0 (+ v_main_~y~0_131 1)))
+  InVars:   {main_#t~nondet5=|v_main_#t~nondet5_108|, main_~x~0=v_main_~x~0_106, main_#t~nondet1=|v_main_#t~nondet1_76|, main_#t~nondet0=|v_main_#t~nondet0_76|, main_#t~nondet3=|v_main_#t~nondet3_113|, main_#t~nondet2=|v_main_#t~nondet2_76|, main_~y~0=v_main_~y~0_134, main_~n~0=v_main_~n~0_88, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_57|, v_rep~unnamed0~0~true_14=v_rep~unnamed0~0~true_14, v_rep~unnamed0~0~false_14=v_rep~unnamed0~0~false_14, v_rep(ite main_#t~short6 1 0)_10=|v_v_rep(ite main_#t~short6 1 0)_10_in_bool_1|, v_rep(ite main_#t~short4 1 0)_13=|v_v_rep(ite main_#t~short4 1 0)_13_in_bool_1|}
+  OutVars:  {main_#t~nondet5=|v_main_#t~nondet5_105|, main_~x~0=v_main_~x~0_105, main_#t~nondet1=|v_main_#t~nondet1_75|, main_#t~nondet0=|v_main_#t~nondet0_75|, main_#t~nondet3=|v_main_#t~nondet3_112|, main_#t~nondet2=|v_main_#t~nondet2_75|, main_~y~0=v_main_~y~0_131, main_~n~0=v_main_~n~0_86, ULTIMATE.start_#t~ret7=|v_ULTIMATE.start_#t~ret7_56|, v_rep~unnamed0~0~true_14=v_rep~unnamed0~0~true_14, v_rep~unnamed0~0~false_14=v_rep~unnamed0~0~false_14, v_rep(ite main_#t~short6 1 0)_10=|v_v_rep(ite main_#t~short6 1 0)_10_out_bool_1|, v_rep(ite main_#t~short4 1 0)_13=|v_v_rep(ite main_#t~short4 1 0)_13_out_bool_1|}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= v_rep~unnamed0~0~true_14 1) (>= v_rep~unnamed0~0~false_14 0) (>= (+ v_main_~y~0_133 1) v_main_~y~0_132) (>= v_rep~unnamed0~0~true_14 1) (<= v_rep~unnamed0~0~false_14 0) (<= (+ |v_v_rep(ite main_#t~short6 1 0)_10_out_bool_1| 1) 1) (<= (+ v_main_~y~0_133 1) v_main_~y~0_132) (>= |v_v_rep(ite main_#t~short6 1 0)_10_in_bool_1| 1)) (and (<= v_rep~unnamed0~0~true_14 1) (>= v_rep~unnamed0~0~false_14 0) (<= (+ v_main_~y~0_132 1) (+ v_main_~n~0_87 1)) (>= (+ v_main_~y~0_133 1) v_main_~y~0_132) (>= v_rep~unnamed0~0~true_14 1) (<= v_rep~unnamed0~0~false_14 0) (<= (+ v_main_~y~0_133 1) v_main_~y~0_132) (>= |v_v_rep(ite main_#t~short6 1 0)_10_in_bool_1| 1)))
+  InVars:   {main_~y~0=v_main_~y~0_133, main_~n~0=v_main_~n~0_87, main_#t~nondet5=|v_main_#t~nondet5_109|, v_rep~unnamed0~0~true_14=v_rep~unnamed0~0~true_14, v_rep~unnamed0~0~false_14=v_rep~unnamed0~0~false_14, v_rep(ite main_#t~short6 1 0)_10=|v_v_rep(ite main_#t~short6 1 0)_10_in_bool_1|}
+  OutVars:  {main_#t~nondet5=|v_main_#t~nondet5_107|, main_~y~0=v_main_~y~0_132, main_~n~0=v_main_~n~0_87, v_rep~unnamed0~0~true_14=v_rep~unnamed0~0~true_14, v_rep~unnamed0~0~false_14=v_rep~unnamed0~0~false_14, v_rep(ite main_#t~short6 1 0)_10=|v_v_rep(ite main_#t~short6 1 0)_10_out_bool_1|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=20):
+  [0] call ULTIMATE.init();
+  [1] assume true;
+  [2] #54#return;
+  [3] call #t~ret7 := main();
+  [4] havoc ~x~0;havoc ~y~0;havoc ~n~0;havoc #t~nondet0;assume -2147483648 <= #t~nondet0 && #t~nondet0 <= 2147483647;~n~0 := #t~nondet0;havoc #t~nondet0;havoc #t~nondet1;assume -2147483648 <= #t~nondet1 && #t~nondet1 <= 2147483647;~x~0 := #t~nondet1;havoc #t~nondet1;havoc #t~nondet2;assume -2147483648 <= #t~nondet2 && #t~nondet2 <= 2147483647;~y~0 := #t~nondet2;havoc #t~nondet2;
+  [5] assume ~x~0 >= 0;
+  [6] #t~short4 := ~y~0 >= 0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short4;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;#t~short4 := 0 != #t~nondet3;ParallelCodeBlock1: assume !#t~short4;}EndParallelComposition
+  [7] assume !#t~short4;havoc #t~nondet3;havoc #t~short4;
+  [8] ~x~0 := ~x~0 - 1;
+  [9] #t~short6 := ~y~0 <= ~n~0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short6;havoc #t~nondet5;assume -2147483648 <= #t~nondet5 && #t~nondet5 <= 2147483647;#t~short6 := 0 != #t~nondet5;ParallelCodeBlock1: assume !#t~short6;}EndParallelComposition
+  [10] assume #t~short6;havoc #t~nondet5;havoc #t~short6;~y~0 := 1 + ~y~0;
+  [11] #t~short6 := ~y~0 <= ~n~0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short6;havoc #t~nondet5;assume -2147483648 <= #t~nondet5 && #t~nondet5 <= 2147483647;#t~short6 := 0 != #t~nondet5;ParallelCodeBlock1: assume !#t~short6;}EndParallelComposition
+  [12] assume !#t~short6;havoc #t~nondet5;havoc #t~short6;
+  [13] assume ~x~0 >= 0;
+  [14] #t~short4 := ~y~0 >= 0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short4;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;#t~short4 := 0 != #t~nondet3;ParallelCodeBlock1: assume !#t~short4;}EndParallelComposition
+  [15] assume #t~short4;havoc #t~nondet3;havoc #t~short4;~y~0 := ~y~0 - 1;
+  [16] #t~short4 := ~y~0 >= 0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short4;havoc #t~nondet3;assume -2147483648 <= #t~nondet3 && #t~nondet3 <= 2147483647;#t~short4 := 0 != #t~nondet3;ParallelCodeBlock1: assume !#t~short4;}EndParallelComposition
+  [17] assume !#t~short4;havoc #t~nondet3;havoc #t~short4;
+  [18] ~x~0 := ~x~0 - 1;
+  [19] #t~short6 := ~y~0 <= ~n~0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short6;havoc #t~nondet5;assume -2147483648 <= #t~nondet5 && #t~nondet5 <= 2147483647;#t~short6 := 0 != #t~nondet5;ParallelCodeBlock1: assume !#t~short6;}EndParallelComposition
+Loop (length=2):
+  [0] assume #t~short6;havoc #t~nondet5;havoc #t~short6;~y~0 := 1 + ~y~0;
+  [1] #t~short6 := ~y~0 <= ~n~0;BeginParallelComposition{ParallelCodeBlock0: assume #t~short6;havoc #t~nondet5;assume -2147483648 <= #t~nondet5 && #t~nondet5 <= 2147483647;#t~short6 := 0 != #t~nondet5;ParallelCodeBlock1: assume !#t~short6;}EndParallelComposition
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   TERMINATING
+Continue directive:  REFINE_BUCHI
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   383729 ns (0,38 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  (none)
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=ON] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        true
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=ON] ---
+  [1] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9773710 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [2] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8905254 ns (8,91 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [3] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 13689336 ns (13,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [4] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8848840 ns (8,85 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [5] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10429078 ns (10,43 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [6] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10978552 ns (10,98 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [7] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8587876 ns (8,59 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [8] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8840601 ns (8,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [9] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10296116 ns (10,30 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [10] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9171791 ns (9,17 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [11] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 19548911 ns (19,55 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [12] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9773710 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [13] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8905254 ns (8,91 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [14] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 13689336 ns (13,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [15] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8848840 ns (8,85 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [16] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10429078 ns (10,43 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [17] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10978552 ns (10,98 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [18] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8587876 ns (8,59 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [19] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8840601 ns (8,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [20] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10296116 ns (10,30 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [21] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9171791 ns (9,17 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [22] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 19548911 ns (19,55 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [23] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9486217 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [24] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9983786 ns (9,98 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [25] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9734442 ns (9,73 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [26] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9735819 ns (9,74 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [27] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12191394 ns (12,19 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [28] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12043588 ns (12,04 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [29] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9701074 ns (9,70 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [30] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 8824122 ns (8,82 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [31] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 11162497 ns (11,16 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [32] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9643037 ns (9,64 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [33] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 29203940 ns (29,20 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 6  Motzkin applications: 24
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [34] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9773710 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [35] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8905254 ns (8,91 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [36] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 13689336 ns (13,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [37] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8848840 ns (8,85 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [38] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10429078 ns (10,43 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [39] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10978552 ns (10,98 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [40] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8587876 ns (8,59 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [41] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8840601 ns (8,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [42] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10296116 ns (10,30 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [43] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9171791 ns (9,17 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [44] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 19548911 ns (19,55 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [45] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9486217 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [46] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9983786 ns (9,98 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [47] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9734442 ns (9,73 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [48] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9735819 ns (9,74 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [49] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12191394 ns (12,19 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [50] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12043588 ns (12,04 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [51] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9701074 ns (9,70 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [52] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 8824122 ns (8,82 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [53] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 11162497 ns (11,16 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [54] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9643037 ns (9,64 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [55] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 29203940 ns (29,20 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 6  Motzkin applications: 24
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [56] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9988323 ns (9,99 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [57] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9040191 ns (9,04 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [58] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9692537 ns (9,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [59] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9490447 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [60] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12805532 ns (12,81 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [61] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 11626785 ns (11,63 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [62] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9370846 ns (9,37 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [63] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 10195211 ns (10,20 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [64] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12570623 ns (12,57 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [65] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9787724 ns (9,79 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [66] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 31262050 ns (31,26 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 8  Motzkin applications: 32
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [67] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9773710 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [68] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8905254 ns (8,91 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [69] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 13689336 ns (13,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [70] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8848840 ns (8,85 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [71] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10429078 ns (10,43 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [72] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10978552 ns (10,98 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [73] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8587876 ns (8,59 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [74] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8840601 ns (8,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [75] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10296116 ns (10,30 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [76] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9171791 ns (9,17 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [77] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 19548911 ns (19,55 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [78] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9486217 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [79] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9983786 ns (9,98 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [80] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9734442 ns (9,73 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [81] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9735819 ns (9,74 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [82] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12191394 ns (12,19 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [83] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12043588 ns (12,04 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [84] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9701074 ns (9,70 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [85] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 8824122 ns (8,82 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [86] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 11162497 ns (11,16 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [87] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9643037 ns (9,64 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [88] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 29203940 ns (29,20 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 6  Motzkin applications: 24
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [89] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9988323 ns (9,99 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [90] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9040191 ns (9,04 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [91] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9692537 ns (9,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [92] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9490447 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [93] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12805532 ns (12,81 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [94] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 11626785 ns (11,63 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [95] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9370846 ns (9,37 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [96] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 10195211 ns (10,20 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [97] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12570623 ns (12,57 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [98] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9787724 ns (9,79 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [99] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 31262050 ns (31,26 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 8  Motzkin applications: 32
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [100] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 15161580 ns (15,16 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [101] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9566246 ns (9,57 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [102] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9406626 ns (9,41 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [103] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9835628 ns (9,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [104] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 14056451 ns (14,06 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [105] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 12792447 ns (12,79 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [106] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9504661 ns (9,50 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [107] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9337368 ns (9,34 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [108] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 13674928 ns (13,67 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [109] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9356329 ns (9,36 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [110] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 37578641 ns (37,58 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 10  Motzkin applications: 40
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [111] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9773710 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [112] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8905254 ns (8,91 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [113] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 13689336 ns (13,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [114] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8848840 ns (8,85 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [115] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10429078 ns (10,43 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [116] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10978552 ns (10,98 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [117] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8587876 ns (8,59 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [118] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 8840601 ns (8,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [119] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 10296116 ns (10,30 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 2  Motzkin applications: 6
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [120] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 9171791 ns (9,17 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 2
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [121] Template: affine                     Degree: 0  Satisfiability: unsat    Time: 19548911 ns (19,55 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 4  Motzkin applications: 16
+       Template params: f(x) = Σ(ai*xi) + c, delta > 0
+         Constraints: f(x) > 0 ∧ f(x') <= f(x) - delta
+  [122] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9486217 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [123] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9983786 ns (9,98 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [124] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9734442 ns (9,73 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [125] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9735819 ns (9,74 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [126] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12191394 ns (12,19 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [127] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 12043588 ns (12,04 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [128] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9701074 ns (9,70 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [129] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 8824122 ns (8,82 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [130] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 11162497 ns (11,16 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [131] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 9643037 ns (9,64 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [132] Template: 2-nested                   Degree: 0  Satisfiability: unsat    Time: 29203940 ns (29,20 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 6  Motzkin applications: 24
+         Template params: 2 functions f0..f1, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..1
+                      f1(x) > 0
+  [133] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9988323 ns (9,99 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [134] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9040191 ns (9,04 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [135] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9692537 ns (9,69 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [136] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9490447 ns (9,49 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [137] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12805532 ns (12,81 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [138] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 11626785 ns (11,63 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [139] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9370846 ns (9,37 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [140] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 10195211 ns (10,20 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [141] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 12570623 ns (12,57 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 4  Motzkin applications: 12
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [142] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 9787724 ns (9,79 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 4
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [143] Template: 3-nested                   Degree: 0  Satisfiability: unsat    Time: 31262050 ns (31,26 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 8  Motzkin applications: 32
+         Template params: 3 functions f0..f2, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..2
+                      f2(x) > 0
+  [144] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 15161580 ns (15,16 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [145] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9566246 ns (9,57 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [146] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9406626 ns (9,41 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [147] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9835628 ns (9,84 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [148] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 14056451 ns (14,06 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [149] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 12792447 ns (12,79 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [150] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9504661 ns (9,50 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [151] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9337368 ns (9,34 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [152] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 13674928 ns (13,67 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 5  Motzkin applications: 15
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [153] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 9356329 ns (9,36 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 5
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [154] Template: 4-nested                   Degree: 0  Satisfiability: unsat    Time: 37578641 ns (37,58 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 10  Motzkin applications: 40
+         Template params: 4 functions f0..f3, delta > 0
+         Constraints: f0(x') < f0(x) - δ
+                      fi(x') < fi(x) + f(i-1)(x) for i=1..3
+                      f3(x) > 0
+  [155] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 9773599 ns (9,77 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [156] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 12387504 ns (12,39 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [157] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 10393117 ns (10,39 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [158] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 10180507 ns (10,18 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [159] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 12851918 ns (12,85 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [160] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 11791811 ns (11,79 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [161] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 10266234 ns (10,27 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [162] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 9663129 ns (9,66 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [163] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 12057833 ns (12,06 ms)
+       Variables (stem/loop): 1/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 3  Motzkin applications: 9
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [164] Template: 2-phase                    Degree: 1  Satisfiability: unsat    Time: 10045571 ns (10,05 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+       Supporting invariants: 0  Motzkin applications: 3
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  [165] Template: 2-phase                    Degree: 1  Satisfiability: sat      Time: 78931765 ns (78,93 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+       Supporting invariants: 6  Motzkin applications: 24
+         Template params: 2 phases f0..f1, δ0..δ1 > 0
+         Constraints: ∨i fi(x) > 0
+                      f0(x') < f0(x) - δ0
+                      fi(x') < fi(x) - δi ∨ f(i-1)(x) > 0 for i=1..1
+  Total termination analysis time: 2018,57 ms
+
+--- TERMINATION ARGUMENT ---
+  Ranking function type: 2-phase
+  Ranking function:      2-phase ranking function:
+  f0 = -1*main_~y~0 + 1*main_~n~0
+  f1 = 1*v_rep(ite main_#t~short6 1 0)_12
+  Variables:
+    main_~y~0
+    main_~n~0
+    v_rep(ite main_#t~short6 1 0)_12
+  Supporting invariants:
+    (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=ON] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  true
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=ON] ---
+  [1] IsFixpoint: true   Satisfiability: sat      Time: 13194722 ns (13,19 ms)
+       Variables (stem/loop): 0/0  Disjuncts (stem/loop): 1/1
+  [2] IsFixpoint: false  Satisfiability: unsat    Time: 29356368 ns (29,36 ms)
+       Variables (stem/loop): 2/5  Disjuncts (stem/loop): 1/2
+  Total nontermination analysis time: 42,55 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=ON] ---
+  [Lasso 1] Initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,3429
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    LassoPartitioneer -> relative DAG size: 0,5745
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    LassoPartitioneer -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,1111
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9722
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,4000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0816
+  [Lasso 2] Initial max DAG size: 35
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,3429
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    LassoPartitioneer -> relative DAG size: 0,5745
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    LassoPartitioneer -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,1111
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,2000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9722
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,4000
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0816
+
+--- TIMING SUMMARY [partitioner=ON] ---
+Fixpoint check time:  0,38 ms
+Total LassoRanker time: 2061,12 ms
+  Termination analysis:     2018,57 ms
+  Nontermination analysis:   42,55 ms
