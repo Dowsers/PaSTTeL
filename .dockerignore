@@ -1,0 +1,29 @@
+# Everything not listed here is sent to Docker as build context on every build. Keep out what the
+# Dockerfile never COPYs -- the ultimate/ source tree alone is ~6 GB -- and all build products.
+
+# Version control and the Ultimate sources (the image uses the prebuilt releases in tools/)
+.git
+**/.git
+ultimate
+
+# Local results and experiment data (pre-computed results ship in logs/)
+stats
+output
+test-reports
+# Lasso traces Ultimate dumped into a release directory, its working directory. Anchored on tools/:
+# benchmarks/smoke_test/ ships pre-extracted lassos under similar names on purpose.
+tools/*/lasso_traces
+
+# Build products: the image compiles PaSTTeL from source, against the solvers it installs itself.
+# A host-built pasttel/bin/pasttel links the host's libraries, and COPY keeps file timestamps, so a
+# leftover *.o could make `make` skip the rebuild entirely.
+pasttel/bin
+**/*.o
+**/*.d
+**/__pycache__
+**/*.pyc
+**/*.smt2
+
+# Solvers are installed from their release archives; the extracted copies next to them are unused.
+tools/solvers/*
+!tools/solvers/*.zip

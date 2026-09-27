@@ -1,315 +1,173 @@
 #!/bin/bash
-# run_full_evaluation.sh -- Full P-ULR vs ULR-Baseline comparison pipeline.
+# run_full_evaluation.sh -- The paper's three comparisons, on the full benchmark by default.
 #
-# Pipeline:
-#   1. Run Ultimate -tc BuchiAutomizer{C,Bpl}.xml on benchmarks/C/ and benchmarks/BPL/
-#       Traces saved as: lasso_traces_<prog>.c/  or  lasso_traces_<prog>.bpl/
-#   2. Classify generated lasso traces (split_specific.sh)
-#   3a. Run PaSTTeL sequentially  (P-ULR-Seq,  --cpus 1, Z3)  --> results_P-ULR-Seq_z3.csv
-#   3b. Run PaSTTeL in parallel   (P-ULR-Par4, --cpus 4, Z3)  --> results_P-ULR-Par4_z3.csv
-#   3c. Run PaSTTeL in parallel   (P-ULR-Par4, --cpus 4, CVC5)--> results_P-ULR-Par4_cvc5.csv
-#   4. Generate scatter plots:
-#      Fig.6 & Table.1  -- ULR-Baseline vs P-ULR-Seq  (Z3)  [paper]
-#      Fig.6 & Table.1 -- ULR-Baseline vs P-ULR-Par4 (Z3)   [paper]
-#      None            -- ULR-Baseline vs P-ULR-Par4 (CVC5) [not in the paper]
-#      Fig.7           -- Z3 vs CVC5 on P-ULR-Par4          [paper]
+#   fixed     ULR (tools/UAutomizer-linux, fixed strategy order)        vs P-ULR-Seq and P-ULR-Par<N>
+#   shuffled  ULR (tools/UAutomizer-linux-shuffler, random order)       vs P-ULR-Seq and P-ULR-Par<N>
+#   upl       ULR (tools/UAutomizer-PaSTTeL-linux, LassoRanker backend) vs UPL (same release, PaSTTeL backend)
+#
+# fixed and shuffled compare per lasso trace and run Ultimate with its default settings
+# (scripts/run_pulr.sh). upl compares per program and is the only part driven by settings files,
+# tools/settings/*.epf (scripts/run_ulr_vs_upl.sh). Only Z3 is used; no CVC* run is part of it.
+# scripts/run_smoke_test.sh is this script on 10 small programs with short timeouts.
 #
 # Usage:
-#   bash /app/scripts/run_full_evaluation.sh  [--timeout <sec>]
-#                                             [--cpus <int>]
-#                                             [--output <dir>]
+#   bash scripts/run_full_evaluation.sh [--input <dir|file>]...       (repeatable; default: benchmarks/C and benchmarks/BPL)
+#                                       [--output <dir>]              (default: output/full)
+#                                       [--parts <list>]              (default: fixed,shuffled,upl)
+#                                       [--ultimate-timeout <sec>]    (default: 3000, per Ultimate run in fixed, shuffled)
+#                                       [--upl-timeout <sec>]         (default: 1000, per Ultimate run in upl)
+#                                       [--pasttel-timeout <sec>]     (default: 600, per PaSTTeL run on one trace)
+#                                       [--upl-pasttel-timeout <sec>] (default: 20, PaSTTeL budget per lasso inside UPL)
 #
-#   Environment variables (override defaults):
-#     APP_DIR        base directory  (default: parent of this script)
-#     PASTTEL_HOME   PaSTTeL install (default: ${APP_DIR}/pasttel)
-#     ULTIMATE_HOME  Ultimate install(default: ${APP_DIR}/ultimate)
+# The defaults are the paper's; each is defined once, in scripts/common.sh.
+#                                       [--par-cpus <int>]            (default: 7)
 #
-#   Default timeout: 600s.
-#   Default output:  ${APP_DIR}/output/full
+# Each part runs Ultimate once per program (upl twice), each run capped by its timeout; the banner
+# prints the resulting worst case. PaSTTeL is comparatively cheap: on the paper's 9084 traces,
+# P-ULR-Seq took 0.48 h in total.
+#
+# Exits non-zero if any selected part produced no result, so that a failure cannot go unnoticed
+# (the Docker build relies on this through the smoke test).
 
-set -e
+set -euo pipefail
 
-TIMEOUT=600
-CPUS=4
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_DIR="${APP_DIR:-$(dirname "$SCRIPT_DIR")}"
-PASTTEL_HOME="${PASTTEL_HOME:-${APP_DIR}/pasttel}"
-ULTIMATE_HOME="${ULTIMATE_HOME:-${APP_DIR}/ultimate}"
-TOOLCHAIN_DIR="${TOOLCHAIN_DIR:-${ULTIMATE_HOME}/toolchains}"
-BENCH_C="${APP_DIR}/benchmarks/C"
-BENCH_BPL="${APP_DIR}/benchmarks/BPL"
+# shellcheck source=common.sh
+source "${SCRIPT_DIR}/common.sh"
+
+declare -a INPUTS=()
 OUTPUT_DIR="${APP_DIR}/output/full"
-SUPPORTED_CLASSES="ALL_INT_VARS BOOLEAN_OP REAL_VARS"
+PARTS="fixed,shuffled,upl"
+ULTIMATE_TIMEOUT="${PULR_ULTIMATE_TIMEOUT_DEFAULT}"
+UPL_TIMEOUT="${UPL_ULTIMATE_TIMEOUT_DEFAULT}"
+PASTTEL_TIMEOUT="${PULR_PASTTEL_TIMEOUT_DEFAULT}"
+UPL_PASTTEL_TIMEOUT="${UPL_PASTTEL_TIMEOUT_DEFAULT}"
+PAR_CPUS=7
+# Banner only; run_smoke_test.sh sets it through the environment.
+TITLE="${EVALUATION_TITLE:-full evaluation}"
 
-function help(){
-    echo "Usage:    bash $0 [--timeout <sec>]  (default: 600)
-    	 	    	    [--cpus <int>]     (default: 4)
-    		  	    [--output <dir>]   (default: ${APP_DIR}/output/full)
-	                    "
-}
-
+usage() { sed -n "2,$(grep -n '^# Exits non-zero' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --timeout)    TIMEOUT="$2"; shift 2 ;;
-        --output) OUTPUT_DIR="$2";      shift 2 ;;
-	--cpus) CPUS="$2";         shift 2;;
-        -h|--help) help; exit 1 ;;
-        *) echo "Unknown option: $1";  help ; exit 1 ;;
+        --input)               INPUTS+=("$2");          shift 2 ;;
+        --output)              OUTPUT_DIR="$2";         shift 2 ;;
+        --parts)               PARTS="$2";              shift 2 ;;
+        --ultimate-timeout)    ULTIMATE_TIMEOUT="$2";   shift 2 ;;
+        --upl-timeout)         UPL_TIMEOUT="$2";        shift 2 ;;
+        --pasttel-timeout)     PASTTEL_TIMEOUT="$2";    shift 2 ;;
+        --upl-pasttel-timeout) UPL_PASTTEL_TIMEOUT="$2"; shift 2 ;;
+        --par-cpus)            PAR_CPUS="$2";           shift 2 ;;
+        -h|--help)             usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
     esac
 done
 
+[ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/C" "${APP_DIR}/benchmarks/BPL")
+require_inputs "${INPUTS[@]}"
 
-CSV_SEQ_Z3="${OUTPUT_DIR}/results_P-ULR-Seq_z3.csv"
-CSV_Par_Z3="${OUTPUT_DIR}/results_P-ULR-Par${CPUS}_z3.csv"
-CSV_Par_CVC5="${OUTPUT_DIR}/results_P-ULR-Par${CPUS}_cvc5.csv"
+# Validate --parts before spending hours on the first one.
+declare -A RUN=()
+IFS=',' read -r -a _parts <<< "${PARTS}"
+for part in "${_parts[@]}"; do
+    case "${part}" in
+        fixed|shuffled|upl) RUN[${part}]=1 ;;
+        *) die "unknown part '${part}' in --parts (expected fixed, shuffled, upl)" ;;
+    esac
+done
 
-echo "============================================================"
-echo " PaSTTeL Artifact -- Full Evaluation"
-echo "============================================================"
-echo " Benchmark C   : ${BENCH_C}"
-echo " Benchmark BPL : ${BENCH_BPL}"
-echo " Output dir    : ${OUTPUT_DIR}"
-echo " Timeout       : ${TIMEOUT}s"
-echo " Configs       : P-ULR-Seq (cpus=1, Z3)"
-echo "                 P-ULR-Par${CPUS} (cpus=${CPUS}, Z3)"
-echo "                 P-ULR-Par${CPUS} (cpus=${CPUS}, CVC5)"
-echo " Supported cats : ${SUPPORTED_CLASSES}"
-echo "============================================================"
-echo " Delete old ${OUTPUT_DIR} directory..."
-echo "============================================================"
-echo ""
-
-rm -rf "${OUTPUT_DIR}"
+n_programs=0
+while IFS= read -r -d '' _; do n_programs=$((n_programs + 1)); done < <(collect_programs "${INPUTS[@]}")
+[ "${n_programs}" -gt 0 ] || die "no .c/.bpl program found in: ${INPUTS[*]}"
+# Worst case for Ultimate: one run per program per P-ULR part, two per program for upl.
+worst_s=$(( (${RUN[fixed]:-0} + ${RUN[shuffled]:-0}) * n_programs * ULTIMATE_TIMEOUT \
+            + 2 * ${RUN[upl]:-0} * n_programs * UPL_TIMEOUT ))
 
 mkdir -p "${OUTPUT_DIR}"
-LASSO_OUT="${OUTPUT_DIR}/lasso_traces"
-mkdir -p "${LASSO_OUT}"
+OUTPUT_DIR="$(realpath "${OUTPUT_DIR}")"
+OUT_FIXED="${OUTPUT_DIR}/ulr_fixed_order"
+OUT_SHUFFLED="${OUTPUT_DIR}/ulr_shuffled_order"
+OUT_UPL="${OUTPUT_DIR}/ulr_vs_upl"
+PAR_LABEL="P-ULR-Par${PAR_CPUS}"
 
-# -- Step 1: Run Ultimate -tc BuchiAutomizer toolchain -----------------------
-echo "[1/4] Step 1 -- Ultimate toolchain (BuchiAutomizer) on benchmarks/C/ and benchmarks/BPL/"
-echo "      (each program: up to ${TIMEOUT}s)"
+declare -a INPUT_ARGS=()
+for in in "${INPUTS[@]}"; do INPUT_ARGS+=(--input "${in}"); done
+
+echo "============================================================"
+echo " PaSTTeL artifact -- ${TITLE}"
+echo "============================================================"
+echo " Programs         : ${n_programs} (from ${INPUTS[*]})"
+echo " Parts            : ${PARTS}"
+echo " Ultimate timeout : ${ULTIMATE_TIMEOUT}s per run (fixed, shuffled), ${UPL_TIMEOUT}s per run (upl)"
+echo " PaSTTeL timeout  : ${PASTTEL_TIMEOUT}s per trace (fixed, shuffled), ${UPL_PASTTEL_TIMEOUT}s per lasso (upl)"
+echo " P-ULR configs    : P-ULR-Seq (1 cpu), ${PAR_LABEL} (${PAR_CPUS} cpus), Z3"
+echo " Worst case       : $(awk -v s="${worst_s}" 'BEGIN { printf "%.1f h", s / 3600 }') for Ultimate," \
+     "if every run hit its timeout, plus PaSTTeL"
+echo " Output           : ${OUTPUT_DIR}"
+echo "============================================================"
 echo ""
 
-run_ultimate_toolchain() {
-    local file="$1"
-    local ext="${file##*.}"
-    local filename
-    filename="$(basename "$file")"
-    local trace_dir="${LASSO_OUT}/lasso_traces_${filename}"
-
-    if [ "$ext" = "c" ]; then
-        TOOL_CHAIN="${TOOLCHAIN_DIR}/BuchiAutomizerC.xml"
-    elif [ "$ext" = "bpl" ]; then
-        TOOL_CHAIN="${TOOLCHAIN_DIR}/BuchiAutomizerBpl.xml"
-    else
-        return
-    fi
-
-    echo "  --> ${filename}"
-    (cd "${ULTIMATE_HOME}" && timeout "${TIMEOUT}" ./Ultimate -tc "${TOOL_CHAIN}" -i "${file}" \
-        > "${LASSO_OUT}/${filename}.ultimate.log" 2>&1 || true)
-
-    if [ -d "${ULTIMATE_HOME}/lasso_traces" ]; then
-        mv -f "${ULTIMATE_HOME}/lasso_traces" "${trace_dir}"
-        count=$(find "${trace_dir}" -name "lasso_trace_*.txt" 2>/dev/null | wc -l)
-        echo "    ${count} trace(s) -- ULR-Baseline results:"
-        python3 "${PASTTEL_HOME}/scripts/print_trace_summary.py" "${trace_dir}" 2>/dev/null || true
-    else
-        echo "    Warning: no lasso_traces/ generated for ${filename}"
-    fi
-}
-
-count_progs=0
-#for bench_dir in "${BENCH_C}" "${BENCH_BPL}"; do
-for bench_dir in "${APP_DIR}/benchmarks/limited_benchmark_vmcai27"; do
-    [ -d "${bench_dir}" ] || continue
-    for f in "${bench_dir}"/*.c "${bench_dir}"/*.bpl; do
-        [ -f "$f" ] || continue
-        run_ultimate_toolchain "$f"
-        count_progs=$((count_progs + 1))
-    done
-done
-echo ""
-echo "  Step 1 done: ${count_progs} program(s) processed."
-
-# -- Step 2: Classify traces with split_specific.sh ---------------------------
-echo ""
-echo "[2/4] Classifying lasso traces..."
-echo ""
-
-SPLIT_SH="${PASTTEL_HOME}/scripts/split_specific.sh"
-if [ ! -f "${SPLIT_SH}" ]; then
-    echo "ERROR: ${SPLIT_SH} not found."
-    exit 1
-fi
-
-(cd "${LASSO_OUT}" && bash "${SPLIT_SH}")
-
-# -- Step 3: Run PaSTTeL -- three configurations ------------------------------
-echo ""
-echo "[3/4] Running PaSTTeL on supported categories (ALL_INT_VARS, BOOLEAN_OP, REAL_VARS)..."
-echo ""
-
-run_pasttel_config() {
-    local cpus="$1"
-    local csv_out="$2"
-    local label="$3"
-    local solver="$4"
-
-    echo "  +-----------------------------------------------------+"
-    echo "  |  ${label} -- Solver: $(printf '%-33s' "${solver^^}")|"
-    echo "  +-----------------------------------------------------+"
-    : > "${csv_out}"
-
-    for cls in ${SUPPORTED_CLASSES}; do
-        local cls_dir="${LASSO_OUT}/${cls}"
-        [ -d "${cls_dir}" ] || continue
-        echo "  Category: ${cls}"
-        for trace_dir in "${cls_dir}"/lasso_traces_*; do
-            [ -d "${trace_dir}" ] || continue
-            local prog_name
-            prog_name="$(basename "${trace_dir#${LASSO_OUT}/}")"
-            local prog_log="${LASSO_OUT}/${prog_name}.pasttel-${label}-${solver}.log"
-            local n_traces
-            n_traces=$(find "${trace_dir}" -maxdepth 1 -name "lasso_trace_*.txt" | wc -l)
-            echo "  --> ${prog_name}"
-            echo "    ${n_traces} trace(s) -- P-ULR results:"
-            python3 "${PASTTEL_HOME}/scripts/benchmark_ultimate_vs_pasttel.py" \
-                --input-dir "${trace_dir}" \
-                --pasttel-bin "${PASTTEL_HOME}/bin/pasttel" \
-                --output "${csv_out}" \
-                --check lasso \
-                --cpus "${cpus}" \
-                --solver "${solver}" \
-                --timeout "${TIMEOUT}" \
-                --strat both \
-                --parse normal \
-                > "${prog_log}" 2>&1 || true
-            grep -E '^\*\*\* JSON name |  PaSTTeL result:|  PaSTTeL P-ULR:' "${prog_log}" \
-            | awk '
-                /^\*\*\* JSON name / { sub(/^\*\*\* JSON name[[:space:]]+/, ""); sub(/\.json$/, ".txt"); name=$0 }
-                /  PaSTTeL result:/  { verdict=$NF }
-                /  PaSTTeL P-ULR:/  { time=$(NF-1); printf "    %-55s -> %-20s|  %s ms\n", name, verdict, time }
-            ' || true
-        done
-    done
+if [ -n "${RUN[fixed]:-}" ]; then
+    echo "################ ULR (UAutomizer-linux, fixed order) vs P-ULR ################"
+    bash "${SCRIPT_DIR}/run_pulr.sh" --ultimate-home "${ULTIMATE_ULR}" "${INPUT_ARGS[@]}" \
+        --output "${OUT_FIXED}" --ultimate-timeout "${ULTIMATE_TIMEOUT}" \
+        --pasttel-timeout "${PASTTEL_TIMEOUT}" --par-cpus "${PAR_CPUS}"
     echo ""
+fi
+
+if [ -n "${RUN[shuffled]:-}" ]; then
+    echo "################ ULR (UAutomizer-linux-shuffler, random order) vs P-ULR ################"
+    bash "${SCRIPT_DIR}/run_pulr.sh" --ultimate-home "${ULTIMATE_ULR_SHUFFLE}" "${INPUT_ARGS[@]}" \
+        --output "${OUT_SHUFFLED}" --ultimate-timeout "${ULTIMATE_TIMEOUT}" \
+        --pasttel-timeout "${PASTTEL_TIMEOUT}" --par-cpus "${PAR_CPUS}"
+    echo ""
+fi
+
+if [ -n "${RUN[upl]:-}" ]; then
+    echo "################ ULR vs UPL (UAutomizer-PaSTTeL-linux, settings files) ################"
+    # Both sides from the same release, so that only the rank-synthesis backend differs; an exported
+    # ULTIMATE_ULR would make run_ulr_vs_upl.sh take the baseline from another release.
+    ULTIMATE_ULR="" bash "${SCRIPT_DIR}/run_ulr_vs_upl.sh" "${INPUT_ARGS[@]}" --output "${OUT_UPL}" \
+        --timeout "${UPL_TIMEOUT}" --pasttel-cpus "${PAR_CPUS}" --pasttel-timeout "${UPL_PASTTEL_TIMEOUT}"
+    echo ""
+fi
+
+# -- Verdict ---------------------------------------------------------------------
+rows() { if [ -s "$1" ]; then echo $(( $(wc -l < "$1") - 1 )); else echo 0; fi; }
+
+status=0
+check() {
+    local label="$1" csv="$2" n
+    n=$(rows "${csv}")
+    if [ "${n}" -gt 0 ]; then
+        printf '  OK      %-44s %6d row(s)  %s\n' "${label}" "${n}" "${csv#"${OUTPUT_DIR}"/}"
+    else
+        printf '  FAILED  %-44s no result     %s\n' "${label}" "${csv#"${OUTPUT_DIR}"/}"
+        status=1
+    fi
 }
 
-run_pasttel_config 1 "${CSV_SEQ_Z3}"    "P-ULR-Seq"  z3
-run_pasttel_config ${CPUS} "${CSV_Par_Z3}"   "P-ULR-Par${CPUS}" z3
-run_pasttel_config ${CPUS} "${CSV_Par_CVC5}" "P-ULR-Par${CPUS}" cvc5
-
-# -- Step 4: Generate scatter plots -------------------------------------------
-echo ""
-echo "[4/4] Generating scatter plots..."
-
-PLOT_LOG="${OUTPUT_DIR}/summary_tables.log"
-: > "${PLOT_LOG}"
-
-HTML_FIG6A="${CSV_SEQ_Z3%.csv}_scatter.html"
-HTML_FIG6A_PDF="${CSV_SEQ_Z3%.csv}_scatter.pdf"
-HTML_FIG6B="${CSV_Par_Z3%.csv}_scatter.html"
-HTML_FIG6B_PDF="${CSV_Par_Z3%.csv}_scatter.pdf"
-HTML_FIG6C="${CSV_Par_CVC5%.csv}_scatter.html"
-HTML_FIG6C_PDF="${CSV_Par_CVC5%.csv}_scatter.pdf"
-HTML_FIG7="${OUTPUT_DIR}/full_z3_vs_cvc5.html"
-HTML_FIG7_PDF="${OUTPUT_DIR}/full_z3_vs_cvc5.pdf"
-
-# Fig.6 -- ULR-Baseline vs P-ULR-Seq (Z3)  [paper]
-FIG6A_STATUS="skipped (no CSV)"
-if [ -f "${CSV_SEQ_Z3}" ] && [ -s "${CSV_SEQ_Z3}" ]; then
-    python3 "${PASTTEL_HOME}/scripts/benchmark_ultimate_vs_pasttel.py" \
-        --plot "${CSV_SEQ_Z3}" \
-        --log \
-        >> "${PLOT_LOG}" 2>&1 || true
-    FIG6A_STATUS="ok"
-fi
-
-# Fig.6 -- ULR-Baseline vs P-ULR-Par (Z3)  [paper]
-FIG6B_STATUS="skipped (no CSV)"
-if [ -f "${CSV_Par_Z3}" ] && [ -s "${CSV_Par_Z3}" ]; then
-    python3 "${PASTTEL_HOME}/scripts/benchmark_ultimate_vs_pasttel.py" \
-        --plot "${CSV_Par_Z3}" \
-        --log \
-        >> "${PLOT_LOG}" 2>&1 || true
-    FIG6B_STATUS="ok"
-fi
-
-# Fig.6 -- ULR-Baseline vs P-ULR-Par (CVC5)  [not in the paper]
-FIG6C_STATUS="skipped (no CSV)"
-if [ -f "${CSV_Par_CVC5}" ] && [ -s "${CSV_Par_CVC5}" ]; then
-    python3 "${PASTTEL_HOME}/scripts/benchmark_ultimate_vs_pasttel.py" \
-        --plot "${CSV_Par_CVC5}" \
-        --log \
-        >> "${PLOT_LOG}" 2>&1 || true
-    FIG6C_STATUS="ok"
-fi
-
-# Fig.7 -- Z3 vs CVC5 on P-ULR-Par  [paper]
-FIG7_STATUS="skipped (missing CSV)"
-if [ -f "${CSV_Par_Z3}" ] && [ -s "${CSV_Par_Z3}" ] && \
-   [ -f "${CSV_Par_CVC5}" ] && [ -s "${CSV_Par_CVC5}" ]; then
-    python3 "${PASTTEL_HOME}/scripts/compare_csv.py" \
-        --csv-x "${CSV_Par_CVC5}" \
-        --csv-y "${CSV_Par_Z3}" \
-        --col "P-ULR-Par" \
-        --label-x "P-ULR-Par (CVC5)" \
-        --label-y "P-ULR-Par (Z3)" \
-        --timeout "${TIMEOUT}" \
-        --output "${HTML_FIG7}" \
-        --log \
-        >> "${PLOT_LOG}" 2>&1 || true
-    FIG7_STATUS="ok"
-fi
-
-echo ""
 echo "============================================================"
-echo " Full evaluation complete."
-echo "------------------------------------------------------------"
-echo " Data files:"
-echo "   CSV (P-ULR-Seq,  Z3)  : ${CSV_SEQ_Z3}"
-echo "   CSV (P-ULR-Par${CPUS}, Z3)  : ${CSV_Par_Z3}"
-echo "   CSV (P-ULR-Par${CPUS}, CVC5): ${CSV_Par_CVC5}"
-echo ""
-echo " Comparison tables [paper]:"
-echo "   ULR-Baseline vs P-ULR-Seq  (Z3):         1st table in ${PLOT_LOG}"
-echo "   ULR-Baseline vs P-ULR-Par${CPUS} (Z3):         2nd table in ${PLOT_LOG}"
-echo "   ULR-Baseline vs P-ULR-Par${CPUS} (CVC5):       3rd table in ${PLOT_LOG}"
-echo "   P-ULR-Par${CPUS} (Z3) vs P-ULR-Par${CPUS} (CVC5):   4th table in ${PLOT_LOG}"
-echo ""
-echo " Fig.6a -- ULR-Baseline vs P-ULR-Seq (Z3)  [paper]:"
-if [ "${FIG6A_STATUS}" = "ok" ]; then
-    echo "   HTML : ${HTML_FIG6A}"
-    [ -f "${HTML_FIG6A_PDF}" ] && echo "   PDF  : ${HTML_FIG6A_PDF}"
-else
-    echo "   ${FIG6A_STATUS}"
-fi
-echo ""
-echo " Fig.6b -- ULR-Baseline vs P-ULR-Par${CPUS} (Z3)  [paper]:"
-if [ "${FIG6B_STATUS}" = "ok" ]; then
-    echo "   HTML : ${HTML_FIG6B}"
-    [ -f "${HTML_FIG6B_PDF}" ] && echo "   PDF  : ${HTML_FIG6B_PDF}"
-else
-    echo "   ${FIG6B_STATUS}"
-fi
-echo ""
-echo " Fig.6c -- ULR-Baseline vs P-ULR-Par${CPUS} (CVC5)  [not in the paper]:"
-if [ "${FIG6C_STATUS}" = "ok" ]; then
-    echo "   HTML : ${HTML_FIG6C}"
-    [ -f "${HTML_FIG6C_PDF}" ] && echo "   PDF  : ${HTML_FIG6C_PDF}"
-else
-    echo "   ${FIG6C_STATUS}"
-fi
-echo ""
-echo " Fig.7 -- Z3 vs CVC5 on P-ULR-Par${CPUS}  [paper]:"
-if [ "${FIG7_STATUS}" = "ok" ]; then
-    echo "   HTML : ${HTML_FIG7}"
-    [ -f "${HTML_FIG7_PDF}" ] && echo "   PDF  : ${HTML_FIG7_PDF}"
-else
-    echo "   ${FIG7_STATUS}"
-fi
-echo ""
-echo "  Pre-computed paper results: ${APP_DIR}/logs/"
+echo " Summary -- ${TITLE}"
 echo "============================================================"
+if [ -n "${RUN[fixed]:-}" ]; then
+    check "ULR (fixed order)    vs P-ULR-Seq"    "${OUT_FIXED}/results_P-ULR-Seq_z3.csv"
+    check "ULR (fixed order)    vs ${PAR_LABEL}" "${OUT_FIXED}/results_${PAR_LABEL}_z3.csv"
+fi
+if [ -n "${RUN[shuffled]:-}" ]; then
+    check "ULR (shuffled order) vs P-ULR-Seq"    "${OUT_SHUFFLED}/results_P-ULR-Seq_z3.csv"
+    check "ULR (shuffled order) vs ${PAR_LABEL}" "${OUT_SHUFFLED}/results_${PAR_LABEL}_z3.csv"
+fi
+if [ -n "${RUN[upl]:-}" ]; then
+    check "ULR vs UPL (per program)"             "${OUT_UPL}/results_ULR_vs_UPL.csv"
+fi
+echo ""
+for d in "${OUT_FIXED}" "${OUT_SHUFFLED}" "${OUT_UPL}"; do
+    [ -f "${d}/summary_tables.log" ] && echo "  Tables : ${d}/summary_tables.log"
+done
+echo "  Plots  : ${OUTPUT_DIR}/*/results_*.html"
+echo "============================================================"
+if [ "${status}" -ne 0 ]; then
+    echo "${TITLE^^} FAILED: see the FAILED lines above and the logs next to each CSV." >&2
+fi
+exit "${status}"

@@ -18,7 +18,7 @@ from functools import lru_cache
 
 # quoting style is important here
 # fmt: off
-version = '18b73f72'
+version = '3df9d4ff'
 toolname = 'Automizer'
 # fmt: on
 

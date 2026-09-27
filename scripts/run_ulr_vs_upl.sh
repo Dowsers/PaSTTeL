@@ -15,10 +15,10 @@
 # and the script says so when it happens.
 #
 # Usage:
-#   bash scripts/run_ulr_vs_upl.sh [--input <dir|file>]     (default: benchmarks/smoke_test/full_programs_c_bpl)
+#   bash scripts/run_ulr_vs_upl.sh [--input <dir|file>]...  (repeatable; default: benchmarks/smoke_test/full_programs_c_bpl)
 #                                  [--output <dir>]         (default: output/ulr_vs_upl)
-#                                  [--timeout <sec>]        (default: 600, per Ultimate run)
-#                                  [--pasttel-timeout <sec>](default: 20, per lasso inside UPL)
+#                                  [--timeout <sec>]        (default: 1000, per Ultimate run, as in the paper)
+#                                  [--pasttel-timeout <sec>](default: 20, per lasso inside UPL; see common.sh)
 #                                  [--pasttel-cpus <int>]   (default: 7)
 #                                  [--repeat <int>]         (default: 1, median over N runs)
 #                                  [--dump-pasttel-io]      (off by default: dumping biases the timings)
@@ -39,10 +39,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-INPUT="${APP_DIR}/benchmarks/smoke_test/full_programs_c_bpl"
+declare -a INPUTS=()
 OUTPUT_DIR="${APP_DIR}/output/ulr_vs_upl"
-TIMEOUT=600
-PASTTEL_TIMEOUT=20
+TIMEOUT="${UPL_ULTIMATE_TIMEOUT_DEFAULT}"
+# Empty: keep the timeout written in the settings template.
+PASTTEL_TIMEOUT="${UPL_PASTTEL_TIMEOUT_DEFAULT}"
 PASTTEL_CPUS=7
 REPEAT=1
 DUMP_IO=false
@@ -57,7 +58,7 @@ usage() { sed -n "2,30p" "${BASH_SOURCE[0]}"; }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --input)           INPUT="$2";           shift 2 ;;
+        --input)           INPUTS+=("$2");       shift 2 ;;
         --output)          OUTPUT_DIR="$2";      shift 2 ;;
         --timeout)         TIMEOUT="$2";         shift 2 ;;
         --pasttel-timeout) PASTTEL_TIMEOUT="$2"; shift 2 ;;
@@ -105,20 +106,12 @@ if ! "${SKIP_UPL}"; then
        It looks like a stock upstream release. Rebuild it from the ultimate/ submodule."
 fi
 
-# -- Collect inputs -----------------------------------------------------------
-# Everything is resolved to an absolute path here: run_config has to cd into the
-# Ultimate release (it looks up z3/cvc4/mathsat relative to its own directory),
-# so any relative path given on the command line would break there.
+# -- Collect inputs (absolute: run_config runs Ultimate from inside its release) ---
+[ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/smoke_test/full_programs_c_bpl")
+require_inputs "${INPUTS[@]}"
 declare -a PROGRAMS=()
-if [ -f "${INPUT}" ]; then
-    PROGRAMS+=("$(realpath "${INPUT}")")
-elif [ -d "${INPUT}" ]; then
-    while IFS= read -r -d '' f; do PROGRAMS+=("$f"); done \
-        < <(find "$(realpath "${INPUT}")" -type f \( -name '*.c' -o -name '*.bpl' \) -print0 | sort -z)
-else
-    die "--input '${INPUT}' is neither a file nor a directory"
-fi
-[ ${#PROGRAMS[@]} -gt 0 ] || die "no .c/.bpl program found under ${INPUT}"
+while IFS= read -r -d '' f; do PROGRAMS+=("$f"); done < <(collect_programs "${INPUTS[@]}")
+[ ${#PROGRAMS[@]} -gt 0 ] || die "no .c/.bpl program found in: ${INPUTS[*]}"
 
 mkdir -p "${OUTPUT_DIR}"
 OUTPUT_DIR="$(realpath "${OUTPUT_DIR}")"
@@ -145,7 +138,7 @@ CSV="${OUTPUT_DIR}/results_ULR_vs_UPL.csv"
 echo "============================================================"
 echo " ULR vs UPL -- per-program comparison"
 echo "============================================================"
-echo " Programs        : ${#PROGRAMS[@]} (from ${INPUT})"
+echo " Programs        : ${#PROGRAMS[@]} (from ${INPUTS[*]})"
 if "${SAME_RELEASE}"; then
 echo " Release         : ${ULTIMATE_UPL}"
 echo "                   (both sides; only the rank-synthesis backend differs)"
@@ -155,6 +148,8 @@ echo " UPL release     : ${ULTIMATE_UPL}"
 echo "                   NOTE: different builds -- this compares releases, not just backends."
 fi
 echo " pasttel binary  : ${PASTTEL_BIN}"
+echo " z3 (Ultimate)   : $(ultimate_z3 "${ULTIMATE_UPL}")"
+"${SAME_RELEASE}" || echo " z3 (ULR side)   : $(ultimate_z3 "${ULTIMATE_ULR}")"
 echo " Ultimate timeout: ${TIMEOUT}s per run"
 echo " PaSTTeL         : ${PASTTEL_TIMEOUT}s per lasso, ${PASTTEL_CPUS} cpus"
 echo " Repeats         : ${REPEAT} (median reported)"

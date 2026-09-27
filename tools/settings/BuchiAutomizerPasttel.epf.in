@@ -6,7 +6,10 @@
 # anything, so they must all be absolute.
 #
 #   @PASTTEL_BIN@      absolute path to the pasttel binary
-#   @PASTTEL_TIMEOUT@  per-lasso PaSTTeL timeout, in seconds
+#   @PASTTEL_TIMEOUT@  budget of one PaSTTeL call (all templates and GNTA racing) on one lasso, in
+#                      seconds; past it Ultimate falls back to LassoRanker. Its default, 20 s, is
+#                      UPL_PASTTEL_TIMEOUT_DEFAULT in scripts/common.sh, the one place it is defined
+#                      (with its rationale); run_ulr_vs_upl.sh --pasttel-timeout overrides it
 #   @PASTTEL_CPUS@     cores PaSTTeL may use to race its templates
 #   @DUMP_ENABLED@     true|false -- dumping writes one JSON per lasso and is off
 #                      during timing runs, since the I/O lands inside the very

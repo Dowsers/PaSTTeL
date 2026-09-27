@@ -1,131 +1,122 @@
 #!/bin/bash
-# run_pasttel_ulr_only.sh — Run P-ULR on lasso trace JSON files.
+# run_pasttel_ulr_only.sh -- Run P-ULR (PaSTTeL alone) on lasso programs in JSON format.
 #
-# Input resolution (in order of priority):
-#   1. --input <file.json>   → run on that single file
-#   2. --input <directory>   → run on all .json files recursively in that directory
-#   3. (no --input)          → run on /app/pasttel/examples/ (unit test suite, 53 examples)
+# No Ultimate involved: PaSTTeL analyses JSON lassos that Ultimate already extracted, such as the
+# pre-extracted smoke-test lassos or the unit-test examples shipped with PaSTTeL.
+#
+# Input resolution:
+#   --input <file.json>   that single file
+#   --input <directory>   every .json found under it, grouped by directory
+#   (no --input)          pasttel/examples/ (PaSTTeL's own examples)
 #
 # Usage:
-#   bash /app/scripts/run_pasttel_ulr_only.sh [--input <file|dir>]
-#                                          [--solver z3|cvc5]  (default: z3)
-#                                          [--cpus N]          (default: 1)
-#                                          [--timeout <sec>]   (default: 600)
-#                                          [--strat both|terminate|nonterminate] (default: both)
-#                                          [--output <log>]    (default: /app/output/pasttel-ulr/pasttel_ulr_results.log)
+#   bash scripts/run_pasttel_ulr_only.sh [--input <file|dir>]
+#                                        [--solver z3|cvc5]                      (default: z3)
+#                                        [--cpus <int>]                          (default: 1, sequential)
+#                                        [--timeout <sec>]                       (default: 600)
+#                                        [--strat both|terminate|nonterminate]  (default: both)
+#                                        [--output <log>]                        (default: output/pasttel-ulr/pasttel_ulr_results.log)
+#
+# The paper uses Z3 only; --solver cvc5 is kept for anyone who wants to try PaSTTeL with CVC5.
+#
+# Environment overrides: APP_DIR, PASTTEL_BIN.
 
-
-
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PASTTEL_HOME="${PASTTEL_HOME:-/app/pasttel}"
-APP_DIR="$(dirname "$SCRIPT_DIR")"
+# shellcheck source=common.sh
+source "${SCRIPT_DIR}/common.sh"
+
 INPUT=""
 SOLVER=z3
 CPUS=1
 TIMEOUT=600
 STRAT=both
 OUTPUT_LOG="${APP_DIR}/output/pasttel-ulr/pasttel_ulr_results.log"
-PASTTEL_BIN="${PASTTEL_HOME}/bin/pasttel"
 
-function help(){
-	echo "Usage:    bash $0 [--input <file|dir>]
-	                        [--solver z3|cvc5]  (default: z3)
-	                        [--cpus N]          (default: 1)
-	                        [--timeout <sec>]   (default: 600)
-	                        [--strat both|terminate|nonterminate] (default: both)
-	                        [--output <log>]    (default: ${APP_DIR}/output/pasttel_ulr_results.log)
-	                        "
-}
-
+usage() { sed -n "2,$(grep -n '^# Environment overrides' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --input)   INPUT="$2";   shift 2 ;;
-        --solver)  SOLVER="$2";  shift 2 ;;
-        --cpus)    CPUS="$2";    shift 2 ;;
-        --timeout) TIMEOUT="$2"; shift 2 ;;
-        --strat)   STRAT="$2";   shift 2 ;;
-        --output)  OUTPUT_LOG="$2";  shift 2 ;;
-        -h|--help) help; exit 1;;
-        *) echo "Unknown option: $1";  help ; exit 1 ;;
+        --input)   INPUT="$2";      shift 2 ;;
+        --solver)  SOLVER="$2";     shift 2 ;;
+        --cpus)    CPUS="$2";       shift 2 ;;
+        --timeout) TIMEOUT="$2";    shift 2 ;;
+        --strat)   STRAT="$2";      shift 2 ;;
+        --output)  OUTPUT_LOG="$2"; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
     esac
 done
 
-
-# Resolve input
-if [ -z "$INPUT" ]; then
+case "${SOLVER}" in z3|cvc5) ;; *) die "--solver must be z3 or cvc5, got '${SOLVER}'" ;; esac
+case "${STRAT}" in both|terminate|nonterminate) ;; *) die "--strat must be both, terminate or nonterminate" ;; esac
+require_file "${PASTTEL_BIN}" "pasttel binary"
+[ -x "${PASTTEL_BIN}" ] || die "${PASTTEL_BIN} is not executable (run 'make -j' in ${PASTTEL_HOME})"
+if [ -z "${INPUT}" ]; then
     INPUT="${PASTTEL_HOME}/examples"
-    echo "No --input specified. Using built-in examples: ${INPUT}"
+    echo "No --input given: using PaSTTeL's examples in ${INPUT}"
 fi
+require_inputs "${INPUT}"
+
+LOG_DIR="$(dirname "${OUTPUT_LOG}")"
+mkdir -p "${LOG_DIR}"
+rm -f "${OUTPUT_LOG}"
 
 echo "============================================================"
-echo " P-ULR — standalone run"
+echo " P-ULR -- standalone run"
 echo "============================================================"
 echo " Input   : ${INPUT}"
+echo " pasttel : ${PASTTEL_BIN}"
 echo " Solver  : ${SOLVER}"
 echo " CPUs    : ${CPUS}"
-echo " Timeout : ${TIMEOUT}s"
+echo " Timeout : ${TIMEOUT}s per lasso"
 echo " Strategy: ${STRAT}"
 echo " Output  : ${OUTPUT_LOG}"
 echo "============================================================"
-echo " Delete old ${OUTPUT_LOG} directory..."
-echo "============================================================"
 echo ""
 
-LOG_DIR="$(dirname "$OUTPUT_LOG")"
-rm -f "${OUTPUT_LOG}"
-mkdir -p "${LOG_DIR}"
-
+# run_one <json> <log>  -- analyse one lasso, print one line, append PaSTTeL's report to <log>.
 run_one() {
-    local json="$1"
-    local log="$2"
-    local result
-    result=$(timeout "$TIMEOUT" "${PASTTEL_BIN}" -a "${STRAT}" -s "${SOLVER}" -c "${CPUS}" "${json}" 2>&1 || true)
-    local verdict
-    verdict=$(echo "$result" | grep -oE 'TERMINATING|NON-TERMINATING|TIMEOUT|UNKNOWN' | tail -1 || echo "UNKNOWN")
-    local elapsed
-    elapsed=$(echo "$result" | grep 'TOTAL TIME' | tail -1 | cut -d':' -f2 | tr -d ' s' || echo "0.00")
-    local time_str
-    time_str=$(awk "BEGIN {printf \"%.2fms\", $elapsed * 1000.0}")
-    printf "    %-55s → %-20s|  %s\n" "$(basename "$json")" "${verdict}" "${time_str}"
-    echo "$result" >> "${log}"
+    local json="$1" log="$2" out rc verdict secs
+    rc=0
+    out=$(timeout "${TIMEOUT}" "${PASTTEL_BIN}" -a "${STRAT}" -s "${SOLVER}" -c "${CPUS}" \
+          -t "${TIMEOUT}" "${json}" 2>&1) || rc=$?
+    verdict=$(sed -n 's/^OVERALL RESULT:[[:space:]]*//p' <<< "${out}" | tail -1)
+    secs=$(sed -n 's/^TOTAL TIME:[[:space:]]*\([0-9.]*\).*/\1/p' <<< "${out}" | tail -1)
+    # No report line means PaSTTeL did not finish: killed by the timeout (exit 124) or crashed.
+    if [ -z "${verdict}" ]; then
+        if [ "${rc}" -eq 124 ]; then verdict="TIMEOUT"; else verdict="ERROR (exit ${rc})"; fi
+    fi
+    if [ -n "${secs}" ]; then
+        secs=$(awk -v s="${secs}" 'BEGIN { printf "%.2f ms", s * 1000 }')
+    else
+        secs="-"
+    fi
+    printf '    %-55s -> %-20s | %s\n' "$(basename "${json}")" "${verdict}" "${secs}"
+    { echo "=== ${json}"; echo "${out}"; echo; } >> "${log}"
 }
 
-run_group() {
-    local dir="$1"
-    local label="${dir#$INPUT/}"
-    [ "$label" = "$dir" ] && label="$(basename "$dir")"
-    local trace_files=()
-    while IFS= read -r -d '' f; do
-        trace_files+=("$f")
-    done < <(find "$dir" -maxdepth 1 -name "*.json" -type f -print0 | sort -z)
-    [ ${#trace_files[@]} -eq 0 ] && return
-    local group_log="${LOG_DIR}/${label}.pasttel.log"
-    rm -f "${group_log}"
-    echo "  → ${label}"
-    echo "    ${#trace_files[@]} trace(s) — P-ULR results:"
-    for json in "${trace_files[@]}"; do
-        run_one "$json" "${group_log}"
-    done
-}
-
-if [ -f "$INPUT" ]; then
-    run_one "$INPUT" "${OUTPUT_LOG}"
-elif [ -d "$INPUT" ]; then
-    count=0
-    while IFS= read -r dir; do
-        run_group "$dir"
-        count=$((count + $(find "$dir" -maxdepth 1 -name "*.json" -type f | wc -l)))
-    done < <(find "$INPUT" -name "*.json" -type f -print0 \
-             | xargs -0 -I{} dirname {} \
-             | sort -u)
-    echo "Processed ${count} JSON file(s)."
+if [ -f "${INPUT}" ]; then
+    run_one "$(realpath "${INPUT}")" "${OUTPUT_LOG}"
+    count=1
 else
-    echo "ERROR: --input '${INPUT}' is neither a file nor a directory."
-    exit 1
+    count=0
+    # One group per directory holding JSON files, each with its own log next to the main one.
+    while IFS= read -r -d '' dir; do
+        label="${dir#"$(realpath "${INPUT}")"/}"
+        [ "${label}" = "${dir}" ] && label="$(basename "${dir}")"
+        group_log="${LOG_DIR}/$(tr '/' '_' <<< "${label}").pasttel.log"
+        rm -f "${group_log}"
+        echo "  -> ${label}"
+        while IFS= read -r -d '' json; do
+            run_one "${json}" "${group_log}"
+            count=$((count + 1))
+        done < <(find "${dir}" -maxdepth 1 -name '*.json' -type f -print0 | sort -z)
+        cat "${group_log}" >> "${OUTPUT_LOG}"
+    done < <(find "$(realpath "${INPUT}")" -name '*.json' -type f -printf '%h\0' | sort -zu)
 fi
 
 echo ""
+echo "Processed ${count} JSON file(s). Full PaSTTeL reports: ${OUTPUT_LOG}"
 echo "============================================================"

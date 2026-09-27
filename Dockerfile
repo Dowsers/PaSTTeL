@@ -17,8 +17,10 @@ ENV CVC5_VERSION=1.3.4
 ENV PASTTEL=${PASTTEL_HOME}/solvers
 ENV CVC5_DIR=${PASTTEL_HOME}/solvers
 
-ENV ULTIMATE_HOME=/app/ultimate
-ENV TOOLCHAIN_DIR=${ULTIMATE_HOME}/toolchains
+# The three Ultimate releases live in /app/tools/, where scripts/common.sh finds them together with
+# tools/settings/ and tools/toolchains/. No TOOLCHAIN_DIR here: it would override common.sh's default.
+# ULTIMATE_HOME names the fixed-order release for scripts that still take a single release.
+ENV ULTIMATE_HOME=/app/tools/UAutomizer-linux
 ENV PATH=${PASTTEL_HOME}/bin:${PASTTEL}/bin:${ULTIMATE_HOME}:${PATH}
 ENV LD_LIBRARY_PATH=${PASTTEL}/lib
 
@@ -42,7 +44,10 @@ RUN apt-get -y update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Z3 (bin/libz3.so + bin/z3 + include/) — from pre-downloaded archive (offline build)
-COPY tools/solvers/z3-4.15.4-x64-glibc-2.39.zip /tmp/z3.zip
+# One Z3 for every tool in the image: PaSTTeL links this libz3, and the Ultimate releases ship no z3
+# binary of their own, so Ultimate resolves "z3" through PATH to this ${PASTTEL}/bin/z3. The archive name
+# is derived from Z3_VERSION, so the copied archive and the extracted path cannot disagree.
+COPY tools/solvers/z3-${Z3_VERSION}-x64-glibc-2.39.zip /tmp/z3.zip
 RUN mkdir -p ${PASTTEL}/include ${PASTTEL}/lib ${PASTTEL}/bin \
     && unzip -q /tmp/z3.zip -d /tmp/z3 \
     && cp /tmp/z3/z3-${Z3_VERSION}-x64-glibc-2.39/include/*.h ${PASTTEL}/include/ \
@@ -62,8 +67,15 @@ RUN unzip -q /tmp/cvc5.zip -d /tmp/cvc5 \
     && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/bin/cvc5               ${PASTTEL}/bin/ \
     && rm -rf /tmp/cvc5.zip /tmp/cvc5
 
-# Copy Ultimate pre-compiled binary (includes toolchains/ subdirectory)
-COPY tools/UAutomizer-linux/ ${ULTIMATE_HOME}/
+# Ultimate releases (prebuilt from the ultimate/ submodule; none ships a z3, see above):
+#   UAutomizer-linux           LassoRanker, fixed strategy order      -> ULR vs P-ULR
+#   UAutomizer-linux-shuffler  LassoRanker, random strategy order     -> ULR vs P-ULR (randomised)
+#   UAutomizer-PaSTTeL-linux   LassoRanker or PaSTTeL rank backend    -> ULR vs UPL
+COPY tools/UAutomizer-linux/          /app/tools/UAutomizer-linux/
+COPY tools/UAutomizer-linux-shuffler/ /app/tools/UAutomizer-linux-shuffler/
+COPY tools/UAutomizer-PaSTTeL-linux/  /app/tools/UAutomizer-PaSTTeL-linux/
+COPY tools/settings/                  /app/tools/settings/
+COPY tools/toolchains/                /app/tools/toolchains/
 
 # Copy PaSTTeL source and build
 WORKDIR ${PASTTEL_HOME}
@@ -80,7 +92,7 @@ RUN chmod +x /app/scripts/*.sh \
 
 # Reduce JVM heap for the build-time smoke test (default 12G is too large for
 # a Docker build layer). The full 12G limit is restored for interactive use.
-RUN sed -i 's/-Xmx12G/-Xmx4G/' ${ULTIMATE_HOME}/Ultimate.ini
+RUN sed -i 's/-Xmx12G/-Xmx4G/' /app/tools/UAutomizer-*/Ultimate.ini
 
 WORKDIR /app
 
@@ -88,6 +100,6 @@ WORKDIR /app
 RUN bash /app/scripts/run_smoke_test.sh
 
 # Restore full JVM heap for production use
-RUN sed -i 's/-Xmx4G/-Xmx12G/' ${ULTIMATE_HOME}/Ultimate.ini
+RUN sed -i 's/-Xmx4G/-Xmx12G/' /app/tools/UAutomizer-*/Ultimate.ini
 
 CMD ["/bin/bash"]

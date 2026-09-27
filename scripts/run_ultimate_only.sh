@@ -1,130 +1,117 @@
 #!/bin/bash
-# run_ultimate_only.sh — Run Ultimate Buchi Automizer on a directory of programs.
+# run_ultimate_only.sh -- Extract lasso traces with Ultimate Buchi Automizer, then classify them.
 #
-# Processes all .c and .bpl files in <src_dir>, generates lasso traces for each,
-# then classifies them using split_specific.sh.
+# Every .c/.bpl program is analysed by one Ultimate release with its default settings (no .epf);
+# the release dumps one lasso_trace_<N>.txt per CEGAR iteration, with LassoRanker's timings and
+# verdicts (the ULR-Baseline). The traces are then sorted by variable category (split_specific.sh):
+#   <output>/<CATEGORY>/lasso_traces_<program>/lasso_trace_<N>.txt
+# with CATEGORY in ALL_INT_VARS, BOOLEAN_OP, REAL_VARS, ARRAY_OP (replayed by PaSTTeL), or
+# UNKNOWN_LOOP, FUNCT_SIGNATURE, UNDEF_TYPE, SI_ARRAYS, OTHERS (Ultimate only).
 #
 # Usage:
-#   bash /app/scripts/run_ultimate_only.sh <src_dir>
-#                                           [--timeout <sec>]    (default: 600)
-#                                           [--output <dir>] (default: /app/output/ultimate/lasso_traces)
+#   bash scripts/run_ultimate_only.sh [--input <dir|file>]...   (repeatable; a bare path works too)
+#                                     [--ultimate-home <dir>]   (default: tools/UAutomizer-linux)
+#                                     [--output <dir>]          (default: output/ultimate/lasso_traces)
+#                                     [--timeout <sec>]         (default: 3000, per program, as in the paper)
+#                                     [--toolchain-dir <dir>]   (default: tools/toolchains)
+#
+# Examples:
+#   bash scripts/run_ultimate_only.sh benchmarks/smoke_test/full_programs_c_bpl
+#   bash scripts/run_ultimate_only.sh --input benchmarks/C --input benchmarks/BPL --timeout 300
+#   bash scripts/run_ultimate_only.sh --ultimate-home tools/UAutomizer-linux-shuffler benchmarks/smoke_test/full_programs_c_bpl
+#
+# Environment overrides: APP_DIR, TOOLCHAIN_DIR, ULTIMATE_ULR.
 
-set -e
+set -euo pipefail
 
-ULTIMATE_HOME="${ULTIMATE_HOME:-/app/ultimate}"
-PASTTEL_HOME="${PASTTEL_HOME:-/app/pasttel}"
-TOOLCHAIN_DIR="${TOOLCHAIN_DIR:-${ULTIMATE_HOME}/toolchains}"
-APP_DIR="$(dirname "$SCRIPT_DIR")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=common.sh
+source "${SCRIPT_DIR}/common.sh"
 
-SRC_DIR=""
-TIMEOUT=600
+declare -a INPUTS=()
+RELEASE="${ULTIMATE_ULR}"
 OUTPUT_DIR="${APP_DIR}/output/ultimate/lasso_traces"
+TIMEOUT="${PULR_ULTIMATE_TIMEOUT_DEFAULT}"
 
+usage() { sed -n "2,$(grep -n '^# Environment overrides' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
-usage() {
-    echo "Usage: bash $0 <src_dir> [--timeout <sec>] [--output <dir>]"
-    echo ""
-    echo "Arguments:"
-    echo "  <src_dir>              Directory containing .c and/or .bpl files (required)"
-    echo ""
-    echo "Options:"
-    echo "  --timeout <sec>        Timeout per program in seconds  (default: 600)"
-    echo "  --output  <dir>        Output directory for lasso traces (default: ${APP_DIR}/output/ultimate/lasso_traces)"
-    echo "  --help                 Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  bash $0 /app/benchmarks/smoke_test/"
-    echo "  bash $0 /app/benchmarks/C/ --timeout 300 --output /app/output/my_traces/"
-}
-
-# Parse positional + keyword args
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --timeout)    TIMEOUT="$2";    shift 2 ;;
-        --output) OUTPUT_DIR="$2"; shift 2 ;;
-        --help|-h)    usage; exit 0 ;;
-        -*) echo "Unknown option: $1"; echo ""; usage; exit 1 ;;
-        *)  SRC_DIR="$1"; shift ;;
+        --input)         INPUTS+=("$2");     shift 2 ;;
+        --ultimate-home) RELEASE="$2";       shift 2 ;;
+        --output)        OUTPUT_DIR="$2";    shift 2 ;;
+        --timeout)       TIMEOUT="$2";       shift 2 ;;
+        --toolchain-dir) TOOLCHAIN_DIR="$2"; shift 2 ;;
+        -h|--help)       usage; exit 0 ;;
+        -*) echo "Unknown option: $1" >&2; usage; exit 1 ;;
+        *)               INPUTS+=("$1");     shift ;;
     esac
 done
 
-if [ -z "$SRC_DIR" ] || [ ! -d "$SRC_DIR" ]; then
-    [ -n "$SRC_DIR" ] && echo "Error: '$SRC_DIR' is not a directory."
-    echo ""
-    usage
-    exit 1
-fi
+[ ${#INPUTS[@]} -gt 0 ] || { usage; die "no input given"; }
+require_inputs "${INPUTS[@]}"
+require_ultimate "${RELEASE}" "$(basename "${RELEASE}")"
+require_dir "${TOOLCHAIN_DIR}" "Ultimate toolchains"
+SPLIT_SH="${PASTTEL_HOME}/scripts/split_specific.sh"
+require_file "${SPLIT_SH}" "trace classifier"
+RELEASE="$(realpath "${RELEASE}")"
 
+declare -a PROGRAMS=()
+while IFS= read -r -d '' f; do PROGRAMS+=("$f"); done < <(collect_programs "${INPUTS[@]}")
+[ ${#PROGRAMS[@]} -gt 0 ] || die "no .c/.bpl program found in: ${INPUTS[*]}"
+
+# Fresh output: traces of an earlier run would be classified together with the new ones.
+rm -rf "${OUTPUT_DIR}"
 mkdir -p "${OUTPUT_DIR}"
-
-# Resolve to absolute paths so they remain valid after cd "${ULTIMATE_HOME}"
-OUTPUT_DIR="$(cd "${OUTPUT_DIR}" && pwd)"
-SRC_DIR="$(cd "${SRC_DIR}" && pwd)"
+OUTPUT_DIR="$(realpath "${OUTPUT_DIR}")"
 
 echo "============================================================"
-echo " Ultimate Buchi Automizer — standalone run"
+echo " Ultimate Buchi Automizer -- lasso trace extraction"
 echo "============================================================"
-echo " Source dir : ${SRC_DIR}"
-echo " Output dir : ${OUTPUT_DIR}"
+echo " Programs   : ${#PROGRAMS[@]} (from ${INPUTS[*]})"
+echo " Release    : ${RELEASE}  (default settings)"
+echo " z3         : $(ultimate_z3 "${RELEASE}")"
+echo " Toolchains : ${TOOLCHAIN_DIR}"
 echo " Timeout    : ${TIMEOUT}s per program"
-echo "============================================================"
-echo " Delete old ${OUTPUT_DIR} directory..."
+echo " Output     : ${OUTPUT_DIR}"
 echo "============================================================"
 echo ""
 
-SPLIT_SH="${PASTTEL_HOME}/scripts/split_specific.sh"
+# Ultimate writes lasso_traces/ into its working directory, i.e. the release. A leftover from an
+# interrupted run would be merged into the next program's traces, so move it out of the way first.
+if [ -e "${RELEASE}/lasso_traces" ]; then
+    echo "  Warning: moving a leftover ${RELEASE}/lasso_traces to ${OUTPUT_DIR}/orphan_lasso_traces"
+    mv "${RELEASE}/lasso_traces" "${OUTPUT_DIR}/orphan_lasso_traces"
+fi
 
-run_ultimate() {
-    local file="$1"
-    local ext="${file##*.}"
-    local filename
-    filename="$(basename "$file")"
-    local trace_dir="${OUTPUT_DIR}/lasso_traces_${filename}"
-    
-    if [ "$ext" = "c" ]; then
-        TOOL_CHAIN="${TOOLCHAIN_DIR}/BuchiAutomizerC.xml"
-    elif [ "$ext" = "bpl" ]; then
-        TOOL_CHAIN="${TOOLCHAIN_DIR}/BuchiAutomizerBpl.xml"
+n=0
+with_traces=0
+for prog in "${PROGRAMS[@]}"; do
+    n=$((n + 1))
+    name="$(basename "${prog}")"
+    tc="$(toolchain_for "${prog}")"
+    printf '  [%d/%d] %s\n' "${n}" "${#PROGRAMS[@]}" "${name}"
+    ( cd "${RELEASE}" && timeout "${TIMEOUT}" ./Ultimate -tc "${tc}" -i "${prog}" ) \
+        > "${OUTPUT_DIR}/${name}.ultimate.log" 2>&1 || true
+    if [ -d "${RELEASE}/lasso_traces" ]; then
+        trace_dir="${OUTPUT_DIR}/lasso_traces_${name}"
+        mv "${RELEASE}/lasso_traces" "${trace_dir}"
+        with_traces=$((with_traces + 1))
+        # ULR-Baseline verdict of each trace, as dumped by Ultimate (RESULT section).
+        while IFS= read -r t; do
+            printf '        %-26s ULR-Baseline: %s\n' "$(basename "$t")" \
+                "$(sed -n 's/^Lasso termination:[[:space:]]*//p' "$t" | head -1)"
+        done < <(find "${trace_dir}" -maxdepth 1 -name 'lasso_trace_*.txt' | sort -V)
     else
-        return
+        echo "        no lasso trace (see ${name}.ultimate.log)"
     fi
-
-    echo "  → ${filename}"
-    # Ultimate must be run from its own directory so it locates config/ and data/.
-    # OUTPUT_DIR and file are absolute paths, so the redirect works regardless of cwd.
-    (cd "${ULTIMATE_HOME}" && timeout "${TIMEOUT}" ./Ultimate -tc "${TOOL_CHAIN}" -i "${file}" \
-        > "${OUTPUT_DIR}/${filename}.log" 2>&1 || true)
-
-    if [ -d "${ULTIMATE_HOME}/lasso_traces" ]; then
-        mv "${ULTIMATE_HOME}/lasso_traces" "${trace_dir}"
-        count=$(find "${trace_dir}" -name "lasso_trace_*.txt" 2>/dev/null | wc -l)
-        echo "    ${count} trace(s) — ULR-Baseline results:"
-        python3 "${PASTTEL_HOME}/scripts/print_trace_summary.py" "${trace_dir}" 2>/dev/null || true
-    else
-        echo "    Warning: no lasso_traces/ generated for ${filename}"
-    fi
-}
-
-count_files=0
-for f in "${SRC_DIR}"/*.c "${SRC_DIR}"/*.bpl; do
-    [ -f "$f" ] || continue
-    run_ultimate "$f"
-    count_files=$((count_files + 1))
 done
 
 echo ""
-echo "  Processed ${count_files} program(s)."
-
-# Classify traces
-if [ -f "${SPLIT_SH}" ]; then
-    echo ""
-    echo "[Classification] Running split_specific.sh on ${OUTPUT_DIR}..."
-    (cd "${OUTPUT_DIR}" && bash "${SPLIT_SH}")
-else
-    echo "  Warning: ${SPLIT_SH} not found. Skipping classification."
-fi
-
+echo "  ${with_traces}/${#PROGRAMS[@]} program(s) produced lasso traces."
 echo ""
-echo "  Lasso traces are in: ${OUTPUT_DIR}"
-echo "  Supported categories for PaSTTeL: ALL_INT_VARS, BOOLEAN_OP, REAL_VARS"
+echo "[Classification] split_specific.sh"
+(cd "${OUTPUT_DIR}" && bash "${SPLIT_SH}")
+echo ""
+echo "  Lasso traces: ${OUTPUT_DIR}/<CATEGORY>/lasso_traces_<program>/"
 echo "============================================================"

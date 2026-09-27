@@ -1069,7 +1069,8 @@ def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
     return base in ("affine", "nested", "lex", "lexicographic", "phase", "piecewise")
 
 
-def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-baseline"):
+def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-baseline",
+                          baseline_name=None):
     """Read the benchmark CSV and generate an interactive HTML scatter plot.
 
     X axis: ULR-Baseline (ms)  — cumulative sequential ULR time
@@ -1086,10 +1087,13 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     (timeout * 2) is used on the Y axis.
     Rows with INFEASIBLE / UNCHECKED / Ultimate-UNKNOWN are skipped.
     """
-    x_axis_label = "ULR-Baseline (ms)"
+    # baseline_name names the Ultimate release the traces came from (fixed or shuffled strategy
+    # order): several baselines are plotted side by side, and the axis must say which one this is.
+    baseline = f"ULR-Baseline ({baseline_name})" if baseline_name else "ULR-Baseline"
+    x_axis_label = f"{baseline} (ms)"
     # Derive Y-axis label from the CSV header (P-ULR-Seq or P-ULR-Par*)
     y_axis_label = "P-ULR (ms)"
-    plot_title   = "ULR-Baseline vs P-ULR"
+    plot_title   = f"{baseline} vs P-ULR"
 
     par2_ms = timeout_s * 2 * 1000.0
     rows = []
@@ -1100,7 +1104,7 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         p_ulr_col = next((h for h in fieldnames if h.startswith("P-ULR")), "P-ULR")
         if p_ulr_col != "P-ULR":
             y_axis_label = f"{p_ulr_col} (ms)"
-            plot_title   = f"ULR-Baseline vs {p_ulr_col}"
+            plot_title   = f"{baseline} vs {p_ulr_col}"
         for row in reader:
             rows.append(row)
 
@@ -1517,6 +1521,11 @@ def main():
              "(skip benchmarking), or add to a benchmark run to plot after."
     )
     parser.add_argument(
+        "--baseline-name", default=None, metavar="NAME",
+        help="Ultimate release the traces were extracted with (e.g. UAutomizer-linux-shuffler); "
+             "shown on the X axis and in the title of the scatter plot"
+    )
+    parser.add_argument(
         "--log", action="store_true", default=False,
         help="Use logarithmic scale for the scatter plot axes"
     )
@@ -1549,7 +1558,8 @@ def main():
             print(f"Error: CSV file not found: {csv_file}")
             sys.exit(1)
         html_out = os.path.splitext(csv_file)[0] + "_scatter.html"
-        generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log)
+        generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log,
+                              baseline_name=args.baseline_name)
         return
 
     # Benchmark mode requires --input-dir and --pasttel-bin
@@ -1781,7 +1791,8 @@ def main():
         # Generate scatter plot if requested
         if args.plot:
             html_out = os.path.splitext(args.output)[0] + "_scatter.html"
-            generate_scatter_plot(args.output, html_out, timeout_s=args.timeout, log_scale=args.log)
+            generate_scatter_plot(args.output, html_out, timeout_s=args.timeout, log_scale=args.log,
+                                  baseline_name=args.baseline_name)
 
 
 if __name__ == "__main__":
