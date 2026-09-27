@@ -47,14 +47,20 @@ require_ultimate() {
 # PASTTEL setting and falls back to LassoRanker, which would make a UPL-vs-ULR
 # comparison measure ULR against itself.
 ultimate_has_pasttel() {
-    local dir="$1" jar
+    local dir="$1" jar hits
+    # -print -quit rather than a pipe to head: callers run under 'set -o pipefail',
+    # where head closing the pipe early makes find die of SIGPIPE and the whole
+    # pipeline report failure even though it found the jar.
     jar=$(find "${dir}/plugins" -maxdepth 1 \
           -name 'de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer_*.jar' \
-          2>/dev/null | head -1)
+          -print -quit 2>/dev/null)
     [ -n "${jar}" ] || return 1
     # -Z1 lists entry names only. Plain 'unzip -l' also echoes the archive's own
     # path, which matches 'pasttel' for any release stored under this repository.
-    unzip -Z1 "${jar}" 2>/dev/null | grep -qi 'pasttel'
+    # Counting rather than 'grep -q' for the same pipefail reason: -q exits on the
+    # first match, SIGPIPEs unzip, and intermittently turns a hit into a miss.
+    hits=$(unzip -Z1 "${jar}" 2>/dev/null | grep -ci 'pasttel' || true)
+    [ "${hits}" -gt 0 ]
 }
 
 # toolchain_for <file>  -- echoes the toolchain XML matching the input's extension.

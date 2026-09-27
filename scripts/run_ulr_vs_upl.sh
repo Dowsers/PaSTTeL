@@ -135,9 +135,10 @@ sed -e "s|@PASTTEL_BIN@|${PASTTEL_BIN}|g" \
     -e "s|@DUMP_ENABLED@|${DUMP_IO}|g" \
     -e "s|@DUMP_DIR@|${DUMP_DIR}|g" \
     "${EPF_TEMPLATE}" > "${EPF_UPL}"
+
 # Only @NAME@ counts: a .epf legitimately contains lines such as '@UltimateCore=0.0.1'.
-grep -vE '^[[:space:]]*#' "${EPF_UPL}" | grep -qE '@[A-Z_]+@' \
-    && die "unsubstituted placeholder left in ${EPF_UPL}"
+LEFTOVERS=$(grep -vE '^[[:space:]]*#' "${EPF_UPL}" | grep -cE '@[A-Z_]+@' || true)
+[ "${LEFTOVERS}" -eq 0 ] || die "unsubstituted placeholder left in ${EPF_UPL}"
 
 CSV="${OUTPUT_DIR}/results_ULR_vs_UPL.csv"
 
