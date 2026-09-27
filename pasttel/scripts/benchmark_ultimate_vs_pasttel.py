@@ -1559,6 +1559,12 @@ def main():
     # Find all trace files
     pattern = os.path.join(args.input_dir, "lass*.txt")
     trace_files = sorted(glob.glob(pattern))
+    # Ultimate dumps each synthesis scope to its own file: lasso_trace_N.txt for the
+    # whole lasso, lasso_trace_N_loop.txt for the loop alone, whose RESULT reports the
+    # lasso as UNCHECKED. Under --check lasso such files carry no lasso verdict and
+    # would only add rows without a ULR baseline, so leave them out.
+    if args.check == "lasso":
+        trace_files = [f for f in trace_files if not f.endswith("_loop.txt")]
 
     if not trace_files:
         print(f"No lass*.txt files found in {args.input_dir}")
