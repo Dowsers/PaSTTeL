@@ -6,25 +6,32 @@
 #   upl       ULR (tools/UAutomizer-PaSTTeL-linux, LassoRanker backend) vs UPL (same release, PaSTTeL backend)
 #
 # fixed and shuffled compare per lasso trace and run Ultimate with its default settings
-# (scripts/run_pulr.sh). upl compares per program and is the only part driven by settings files,
-# tools/settings/*.epf (scripts/run_ulr_vs_upl.sh). Only Z3 is used; no CVC* run is part of it.
+# (scripts/run_pulr.sh). upl compares per program (scripts/run_ulr_vs_upl.sh): ULR runs with the
+# same default settings, and UPL with a settings file that only switches the rank-synthesis backend
+# to PaSTTeL (tools/settings/BuchiAutomizerPasttel.epf.in). Only Z3 is used; no CVC* run is part of it.
 # scripts/run_smoke_test.sh is this script on 10 small programs with short timeouts.
 #
 # Usage:
-#   bash scripts/run_full_evaluation.sh [--input <dir|file>]...       (repeatable; default: benchmarks/C and benchmarks/BPL)
-#                                       [--output <dir>]              (default: output/full)
+#   bash scripts/run_full_evaluation.sh [--subset]                    (benchmarks/subset, in about 4 hours; see below)
+#                                       [--input <dir|file>]...       (repeatable; default: benchmarks/C and benchmarks/BPL)
+#                                       [--output <dir>]              (default: output/full, output/subset with --subset)
 #                                       [--parts <list>]              (default: fixed,shuffled,upl)
 #                                       [--ultimate-timeout <sec>]    (default: 3000, per Ultimate run in fixed, shuffled)
 #                                       [--upl-timeout <sec>]         (default: 1000, per Ultimate run in upl)
 #                                       [--pasttel-timeout <sec>]     (default: 600, per PaSTTeL run on one trace)
 #                                       [--upl-pasttel-timeout <sec>] (default: 20, PaSTTeL budget per lasso inside UPL)
-#
-# The defaults are the paper's; each is defined once, in scripts/common.sh.
 #                                       [--par-cpus <int>]            (default: 7)
 #
+# The timeout defaults are the paper's; each is defined once, in scripts/common.sh.
+#
+# --subset replicates the comparisons in under 8 hours: it runs them on the 100 programs of
+# benchmarks/subset, drawn at random from the paper's benchmark (benchmarks/subset/README), with
+# every Ultimate run capped at 300 s instead of 3,000 s (fixed, shuffled) and 1,000 s (upl).
+# PaSTTeL keeps the paper's timeouts. --ultimate-timeout, --upl-timeout, --output and --parts still
+# apply; --input does not, since --subset sets the input.
+#
 # Each part runs Ultimate once per program (upl twice), each run capped by its timeout; the banner
-# prints the resulting worst case. PaSTTeL is comparatively cheap: on the paper's 9084 traces,
-# P-ULR-Seq took 0.48 h in total.
+# prints the resulting worst case. P-ULR-Seq pass took about 20 minutes and the P-ULR-Par7 pass about 17.
 #
 # Exits non-zero if any selected part produced no result, so that a failure cannot go unnoticed
 # (the Docker build relies on this through the smoke test).
@@ -36,20 +43,29 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
 declare -a INPUTS=()
-OUTPUT_DIR="${APP_DIR}/output/full"
+# Empty: the default, which depends on --subset, is filled in after the options are parsed.
+OUTPUT_DIR=""
+ULTIMATE_TIMEOUT=""
+UPL_TIMEOUT=""
 PARTS="fixed,shuffled,upl"
-ULTIMATE_TIMEOUT="${PULR_ULTIMATE_TIMEOUT_DEFAULT}"
-UPL_TIMEOUT="${UPL_ULTIMATE_TIMEOUT_DEFAULT}"
 PASTTEL_TIMEOUT="${PULR_PASTTEL_TIMEOUT_DEFAULT}"
 UPL_PASTTEL_TIMEOUT="${UPL_PASTTEL_TIMEOUT_DEFAULT}"
 PAR_CPUS=7
+SUBSET=false
 # Banner only; run_smoke_test.sh sets it through the environment.
-TITLE="${EVALUATION_TITLE:-full evaluation}"
+TITLE="${EVALUATION_TITLE:-}"
+
+# --subset: its programs, its timeout for every Ultimate run, and its duration per part on the
+# paper's machine, estimated from the paper's logs (README, "Subset version").
+SUBSET_DIR="${APP_DIR}/benchmarks/subset"
+SUBSET_ULTIMATE_TIMEOUT=300
+declare -A SUBSET_HOURS=([fixed]=1 [shuffled]=1 [upl]=2)
 
 usage() { sed -n "2,$(grep -n '^# Exits non-zero' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --subset)              SUBSET=true;             shift ;;
         --input)               INPUTS+=("$2");          shift 2 ;;
         --output)              OUTPUT_DIR="$2";         shift 2 ;;
         --parts)               PARTS="$2";              shift 2 ;;
@@ -63,9 +79,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-[ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/C" "${APP_DIR}/benchmarks/BPL")
-require_inputs "${INPUTS[@]}"
-
 # Validate --parts before spending hours on the first one.
 declare -A RUN=()
 IFS=',' read -r -a _parts <<< "${PARTS}"
@@ -75,6 +88,28 @@ for part in "${_parts[@]}"; do
         *) die "unknown part '${part}' in --parts (expected fixed, shuffled, upl)" ;;
     esac
 done
+
+EXPECTED=""
+if "${SUBSET}"; then
+    [ ${#INPUTS[@]} -eq 0 ] || die "--subset runs on ${SUBSET_DIR}: use either --subset or --input"
+    INPUTS=("${SUBSET_DIR}")
+    ULTIMATE_TIMEOUT="${ULTIMATE_TIMEOUT:-${SUBSET_ULTIMATE_TIMEOUT}}"
+    UPL_TIMEOUT="${UPL_TIMEOUT:-${SUBSET_ULTIMATE_TIMEOUT}}"
+    # The estimate holds for the subset's own timeout only.
+    if [ "${ULTIMATE_TIMEOUT}" = "${SUBSET_ULTIMATE_TIMEOUT}" ] && [ "${UPL_TIMEOUT}" = "${SUBSET_ULTIMATE_TIMEOUT}" ]; then
+        hours=0
+        for part in "${!RUN[@]}"; do hours=$((hours + ${SUBSET_HOURS[${part}]})); done
+        EXPECTED="about ${hours} h on the paper's machine"
+    fi
+    OUTPUT_DIR="${OUTPUT_DIR:-${APP_DIR}/output/subset}"
+    TITLE="${TITLE:-subset evaluation}"
+fi
+[ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/C" "${APP_DIR}/benchmarks/BPL")
+ULTIMATE_TIMEOUT="${ULTIMATE_TIMEOUT:-${PULR_ULTIMATE_TIMEOUT_DEFAULT}}"
+UPL_TIMEOUT="${UPL_TIMEOUT:-${UPL_ULTIMATE_TIMEOUT_DEFAULT}}"
+OUTPUT_DIR="${OUTPUT_DIR:-${APP_DIR}/output/full}"
+TITLE="${TITLE:-full evaluation}"
+require_inputs "${INPUTS[@]}"
 
 n_programs=0
 while IFS= read -r -d '' _; do n_programs=$((n_programs + 1)); done < <(collect_programs "${INPUTS[@]}")
@@ -103,6 +138,7 @@ echo " PaSTTeL timeout  : ${PASTTEL_TIMEOUT}s per trace (fixed, shuffled), ${UPL
 echo " P-ULR configs    : P-ULR-Seq (1 cpu), ${PAR_LABEL} (${PAR_CPUS} cpus), Z3"
 echo " Worst case       : $(awk -v s="${worst_s}" 'BEGIN { printf "%.1f h", s / 3600 }') for Ultimate," \
      "if every run hit its timeout, plus PaSTTeL"
+if [ -n "${EXPECTED}" ]; then echo " Expected         : ${EXPECTED}"; fi
 echo " Output           : ${OUTPUT_DIR}"
 echo "============================================================"
 echo ""
@@ -124,7 +160,7 @@ if [ -n "${RUN[shuffled]:-}" ]; then
 fi
 
 if [ -n "${RUN[upl]:-}" ]; then
-    echo "################ ULR vs UPL (UAutomizer-PaSTTeL-linux, settings files) ################"
+    echo "################ ULR vs UPL (UAutomizer-PaSTTeL-linux, LassoRanker vs PaSTTeL backend) ################"
     # Both sides from the same release, so that only the rank-synthesis backend differs; an exported
     # ULTIMATE_ULR would make run_ulr_vs_upl.sh take the baseline from another release.
     ULTIMATE_ULR="" bash "${SCRIPT_DIR}/run_ulr_vs_upl.sh" "${INPUT_ARGS[@]}" --output "${OUT_UPL}" \

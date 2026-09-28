@@ -6,8 +6,9 @@
 #   [2] ULR (tools/UAutomizer-linux-shuffler, random order)       vs P-ULR-Seq and P-ULR-Par<N>
 #   [3] ULR (tools/UAutomizer-PaSTTeL-linux, LassoRanker backend) vs UPL (same release, PaSTTeL backend)
 #
-# [1] and [2] compare per lasso trace and run Ultimate with its default settings; [3] compares per
-# program and is the only one driven by settings files, tools/settings/*.epf. Only Z3 is used.
+# [1] and [2] compare per lasso trace, [3] per program. All of them run Ultimate with its default
+# settings, except UPL in [3]: its settings file only switches the rank-synthesis backend to PaSTTeL
+# (tools/settings/BuchiAutomizerPasttel.epf.in). Only Z3 is used.
 # This is scripts/run_full_evaluation.sh with smoke-test defaults.
 #
 # Usage:

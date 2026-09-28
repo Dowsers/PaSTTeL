@@ -8,8 +8,11 @@
 # falls back to LassoRanker whenever PaSTTeL does not conclude.
 #
 # By default both runs use the SAME Ultimate release, so the two configurations
-# differ only in the value of 'Rank synthesis backend' and the five PaSTTeL
-# settings beside it -- not in build date, bundled solvers or upstream revision.
+# differ only in the rank-synthesis backend -- not in build date, bundled solvers
+# or upstream revision. ULR runs Ultimate with no settings file, exactly as
+# run_ultimate_only.sh does to extract the lasso traces of ULR vs P-ULR; UPL adds
+# tools/settings/BuchiAutomizerPasttel.epf.in, whose only lines select the
+# PaSTTeL backend and configure it (binary, timeout, cores).
 # Pass --ulr-home to run the baseline from a different release instead; that is a
 # deliberately different experiment (comparing builds, e.g. the shuffled one),
 # and the script says so when it happens.
@@ -85,12 +88,10 @@ fi
 
 PARSER="${PASTTEL_HOME}/scripts/benchmark_ulr_vs_upl.py"
 EPF_TEMPLATE="${SETTINGS_DIR}/BuchiAutomizerPasttel.epf.in"
-EPF_ULR="${SETTINGS_DIR}/BuchiAutomizer.epf"
 
 # -- Sanity checks ------------------------------------------------------------
 require_file "${PARSER}"       "parser"
 require_file "${EPF_TEMPLATE}" "PaSTTeL settings template"
-require_file "${EPF_ULR}"      "ULR settings"
 require_file "${PASTTEL_BIN}"  "pasttel binary"
 [ -x "${PASTTEL_BIN}" ] || die "${PASTTEL_BIN} is not executable (run 'make -j' in ${PASTTEL_HOME})"
 require_dir  "${TOOLCHAIN_DIR}" "Ultimate toolchains"
@@ -125,9 +126,13 @@ EPF_UPL="${OUTPUT_DIR}/BuchiAutomizerPasttel.epf"
 sed -e "s|@PASTTEL_BIN@|${PASTTEL_BIN}|g" \
     -e "s|@PASTTEL_TIMEOUT@|${PASTTEL_TIMEOUT}|g" \
     -e "s|@PASTTEL_CPUS@|${PASTTEL_CPUS}|g" \
-    -e "s|@DUMP_ENABLED@|${DUMP_IO}|g" \
-    -e "s|@DUMP_DIR@|${DUMP_DIR}|g" \
     "${EPF_TEMPLATE}" > "${EPF_UPL}"
+# Only on request: with these two lines Ultimate keeps PaSTTeL's JSON I/O per lasso.
+if "${DUMP_IO}"; then
+    BA_PREF="/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer"
+    printf '%s\n' "${BA_PREF}/Dump\ SMT\ script\ to\ file=true" \
+                   "${BA_PREF}/To\ the\ following\ directory=${DUMP_DIR}" >> "${EPF_UPL}"
+fi
 
 # Only @NAME@ counts: a .epf legitimately contains lines such as '@UltimateCore=0.0.1'.
 LEFTOVERS=$(grep -vE '^[[:space:]]*#' "${EPF_UPL}" | grep -cE '@[A-Z_]+@' || true)
@@ -151,6 +156,7 @@ echo " pasttel binary  : ${PASTTEL_BIN}"
 echo " z3 (Ultimate)   : $(ultimate_z3 "${ULTIMATE_UPL}")"
 "${SAME_RELEASE}" || echo " z3 (ULR side)   : $(ultimate_z3 "${ULTIMATE_ULR}")"
 echo " Ultimate timeout: ${TIMEOUT}s per run"
+echo " Settings        : ULR none (Ultimate's defaults), UPL ${EPF_UPL}"
 echo " PaSTTeL         : ${PASTTEL_TIMEOUT}s per lasso, ${PASTTEL_CPUS} cpus"
 echo " Repeats         : ${REPEAT} (median reported)"
 echo " I/O dumping     : ${DUMP_IO}"
@@ -159,15 +165,18 @@ echo "============================================================"
 echo ""
 
 # run_config <label> <ultimate_home> <settings> <program> <log>
-# Runs Ultimate once and prints the wall-clock milliseconds on stdout.
+# Runs Ultimate once and prints the wall-clock milliseconds on stdout. An empty
+# <settings> runs it with no settings file, i.e. with Ultimate's defaults.
 # Ultimate must run from its own directory: it resolves z3/cvc4/mathsat relatively.
 run_config() {
     local label="$1" home="$2" settings="$3" prog="$4" log="$5"
     local tc start end
+    local -a settings_args=()
+    [ -z "${settings}" ] || settings_args=(-s "${settings}")
     tc="$(toolchain_for "${prog}")"
     start=$(now_ms)
     ( cd "${home}" && timeout "${TIMEOUT}" ./Ultimate \
-        -tc "${tc}" -s "${settings}" -i "${prog}" ) > "${log}" 2>&1 || true
+        -tc "${tc}" "${settings_args[@]}" -i "${prog}" ) > "${log}" 2>&1 || true
     end=$(now_ms)
     echo "$((end - start))"
 }
@@ -188,6 +197,31 @@ upl_preflight() {
     fi
 }
 
+# Guard evaluated once per side, on its first run that analyses a lasso: both sides must do so with
+# the settings of ULR-Baseline in ULR vs P-ULR -- LassoRanker's partitioning off, linear rank and
+# GNTA synthesis -- which only a release built from the current ultimate/ submodule has by default.
+# An older build runs with partitioning on and nonlinear synthesis, silently: every row would then
+# compare against another baseline than the paper's.
+declare -A settings_checked=()
+settings_preflight() {
+    local cfg="$1" log="$2" found wrong
+    [ -z "${settings_checked[${cfg}]:-}" ] || return 0
+    found=$(grep -oE 'Enable LassoPartitioneer: (true|false)|(Termination|Nontermination) analysis: (NONLINEAR|LINEAR_WITH_GUESSES|LINEAR|DISABLED)' \
+            "${log}" | sort -u || true)
+    [ -n "${found}" ] || return 0    # no lasso analysed in this run: check the next one
+    settings_checked[${cfg}]=1
+    wrong=$(printf '%s\n' "${found}" | grep -vE ': (false|LINEAR)$' || true)
+    if [ -n "${wrong}" ]; then
+        echo "" >&2
+        echo "ERROR: ${cfg^^} analysed its lassos with settings other than those of ULR-Baseline:" >&2
+        printf '%s\n' "${wrong}" | sed 's/^/         /' >&2
+        echo "       expected: Enable LassoPartitioneer: false, (Non)termination analysis: LINEAR." >&2
+        echo "       Rebuild the release from the ultimate/ submodule, whose defaults are these." >&2
+        echo "       Log: ${log}" >&2
+        exit 1
+    fi
+}
+
 n=0
 for prog in "${PROGRAMS[@]}"; do
     n=$((n + 1))
@@ -198,7 +232,7 @@ for prog in "${PROGRAMS[@]}"; do
     for cfg in ulr upl; do
         [ "${cfg}" = ulr ] && "${SKIP_ULR}" && continue
         [ "${cfg}" = upl ] && "${SKIP_UPL}" && continue
-        if [ "${cfg}" = ulr ]; then home="${ULTIMATE_ULR}"; settings="${EPF_ULR}"
+        if [ "${cfg}" = ulr ]; then home="${ULTIMATE_ULR}"; settings=""
         else                        home="${ULTIMATE_UPL}"; settings="${EPF_UPL}"; fi
 
         canonical="${LOG_DIR}/${name}.${cfg}.log"
@@ -209,6 +243,7 @@ for prog in "${PROGRAMS[@]}"; do
             times+=("$(run_config "${cfg}" "${home}" "${settings}" "${prog}" "${run_log}")")
             logs+=("${run_log}")
             [ "${cfg}" = upl ] && upl_preflight "${run_log}"
+            settings_preflight "${cfg}" "${run_log}"
         done
         # Report the median repeat, and keep that same run's log as the canonical
         # one: the parser derives the plugin and lasso timings from it, so they
@@ -231,7 +266,7 @@ python3 "${PARSER}" --log-dir "${LOG_DIR}" --output "${CSV}" --timeout "${TIMEOU
 if "${PLOT}"; then
     # Name the axes after the settings actually used, so a figure read on its own
     # still says which backend each side is -- both runs are "Ultimate" otherwise.
-    ULR_LABEL="ULR — LassoRanker ($(basename "${EPF_ULR}"))"
+    ULR_LABEL="ULR — LassoRanker (default settings)"
     UPL_LABEL="UPL — PaSTTeL ($(basename "${EPF_UPL}"))"
     "${SAME_RELEASE}" || {
         ULR_LABEL="${ULR_LABEL%)} , $(basename "${ULTIMATE_ULR}"))"

@@ -163,13 +163,16 @@ def agreement(ulr_verdict, upl_verdict):
         return "ULR MISSING"
     if upl_verdict == MISSING:
         return "UPL MISSING"
-    if ulr_verdict == upl_verdict:
-        return "SAME" if ulr_verdict in SOLVED else f"BOTH {ulr_verdict}"
-    if upl_verdict in SOLVED and ulr_verdict not in SOLVED:
+    u_ok, p_ok = ulr_verdict in SOLVED, upl_verdict in SOLVED
+    if u_ok and p_ok:
+        # The only disagreement that is a conflict: both concluded, with opposite verdicts.
+        return "SAME" if ulr_verdict == upl_verdict else "CONFLICT"
+    if p_ok:
         return "UPL ONLY"
-    if ulr_verdict in SOLVED and upl_verdict not in SOLVED:
+    if u_ok:
         return "ULR ONLY"
-    return "CONFLICT"
+    # Neither solved: a TIMEOUT against an ERROR is two failures, not a conflict.
+    return f"BOTH {ulr_verdict}" if ulr_verdict == upl_verdict else "NEITHER"
 
 
 def build_rows(log_dir, timeout_s):
@@ -180,10 +183,9 @@ def build_rows(log_dir, timeout_s):
         wall = {cfg: read_wall_ms(log_dir, name, cfg) for cfg in CONFIGS}
         u, p = parsed["ulr"], parsed["upl"]
 
-        # A disagreement on a solved verdict is a soundness signal, not a
-        # performance one -- surface it rather than averaging it away.
-        conflict = (u["verdict"] in SOLVED and p["verdict"] in SOLVED
-                    and u["verdict"] != p["verdict"])
+        # A speedup only means something when both runs solved the program: a run that crashed or
+        # gave up early is not faster, it did not answer.
+        both_solved = u["verdict"] in SOLVED and p["verdict"] in SOLVED
 
         rows.append({
             "Program": name,
@@ -204,9 +206,9 @@ def build_rows(log_dir, timeout_s):
             "UPL Fallbacks": p["pasttel_fallback"],
             "UPL Unmapped": p["pasttel_unmapped"],
             "UPL Techniques": "|".join(sorted(set(p["techniques"]))) or "-",
-            "Agreement": "CONFLICT" if conflict else agreement(u["verdict"], p["verdict"]),
-            "Speedup (wall)": fmt(speedup(wall["ulr"], wall["upl"]), 3),
-            "Speedup (plugin)": fmt(speedup(u["plugin_ms"], p["plugin_ms"]), 3),
+            "Agreement": agreement(u["verdict"], p["verdict"]),
+            "Speedup (wall)": fmt(speedup(wall["ulr"], wall["upl"]) if both_solved else None, 3),
+            "Speedup (plugin)": fmt(speedup(u["plugin_ms"], p["plugin_ms"]) if both_solved else None, 3),
         })
     return rows
 
@@ -238,114 +240,122 @@ COLUMN_FOR = {
     "lassos": ("ULR Lassos (ms)", "UPL Lassos (ms)", "lasso analysis"),
 }
 
+# One classification feeds the text summary, the HTML table and the scatter plot alike, so that the
+# three can never tell different stories. Only a TERMINATING or NONTERMINATING verdict counts as
+# solved: a TIMEOUT, UNKNOWN or ERROR run solved nothing, however fast it ended, and is placed at the
+# PAR-2 penalty (twice the Ultimate timeout) instead of its own time.
+#   key, label, colour, marker, plotted
+CATEGORIES = (
+    ("term", "Terminating (common)", "green", "circle", True),
+    ("nonterm", "Non-terminating (common)", "blue", "circle", True),
+    ("contra", "Contradiction (both disagree)", "black", "star", True),
+    ("ulr_only", "Solved by ULR only (UPL: PAR-2)", "orange", "circle-open", True),
+    ("upl_only", "Solved by UPL only (ULR: PAR-2)", "purple", "diamond-open", True),
+    # both at PAR-2: every such program would sit on the same corner point, so it is only counted
+    ("neither", "Solved by neither (PAR-2 both)", "red", "x", False),
+)
 
-def aggregates(rows, col_key):
-    """Totals and medians for one timing column, over the programs both sides solved.
 
-    Totals are the headline number for "global resolution time": they answer how
-    long the whole benchmark takes under each backend. They are restricted to
-    commonly solved programs so that a timeout on one side cannot masquerade as
-    time spent by the other.
+def _as_int(value):
+    try:
+        return int(str(value).strip())
+    except ValueError:
+        return 0
+
+
+def categorize(rows, col_key, default_timeout_s):
+    """Sort programs into CATEGORIES for one timing column.
+
+    Returns ({key: [point]}, excluded) where a point is (program, x_ms, y_ms, row), x for ULR and y
+    for UPL, and excluded counts the programs left out: both runs ended in ERROR (they say nothing
+    about either backend), or one side was never run (--skip-ulr / --skip-upl).
     """
-    cx, cy, label = COLUMN_FOR[col_key]
-    pairs = []
+    cx, cy, _ = COLUMN_FOR[col_key]
+    cats = {key: [] for key, *_ in CATEGORIES}
+    excluded = {"both ERROR": 0, "one side not run": 0}
     for r in rows:
-        if r["ULR Verdict"] not in SOLVED or r["UPL Verdict"] not in SOLVED:
+        u, p = r["ULR Verdict"], r["UPL Verdict"]
+        if MISSING in (u, p):
+            excluded["one side not run"] += 1
             continue
-        x, y = parse_float(r[cx]), parse_float(r[cy])
-        if x is not None and y is not None:
-            pairs.append((x, y))
-    if not pairs:
-        return None
-    ulr_total = sum(x for x, _ in pairs)
-    upl_total = sum(y for _, y in pairs)
-    ratios = [x / y for x, y in pairs if y > 0]
-    return {
-        "label": label, "n": len(pairs),
-        "ulr_total_ms": ulr_total, "upl_total_ms": upl_total,
-        "total_speedup": (ulr_total / upl_total) if upl_total > 0 else None,
-        "median_speedup": statistics.median(ratios) if ratios else None,
-        "min_speedup": min(ratios) if ratios else None,
-        "max_speedup": max(ratios) if ratios else None,
-        "upl_faster": sum(1 for x, y in pairs if y < x),
-        "ulr_faster": sum(1 for x, y in pairs if x < y),
-    }
+        if u == "ERROR" and p == "ERROR":
+            excluded["both ERROR"] += 1
+            continue
+        par2 = 2 * 1000.0 * (parse_float(r.get("Timeout (s)")) or default_timeout_s)
+        u_ok, p_ok = u in SOLVED, p in SOLVED
+        # A solved side without a parsed time (e.g. missing statistics line) keeps PAR-2 rather than
+        # vanishing from the totals.
+        x = (parse_float(r[cx]) if u_ok else None) or par2
+        y = (parse_float(r[cy]) if p_ok else None) or par2
+        if u_ok and p_ok:
+            key = "contra" if u != p else ("term" if u == "TERMINATING" else "nonterm")
+        elif u_ok:
+            key = "ulr_only"
+        elif p_ok:
+            key = "upl_only"
+        else:
+            key = "neither"
+        cats[key].append((r["Program"], x, y, r))
+    return cats, excluded
 
 
-def per_program_table(rows, col_key):
-    """Text table: one line per program, ULR beside UPL for one timing column."""
-    cx, cy, label = COLUMN_FOR[col_key]
-    head = (f"{'Program':<48} {'ULR verdict':<15} {'UPL verdict':<15} "
-            f"{'ULR (ms)':>11} {'UPL (ms)':>11} {'speedup':>9}  PaSTTeL")
-    lines = [head, "-" * len(head)]
-    for r in sorted(rows, key=lambda r: r["Program"]):
-        x, y = parse_float(r[cx]), parse_float(r[cy])
-        ratio = f"{x / y:.2f}x" if (x and y and y > 0) else "-"
-        pastel = f"{r['UPL PaSTTeL Success']}/{r['UPL PaSTTeL Calls']}"
-        if int(r["UPL Fallbacks"] or 0):
-            pastel += f" (+{r['UPL Fallbacks']} fb)"
-        lines.append(f"{r['Program'][:48]:<48} {r['ULR Verdict']:<15} {r['UPL Verdict']:<15} "
-                     f"{fmt(x):>11} {fmt(y):>11} {ratio:>9}  {pastel}")
-    return "\n".join(lines)
+def summary_rows(cats):
+    """(label, count, ULR total s, UPL total s) per category, then the two cumulative lines."""
+    out = []
+    for key, label, *_ in CATEGORIES:
+        pts = cats[key]
+        out.append((key, label, len(pts), sum(x for _, x, _, _ in pts) / 1000, sum(y for _, _, y, _ in pts) / 1000))
+    both = cats["term"] + cats["nonterm"]
+    # Programs neither run solved are left out of the PAR-2 total: they would add the same 2 x timeout
+    # to both sides and only dilute the difference between the two backends.
+    solved = [pt for key, *_ in CATEGORIES if key != "neither" for pt in cats[key]]
+    out.append(("both", "Solved by both (cumulative)", len(both),
+                sum(x for _, x, _, _ in both) / 1000, sum(y for _, _, y, _ in both) / 1000))
+    out.append(("par2", "PAR-2 total (solved by at least one)", len(solved),
+                sum(x for _, x, _, _ in solved) / 1000, sum(y for _, _, y, _ in solved) / 1000))
+    return out
+
+
+def summary_table_text(rows, col_key, default_timeout_s, ulr_label, upl_label):
+    cats, excluded = categorize(rows, col_key, default_timeout_s)
+    metric = COLUMN_FOR[col_key][2]
+    xh, yh = f"{ulr_label} (s)", f"{upl_label} (s)"
+    w = max(len(xh), len(yh), 14)
+    hdr = f"{'Category':<36}  {'Count':>6}  {xh:>{w}}  {yh:>{w}}"
+    sep = "-" * len(hdr)
+    lines = [f"=== {metric} ===", sep, hdr, sep]
+    for key, label, n, tx, ty in summary_rows(cats):
+        if key == "both":
+            lines.append(sep)
+        lines.append(f"{label:<36}  {n:>6}  {tx:>{w}.2f}  {ty:>{w}.2f}")
+    lines.append(sep)
+    left_out = [f"{n} {why}" for why, n in excluded.items() if n]
+    if left_out:
+        lines.append(f"Not shown: {', '.join(left_out)}.")
+    return "\n".join(lines), cats
 
 
 def render_summary(rows):
-    """The whole summary as text, for stdout and for summary_tables.log alike."""
-    out = []
-    w = out.append
-    conflicts = [r for r in rows if r["Agreement"] == "CONFLICT"]
-    upl_only = [r for r in rows if r["Agreement"] == "UPL ONLY"]
-    ulr_only = [r for r in rows if r["Agreement"] == "ULR ONLY"]
-    unmapped = [r for r in rows if int(r["UPL Unmapped"] or 0) > 0]
-
-    w("=" * 78)
-    w(" TABLE 1 -- ULR vs UPL, per program (wall clock)")
-    w("=" * 78)
-    w(per_program_table(rows, "wall"))
-    w("")
-    w("=" * 78)
-    w(" TABLE 2 -- verdicts")
-    w("=" * 78)
-    w(f" Programs                  : {len(rows)}")
-    w(f" Solved by ULR             : {sum(1 for r in rows if r['ULR Verdict'] in SOLVED)}")
-    w(f" Solved by UPL             : {sum(1 for r in rows if r['UPL Verdict'] in SOLVED)}")
-    w(f" Solved only by UPL        : {len(upl_only)}")
-    w(f" Solved only by ULR        : {len(ulr_only)}")
-    w(f" Verdict conflicts         : {len(conflicts)}")
-    w(f" PaSTTeL calls (total)     : {sum(int(r['UPL PaSTTeL Calls'] or 0) for r in rows)}")
-    w(f"   conclusive              : {sum(int(r['UPL PaSTTeL Success'] or 0) for r in rows)}")
-    w(f"   fell back to LassoRanker: {sum(int(r['UPL Fallbacks'] or 0) for r in rows)}")
-    w(f"   certificate unmapped    : {sum(int(r['UPL Unmapped'] or 0) for r in rows)}")
-    w("")
-    w("=" * 78)
-    w(" TABLE 3 -- global resolution time, over programs both sides solved")
-    w("=" * 78)
-    w(f" {'metric':<24} {'n':>4} {'ULR total':>13} {'UPL total':>13} {'total':>9} {'median':>9}"
-      f" {'UPL faster':>11}")
-    w(" " + "-" * 76)
-    for key in ("wall", "plugin", "lassos"):
-        a = aggregates(rows, key)
-        if a is None:
-            w(f" {COLUMN_FOR[key][2]:<24} {'-':>4}  (no commonly solved program)")
-            continue
-        w(f" {a['label']:<24} {a['n']:>4} {a['ulr_total_ms'] / 1000:>11.2f} s"
-          f" {a['upl_total_ms'] / 1000:>11.2f} s {a['total_speedup']:>8.2f}x"
-          f" {a['median_speedup']:>8.2f}x {a['upl_faster']:>6}/{a['n']:<4}")
-    w("")
-    w(" total  = sum(ULR) / sum(UPL); >1 means UPL resolves the benchmark faster overall.")
-    w(" median = median of the per-program ratios, which weights small programs equally.")
-
-    if conflicts:
-        w("")
-        w(" CONFLICTS (ULR and UPL disagree on a solved verdict):")
-        for r in conflicts:
-            w(f"   {r['Program']}: ULR={r['ULR Verdict']} UPL={r['UPL Verdict']}")
-    if unmapped:
-        w("")
-        w(" Certificates PaSTTeL produced but could not map back:")
-        for r in unmapped:
-            w(f"   {r['Program']}: {r['UPL Unmapped']}")
-    w("=" * 78)
+    """The whole text summary, for stdout and summary_tables.log alike."""
+    labels = (DEFAULT_ULR_LABEL, DEFAULT_UPL_LABEL)
+    timeout = next((parse_float(r.get("Timeout (s)")) for r in rows if parse_float(r.get("Timeout (s)"))), 0)
+    out = [f"ULR vs UPL -- {len(rows)} program(s), PAR-2 penalty = 2 x {timeout:g} s", ""]
+    # Wall clock only: it is the time a user of Ultimate actually waits. The plugin and lasso-analysis
+    # columns stay in the CSV, and --plot --col plugin|lassos still draws them.
+    text, cats = summary_table_text(rows, "wall", timeout, *labels)
+    out += [text, ""]
+    calls = sum(_as_int(r["UPL PaSTTeL Calls"]) for r in rows)
+    ok = sum(_as_int(r["UPL PaSTTeL Success"]) for r in rows)
+    fb = sum(_as_int(r["UPL Fallbacks"]) for r in rows)
+    unm = sum(_as_int(r["UPL Unmapped"]) for r in rows)
+    out.append(f"PaSTTeL inside UPL: {calls} call(s), {ok} conclusive, {fb} fell back to LassoRanker, "
+               f"{unm} certificate(s) not mapped back.")
+    # A contradiction is a soundness signal: name the programs rather than only counting them.
+    if cats and cats["contra"]:
+        out.append("")
+        out.append("CONTRADICTIONS (both runs solved the program, with opposite verdicts):")
+        for prog, _, _, r in cats["contra"]:
+            out.append(f"  {prog}: ULR={r['ULR Verdict']} UPL={r['UPL Verdict']}")
     return "\n".join(out)
 
 
@@ -370,193 +380,104 @@ def _plotly_script_tag():
         return '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
 
 
-AGREEMENT_COLOR = {
-    "SAME": "#2e7d32",
-    "UPL ONLY": "#1565c0",
-    "ULR ONLY": "#ef6c00",
-    "CONFLICT": "#c62828",
-}
-
-
-def _html_escape(text):
-    return (str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
-
-
-def _summary_block_html(rows, col_key, ulr_label, upl_label):
-    """Headline aggregates plus the per-program table, rendered beside the plot.
-
-    The figure alone cannot say how much total time separates the two backends,
-    nor which programs the points belong to; both questions come up immediately
-    when reading a scatter, so the answers ship in the same file.
-    """
-    cx, cy, label = COLUMN_FOR[col_key]
-    a = aggregates(rows, col_key)
-    if a is None:
-        cards = "<p>No program was solved by both configurations.</p>"
-    else:
-        def card(title, value, note):
-            return (f'<div class="card"><div class="k">{_html_escape(title)}</div>'
-                    f'<div class="v">{_html_escape(value)}</div>'
-                    f'<div class="n">{_html_escape(note)}</div></div>')
-        cards = (
-            card("ULR total", f"{a['ulr_total_ms'] / 1000:.2f} s", f"{a['n']} programs")
-            + card("UPL total", f"{a['upl_total_ms'] / 1000:.2f} s", f"{a['n']} programs")
-            + card("Total speedup", f"{a['total_speedup']:.2f}x", "sum(ULR) / sum(UPL)")
-            + card("Median speedup", f"{a['median_speedup']:.2f}x",
-                   f"per program, {a['min_speedup']:.2f}x – {a['max_speedup']:.2f}x")
-            + card("UPL faster on", f"{a['upl_faster']}/{a['n']}",
-                   f"ULR faster on {a['ulr_faster']}"))
-
-    body = []
-    for r in sorted(rows, key=lambda r: r["Program"]):
-        x, y = parse_float(r[cx]), parse_float(r[cy])
-        ratio = f"{x / y:.2f}x" if (x and y and y > 0) else "—"
-        cls = ""
-        if x and y and y > 0:
-            cls = "faster" if y < x else ("slower" if x < y else "")
-        agree = r["Agreement"]
-        acls = "bad" if agree == "CONFLICT" else ("good" if agree in ("SAME", "UPL ONLY") else "")
-        body.append(
-            f"<tr><td class='prog'>{_html_escape(r['Program'])}</td>"
-            f"<td>{_html_escape(r['ULR Verdict'])}</td>"
-            f"<td>{_html_escape(r['UPL Verdict'])}</td>"
-            f"<td class='num'>{_html_escape(r[cx])}</td>"
-            f"<td class='num'>{_html_escape(r[cy])}</td>"
-            f"<td class='num {cls}'>{ratio}</td>"
-            f"<td class='num'>{_html_escape(r['UPL PaSTTeL Success'])}/"
-            f"{_html_escape(r['UPL PaSTTeL Calls'])}</td>"
-            f"<td class='num'>{_html_escape(r['UPL Fallbacks'])}</td>"
-            f"<td class='{acls}'>{_html_escape(agree)}</td></tr>")
-
-    return f"""
-<h1>{_html_escape(ulr_label)} vs {_html_escape(upl_label)} — {_html_escape(label)}</h1>
-<p class="sub">Same Ultimate release, same toolchain; the two runs differ only in the
-rank-synthesis backend. Totals cover the programs both configurations solved.</p>
-<div class="cards">{cards}</div>
-<table>
-<thead><tr><th>Program</th><th>{_html_escape(ulr_label)}<br>verdict</th>
-<th>{_html_escape(upl_label)}<br>verdict</th>
-<th>{_html_escape(ulr_label)}<br>(ms)</th><th>{_html_escape(upl_label)}<br>(ms)</th>
-<th>speedup</th><th>PaSTTeL ok/calls</th>
-<th>fallbacks</th><th>agreement</th></tr></thead>
-<tbody>{''.join(body)}</tbody>
-</table>
-"""
-
-
-_CSS = """
-:root { --fg:#1a1a1a; --muted:#666; --bd:#e0e0e0; --bg:#ffffff; --card:#f6f7f9;
-        --good:#2e7d32; --bad:#c62828; }
-@media (prefers-color-scheme: dark) {
-  :root { --fg:#e8e8e8; --muted:#a0a0a0; --bd:#3a3a3a; --bg:#161616; --card:#212121;
-          --good:#81c784; --bad:#ef9a9a; }
-}
-body { background:var(--bg); color:var(--fg); margin:0; padding:24px 16px;
-       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-.wrap { max-width:1100px; margin:0 auto; }
-h1 { font-size:20px; margin:0 0 4px; }
-.sub { color:var(--muted); margin:0 0 16px; max-width:70ch; }
-.cards { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
-.card { background:var(--card); border:1px solid var(--bd); border-radius:8px;
-        padding:10px 14px; min-width:130px; }
-.card .k { color:var(--muted); font-size:11px; text-transform:uppercase;
-           letter-spacing:.04em; }
-.card .v { font-size:20px; font-variant-numeric:tabular-nums; margin:2px 0; }
-.card .n { color:var(--muted); font-size:11px; }
-table { border-collapse:collapse; width:100%; margin-bottom:24px; font-size:13px; }
-th,td { border-bottom:1px solid var(--bd); padding:6px 8px; text-align:left; }
-th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase;
-     letter-spacing:.04em; }
-td.num { text-align:right; font-variant-numeric:tabular-nums; }
-td.prog { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px;
-          word-break:break-all; }
-.faster { color:var(--good); font-weight:600; }
-.slower { color:var(--bad); }
-.good { color:var(--good); }
-.bad { color:var(--bad); font-weight:600; }
-#plot { margin-bottom:16px; }
-@media (max-width:640px) { body { padding:16px; } table { font-size:11px; } }
-"""
+def _esc(text):
+    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def plot(csv_path, col_key, output_html, log_scale, timeout_s,
          ulr_label=DEFAULT_ULR_LABEL, upl_label=DEFAULT_UPL_LABEL):
-    cx, cy, label = COLUMN_FOR[col_key]
+    """Scatter plot plus summary table, in the style of the P-ULR plots
+    (benchmark_ultimate_vs_pasttel.py): white page, one table, one figure."""
+    import json
     with open(csv_path, newline="") as fh:
         rows = list(csv.DictReader(fh))
+    cats, _ = categorize(rows, col_key, timeout_s)
+    metric = COLUMN_FOR[col_key][2]
+    par2_s = 2 * (next((parse_float(r.get("Timeout (s)")) for r in rows if parse_float(r.get("Timeout (s)"))), 0)
+                  or timeout_s)
+    title = f"{ulr_label} vs {upl_label}"
 
-    groups = {}
-    for row in rows:
-        x, y = parse_float(row.get(cx)), parse_float(row.get(cy))
-        if x is None or y is None:
+    traces, pts_all = [], []
+    for key, label, colour, symbol, plotted in CATEGORIES:
+        pts = cats[key]
+        if not plotted or not pts:
             continue
-        key = row.get("Agreement", "SAME")
-        key = key if key in AGREEMENT_COLOR else "SAME"
-        groups.setdefault(key, {"x": [], "y": [], "t": []})
-        groups[key]["x"].append(x)
-        groups[key]["y"].append(y)
-        groups[key]["t"].append(
-            f"{row['Program']}<br>{ulr_label}: {row['ULR Verdict']}"
-            f"<br>{upl_label}: {row['UPL Verdict']}"
-            f"<br>PaSTTeL success/calls: {row['UPL PaSTTeL Success']}/{row['UPL PaSTTeL Calls']}"
-            f"<br>techniques: {row['UPL Techniques']}")
-
-    if not groups:
+        pts_all += pts
+        traces.append({
+            "x": [x for _, x, _, _ in pts], "y": [y for _, _, y, _ in pts],
+            "text": [f"{prog}<br>ULR: {r['ULR Verdict']}, {x:.1f} ms<br>UPL: {r['UPL Verdict']}, {y:.1f} ms"
+                     f"<br>PaSTTeL conclusive/calls: {r['UPL PaSTTeL Success']}/{r['UPL PaSTTeL Calls']}"
+                     for prog, x, y, r in pts],
+            "mode": "markers", "type": "scatter", "name": f"{label} ({len(pts)})", "hoverinfo": "text",
+            "marker": {"color": colour, "symbol": symbol, "opacity": 0.8,
+                       "size": 12 if symbol == "star" else 9},
+        })
+    if not pts_all:
         print(f"No plottable data for '{col_key}' in {csv_path}", file=sys.stderr)
         return
-
-    all_vals = [v for g in groups.values() for v in g["x"] + g["y"] if v > 0]
-    lo, hi = (min(all_vals) * 0.5, max(all_vals) * 2.0) if all_vals else (1, 10)
-
-    traces = []
-    for key, g in groups.items():
-        traces.append({
-            "x": g["x"], "y": g["y"], "text": g["t"],
-            "mode": "markers", "type": "scatter", "name": key,
-            "hovertemplate": "%{text}<br>ULR: %{x:.1f} ms<br>UPL: %{y:.1f} ms<extra></extra>",
-            "marker": {"size": 8, "color": AGREEMENT_COLOR[key],
-                       "line": {"width": 0.5, "color": "#ffffff"}},
-        })
-    # Diagonal: below it UPL is faster than ULR.
-    traces.append({
-        "x": [lo, hi], "y": [lo, hi], "mode": "lines", "type": "scatter",
-        "name": "x = y", "hoverinfo": "skip",
-        "line": {"dash": "dash", "width": 1, "color": "#888888"},
-    })
-
-    axis = {"type": "log" if log_scale else "linear", "range":
-            ([__import__("math").log10(lo), __import__("math").log10(hi)] if log_scale else [lo, hi])}
+    vals = [v for _, x, y, _ in pts_all for v in (x, y) if v > 0]
+    lo, hi = min(vals) * 0.8, max(vals) * 1.2
+    # Diagonal from a positive start, so that it is drawn on logarithmic axes too.
+    traces.insert(0, {"x": [lo, hi], "y": [lo, hi], "mode": "lines", "type": "scatter", "name": "y = x",
+                      "line": {"color": "gray", "width": 1.5, "dash": "dash"}, "hoverinfo": "skip"})
+    axis_type = {"type": "log"} if log_scale else {"rangemode": "tozero"}
     layout = {
-        "title": f"{ulr_label}  vs  {upl_label} — {label}"
-                 f"<br><sub>points below the diagonal: UPL faster</sub>",
-        "xaxis": dict(axis, title=f"{ulr_label} — {label} (ms)"),
-        "yaxis": dict(axis, title=f"{upl_label} — {label} (ms)"),
-        "hovermode": "closest", "height": 700, "autosize": True,
-        "legend": {"title": {"text": "verdict agreement"}},
+        "xaxis": dict(axis_type, title=f"{ulr_label} — {metric} (ms)"),
+        "yaxis": dict(axis_type, title=f"{upl_label} — {metric} (ms)"),
+        "hovermode": "closest",
+        "legend": {"x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"},
+        "margin": {"l": 70, "r": 30, "t": 30, "b": 70},
     }
 
-    import json
+    style = {"term": "color:green;", "nonterm": "color:blue;", "contra": "color:black; background:#fff3cd;",
+             "ulr_only": "color:orange;", "upl_only": "color:purple;", "neither": "color:red;",
+             "both": "font-weight:bold; border-top:2px solid #333;", "par2": "font-weight:bold;"}
+    body = "".join(
+        f'  <tr style="{style[key]}"><td>{_esc(label)}</td><td style="text-align:right;">{n}</td>'
+        f'<td style="text-align:right;">{tx:.2f}</td><td style="text-align:right;">{ty:.2f}</td></tr>\n'
+        for key, label, n, tx, ty in summary_rows(cats))
+    summary_html = f"""<h3>Summary</h3>
+<table border="1" cellpadding="6" cellspacing="0"
+       style="border-collapse:collapse; font-family:monospace; margin-bottom:20px;">
+<thead style="background:#f0f0f0;">
+  <tr><th>Category</th><th>Count</th><th>{_esc(ulr_label)} total (s)</th><th>{_esc(upl_label)} total (s)</th></tr>
+</thead>
+<tbody>
+{body}</tbody>
+</table>"""
+
+    legend = " &nbsp;\n  ".join(
+        f'<span style="color:{colour};">{"&#9733;" if symbol == "star" else "&#9679;"}</span> {_esc(label)}'
+        for _, label, colour, symbol, plotted in CATEGORIES if plotted)
     html = f"""<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{ulr_label} vs {upl_label} — {label}</title>
-<style>{_CSS}</style>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{_esc(title)} - Scatter Plot</title>
 {_plotly_script_tag()}
-</head><body>
-<div class="wrap">
-{_summary_block_html(rows, col_key, ulr_label, upl_label)}
+<style>
+  body {{ font-family: Arial, sans-serif; margin: 20px; }}
+  #plot {{ width: 100%; height: 85vh; }}
+</style>
+</head>
+<body>
+<h2>{_esc(title)} &mdash; {_esc(metric)}</h2>
+<p>
+  {legend}
+</p>
+<p style="font-size:0.85em; color:#555;">
+  Each point is one program, analysed twice by the same Ultimate release, once per rank-synthesis
+  backend. Only TERMINATING and NONTERMINATING count as solved: a side that timed out, answered
+  UNKNOWN or stopped with an ERROR is placed at the PAR-2 penalty, twice the timeout ({par2_s:g} s).
+  Programs where both runs stopped with an ERROR are not shown.
+</p>
+{summary_html}
 <div id="plot"></div>
-</div>
 <script>
-const layout = {json.dumps(layout)};
-layout.paper_bgcolor = "rgba(0,0,0,0)";
-layout.plot_bgcolor = "rgba(0,0,0,0)";
-if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {{
-  layout.font = {{color: "#e8e8e8"}};
-}}
-Plotly.newPlot("plot", {json.dumps(traces)}, layout, {{responsive: true}});
+Plotly.newPlot('plot', {json.dumps(traces)}, {json.dumps(layout)});
 </script>
-</body></html>"""
+</body>
+</html>"""
     os.makedirs(os.path.dirname(os.path.abspath(output_html)) or ".", exist_ok=True)
     with open(output_html, "w") as fh:
         fh.write(html)

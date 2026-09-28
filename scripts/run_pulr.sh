@@ -137,7 +137,10 @@ echo ""
 echo "[4/4] Scatter plots and summary tables"
 SUMMARY="${OUTPUT_DIR}/summary_tables.log"
 : > "${SUMMARY}"
-for csv in "${OUTPUT_DIR}"/results_P-ULR-*_z3.csv; do
+declare -a LABELS=("P-ULR-Seq")
+[ "${PAR_CPUS}" -gt 1 ] && LABELS+=("P-ULR-Par${PAR_CPUS}")
+for label in "${LABELS[@]}"; do
+    csv="${OUTPUT_DIR}/results_${label}_z3.csv"
     [ -s "${csv}" ] || { echo "  $(basename "${csv}"): empty, no plot"; continue; }
     {
         echo "=== $(basename "${csv}") -- ULR-Baseline from ${RELEASE_NAME} ==="
@@ -147,6 +150,11 @@ for csv in "${OUTPUT_DIR}"/results_P-ULR-*_z3.csv; do
     } >> "${SUMMARY}"
     echo "  $(basename "${csv%.csv}")_scatter.html"
 done
+
+# The same tables on the console, so that a run's output shows its results and not only paths.
+echo ""
+echo "  Summary tables -- ULR-Baseline (${RELEASE_NAME}) vs P-ULR:"
+grep -v '^Scatter plot written to:' "${SUMMARY}" | sed 's/^/  /'
 
 echo ""
 echo "============================================================"

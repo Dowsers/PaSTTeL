@@ -1,10 +1,23 @@
+# Docker Compose entry point of the PaSTTeL VMCAI 2027 artifact.
+#
+# The image must exist first, loaded or built (see README, Installation):
+#   docker load --input pasttel-artifact-vmcai27.tar.gz      # or: docker build -t pasttel-artifact:vmcai27 .
+# then:
+#   docker compose up -d                 # start the container
+#   docker compose exec pasttel bash     # open a shell in it, then e.g. bash scripts/run_smoke_test.sh
+#   docker compose down                  # stop and remove the container
+#
+# Results written to /app/output inside the container appear in ./output on the host.
 services:
   pasttel:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pasttel_container
-    command: tail -f /dev/null
+    image: pasttel-artifact:vmcai27
+    # No build section: with one, `docker compose up` rebuilds the image even when it is already loaded.
+    # Never pull either: the image is not on any registry, and a pull would only contact Docker Hub.
+    pull_policy: never
+    container_name: pasttel-vmcai27
+    # Only keeps the container alive for `docker compose exec`; the experiments are started by hand.
+    command: sleep infinity
+    # A minimal init as PID 1, so that `docker compose down` stops the container at once.
+    init: true
     volumes:
       - ./output:/app/output
-      - ./test-reports:/app/pasttel/test-reports
