@@ -16,32 +16,37 @@ SETTINGS_DIR="${SETTINGS_DIR:-${TOOLS_DIR}/settings}"
 # tunes icfgbuilder, so an rcfgbuilder toolchain also drops those settings.
 TOOLCHAIN_DIR="${TOOLCHAIN_DIR:-${TOOLS_DIR}/toolchains}"
 
-# The three Ultimate releases the paper's experiments need. They are binary
-# releases built from the ultimate/ submodule; see README for how to regenerate.
+# The two prebuilt Ultimate releases the paper's experiments need: ULR, which dumps the lasso
+# traces of ULR vs P-ULR, and UPL, built from the ultimate/ submodule, for ULR vs UPL.
 ULTIMATE_ULR="${ULTIMATE_ULR:-${TOOLS_DIR}/UAutomizer-linux}"
-ULTIMATE_ULR_SHUFFLE="${ULTIMATE_ULR_SHUFFLE:-${TOOLS_DIR}/UAutomizer-linux-shuffler}"
 ULTIMATE_UPL="${ULTIMATE_UPL:-${TOOLS_DIR}/UAutomizer-PaSTTeL-linux}"
 
 # Defaults taken from the paper's experiments. Each is defined here only; the scripts read them, and
 # their options override them for one run.
 #   PULR_ULTIMATE_TIMEOUT_DEFAULT  Ultimate budget per program when extracting the lasso traces of the
-#                                  ULR vs P-ULR comparison, fixed or shuffled order (run_pulr.sh,
+#                                  ULR vs P-ULR comparison (run_pulr.sh,
 #                                  run_ultimate_only.sh, run_full_evaluation.sh --ultimate-timeout)
 #   PULR_PASTTEL_TIMEOUT_DEFAULT   PaSTTeL budget per lasso trace in ULR vs P-ULR (run_pulr.sh,
 #                                  run_full_evaluation.sh --pasttel-timeout)
 #   UPL_ULTIMATE_TIMEOUT_DEFAULT   Ultimate budget per program for each of the two runs of ULR vs UPL
 #                                  (run_ulr_vs_upl.sh --timeout, run_full_evaluation.sh --upl-timeout)
-#   UPL_PASTTEL_TIMEOUT_DEFAULT    PaSTTeL budget per lasso inside UPL, past which Ultimate falls back to
-#                                  LassoRanker; substituted for @PASTTEL_TIMEOUT@ in
+#   UPL_PASTTEL_TIMEOUT_DEFAULT    PaSTTeL budget per lasso inside UPL, past which the lasso gets no
+#                                  ranking function; substituted for @PASTTEL_TIMEOUT@ in
 #                                  tools/settings/BuchiAutomizerPasttel.epf.in. 20 s, the preference's own
-#                                  default in the fork: UPL runs PaSTTeL on 7 cores, and in P-ULR-Par7
-#                                  every trace PaSTTeL solved on the paper's benchmark (4,749) was solved
-#                                  within 20 s. (run_ulr_vs_upl.sh --pasttel-timeout,
-#                                  run_full_evaluation.sh --upl-pasttel-timeout)
+#                                  default in the fork: in P-ULR-Par7 every trace PaSTTeL solved on the
+#                                  paper's benchmark (4,749) was solved within 20 s. (run_ulr_vs_upl.sh
+#                                  --pasttel-timeout, run_full_evaluation.sh --upl-pasttel-timeout)
+#   UPL_PASTTEL_CPUS_DEFAULT       cores PaSTTeL races its techniques on inside UPL; substituted for
+#                                  @PASTTEL_CPUS@. 5: UPL asks PaSTTeL for ranking functions only
+#                                  (-a terminate), and its termination portfolio has five techniques
+#                                  (affine, nested, multiphase, lexicographic, piecewise), one core each.
+#                                  Independent of P-ULR-Par7, which keeps 7. (run_ulr_vs_upl.sh
+#                                  --pasttel-cpus, run_full_evaluation.sh --upl-pasttel-cpus)
 PULR_ULTIMATE_TIMEOUT_DEFAULT=3000
 PULR_PASTTEL_TIMEOUT_DEFAULT=600
 UPL_ULTIMATE_TIMEOUT_DEFAULT=1000
 UPL_PASTTEL_TIMEOUT_DEFAULT=20
+UPL_PASTTEL_CPUS_DEFAULT=5
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -82,24 +87,23 @@ require_java() {
 }
 
 # ultimate_has_pasttel <dir>
-# True when the release's BuchiAutomizer plugin actually carries the PaSTTeL
-# backend. Without this check a release built from upstream silently ignores the
-# PASTTEL setting and falls back to LassoRanker, which would make a UPL-vs-ULR
-# comparison measure ULR against itself.
+# True when the release actually carries the PaSTTeL backend, i.e. when its LassoRanker library holds
+# PasttelExecutor. Without this check a release built from upstream silently ignores the PASTTEL
+# setting and falls back to LassoRanker, which would make a UPL-vs-ULR comparison measure ULR
+# against itself.
 ultimate_has_pasttel() {
     local dir="$1" jar hits
     # -print -quit rather than a pipe to head: callers run under 'set -o pipefail',
     # where head closing the pipe early makes find die of SIGPIPE and the whole
     # pipeline report failure even though it found the jar.
     jar=$(find "${dir}/plugins" -maxdepth 1 \
-          -name 'de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer_*.jar' \
+          -name 'de.uni_freiburg.informatik.ultimate.lib.lassoranker_*.jar' \
           -print -quit 2>/dev/null)
     [ -n "${jar}" ] || return 1
-    # -Z1 lists entry names only. Plain 'unzip -l' also echoes the archive's own
-    # path, which matches 'pasttel' for any release stored under this repository.
-    # Counting rather than 'grep -q' for the same pipefail reason: -q exits on the
-    # first match, SIGPIPEs unzip, and intermittently turns a hit into a miss.
-    hits=$(unzip -Z1 "${jar}" 2>/dev/null | grep -ci 'pasttel' || true)
+    # -Z1 lists entry names only. Counting rather than 'grep -q' for the same pipefail
+    # reason: -q exits on the first match, SIGPIPEs unzip, and intermittently turns a
+    # hit into a miss.
+    hits=$(unzip -Z1 "${jar}" 2>/dev/null | grep -c 'lassoranker/pasttel/PasttelExecutor\.class$' || true)
     [ "${hits}" -gt 0 ]
 }
 

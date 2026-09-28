@@ -30,7 +30,7 @@ DRY_RUN=false
 # In tools/, the solvers go in as their release archives only, not as the copies extracted next to them.
 INCLUDE=(README LICENSE Dockerfile .dockerignore docker-compose.yml package.sh
          pasttel scripts benchmarks logs
-         tools/UAutomizer-linux tools/UAutomizer-linux-shuffler tools/UAutomizer-PaSTTeL-linux
+         tools/UAutomizer-linux tools/UAutomizer-PaSTTeL-linux
          tools/settings tools/toolchains tools/solvers/*.zip)
 [ -f paper.pdf ] && INCLUDE+=(paper.pdf)
 # Build products and local leftovers inside the included paths.

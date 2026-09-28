@@ -2,8 +2,8 @@
 """Parse paired Ultimate logs (ULR vs UPL) into a CSV, and plot the comparison.
 
 Each program is analysed twice by a full Ultimate run -- once with the stock
-LassoRanker rank-synthesis backend (ULR), once with the PaSTTeL backend, which
-falls back to LassoRanker per lasso whenever PaSTTeL does not conclude (UPL).
+LassoRanker rank-synthesis backend (ULR), once with the PaSTTeL backend for
+ranking functions, without any LassoRanker fallback (UPL).
 scripts/run_ulr_vs_upl.sh produces, per program and per configuration:
 
     <name>.<cfg>.log       Ultimate stdout+stderr
@@ -57,7 +57,10 @@ _TOOLCHAIN_RE = re.compile(r"BuchiAutomizer took " + _NUM + r"\s*ms")
 # non-termination stops after the technique -- so stop at a comma, not at
 # whitespace, or the technique keeps the separator.
 _PASTTEL_SUCCESS_RE = re.compile(r"PaSTTeL (?:termination|non-termination) check: SUCCESS via ([^,\n]+)")
-_PASTTEL_FALLBACK_RE = re.compile(r"falling back to LassoRanker")
+# A PaSTTeL call that produced no argument (UNKNOWN, timeout, crash, unmapped certificate). Since UPL has no
+# LassoRanker fallback, LassoCheck logs "no ranking function"; logs of older builds say "falling back to
+# LassoRanker" for the same event.
+_PASTTEL_NO_RESULT_RE = re.compile(r"PaSTTeL .*(?:no ranking function|falling back to LassoRanker)")
 _PASTTEL_INVOKE_FAIL_RE = re.compile(r"PaSTTeL invocation failed")
 _PASTTEL_UNMAPPED_RE = re.compile(r"PaSTTeL reported \S+ but its certificate could not be mapped back")
 
@@ -65,7 +68,7 @@ COLUMNS = [
     "Program", "Ext", "Timeout (s)",
     "ULR Verdict", "ULR Wall (ms)", "ULR Plugin (ms)", "ULR Lassos (ms)", "ULR Iters",
     "UPL Verdict", "UPL Wall (ms)", "UPL Plugin (ms)", "UPL Lassos (ms)", "UPL Iters",
-    "UPL PaSTTeL Calls", "UPL PaSTTeL Success", "UPL Fallbacks", "UPL Unmapped",
+    "UPL PaSTTeL Calls", "UPL PaSTTeL Success", "UPL No Result", "UPL Unmapped",
     "UPL Techniques",
     "Agreement", "Speedup (wall)", "Speedup (plugin)",
 ]
@@ -84,7 +87,7 @@ def parse_log(path, timeout_s):
     out = {
         "verdict": "UNKNOWN", "plugin_ms": None, "lassos_ms": None,
         "toolchain_ms": None, "iterations": None,
-        "pasttel_success": 0, "pasttel_fallback": 0,
+        "pasttel_success": 0, "pasttel_no_result": 0,
         "pasttel_invoke_fail": 0, "pasttel_unmapped": 0, "techniques": [],
     }
     try:
@@ -118,7 +121,7 @@ def parse_log(path, timeout_s):
     out["techniques"] = _PASTTEL_SUCCESS_RE.findall(text)
     out["pasttel_success"] = len(out["techniques"])
     out["pasttel_invoke_fail"] = len(_PASTTEL_INVOKE_FAIL_RE.findall(text))
-    out["pasttel_fallback"] = len(_PASTTEL_FALLBACK_RE.findall(text))
+    out["pasttel_no_result"] = len(_PASTTEL_NO_RESULT_RE.findall(text))
     out["pasttel_unmapped"] = len(_PASTTEL_UNMAPPED_RE.findall(text))
     return out
 
@@ -201,9 +204,9 @@ def build_rows(log_dir, timeout_s):
             "UPL Plugin (ms)": fmt(p["plugin_ms"]),
             "UPL Lassos (ms)": fmt(p["lassos_ms"]),
             "UPL Iters": p["iterations"] if p["iterations"] is not None else "-",
-            "UPL PaSTTeL Calls": p["pasttel_success"] + p["pasttel_fallback"],
+            "UPL PaSTTeL Calls": p["pasttel_success"] + p["pasttel_no_result"],
             "UPL PaSTTeL Success": p["pasttel_success"],
-            "UPL Fallbacks": p["pasttel_fallback"],
+            "UPL No Result": p["pasttel_no_result"],
             "UPL Unmapped": p["pasttel_unmapped"],
             "UPL Techniques": "|".join(sorted(set(p["techniques"]))) or "-",
             "Agreement": agreement(u["verdict"], p["verdict"]),
@@ -346,9 +349,9 @@ def render_summary(rows):
     out += [text, ""]
     calls = sum(_as_int(r["UPL PaSTTeL Calls"]) for r in rows)
     ok = sum(_as_int(r["UPL PaSTTeL Success"]) for r in rows)
-    fb = sum(_as_int(r["UPL Fallbacks"]) for r in rows)
+    nores = sum(_as_int(r["UPL No Result"]) for r in rows)
     unm = sum(_as_int(r["UPL Unmapped"]) for r in rows)
-    out.append(f"PaSTTeL inside UPL: {calls} call(s), {ok} conclusive, {fb} fell back to LassoRanker, "
+    out.append(f"PaSTTeL inside UPL: {calls} call(s), {ok} conclusive, {nores} without result, "
                f"{unm} certificate(s) not mapped back.")
     # A contradiction is a soundness signal: name the programs rather than only counting them.
     if cats and cats["contra"]:

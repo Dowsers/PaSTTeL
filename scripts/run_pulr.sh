@@ -1,19 +1,19 @@
 #!/bin/bash
-# run_pulr.sh -- ULR-Baseline vs P-ULR on the lasso traces of one Ultimate release.
+# run_pulr.sh -- ULR-Baseline vs P-ULR on the lasso traces of an Ultimate release.
 #
 # The comparison is per *lasso trace*: Ultimate extracts the traces, PaSTTeL replays each one.
-#   1-2. scripts/run_ultimate_only.sh: the given Ultimate release analyses every program with its
+#   1-2. scripts/run_ultimate_only.sh: the Ultimate release analyses every program with its
 #      default settings (no .epf) and dumps one lasso_trace_<N>.txt per CEGAR iteration, with
 #      LassoRanker's own timings (ULR-Baseline); the traces are then classified by variable category.
 #   3. PaSTTeL (Z3) replays every trace of the supported categories twice: sequentially (P-ULR-Seq,
 #      1 cpu) and in parallel (P-ULR-Par<N>, N cpus).
 #   4. One CSV, one scatter plot and one summary table per PaSTTeL configuration.
 #
-# The release decides the baseline: tools/UAutomizer-linux runs LassoRanker's strategies in a fixed
-# order, tools/UAutomizer-linux-shuffler in a random one (the ULR-Baseline then varies between runs).
+# The ULR-Baseline comes from the release's own dumps: tools/UAutomizer-linux by default, the one
+# the paper uses.
 #
 # Usage:
-#   bash scripts/run_pulr.sh --ultimate-home <release dir>
+#   bash scripts/run_pulr.sh [--ultimate-home <release dir>] (default: tools/UAutomizer-linux)
 #                            [--input <dir|file>]...      (repeatable; default: benchmarks/smoke_test/full_programs_c_bpl)
 #                            [--output <dir>]             (default: output/pulr_<release name>)
 #                            [--ultimate-timeout <sec>]   (default: 3000, per Ultimate run, as in the paper)
@@ -21,7 +21,7 @@
 #                            [--par-cpus <int>]           (default: 7, cores of the P-ULR-Par run)
 #                            [--toolchain-dir <dir>]      (default: tools/toolchains)
 #
-# Environment overrides: APP_DIR, PASTTEL_BIN, TOOLCHAIN_DIR.
+# Environment overrides: APP_DIR, PASTTEL_BIN, TOOLCHAIN_DIR, ULTIMATE_ULR.
 
 set -euo pipefail
 
@@ -29,7 +29,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
-RELEASE=""
+RELEASE="${ULTIMATE_ULR}"
 declare -a INPUTS=()
 OUTPUT_DIR=""
 ULTIMATE_TIMEOUT="${PULR_ULTIMATE_TIMEOUT_DEFAULT}"
@@ -55,7 +55,6 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-[ -n "${RELEASE}" ] || { usage; die "--ultimate-home is required"; }
 [ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/smoke_test/full_programs_c_bpl")
 require_inputs "${INPUTS[@]}"
 RELEASE="$(realpath "${RELEASE}")"

@@ -1008,8 +1008,8 @@ def ulr_baseline_ms(ultimate, result_code):
     """Sequential ULR time up to and including the winning strategy, or None.
 
     Ultimate stops at the first conclusive strategy and only logs what ran, so the
-    sum of all logged times is the cumulative time whatever the order (fixed or
-    shuffled): strategies after the winner contribute 0.
+    sum of all logged times is the cumulative time whatever the order in which
+    the strategies ran: strategies after the winner contribute 0.
     """
     if result_code not in ("TERMINATING", "NONTERMINATING"):
         return None
@@ -1087,8 +1087,8 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
     (timeout * 2) is used on the Y axis.
     Rows with INFEASIBLE / UNCHECKED / Ultimate-UNKNOWN are skipped.
     """
-    # baseline_name names the Ultimate release the traces came from (fixed or shuffled strategy
-    # order): several baselines are plotted side by side, and the axis must say which one this is.
+    # baseline_name names the Ultimate release the traces came from: plots of several releases may
+    # be compared side by side, and the axis must say which one this is.
     baseline = f"ULR-Baseline ({baseline_name})" if baseline_name else "ULR-Baseline"
     x_axis_label = f"{baseline} (ms)"
     # Derive Y-axis label from the CSV header (P-ULR-Seq or P-ULR-Par*)
@@ -1522,7 +1522,7 @@ def main():
     )
     parser.add_argument(
         "--baseline-name", default=None, metavar="NAME",
-        help="Ultimate release the traces were extracted with (e.g. UAutomizer-linux-shuffler); "
+        help="Ultimate release the traces were extracted with (e.g. UAutomizer-linux); "
              "shown on the X axis and in the title of the scatter plot"
     )
     parser.add_argument(

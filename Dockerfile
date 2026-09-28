@@ -17,9 +17,9 @@ ENV CVC5_VERSION=1.3.4
 ENV PASTTEL=${PASTTEL_HOME}/solvers
 ENV CVC5_DIR=${PASTTEL_HOME}/solvers
 
-# The three Ultimate releases live in /app/tools/, where scripts/common.sh finds them together with
+# The two Ultimate releases live in /app/tools/, where scripts/common.sh finds them together with
 # tools/settings/ and tools/toolchains/. No TOOLCHAIN_DIR here: it would override common.sh's default.
-# ULTIMATE_HOME names the fixed-order release for scripts that still take a single release.
+# ULTIMATE_HOME names the release of ULR vs P-ULR for scripts that still take a single release.
 ENV ULTIMATE_HOME=/app/tools/UAutomizer-linux
 ENV PATH=${PASTTEL_HOME}/bin:${PASTTEL}/bin:${ULTIMATE_HOME}:${PATH}
 ENV LD_LIBRARY_PATH=${PASTTEL}/lib
@@ -67,12 +67,10 @@ RUN unzip -q /tmp/cvc5.zip -d /tmp/cvc5 \
     && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/bin/cvc5               ${PASTTEL}/bin/ \
     && rm -rf /tmp/cvc5.zip /tmp/cvc5
 
-# Ultimate releases (prebuilt from the ultimate/ submodule; none ships a z3, see above):
-#   UAutomizer-linux           LassoRanker, fixed strategy order      -> ULR vs P-ULR
-#   UAutomizer-linux-shuffler  LassoRanker, random strategy order     -> ULR vs P-ULR (randomised)
-#   UAutomizer-PaSTTeL-linux   LassoRanker or PaSTTeL rank backend    -> ULR vs UPL
+# Prebuilt Ultimate releases (none ships a z3, see above):
+#   UAutomizer-linux           LassoRanker, dumps the lasso traces    -> ULR vs P-ULR
+#   UAutomizer-PaSTTeL-linux   LassoRanker or PaSTTeL rank backend    -> ULR vs UPL (from ultimate/)
 COPY tools/UAutomizer-linux/          /app/tools/UAutomizer-linux/
-COPY tools/UAutomizer-linux-shuffler/ /app/tools/UAutomizer-linux-shuffler/
 COPY tools/UAutomizer-PaSTTeL-linux/  /app/tools/UAutomizer-PaSTTeL-linux/
 COPY tools/settings/                  /app/tools/settings/
 COPY tools/toolchains/                /app/tools/toolchains/

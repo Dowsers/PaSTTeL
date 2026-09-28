@@ -1,23 +1,22 @@
 #!/bin/bash
-# run_smoke_test.sh -- Smoke test of the PaSTTeL artifact: the paper's three comparisons, on the
+# run_smoke_test.sh -- Smoke test of the PaSTTeL artifact: the paper's two comparisons, on the
 # 10 programs of benchmarks/smoke_test/full_programs_c_bpl, with short timeouts (~5 minutes).
 #
-#   [1] ULR (tools/UAutomizer-linux, fixed strategy order)        vs P-ULR-Seq and P-ULR-Par<N>
-#   [2] ULR (tools/UAutomizer-linux-shuffler, random order)       vs P-ULR-Seq and P-ULR-Par<N>
-#   [3] ULR (tools/UAutomizer-PaSTTeL-linux, LassoRanker backend) vs UPL (same release, PaSTTeL backend)
+#   [1] ULR (tools/UAutomizer-linux)                            vs P-ULR-Seq and P-ULR-Par<N>
+#   [2] ULR (tools/UAutomizer-PaSTTeL-linux, LassoRanker backend) vs UPL (same release, PaSTTeL backend)
 #
-# [1] and [2] compare per lasso trace, [3] per program. All of them run Ultimate with its default
-# settings, except UPL in [3]: its settings file only switches the rank-synthesis backend to PaSTTeL
+# [1] compares per lasso trace, [2] per program. Both run Ultimate with its default settings,
+# except UPL in [2]: its settings file only switches the rank-synthesis backend to PaSTTeL
 # (tools/settings/BuchiAutomizerPasttel.epf.in). Only Z3 is used.
 # This is scripts/run_full_evaluation.sh with smoke-test defaults.
 #
 # Usage:
 #   bash scripts/run_smoke_test.sh [--ultimate-timeout <sec>]  (default: 120, per Ultimate run)
-#                                  [--pasttel-timeout <sec>]   (default: 120, per PaSTTeL run in [1],[2])
+#                                  [--pasttel-timeout <sec>]   (default: 120, per PaSTTeL run in [1])
 #                                  [--par-cpus <int>]          (default: 7)
 #                                  [--output <dir>]            (default: output/smoke)
 #
-# Exits non-zero if any of the three comparisons produced no result, so that a Docker build running
+# Exits non-zero if either comparison produced no result, so that a Docker build running
 # this script fails instead of shipping an image that silently does nothing.
 
 set -euo pipefail

@@ -2,11 +2,11 @@ benchmarks/subset -- the 100 programs of scripts/run_full_evaluation.sh --subset
 =================================================================================
 
 A random subset of the benchmark, on which scripts/run_full_evaluation.sh --subset replicates the
-paper's three comparisons in under 8 hours (README, "Full Evaluation"). The files are unchanged
+paper's two comparisons in under 8 hours (README, "Full Evaluation"). The files are unchanged
 copies of programs of benchmarks/C and benchmarks/BPL.
 
 How they were drawn: uniformly at random, with a fixed seed, from the 2,860 programs of the
-paper's fixed-order run (logs/FINAL_VMCAI27_NOSHUFFLE_LASSOS.zip, one *.ultimate.log per program):
+paper's ULR vs P-ULR run (logs/FINAL_VMCAI27_NOSHUFFLE_LASSOS.zip, one *.ultimate.log per program):
 55 of its 1,559 C programs and 45 of its 1,301 Boogie programs, the proportions of the paper. In
 Python 3:
 
@@ -14,7 +14,7 @@ Python 3:
     c   = rng.sample(sorted(c_programs), 55)
     bpl = rng.sample(sorted(bpl_programs), 45)
 
-The columns give the paper's result for each program, from that same fixed-order run
+The columns give the paper's result for each program, from that same run
 (tools/UAutomizer-linux, timeout 3,000 s): the verdict Ultimate reached, the time it took (from
 the timestamps of its log) and the number of lasso traces it dumped. ERROR means that Ultimate
 stopped on an exception, TIMEOUT that it was killed at 3,000 s; both leave the traces dumped until

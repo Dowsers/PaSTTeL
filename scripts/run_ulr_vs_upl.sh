@@ -4,8 +4,8 @@
 # Unlike run_full_evaluation.sh, which compares per *lasso trace* (Ultimate
 # extracts traces, PaSTTeL replays them), this script compares per *program*:
 # every input is analysed twice by a full Ultimate run, once with the stock
-# LassoRanker rank-synthesis backend and once with the PaSTTeL backend, which
-# falls back to LassoRanker whenever PaSTTeL does not conclude.
+# LassoRanker rank-synthesis backend and once with the PaSTTeL backend for
+# ranking functions, with no LassoRanker fallback.
 #
 # By default both runs use the SAME Ultimate release, so the two configurations
 # differ only in the rank-synthesis backend -- not in build date, bundled solvers
@@ -14,7 +14,7 @@
 # tools/settings/BuchiAutomizerPasttel.epf.in, whose only lines select the
 # PaSTTeL backend and configure it (binary, timeout, cores).
 # Pass --ulr-home to run the baseline from a different release instead; that is a
-# deliberately different experiment (comparing builds, e.g. the shuffled one),
+# deliberately different experiment (comparing builds, e.g. tools/UAutomizer-linux),
 # and the script says so when it happens.
 #
 # Usage:
@@ -22,7 +22,7 @@
 #                                  [--output <dir>]         (default: output/ulr_vs_upl)
 #                                  [--timeout <sec>]        (default: 1000, per Ultimate run, as in the paper)
 #                                  [--pasttel-timeout <sec>](default: 20, per lasso inside UPL; see common.sh)
-#                                  [--pasttel-cpus <int>]   (default: 7)
+#                                  [--pasttel-cpus <int>]   (default: 5, cores for PaSTTeL inside UPL; see common.sh)
 #                                  [--repeat <int>]         (default: 1, median over N runs)
 #                                  [--dump-pasttel-io]      (off by default: dumping biases the timings)
 #                                  [--skip-ulr | --skip-upl]
@@ -47,7 +47,7 @@ OUTPUT_DIR="${APP_DIR}/output/ulr_vs_upl"
 TIMEOUT="${UPL_ULTIMATE_TIMEOUT_DEFAULT}"
 # Empty: keep the timeout written in the settings template.
 PASTTEL_TIMEOUT="${UPL_PASTTEL_TIMEOUT_DEFAULT}"
-PASTTEL_CPUS=7
+PASTTEL_CPUS="${UPL_PASTTEL_CPUS_DEFAULT}"
 REPEAT=1
 DUMP_IO=false
 SKIP_ULR=false
@@ -103,7 +103,8 @@ if ! "${SKIP_UPL}"; then
     # quietly ignores it, producing a UPL column identical to ULR. Refuse to run
     # rather than emit a comparison that looks plausible and means nothing.
     ultimate_has_pasttel "${ULTIMATE_UPL}" \
-        || die "${ULTIMATE_UPL} has no PaSTTeL backend in its BuchiAutomizer plugin.
+        || die "${ULTIMATE_UPL} has no PaSTTeL backend: its LassoRanker library
+       (plugins/de.uni_freiburg.informatik.ultimate.lib.lassoranker_*.jar) holds no PasttelExecutor.
        It looks like a stock upstream release. Rebuild it from the ultimate/ submodule."
 fi
 
