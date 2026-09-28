@@ -1,4 +1,9 @@
-#PaSTTeL-enabled BuchiAutomizer settings, derived from BuchiAutomizer.epf.
+#PaSTTeL backend for BuchiAutomizer: the only settings UPL adds to Ultimate's defaults.
+#
+# ULR runs Ultimate with no settings file at all, like the extraction of the lasso traces for
+# ULR vs P-ULR; UPL runs it with this one. It holds the lines that select PaSTTeL instead of
+# LassoRanker as the rank-synthesis backend and configure it, and nothing else, so that ULR and
+# UPL differ in the backend only.
 #
 # TEMPLATE -- do not pass this file to Ultimate directly. The placeholders below
 # are substituted by scripts/run_ulr_vs_upl.sh, which writes the resulting .epf
@@ -11,41 +16,14 @@
 #                      UPL_PASTTEL_TIMEOUT_DEFAULT in scripts/common.sh, the one place it is defined
 #                      (with its rationale); run_ulr_vs_upl.sh --pasttel-timeout overrides it
 #   @PASTTEL_CPUS@     cores PaSTTeL may use to race its templates
-#   @DUMP_ENABLED@     true|false -- dumping writes one JSON per lasso and is off
-#                      during timing runs, since the I/O lands inside the very
-#                      interval the UPL-vs-ULR comparison measures
-#   @DUMP_DIR@         directory for those dumps (ignored when dumping is off)
+#
+# run_ulr_vs_upl.sh --dump-pasttel-io appends the two lines that make Ultimate keep PaSTTeL's JSON
+# input and output per lasso. They are off by default: the I/O lands inside the very interval the
+# ULR vs UPL comparison measures.
 file_export_version=3.0
 @de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=0.0.1
 \!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Use\ external\ solver\ (rank\ synthesis)=true
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Use\ external\ solver\ (GNTA\ synthesis)=true
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/GNTA\ analysis=NONLINEAR
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Rank\ analysis=NONLINEAR
-
 /instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Rank\ synthesis\ backend=PASTTEL
 /instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ binary\ path=@PASTTEL_BIN@
 /instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ timeout\ (seconds)=@PASTTEL_TIMEOUT@
 /instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ number\ of\ CPUs=@PASTTEL_CPUS@
-
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Dump\ SMT\ script\ to\ file=@DUMP_ENABLED@
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/To\ the\ following\ directory=@DUMP_DIR@
-
-#Fri Apr 10 13:03:27 CEST 2015
-\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding=
-file_export_version=3.0
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Rating-Boundary\ (empty\ for\ LBE)=0
-@de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding=0.0.1
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Minimize\ Call\ and\ Return\ Edges=true
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.blockencoding/Strategy\ for\ the\ edge\ rating=DISJUNCTIVE_RATING
-
-#Fri Apr 10 13:03:27 CEST 2015
-\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder=
-file_export_version=3.0
-/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder/Size\ of\ a\ code\ block=SequenceOfStatements
-@de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder=0.0.1
-
-#Sat Mar 15 16:00:32 CET 2014
-file_export_version=3.0
-@UltimateCore=0.0.1
-/instance/UltimateCore/Generate\ benchmark\ results=false
