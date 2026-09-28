@@ -171,14 +171,17 @@ echo ""
 # Ultimate must run from its own directory: it resolves z3/cvc4/mathsat relatively.
 run_config() {
     local label="$1" home="$2" settings="$3" prog="$4" log="$5"
-    local tc start end
+    local tc start end status=0
     local -a settings_args=()
     [ -z "${settings}" ] || settings_args=(-s "${settings}")
     tc="$(toolchain_for "${prog}")"
     start=$(now_ms)
     ( cd "${home}" && timeout "${TIMEOUT}" ./Ultimate \
-        -tc "${tc}" "${settings_args[@]}" -i "${prog}" ) > "${log}" 2>&1 || true
+        -tc "${tc}" "${settings_args[@]}" -i "${prog}" ) > "${log}" 2>&1 || status=$?
     end=$(now_ms)
+    # Sidecar <name>.<cfg>.exit: timeout(1) exits with 124 when it had to stop Ultimate, which is how
+    # the parser tells a run that hit the time limit (TIMEOUT) from one that ended early (CRASHED).
+    echo "${status}" > "${log%.log}.exit"
     echo "$((end - start))"
 }
 
@@ -251,10 +254,16 @@ for prog in "${PROGRAMS[@]}"; do
         # must describe the very run whose wall clock is reported beside them.
         median_idx=$(for i in "${!times[@]}"; do printf '%s %s\n' "${times[$i]}" "$i"; done \
                      | sort -n | awk -v n="${#times[@]}" 'NR == int((n + 1) / 2) { print $2 }')
-        [ "${logs[$median_idx]}" = "${canonical}" ] || cp -f "${logs[$median_idx]}" "${canonical}"
+        if [ "${logs[$median_idx]}" != "${canonical}" ]; then
+            cp -f "${logs[$median_idx]}" "${canonical}"
+            cp -f "${logs[$median_idx]%.log}.exit" "${canonical%.log}.exit"
+        fi
         # Sidecar: wall clock stays the script's own measurement, never log-derived.
         echo "${times[$median_idx]}" > "${LOG_DIR}/${name}.${cfg}.wall_ms"
-        printf '        %-4s wall %8s ms\n' "${cfg^^}" "${times[$median_idx]}"
+        # The verdict as the CSV will have it: proved terminating, proved nonterminating, UNKNOWN,
+        # TIMEOUT or CRASHED.
+        verdict=$(python3 "${PARSER}" --verdict "${canonical}" --timeout "${TIMEOUT}" 2>/dev/null || echo "?")
+        printf '        %-4s wall %8s ms  %s\n' "${cfg^^}" "${times[$median_idx]}" "${verdict}"
     done
 done
 

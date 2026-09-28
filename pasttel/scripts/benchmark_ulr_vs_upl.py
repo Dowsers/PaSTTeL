@@ -39,7 +39,15 @@ _VERDICT_PATTERNS = (
     ("NONTERMINATING", re.compile(r"TerminationAnalysisResult:\s*Nontermination possible")),
     ("UNKNOWN", re.compile(r"TerminationAnalysisResult:\s*Unable to decide termination")),
 )
-_ERROR_RE = re.compile(r"ExceptionOrErrorResult")
+# No verdict: the run hit the time limit (TIMEOUT) or ended early without one (CRASHED). Only the
+# first is decided by timeout(1)'s exit status, which run_ulr_vs_upl.sh keeps in <name>.<cfg>.exit;
+# the exception Ultimate logs cannot tell them apart, since a run stopped at the time limit may raise
+# one while it shuts down. Logs recorded before that sidecar existed fall back on Ultimate's own
+# TimeoutResult, then on a wall clock (<name>.<cfg>.wall_ms) that reached the limit.
+TIMEOUT = "TIMEOUT"
+CRASHED = "CRASHED"
+TIMEOUT_EXIT_STATUS = "124"
+_TIMEOUT_RESULT_RE = re.compile(r"TimeoutResult")
 
 # --- Timings ----------------------------------------------------------------
 # Ultimate prints decimal separators according to the JVM locale, so a French
@@ -75,11 +83,39 @@ COLUMNS = [
 
 SOLVED = ("TERMINATING", "NONTERMINATING")
 MISSING = "NO LOG"
+# How run_ulr_vs_upl.sh reports each verdict next to a run's wall clock (--verdict).
+VERDICT_LABELS = {
+    "TERMINATING": "proved terminating", "NONTERMINATING": "proved nonterminating",
+    "UNKNOWN": "UNKNOWN", TIMEOUT: TIMEOUT, CRASHED: CRASHED, MISSING: MISSING,
+}
 
 
 def _num(text):
     """Parse a number written with either decimal separator."""
     return float(text.replace(",", "."))
+
+
+def _sidecar(log_path, ext):
+    """Content of the file run_ulr_vs_upl.sh writes next to <name>.<cfg>.log, or None."""
+    base = log_path[:-len(".log")] if log_path.endswith(".log") else log_path
+    try:
+        with open(base + ext) as fh:
+            return fh.read().strip()
+    except OSError:
+        return None
+
+
+def _hit_time_limit(log_path, text, timeout_s):
+    """True when the time limit stopped the run, rather than the run ending on its own."""
+    status = _sidecar(log_path, ".exit")
+    if status is not None:
+        return status == TIMEOUT_EXIT_STATUS
+    if _TIMEOUT_RESULT_RE.search(text):
+        return True
+    try:
+        return float(_sidecar(log_path, ".wall_ms")) >= timeout_s * 1000.0
+    except (TypeError, ValueError):
+        return False
 
 
 def parse_log(path, timeout_s):
@@ -103,9 +139,7 @@ def parse_log(path, timeout_s):
             break
     else:
         # No TerminationAnalysisResult at all: the run did not reach a verdict.
-        # Distinguish a crashed run from one the timeout killed: only the
-        # latter is a legitimate data point for a timeout-bounded comparison.
-        out["verdict"] = "ERROR" if _ERROR_RE.search(text) else "TIMEOUT"
+        out["verdict"] = TIMEOUT if _hit_time_limit(path, text, timeout_s) else CRASHED
 
     m = _PLUGIN_RE.search(text) or _PLUGIN_ASCII_RE.search(text)
     if m:
@@ -174,7 +208,7 @@ def agreement(ulr_verdict, upl_verdict):
         return "UPL ONLY"
     if u_ok:
         return "ULR ONLY"
-    # Neither solved: a TIMEOUT against an ERROR is two failures, not a conflict.
+    # Neither solved: a TIMEOUT against a CRASHED run is two failures, not a conflict.
     return f"BOTH {ulr_verdict}" if ulr_verdict == upl_verdict else "NEITHER"
 
 
@@ -245,7 +279,7 @@ COLUMN_FOR = {
 
 # One classification feeds the text summary, the HTML table and the scatter plot alike, so that the
 # three can never tell different stories. Only a TERMINATING or NONTERMINATING verdict counts as
-# solved: a TIMEOUT, UNKNOWN or ERROR run solved nothing, however fast it ended, and is placed at the
+# solved: a TIMEOUT, UNKNOWN or CRASHED run solved nothing, however fast it ended, and is placed at the
 # PAR-2 penalty (twice the Ultimate timeout) instead of its own time.
 #   key, label, colour, marker, plotted
 CATEGORIES = (
@@ -270,19 +304,19 @@ def categorize(rows, col_key, default_timeout_s):
     """Sort programs into CATEGORIES for one timing column.
 
     Returns ({key: [point]}, excluded) where a point is (program, x_ms, y_ms, row), x for ULR and y
-    for UPL, and excluded counts the programs left out: both runs ended in ERROR (they say nothing
+    for UPL, and excluded counts the programs left out: both runs CRASHED (they say nothing
     about either backend), or one side was never run (--skip-ulr / --skip-upl).
     """
     cx, cy, _ = COLUMN_FOR[col_key]
     cats = {key: [] for key, *_ in CATEGORIES}
-    excluded = {"both ERROR": 0, "one side not run": 0}
+    excluded = {"both CRASHED": 0, "one side not run": 0}
     for r in rows:
         u, p = r["ULR Verdict"], r["UPL Verdict"]
         if MISSING in (u, p):
             excluded["one side not run"] += 1
             continue
-        if u == "ERROR" and p == "ERROR":
-            excluded["both ERROR"] += 1
+        if u == CRASHED and p == CRASHED:
+            excluded["both CRASHED"] += 1
             continue
         par2 = 2 * 1000.0 * (parse_float(r.get("Timeout (s)")) or default_timeout_s)
         u_ok, p_ok = u in SOLVED, p in SOLVED
@@ -471,8 +505,8 @@ def plot(csv_path, col_key, output_html, log_scale, timeout_s,
 <p style="font-size:0.85em; color:#555;">
   Each point is one program, analysed twice by the same Ultimate release, once per rank-synthesis
   backend. Only TERMINATING and NONTERMINATING count as solved: a side that timed out, answered
-  UNKNOWN or stopped with an ERROR is placed at the PAR-2 penalty, twice the timeout ({par2_s:g} s).
-  Programs where both runs stopped with an ERROR are not shown.
+  UNKNOWN or crashed is placed at the PAR-2 penalty, twice the timeout ({par2_s:g} s).
+  Programs where both runs crashed are not shown.
 </p>
 {summary_html}
 <div id="plot"></div>
@@ -496,6 +530,8 @@ def main():
     ap.add_argument("--summary-file", default=None,
                     help="Also write the summary tables to this file")
     ap.add_argument("--plot", metavar="CSV", help="Plot an existing CSV instead of parsing logs")
+    ap.add_argument("--verdict", metavar="LOG",
+                    help="Print the verdict of one Ultimate log, as run_ulr_vs_upl.sh reports it")
     ap.add_argument("--col", choices=sorted(COLUMN_FOR), default="wall", help="Timing column to plot")
     ap.add_argument("--log-scale", action="store_true", help="Logarithmic axes")
     ap.add_argument("--ulr-label", default=DEFAULT_ULR_LABEL,
@@ -503,6 +539,10 @@ def main():
     ap.add_argument("--upl-label", default=DEFAULT_UPL_LABEL,
                     help="Name of the PaSTTeL configuration, used on the y axis")
     args = ap.parse_args()
+
+    if args.verdict:
+        print(VERDICT_LABELS[parse_log(args.verdict, args.timeout)["verdict"]])
+        return
 
     if args.plot:
         if not os.path.isfile(args.plot):

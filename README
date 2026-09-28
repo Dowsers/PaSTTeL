@@ -42,6 +42,7 @@ PaSTTeL/
 │   ├── C/                       — 1,559 .c programs
 │   ├── BPL/                     — 1,871 .bpl programs
 │   ├── subset/                  — 100 programs drawn at random, for run_full_evaluation.sh --subset
+│   ├── difficult_instances/     — the 200 hardest programs for ULR and P-ULR-Par7 (see its README)
 │   │                              (see its README)
 │   └── smoke_test/              — 10 representative programs for smoke test
 │       ├── full_programs_c_bpl/ — source programs (.c/.bpl) for Ultimate Buchi Automizer
@@ -57,7 +58,7 @@ PaSTTeL/
 │   ├── ulr_vs_upl/              — [2] ULR vs UPL:
 │   │     results_ULR_vs_UPL.csv, summary_tables.log, results_ULR_vs_UPL_{wall,plugin,lassos}.html
 │   │     BuchiAutomizerPasttel.epf — the UPL settings of the run
-│   │     logs/                  — <prog>.ulr.log, <prog>.upl.log (Ultimate) and .wall_ms (wall clock)
+│   │     logs/                  — <prog>.ulr.log, <prog>.upl.log (Ultimate), .wall_ms (wall clock), .exit (exit status)
 │   └── smoke_test_output.log    — Expected output of the smoke test script
 ├── tools/
 │   ├── UAutomizer-linux/            — Ultimate release of ULR vs P-ULR: LassoRanker, dumps the lasso traces
@@ -389,6 +390,20 @@ bash scripts/run_ulr_vs_upl.sh --input /path/to/benchmark --output output/my_run
 bash scripts/run_ulr_vs_upl.sh --input benchmarks/smoke_test/full_programs_c_bpl/Fibonacci.bpl
 ```
 
+For each program, the script prints the wall clock and the verdict of both runs:
+
+```
+[1/4] LeeJonesBen-Amram-POPL2001-Ex5.c
+        ULR  wall    34457 ms  UNKNOWN
+        UPL  wall   114891 ms  UNKNOWN
+```
+
+The verdict is `proved terminating`, `proved nonterminating`, `UNKNOWN` (Ultimate gave up),
+`TIMEOUT` (the run was stopped at `--timeout`) or `CRASHED` (the run ended before the time limit
+without a verdict, typically on an exception). TIMEOUT and CRASHED are told apart by the exit status
+of the run, which the script keeps next to its log: an exception alone does not tell them apart,
+since a run stopped at the time limit may raise one while Ultimate shuts down.
+
 Options (`--help` lists them all):
 
 | Option | Default | Meaning |
@@ -431,6 +446,7 @@ In the `--output` directory:
 | `results_ULR_vs_UPL_plugin.html` | idem, BuchiAutomizer plugin time only |
 | `results_ULR_vs_UPL_lassos.html` | idem, lasso analysis time only |
 | `logs/<prog>.{ulr,upl}.log` | raw Ultimate output for both configurations |
+| `logs/<prog>.{ulr,upl}.wall_ms`, `.exit` | wall clock measured by the script, and the run's exit status (124: stopped at the time limit) |
 | `BuchiAutomizerPasttel.epf` | the settings actually used, for traceability |
 
 Three timings are recorded side by side because they answer different questions: **wall clock**
@@ -446,15 +462,15 @@ and the cumulated time of each side:
 |----------|---------|
 | Terminating / Non-terminating (common) | both runs proved the same verdict |
 | Contradiction | both runs concluded, with opposite verdicts |
-| Solved by ULR only / by UPL only | one run concluded, the other timed out, answered UNKNOWN or stopped with an ERROR |
+| Solved by ULR only / by UPL only | one run concluded, the other timed out, answered UNKNOWN or crashed |
 | Solved by neither | no run concluded; counted in the table, not plotted |
 
 Only `TERMINATING` and `NONTERMINATING` count as solved: a run that timed out, gave up or crashed
 answered nothing, however quickly it ended. Such a side is placed at the PAR-2 penalty, twice the
 Ultimate timeout, both in the table and on the plot. `PAR-2 total` sums, on that basis, the programs
 solved by at least one of the two runs: those neither solved would add the same penalty to both
-sides and only blur the difference between the backends. Programs where both runs stopped with an ERROR say nothing about either backend and are
-left out; `summary_tables.log` gives their number.
+sides and only blur the difference between the backends. Programs where both runs crashed say
+nothing about either backend and are left out; `summary_tables.log` gives their number.
 
 ### Reading the PaSTTeL columns
 
@@ -467,7 +483,7 @@ value there is worth investigating.
 
 A **contradiction** -- both configurations concluding on the same program, with opposite verdicts --
 is a soundness signal rather than a performance one, and is listed explicitly at the end of
-`summary_tables.log` rather than averaged away. One side failing (TIMEOUT, UNKNOWN, ERROR) while the
+`summary_tables.log` rather than averaged away. One side failing (TIMEOUT, UNKNOWN, CRASHED) while the
 other concludes, or both failing differently, is not a contradiction.
 
 ### Regenerating tables and figures without re-running Ultimate
@@ -766,7 +782,7 @@ The results CSV contains the following columns:
 |--------|-------------|
 | `Program`, `Ext` | Program file name and extension (`c` or `bpl`) |
 | `Timeout (s)` | Budget given to each Ultimate run |
-| `ULR Verdict`, `UPL Verdict` | `TERMINATING`, `NONTERMINATING`, `UNKNOWN`, `TIMEOUT`, `ERROR`, or `NO LOG` when that side was skipped |
+| `ULR Verdict`, `UPL Verdict` | `TERMINATING`, `NONTERMINATING`, `UNKNOWN`, `TIMEOUT` (stopped at the time limit), `CRASHED` (ended earlier without a verdict), or `NO LOG` when that side was skipped |
 | `ULR/UPL Wall (ms)` | Wall clock measured around the Ultimate process by the script |
 | `ULR/UPL Plugin (ms)` | Time attributed to the BuchiAutomizer plugin, from Ultimate's own statistics |
 | `ULR/UPL Lassos (ms)` | Time spent analysing lassos, from the same statistics |
