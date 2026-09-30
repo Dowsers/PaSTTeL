@@ -1,0 +1,257 @@
+============================================================
+ PaSTTeL artifact -- smoke test
+============================================================
+ Programs (pulr)  : 10 (from /app/benchmarks/smoke_test/full_programs_c_bpl)
+ Programs (upl)   : 10 (from /app/benchmarks/smoke_test/full_programs_c_bpl)
+ Parts            : pulr,upl
+ Ultimate timeout : 120s per run (pulr), 120s per run (upl)
+ PaSTTeL timeout  : 600s per trace (pulr), 20s per lasso (upl)
+ P-ULR configs    : P-ULR-Seq (1 cpu), P-ULR-Par7 (7 cpus), Z3
+ Ultimate-PL      : PaSTTeL on 5 cpus
+ Worst case       : 1.0 h for Ultimate, if every run hit its timeout, plus PaSTTeL
+ Output           : /app/output/smoke
+============================================================
+
+################ ULR-Baseline (UAutomizer-linux) vs P-ULR ################
+============================================================
+ ULR-Baseline vs P-ULR -- per lasso trace
+============================================================
+ Steps            : ulr,seq,par
+ Programs         : 10 (from /app/benchmarks/smoke_test/full_programs_c_bpl)
+ Ultimate release : /app/tools/UAutomizer-linux  (default settings)
+ z3 (Ultimate)    : /app/pasttel/solvers/bin/z3 (4.16.0)
+ Ultimate timeout : 120s per program
+ Lasso traces     : /app/output/smoke/ulr_vs_pulr/lasso_traces
+ PaSTTeL          : /app/pasttel/bin/pasttel, Z3, 600s per trace
+ Configurations   : P-ULR-Seq (1 cpu) P-ULR-Par7 (7 cpus)
+ Categories       : ALL_INT_VARS BOOLEAN_OP REAL_VARS ARRAY_OP
+ Output           : /app/output/smoke/ulr_vs_pulr
+============================================================
+
+[ulr] UAutomizer-linux -- lasso trace extraction
+  [1/10] 2Nested-1.c
+        lasso_trace_1.txt          ULR-Baseline: TERMINATING
+  [2/10] ATVA2013-nonIntegral-real.bpl
+        lasso_trace_1.txt          ULR-Baseline: NONTERMINATING
+  [3/10] AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+        lasso_trace_1.txt          ULR-Baseline: UNCHECKED
+        lasso_trace_2.txt          ULR-Baseline: TERMINATING
+        lasso_trace_3.txt          ULR-Baseline: TERMINATING
+        lasso_trace_4.txt          ULR-Baseline: TERMINATING
+        lasso_trace_5.txt          ULR-Baseline: TERMINATING
+        lasso_trace_6.txt          ULR-Baseline: TERMINATING
+  [4/10] Fibonacci.bpl
+        lasso_trace_1.txt          ULR-Baseline: NONTERMINATING
+  [5/10] LTL_Coolant_Nonterminating01.bpl
+        lasso_trace_1.txt          ULR-Baseline: NONTERMINATING
+  [6/10] Lobnya-Boolean.bpl
+        lasso_trace_1.txt          ULR-Baseline: TERMINATING
+  [7/10] NonterminationDifficult05_ComplexEigenvalues.bpl
+        lasso_trace_1.txt          ULR-Baseline: NONTERMINATING
+  [8/10] java_DivMinus1.c
+        lasso_trace_1.txt          ULR-Baseline: TERMINATING
+  [9/10] loopWithBreak.bpl
+        lasso_trace_1.txt          ULR-Baseline: TERMINATING
+  [10/10] recursive.c
+        lasso_trace_1.txt          ULR-Baseline: NONTERMINATING
+
+  10/10 program(s) produced lasso traces.
+
+[ulr] Classification (split_specific.sh)
+Classifying 15 files...
+
+=== Classification terminee ===
+  UNKNOWN_LOOP         : 0 fichier(s)
+  BOOLEAN_OP           : 6 fichier(s)
+  ARRAY_OP             : 0 fichier(s)
+  REAL_VARS            : 2 fichier(s)
+  FUNCT_SIGNATURE      : 0 fichier(s)
+  UNDEF_TYPE           : 0 fichier(s)
+  SI_ARRAYS            : 0 fichier(s)
+  ALL_INT_VARS         : 7 fichier(s)
+  OTHERS               : 0 fichier(s)
+
+[seq/par] PaSTTeL (Z3) replays the traces of 11 program(s)
+
+  -- P-ULR-Seq (1 cpu) --
+  ALL_INT_VARS/lasso_traces_2Nested-1.c
+        lasso_trace_1.txt          P-ULR: TERMINATING      3.00 ms
+  ALL_INT_VARS/lasso_traces_AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+  ALL_INT_VARS/lasso_traces_Fibonacci.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   3.00 ms
+  ALL_INT_VARS/lasso_traces_LTL_Coolant_Nonterminating01.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   3.00 ms
+  ALL_INT_VARS/lasso_traces_java_DivMinus1.c
+        lasso_trace_1.txt          P-ULR: TERMINATING      10.00 ms
+  ALL_INT_VARS/lasso_traces_loopWithBreak.bpl
+        lasso_trace_1.txt          P-ULR: TERMINATING      7.00 ms
+  ALL_INT_VARS/lasso_traces_recursive.c
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+  BOOLEAN_OP/lasso_traces_AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+        lasso_trace_2.txt          P-ULR: TERMINATING      6.00 ms
+        lasso_trace_3.txt          P-ULR: TERMINATING      7.00 ms
+        lasso_trace_4.txt          P-ULR: TERMINATING      8.00 ms
+        lasso_trace_5.txt          P-ULR: TERMINATING      7.00 ms
+        lasso_trace_6.txt          P-ULR: TERMINATING      88.00 ms
+  BOOLEAN_OP/lasso_traces_Lobnya-Boolean.bpl
+        lasso_trace_1.txt          P-ULR: TERMINATING      7.00 ms
+  REAL_VARS/lasso_traces_ATVA2013-nonIntegral-real.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+  REAL_VARS/lasso_traces_NonterminationDifficult05_ComplexEigenvalues.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   3.00 ms
+
+  -- P-ULR-Par7 (7 cpus) --
+  ALL_INT_VARS/lasso_traces_2Nested-1.c
+        lasso_trace_1.txt          P-ULR: TERMINATING      5.00 ms
+  ALL_INT_VARS/lasso_traces_AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+  ALL_INT_VARS/lasso_traces_Fibonacci.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+  ALL_INT_VARS/lasso_traces_LTL_Coolant_Nonterminating01.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+  ALL_INT_VARS/lasso_traces_java_DivMinus1.c
+        lasso_trace_1.txt          P-ULR: TERMINATING      4.00 ms
+  ALL_INT_VARS/lasso_traces_loopWithBreak.bpl
+        lasso_trace_1.txt          P-ULR: TERMINATING      4.00 ms
+  ALL_INT_VARS/lasso_traces_recursive.c
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   1.00 ms
+  BOOLEAN_OP/lasso_traces_AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+        lasso_trace_2.txt          P-ULR: TERMINATING      3.00 ms
+        lasso_trace_3.txt          P-ULR: TERMINATING      4.00 ms
+        lasso_trace_4.txt          P-ULR: TERMINATING      4.00 ms
+        lasso_trace_5.txt          P-ULR: TERMINATING      4.00 ms
+        lasso_trace_6.txt          P-ULR: TERMINATING      9.00 ms
+  BOOLEAN_OP/lasso_traces_Lobnya-Boolean.bpl
+        lasso_trace_1.txt          P-ULR: TERMINATING      3.00 ms
+  REAL_VARS/lasso_traces_ATVA2013-nonIntegral-real.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+  REAL_VARS/lasso_traces_NonterminationDifficult05_ComplexEigenvalues.bpl
+        lasso_trace_1.txt          P-ULR: NONTERMINATING   2.00 ms
+
+Table and scatter plots
+
+ULR-Baseline vs P-ULR, ULR-Baseline from UAutomizer-linux
+15 lasso traces, 14 analysed (left out: 1 infeasible)
+----------------------------------------------------------------------
+Tool          #Terminating    Time (s)   #Non-Terminating    Time (s)
+----------------------------------------------------------------------
+VBS                      9        0.04                   5        0.00
+ULR-Baseline             9        0.95                   5        0.00*
+P-ULR-Seq                9        0.14                   5        0.01 
+P-ULR-Par7               9        0.04*                  5        0.01 
+----------------------------------------------------------------------
+Tools: the 14 traces every tool proved. VBS: the traces any tool proved, each at its best time. * best.
+Not proved: ULR-Baseline 0 | P-ULR-Seq 0 | P-ULR-Par7 0
+Contradictions: none
+Scatter plot: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Seq_z3_scatter.html
+Scatter plot: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Par7_z3_scatter.html
+CSV: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Seq_z3.csv
+CSV: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Par7_z3.csv
+
+################ Ultimate-LR vs Ultimate-PL (UAutomizer-PaSTTeL-linux, LassoRanker vs PaSTTeL backend) ################
+============================================================
+ Ultimate-LR vs Ultimate-PL -- per-program comparison
+============================================================
+ Programs        : 10 (from /app/benchmarks/smoke_test/full_programs_c_bpl)
+ Release         : /app/tools/UAutomizer-PaSTTeL-linux
+                   (both sides; only the rank-synthesis backend differs)
+ pasttel binary  : /app/pasttel/bin/pasttel
+ z3 (Ultimate)   : /app/pasttel/solvers/bin/z3 (4.16.0)
+ Ultimate timeout: 120s per run
+ Sides           : Ultimate-LR Ultimate-PL 
+ Settings        : Ultimate-LR none (Ultimate's defaults), Ultimate-PL /app/output/smoke/ulr_vs_upl/BuchiAutomizerPasttel.epf
+ PaSTTeL         : 20s per lasso, 5 cpus
+ Output          : /app/output/smoke/ulr_vs_upl
+============================================================
+
+[1/10] 2Nested-1.c
+        Ultimate-LR wall     4519 ms  proved terminating
+        Ultimate-PL wall     4450 ms  proved terminating
+[2/10] ATVA2013-nonIntegral-real.bpl
+        Ultimate-LR wall     2084 ms  proved nonterminating
+        Ultimate-PL wall     2189 ms  proved nonterminating
+[3/10] AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c
+        Ultimate-LR wall     7305 ms  proved terminating
+        Ultimate-PL wall     6795 ms  proved terminating
+[4/10] Fibonacci.bpl
+        Ultimate-LR wall     2473 ms  proved nonterminating
+        Ultimate-PL wall     2509 ms  proved nonterminating
+[5/10] LTL_Coolant_Nonterminating01.bpl
+        Ultimate-LR wall     2267 ms  proved nonterminating
+        Ultimate-PL wall     2321 ms  proved nonterminating
+[6/10] Lobnya-Boolean.bpl
+        Ultimate-LR wall     2334 ms  proved terminating
+        Ultimate-PL wall     2321 ms  proved terminating
+[7/10] NonterminationDifficult05_ComplexEigenvalues.bpl
+        Ultimate-LR wall     2583 ms  proved nonterminating
+        Ultimate-PL wall     2423 ms  proved nonterminating
+[8/10] java_DivMinus1.c
+        Ultimate-LR wall     4235 ms  proved terminating
+        Ultimate-PL wall     4273 ms  proved terminating
+[9/10] loopWithBreak.bpl
+        Ultimate-LR wall     2488 ms  proved terminating
+        Ultimate-PL wall     2515 ms  proved terminating
+[10/10] recursive.c
+        Ultimate-LR wall     4371 ms  proved nonterminating
+        Ultimate-PL wall     4168 ms  proved nonterminating
+
+Ultimate-LR vs Ultimate-PL on 10 C/BPL programs, Ultimate timeout 120 s per run, wall clock
+---------------------------------------------------------------------------------------------
+Tool          #Solved   #Terminating    Time (s)   #Non-Terminating    Time (s)    Total (s)
+---------------------------------------------------------------------------------------------
+VBS                10               5       20.29                   5       13.41         33.70
+Ultimate-LR        10*              5       20.88                   5       13.78         34.66 
+Ultimate-PL        10*              5       20.35*                  5       13.61*        33.96*
+---------------------------------------------------------------------------------------------
+Ultimate-LR, Ultimate-PL: #Solved by each run; times on the 10 programs both runs solved,
+  Total being the Cumulative Intersection Time. VBS: the programs either run solved, each at its
+  better time. * best.
+Not solved: Ultimate-LR 0 | Ultimate-PL 0
+Solved by one run only: Ultimate-LR 0, Ultimate-PL 0
+PaSTTeL inside Ultimate-PL: 9 calls, 9 conclusive, 0 without result (LassoRanker took over), 0 certificates not mapped back
+Contradictions: none
+Scatter plot: /app/output/smoke/ulr_vs_upl/results_ULR_vs_UPL_wall.html
+CSV: /app/output/smoke/ulr_vs_upl/results_ULR_vs_UPL.csv
+
+============================================================
+ Summary -- smoke test
+============================================================
+  OK      ULR-Baseline vs P-ULR-Seq                        15 row(s)  ulr_vs_pulr/results_P-ULR-Seq_z3.csv
+  OK      ULR-Baseline vs P-ULR-Par7                       15 row(s)  ulr_vs_pulr/results_P-ULR-Par7_z3.csv
+  OK      Ultimate-LR vs Ultimate-PL (per program)         10 row(s)  ulr_vs_upl/results_ULR_vs_UPL.csv
+
+ULR-Baseline vs P-ULR, ULR-Baseline from UAutomizer-linux
+15 lasso traces, 14 analysed (left out: 1 infeasible)
+----------------------------------------------------------------------
+Tool          #Terminating    Time (s)   #Non-Terminating    Time (s)
+----------------------------------------------------------------------
+VBS                      9        0.04                   5        0.00
+ULR-Baseline             9        0.95                   5        0.00*
+P-ULR-Seq                9        0.14                   5        0.01 
+P-ULR-Par7               9        0.04*                  5        0.01 
+----------------------------------------------------------------------
+Tools: the 14 traces every tool proved. VBS: the traces any tool proved, each at its best time. * best.
+Not proved: ULR-Baseline 0 | P-ULR-Seq 0 | P-ULR-Par7 0
+Contradictions: none
+Scatter plot: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Seq_z3_scatter.html
+Scatter plot: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Par7_z3_scatter.html
+CSV: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Seq_z3.csv
+CSV: /app/output/smoke/ulr_vs_pulr/results_P-ULR-Par7_z3.csv
+
+Ultimate-LR vs Ultimate-PL on 10 C/BPL programs, Ultimate timeout 120 s per run, wall clock
+---------------------------------------------------------------------------------------------
+Tool          #Solved   #Terminating    Time (s)   #Non-Terminating    Time (s)    Total (s)
+---------------------------------------------------------------------------------------------
+VBS                10               5       20.29                   5       13.41         33.70
+Ultimate-LR        10*              5       20.88                   5       13.78         34.66 
+Ultimate-PL        10*              5       20.35*                  5       13.61*        33.96*
+---------------------------------------------------------------------------------------------
+Ultimate-LR, Ultimate-PL: #Solved by each run; times on the 10 programs both runs solved,
+  Total being the Cumulative Intersection Time. VBS: the programs either run solved, each at its
+  better time. * best.
+Not solved: Ultimate-LR 0 | Ultimate-PL 0
+Solved by one run only: Ultimate-LR 0, Ultimate-PL 0
+PaSTTeL inside Ultimate-PL: 9 calls, 9 conclusive, 0 without result (LassoRanker took over), 0 certificates not mapped back
+Contradictions: none
+Scatter plot: /app/output/smoke/ulr_vs_upl/results_ULR_vs_UPL_wall.html
+CSV: /app/output/smoke/ulr_vs_upl/results_ULR_vs_UPL.csv
+============================================================

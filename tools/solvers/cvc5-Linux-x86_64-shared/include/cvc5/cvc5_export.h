@@ -22,7 +22,7 @@
 #endif
 
 #ifndef CVC5_DEPRECATED
-#  define CVC5_DEPRECATED __attribute__ ((__deprecated__))
+#  define CVC5_DEPRECATED 
 #endif
 
 #ifndef CVC5_DEPRECATED_EXPORT

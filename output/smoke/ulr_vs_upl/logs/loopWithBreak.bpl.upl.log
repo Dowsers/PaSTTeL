@@ -1,0 +1,243 @@
+This is Ultimate 0.3.2-dev-4a3209064b
+[2026-09-30 15:35:00,686 INFO  L188        SettingsManager]: Resetting all preferences to default values...
+[2026-09-30 15:35:00,733 INFO  L114        SettingsManager]: Loading settings from /home/anissa/Documents/Tools/PaSTTeL/output/smoke/ulr_vs_upl/BuchiAutomizerPasttel.epf
+[2026-09-30 15:35:00,776 INFO  L130        SettingsManager]: Preferences different from defaults after loading the file:
+[2026-09-30 15:35:00,777 INFO  L151        SettingsManager]: Preferences of BuchiAutomizer differ from their defaults:
+[2026-09-30 15:35:00,777 INFO  L153        SettingsManager]:  * PaSTTeL binary path=/home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel
+[2026-09-30 15:35:00,778 INFO  L153        SettingsManager]:  * Rank synthesis backend=PASTTEL
+[2026-09-30 15:35:00,778 INFO  L153        SettingsManager]:  * PaSTTeL number of CPUs=5
+[2026-09-30 15:35:00,939 INFO  L75    nceAwareModelManager]: Repository-Root is: /tmp
+[2026-09-30 15:35:00,948 INFO  L261   ainManager$Toolchain]: [Toolchain 1]: Applicable parser(s) successfully (re)initialized
+[2026-09-30 15:35:00,949 INFO  L217   ainManager$Toolchain]: [Toolchain 1]: Toolchain selected.
+[2026-09-30 15:35:00,950 INFO  L270        PluginConnector]: Initializing Boogie PL CUP Parser...
+[2026-09-30 15:35:00,950 INFO  L274        PluginConnector]: Boogie PL CUP Parser initialized
+[2026-09-30 15:35:00,951 INFO  L431   ainManager$Toolchain]: [Toolchain 1]: Parsing single file: /home/anissa/Documents/Tools/PaSTTeL/benchmarks/smoke_test/full_programs_c_bpl/loopWithBreak.bpl
+[2026-09-30 15:35:00,951 INFO  L110           BoogieParser]: Parsing: '/home/anissa/Documents/Tools/PaSTTeL/benchmarks/smoke_test/full_programs_c_bpl/loopWithBreak.bpl'
+[2026-09-30 15:35:00,960 INFO  L299   ainManager$Toolchain]: ####################### [Toolchain 1] #######################
+[2026-09-30 15:35:00,961 INFO  L133        ToolchainWalker]: Walking toolchain with 3 elements.
+[2026-09-30 15:35:00,962 INFO  L112        PluginConnector]: ------------------------Boogie Preprocessor----------------------------
+[2026-09-30 15:35:00,962 INFO  L270        PluginConnector]: Initializing Boogie Preprocessor...
+[2026-09-30 15:35:00,962 INFO  L274        PluginConnector]: Boogie Preprocessor initialized
+[2026-09-30 15:35:00,970 INFO  L184        PluginConnector]: Executing the observer EnsureBoogieModelObserver from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,971 INFO  L184        PluginConnector]: Executing the observer TypeChecker from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,985 INFO  L184        PluginConnector]: Executing the observer ConstExpander from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,985 INFO  L184        PluginConnector]: Executing the observer StructExpander from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,986 INFO  L184        PluginConnector]: Executing the observer ReplaceArrayAssignments from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,986 INFO  L184        PluginConnector]: Executing the observer FunctionInliner from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,986 INFO  L184        PluginConnector]: Executing the observer LTLStepAnnotator from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,987 INFO  L184        PluginConnector]: Executing the observer BoogieSymbolTableConstructor from plugin Boogie Preprocessor for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,989 INFO  L131        PluginConnector]: ------------------------ END Boogie Preprocessor----------------------------
+[2026-09-30 15:35:00,990 INFO  L112        PluginConnector]: ------------------------IcfgBuilder----------------------------
+[2026-09-30 15:35:00,990 INFO  L270        PluginConnector]: Initializing IcfgBuilder...
+[2026-09-30 15:35:00,990 INFO  L274        PluginConnector]: IcfgBuilder initialized
+[2026-09-30 15:35:00,991 INFO  L184        PluginConnector]: Executing the observer IcfgBuilderObserver from plugin IcfgBuilder for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/1) ...
+[2026-09-30 15:35:00,993 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:35:01,000 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:35:01,007 INFO  L229       MonitoredProcess]: Starting monitored process 1 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:35:01,010 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (1)] Waiting until timeout for monitored process
+[2026-09-30 15:35:01,024 INFO  L124     BoogieDeclarations]: Specification and implementation of procedure main given in one single declaration
+[2026-09-30 15:35:01,025 INFO  L130     BoogieDeclarations]: Found specification of procedure main
+[2026-09-30 15:35:01,025 INFO  L138     BoogieDeclarations]: Found implementation of procedure main
+[2026-09-30 15:35:01,058 INFO  L250             CfgBuilder]: Building ICFG
+[2026-09-30 15:35:01,059 INFO  L281             CfgBuilder]: Building CFG for each procedure with an implementation
+[2026-09-30 15:35:01,099 INFO  L?                        ?]: Removed 2 outVars from TransFormulas that were not future-live.
+[2026-09-30 15:35:01,099 INFO  L302             CfgBuilder]: Performing block encoding
+[2026-09-30 15:35:01,104 INFO  L104     LargeBlockEncoding]: Applying CFG Large Block Encoding to ICFG that has 1 procedures, 7 locations, 8 edges, 0 initial locations, 1 loop locations, and 1 error locations.
+[2026-09-30 15:35:01,110 INFO  L154     LargeBlockEncoding]: LargeBlockEncoding completed in 10 ms, with 1 straightline sequential compositions, 0 parallel compositions, 0 1:n/n:1 sequential compositions and 0 complex sequential compositions.
+[2026-09-30 15:35:01,111 INFO  L324             CfgBuilder]: Using library mode
+[2026-09-30 15:35:01,111 INFO  L332             CfgBuilder]: Removed 0 assume(true) statements.
+[2026-09-30 15:35:01,111 INFO  L334             CfgBuilder]: Constructed ICFG has 1 procedures, 6 locations, 7 edges, 1 initial locations, 1 loop locations, and 1 error locations.
+[2026-09-30 15:35:01,112 INFO  L201        PluginConnector]: Adding new model loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder CFG 30.09 03:35:01 BoogieIcfgContainer
+[2026-09-30 15:35:01,112 INFO  L131        PluginConnector]: ------------------------ END IcfgBuilder----------------------------
+[2026-09-30 15:35:01,112 INFO  L112        PluginConnector]: ------------------------BuchiAutomizer----------------------------
+[2026-09-30 15:35:01,113 INFO  L270        PluginConnector]: Initializing BuchiAutomizer...
+[2026-09-30 15:35:01,116 INFO  L274        PluginConnector]: BuchiAutomizer initialized
+[2026-09-30 15:35:01,116 INFO  L99          BuchiAutomizer]: Safety of program was proven or not checked, starting termination analysis
+[2026-09-30 15:35:01,117 INFO  L184        PluginConnector]: Executing the observer BuchiAutomizerObserver from plugin BuchiAutomizer for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:35:00" (1/2) ...
+[2026-09-30 15:35:01,118 INFO  L204        PluginConnector]: Invalid model from BuchiAutomizer for observer de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer.BuchiAutomizerObserver@263a9b63 and model type loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer AST 30.09 03:35:01, skipping insertion in model container
+[2026-09-30 15:35:01,118 INFO  L99          BuchiAutomizer]: Safety of program was proven or not checked, starting termination analysis
+[2026-09-30 15:35:01,118 INFO  L184        PluginConnector]: Executing the observer BuchiAutomizerObserver from plugin BuchiAutomizer for "loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder CFG 30.09 03:35:01" (2/2) ...
+[2026-09-30 15:35:01,119 INFO  L363   chiAutomizerObserver]: Analyzing ICFG loopWithBreak.bpl
+[2026-09-30 15:35:01,155 INFO  L333   stractBuchiCegarLoop]: Interprodecural is true
+[2026-09-30 15:35:01,155 INFO  L334   stractBuchiCegarLoop]: Hoare is None
+[2026-09-30 15:35:01,156 INFO  L335   stractBuchiCegarLoop]: Compute interpolants for ForwardPredicates
+[2026-09-30 15:35:01,156 INFO  L336   stractBuchiCegarLoop]: Backedges is STRAIGHT_LINE
+[2026-09-30 15:35:01,156 INFO  L337   stractBuchiCegarLoop]: Determinization is PREDICATE_ABSTRACTION
+[2026-09-30 15:35:01,156 INFO  L338   stractBuchiCegarLoop]: Difference is false
+[2026-09-30 15:35:01,156 INFO  L339   stractBuchiCegarLoop]: Minimize is MINIMIZE_SEVPA
+[2026-09-30 15:35:01,156 INFO  L343   stractBuchiCegarLoop]: ======== Iteration 0 == of CEGAR loop == BuchiAutomatonCegarLoop ========
+[2026-09-30 15:35:01,159 INFO  L73            BuchiIsEmpty]: Start buchiIsEmpty. Operand  has 6 states, 4 states have (on average 1.75) internal successors, (7), 5 states have internal predecessors, (7), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0)
+[2026-09-30 15:35:01,170 INFO  L131   ngComponentsAnalysis]: Automaton has 1 accepting balls. 2
+[2026-09-30 15:35:01,170 INFO  L88            BuchiIsEmpty]: Finished buchiIsEmpty Result is false
+[2026-09-30 15:35:01,170 INFO  L120           BuchiIsEmpty]: Starting construction of run
+[2026-09-30 15:35:01,173 INFO  L148   hiAutomatonCegarLoop]: Counterexample stem histogram [1]
+[2026-09-30 15:35:01,173 INFO  L149   hiAutomatonCegarLoop]: Counterexample loop histogram [1, 1]
+[2026-09-30 15:35:01,173 INFO  L363   stractBuchiCegarLoop]: ======== Iteration 1 ============
+[2026-09-30 15:35:01,174 INFO  L73            BuchiIsEmpty]: Start buchiIsEmpty. Operand  has 6 states, 4 states have (on average 1.75) internal successors, (7), 5 states have internal predecessors, (7), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0)
+[2026-09-30 15:35:01,174 INFO  L131   ngComponentsAnalysis]: Automaton has 1 accepting balls. 2
+[2026-09-30 15:35:01,174 INFO  L88            BuchiIsEmpty]: Finished buchiIsEmpty Result is false
+[2026-09-30 15:35:01,174 INFO  L120           BuchiIsEmpty]: Starting construction of run
+[2026-09-30 15:35:01,174 INFO  L148   hiAutomatonCegarLoop]: Counterexample stem histogram [1]
+[2026-09-30 15:35:01,175 INFO  L149   hiAutomatonCegarLoop]: Counterexample loop histogram [1, 1]
+[2026-09-30 15:35:01,181 INFO  L1146  eck$LassoCheckResult]: Stem: "x := 0;" 
+[2026-09-30 15:35:01,182 INFO  L1148  eck$LassoCheckResult]: Loop: "assume x < 100;" "assume !(x == 10);x := x + 1;" 
+[2026-09-30 15:35:01,185 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:35:01,185 INFO  L86        PathProgramCache]: Analyzing trace with hash 39, now seen corresponding path program 1 times
+[2026-09-30 15:35:01,188 INFO  L118   FreeRefinementEngine]: Executing refinement strategy FIXED_PREFERENCES
+[2026-09-30 15:35:01,189 INFO  L324   FreeRefinementEngine]: Using trace check IpTcStrategyModulePreferences [1272077849]
+[2026-09-30 15:35:01,189 INFO  L97    rtionOrderModulation]: Keeping assertion order NOT_INCREMENTALLY
+[2026-09-30 15:35:01,189 INFO  L127          SolverBuilder]: Constructing new instance of SMTInterpol with explicit timeout -1 ms and remaining time -1 ms
+[2026-09-30 15:35:01,222 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 1 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,227 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 1 of 1 statements.
+[2026-09-30 15:35:01,227 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,227 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,228 INFO  L348             TraceCheck]: Trace is feasible, we will do another trace check, this time with branch encoders.
+[2026-09-30 15:35:01,229 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 1 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,230 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 1 of 1 statements.
+[2026-09-30 15:35:01,230 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,230 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,237 INFO  L130   FreeRefinementEngine]: Strategy FIXED_PREFERENCES found a feasible trace
+[2026-09-30 15:35:01,239 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:35:01,239 INFO  L86        PathProgramCache]: Analyzing trace with hash 1152, now seen corresponding path program 1 times
+[2026-09-30 15:35:01,240 INFO  L118   FreeRefinementEngine]: Executing refinement strategy FIXED_PREFERENCES
+[2026-09-30 15:35:01,240 INFO  L324   FreeRefinementEngine]: Using trace check IpTcStrategyModulePreferences [1242707451]
+[2026-09-30 15:35:01,240 INFO  L97    rtionOrderModulation]: Keeping assertion order NOT_INCREMENTALLY
+[2026-09-30 15:35:01,240 INFO  L127          SolverBuilder]: Constructing new instance of SMTInterpol with explicit timeout -1 ms and remaining time -1 ms
+[2026-09-30 15:35:01,243 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 2 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,246 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 2 of 2 statements.
+[2026-09-30 15:35:01,247 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,247 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,247 INFO  L348             TraceCheck]: Trace is feasible, we will do another trace check, this time with branch encoders.
+[2026-09-30 15:35:01,248 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 2 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,249 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 2 of 2 statements.
+[2026-09-30 15:35:01,249 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,249 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,249 INFO  L130   FreeRefinementEngine]: Strategy FIXED_PREFERENCES found a feasible trace
+[2026-09-30 15:35:01,250 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:35:01,250 INFO  L86        PathProgramCache]: Analyzing trace with hash 37670, now seen corresponding path program 1 times
+[2026-09-30 15:35:01,251 INFO  L118   FreeRefinementEngine]: Executing refinement strategy FIXED_PREFERENCES
+[2026-09-30 15:35:01,251 INFO  L324   FreeRefinementEngine]: Using trace check IpTcStrategyModulePreferences [160378834]
+[2026-09-30 15:35:01,251 INFO  L97    rtionOrderModulation]: Keeping assertion order NOT_INCREMENTALLY
+[2026-09-30 15:35:01,251 INFO  L127          SolverBuilder]: Constructing new instance of SMTInterpol with explicit timeout -1 ms and remaining time -1 ms
+[2026-09-30 15:35:01,253 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 3 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,257 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 3 of 3 statements.
+[2026-09-30 15:35:01,257 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,257 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,257 INFO  L348             TraceCheck]: Trace is feasible, we will do another trace check, this time with branch encoders.
+[2026-09-30 15:35:01,258 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 3 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,259 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 3 of 3 statements.
+[2026-09-30 15:35:01,260 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,260 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:35:01,260 INFO  L130   FreeRefinementEngine]: Strategy FIXED_PREFERENCES found a feasible trace
+[2026-09-30 15:35:01,303 INFO  L214          LassoAnalysis]: Preferences:
+[2026-09-30 15:35:01,303 INFO  L125   ssoRankerPreferences]: Compute integeral hull: false
+[2026-09-30 15:35:01,303 INFO  L126   ssoRankerPreferences]: Enable LassoPartitioneer: false
+[2026-09-30 15:35:01,304 INFO  L127   ssoRankerPreferences]: Term annotations enabled: false
+[2026-09-30 15:35:01,304 INFO  L128   ssoRankerPreferences]: Use exernal solver: true
+[2026-09-30 15:35:01,304 INFO  L129   ssoRankerPreferences]: SMT solver command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:35:01,304 INFO  L130   ssoRankerPreferences]: Dump SMT script to file: false
+[2026-09-30 15:35:01,304 INFO  L131   ssoRankerPreferences]: Path of dumped script: 
+[2026-09-30 15:35:01,304 INFO  L132   ssoRankerPreferences]: Filename of dumped script: loopWithBreak.bpl_Iteration1_Loop
+[2026-09-30 15:35:01,304 INFO  L133   ssoRankerPreferences]: MapElimAlgo: Matthias
+[2026-09-30 15:35:01,304 INFO  L251          LassoAnalysis]: Starting lasso preprocessing...
+[2026-09-30 15:35:01,360 INFO  L270          LassoAnalysis]: Preprocessing complete.
+[2026-09-30 15:35:01,361 INFO  L387          LassoAnalysis]: Checking for nontermination...
+[2026-09-30 15:35:01,362 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:35:01,363 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:35:01,365 INFO  L229       MonitoredProcess]: Starting monitored process 2 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:35:01,366 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (2)] Waiting until timeout for monitored process
+[2026-09-30 15:35:01,367 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 0 Nilpotent components: true
+[2026-09-30 15:35:01,367 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:35:01,383 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (2)] Ended with exit code 0
+[2026-09-30 15:35:01,383 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:35:01,384 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:35:01,386 INFO  L229       MonitoredProcess]: Starting monitored process 3 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:35:01,387 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (3)] Waiting until timeout for monitored process
+[2026-09-30 15:35:01,388 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 3 Nilpotent components: true
+[2026-09-30 15:35:01,388 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:35:01,405 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (3)] Ended with exit code 0
+[2026-09-30 15:35:01,406 INFO  L429          LassoAnalysis]: Proving nontermination failed: No geometric nontermination argument exists.
+[2026-09-30 15:35:01,406 INFO  L214          LassoAnalysis]: Preferences:
+[2026-09-30 15:35:01,406 INFO  L125   ssoRankerPreferences]: Compute integeral hull: false
+[2026-09-30 15:35:01,406 INFO  L126   ssoRankerPreferences]: Enable LassoPartitioneer: false
+[2026-09-30 15:35:01,406 INFO  L127   ssoRankerPreferences]: Term annotations enabled: false
+[2026-09-30 15:35:01,406 INFO  L128   ssoRankerPreferences]: Use exernal solver: true
+[2026-09-30 15:35:01,406 INFO  L129   ssoRankerPreferences]: SMT solver command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:35:01,406 INFO  L130   ssoRankerPreferences]: Dump SMT script to file: false
+[2026-09-30 15:35:01,406 INFO  L131   ssoRankerPreferences]: Path of dumped script: 
+[2026-09-30 15:35:01,406 INFO  L132   ssoRankerPreferences]: Filename of dumped script: loopWithBreak.bpl_Iteration1_Loop
+[2026-09-30 15:35:01,406 INFO  L133   ssoRankerPreferences]: MapElimAlgo: Matthias
+[2026-09-30 15:35:01,406 INFO  L251          LassoAnalysis]: Starting lasso preprocessing...
+[2026-09-30 15:35:01,457 INFO  L270          LassoAnalysis]: Preprocessing complete.
+[2026-09-30 15:35:01,469 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel
+[2026-09-30 15:35:01,471 INFO  L229       MonitoredProcess]: Starting monitored process 4 with /home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel -a terminate -o json -t 20 -c 5 -q -val /tmp/pasttel_lasso_11280304172276105874.json (exit command is null, workingDir is null)
+[2026-09-30 15:35:01,472 INFO  L290       MonitoredProcess]: [MP /home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel -a terminate -o json -t 20 -c 5 -q -val /tmp/pasttel_lasso_11280304172276105874.json (4)] Waiting 25000 ms for monitored process
+[2026-09-30 15:35:01,538 INFO  L546       MonitoredProcess]: [MP /home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel -a terminate -o json -t 20 -c 5 -q -val /tmp/pasttel_lasso_11280304172276105874.json (4)] Ended with exit code 0
+[2026-09-30 15:35:01,541 INFO  L612             LassoCheck]: PaSTTeL termination check: SUCCESS via RankingBased(AffineTemplate), ranking function f(main_x) = -1*main_x + 99
+[2026-09-30 15:35:01,543 INFO  L156   tatePredicateManager]: 0 out of 0 supporting invariants were superfluous and have been removed
+[2026-09-30 15:35:01,558 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:35:01,562 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 1 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,563 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 1 of 1 statements.
+[2026-09-30 15:35:01,563 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,563 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is unsat
+[2026-09-30 15:35:01,564 WARN  L254         TraceCheckSpWp]: Trace formula consists of 4 conjuncts, 2 conjuncts are in the unsatisfiable core
+[2026-09-30 15:35:01,565 INFO  L279         TraceCheckSpWp]: Computing forward predicates...
+[2026-09-30 15:35:01,569 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 2 statements into 1 equivalence classes.
+[2026-09-30 15:35:01,570 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 2 of 2 statements.
+[2026-09-30 15:35:01,570 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:35:01,570 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is unsat
+[2026-09-30 15:35:01,571 WARN  L254         TraceCheckSpWp]: Trace formula consists of 6 conjuncts, 4 conjuncts are in the unsatisfiable core
+[2026-09-30 15:35:01,571 INFO  L279         TraceCheckSpWp]: Computing forward predicates...
+[2026-09-30 15:35:01,589 INFO  L134       CoverageAnalysis]: Checked inductivity of 0 backedges. 0 proven. 0 refuted. 0 times theorem prover too weak. 0 trivial. 0 not checked.
+[2026-09-30 15:35:01,614 INFO  L141   lantAutomatonBouncer]: Defining deterministic Buchi interpolant automaton with honda bouncer for stem and without honda bouncer for loop.1 stem predicates 2 loop predicates 
+[2026-09-30 15:35:01,615 INFO  L69     BuchiDifferenceNCSB]: Start buchiDifferenceNCSB. First operand  has 6 states, 4 states have (on average 1.75) internal successors, (7), 5 states have internal predecessors, (7), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0) Second operand  has 3 states, 3 states have (on average 1.0) internal successors, (3), 2 states have internal predecessors, (3), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0)
+[2026-09-30 15:35:01,650 INFO  L73     BuchiDifferenceNCSB]: Finished buchiDifferenceNCSB. First operand  has 6 states, 4 states have (on average 1.75) internal successors, (7), 5 states have internal predecessors, (7), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0). Second operand  has 3 states, 3 states have (on average 1.0) internal successors, (3), 2 states have internal predecessors, (3), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0) Result 11 states and 16 transitions. Complement of second has 7 states.
+[2026-09-30 15:35:01,652 INFO  L140   InterpolantAutomaton]: Switched to read-only mode: Buchi interpolant automaton has 4 states 1 stem states 2 non-accepting loop states 1 accepting loop states 
+[2026-09-30 15:35:01,654 INFO  L82        GeneralOperation]: Start removeUnreachable. Operand  has 3 states, 3 states have (on average 1.0) internal successors, (3), 2 states have internal predecessors, (3), 0 states have call successors, (0), 0 states have call predecessors, (0), 0 states have return successors, (0), 0 states have call predecessors, (0), 0 states have call successors, (0)
+[2026-09-30 15:35:01,656 INFO  L88        GeneralOperation]: Finished removeUnreachable. Reduced from 4 states to 4 states and 5 transitions.
+[2026-09-30 15:35:01,659 INFO  L85            BuchiAccepts]: Start buchiAccepts Operand 4 states and 5 transitions. Stem has 1 letters. Loop has 2 letters.
+[2026-09-30 15:35:01,660 INFO  L117           BuchiAccepts]: Finished buchiAccepts.
+[2026-09-30 15:35:01,660 INFO  L85            BuchiAccepts]: Start buchiAccepts Operand 4 states and 5 transitions. Stem has 3 letters. Loop has 2 letters.
+[2026-09-30 15:35:01,660 INFO  L117           BuchiAccepts]: Finished buchiAccepts.
+[2026-09-30 15:35:01,660 INFO  L85            BuchiAccepts]: Start buchiAccepts Operand 4 states and 5 transitions. Stem has 1 letters. Loop has 4 letters.
+[2026-09-30 15:35:01,660 INFO  L117           BuchiAccepts]: Finished buchiAccepts.
+[2026-09-30 15:35:01,661 INFO  L82        GeneralOperation]: Start removeNonLiveStates. Operand 11 states and 16 transitions.
+[2026-09-30 15:35:01,662 INFO  L131   ngComponentsAnalysis]: Automaton has 0 accepting balls. 0
+[2026-09-30 15:35:01,663 INFO  L88        GeneralOperation]: Finished removeNonLiveStates. Reduced from 11 states to 0 states and 0 transitions.
+[2026-09-30 15:35:01,664 INFO  L87         BuchiClosureNwa]: Accepting states before buchiClosure: 0
+[2026-09-30 15:35:01,664 INFO  L106        BuchiClosureNwa]: Accepting states after buchiClosure: 0
+[2026-09-30 15:35:01,664 INFO  L74         IsDeterministic]: Start isDeterministic. Operand 0 states and 0 transitions.
+[2026-09-30 15:35:01,664 INFO  L81         IsDeterministic]: Finished isDeterministic. Operand is deterministic.
+[2026-09-30 15:35:01,664 INFO  L218   hiAutomatonCegarLoop]: Abstraction has 0 states and 0 transitions.
+[2026-09-30 15:35:01,664 INFO  L240   hiAutomatonCegarLoop]: Abstraction has 0 states and 0 transitions.
+[2026-09-30 15:35:01,664 INFO  L464   stractBuchiCegarLoop]: Abstraction has 0 states and 0 transitions.
+[2026-09-30 15:35:01,664 INFO  L363   stractBuchiCegarLoop]: ======== Iteration 2 ============
+[2026-09-30 15:35:01,664 INFO  L73            BuchiIsEmpty]: Start buchiIsEmpty. Operand 0 states and 0 transitions.
+[2026-09-30 15:35:01,665 INFO  L131   ngComponentsAnalysis]: Automaton has 0 accepting balls. 0
+[2026-09-30 15:35:01,665 INFO  L88            BuchiIsEmpty]: Finished buchiIsEmpty Result is true
+[2026-09-30 15:35:01,672 INFO  L201        PluginConnector]: Adding new model loopWithBreak.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer CFG 30.09 03:35:01 BoogieIcfgContainer
+[2026-09-30 15:35:01,672 INFO  L131        PluginConnector]: ------------------------ END BuchiAutomizer----------------------------
+[2026-09-30 15:35:01,673 INFO  L158              Benchmark]: Toolchain (without parser) took 711,88ms. Allocated memory is still 536,9MB. Free memory was 493,6MB in the beginning and 511,0MB in the end (delta: -17,4MB). There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:35:01,673 INFO  L158              Benchmark]: Boogie PL CUP Parser took 0,15ms. Allocated memory is still 536,9MB. Free memory is still 494,5MB. There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:35:01,674 INFO  L158              Benchmark]: Boogie Preprocessor took 27,54ms. Allocated memory is still 536,9MB. Free memory was 493,6MB in the beginning and 491,2MB in the end (delta: 2,4MB). There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:35:01,674 INFO  L158              Benchmark]: IcfgBuilder took 121,78ms. Allocated memory is still 536,9MB. Free memory was 491,2MB in the beginning and 482,3MB in the end (delta: 8,9MB). There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:35:01,674 INFO  L158              Benchmark]: BuchiAutomizer took 560,07ms. Allocated memory is still 536,9MB. Free memory was 482,1MB in the beginning and 511,0MB in the end (delta: -28,9MB). There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:35:01,675 INFO  L338   ainManager$Toolchain]: #######################  End [Toolchain 1] #######################
+ --- Results ---
+ * Results from de.uni_freiburg.informatik.ultimate.core:
+  - StatisticsResult: Toolchain Benchmarks
+    Benchmark results are:
+ * Boogie PL CUP Parser took 0,15ms. Allocated memory is still 536,9MB. Free memory is still 494,5MB. There was no memory consumed. Max. memory is 12,9GB.
+ * Boogie Preprocessor took 27,54ms. Allocated memory is still 536,9MB. Free memory was 493,6MB in the beginning and 491,2MB in the end (delta: 2,4MB). There was no memory consumed. Max. memory is 12,9GB.
+ * IcfgBuilder took 121,78ms. Allocated memory is still 536,9MB. Free memory was 491,2MB in the beginning and 482,3MB in the end (delta: 8,9MB). There was no memory consumed. Max. memory is 12,9GB.
+ * BuchiAutomizer took 560,07ms. Allocated memory is still 536,9MB. Free memory was 482,1MB in the beginning and 511,0MB in the end (delta: -28,9MB). There was no memory consumed. Max. memory is 12,9GB.
+ * Results from de.uni_freiburg.informatik.ultimate.plugins.generator.traceabstraction:
+  - StatisticsResult: Constructed decomposition of program
+    Your program was decomposed into 1 terminating modules (0 trivial, 1 deterministic, 0 nondeterministic). One deterministic module has affine ranking function -1 * x + 99 and consists of 4 locations. 
+  - StatisticsResult: Timing statistics
+    BüchiAutomizer plugin needed 0.5s and 2 iterations.  TraceHistogramMax:1. Analysis of lassos took 0.3s. Construction of modules took 0.0s. Büchi inclusion checks took 0.1s. Highest rank in rank-based complementation 3. Minimization of det autom 1. Minimization of nondet autom 0. Automata minimization No data available. Non-live state removal took 0.0s Buchi closure took 0.0s. Biggest automaton had -1 states and ocurred in iteration -1.	Nontrivial modules had stage [1, 0, 0, 0, 0].	InterpolantCoveringCapabilityFinite: 0/0	InterpolantCoveringCapabilityBuchi: 0/0	HoareTripleCheckerStatistics: 0 mSolverCounterUnknown, 3 SdHoareTripleChecker+Valid, 0,0s IncrementalHoareTripleChecker+Time, 0 mSdLazyCounter, 2 mSDsluCounter, 1 SdHoareTripleChecker+Invalid, 0,0s Time, 0 mProtectedAction, 0 SdHoareTripleChecker+Unchecked, 0 IncrementalHoareTripleChecker+Unchecked, 0 mSDsCounter, 2 IncrementalHoareTripleChecker+Valid, 0 mProtectedPredicate, 24 IncrementalHoareTripleChecker+Invalid, 26 SdHoareTripleChecker+Unknown, 0 mSolverCounterNotChecked, 2 mSolverCounterUnsat, 1 mSDtfsCounter, 24 mSolverCounterSat, 0,0s SdHoareTripleChecker+Time, 0 IncrementalHoareTripleChecker+Unknown	LassoAnalysisResults: nont0 unkn0 SFLI0 SFLT1 conc0 concLT0 SILN0 SILU0 SILI0 SILT0 lasso0 LassoPreprocessingBenchmarks:   Lassos: inital14 mio100 ax100 arr100 mio100 div100 bol100 ite100 ukn100 eq171 smp100 dnf150 smp91 tf106 neg100 sie111 LassoTerminationAnalysisBenchmarks: not availableLassoTerminationAnalysisBenchmarks: LassoNonterminationAnalysisSatFixpoint: 0	LassoNonterminationAnalysisSatUnbounded: 0	LassoNonterminationAnalysisUnsat: 1	LassoNonterminationAnalysisUnknown: 0	LassoNonterminationAnalysisTime: 0.0s	InitialAbstractionConstructionTime: 0.0s
+  - TerminationAnalysisResult: Termination proven
+    Buchi Automizer proved that your program is terminating
+RESULT: Ultimate proved your program to be correct!
+[2026-09-30 15:35:01,686 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (1)] Ended with exit code 0
+Received shutdown request...

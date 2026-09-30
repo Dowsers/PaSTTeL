@@ -2,7 +2,7 @@
 # package.sh -- Build the VMCAI 2027 artifact archive, ready for upload to Zenodo.
 #
 # Produces, in dist/:
-#   pasttel-artifact-vmcai27.tar.gz          the Docker image (docker save, gzip), also inside the archive
+#   pasttel-docker-image-vmcai27.tar.gz      the Docker image (docker save, gzip), also inside the archive
 #   pasttel-vmcai27-artifact.tar.gz          the artifact archive, with a single top-level directory
 #   *.sha256                                 their SHA256 checksums
 #
@@ -13,8 +13,13 @@
 #   ultimate-verifier/  UltimateVerifier, Ultimate 0.3.1 with the lasso-trace dump -> tools/UAutomizer-linux
 # UltimateVerifier lives outside this repository: ULTIMATE_VERIFIER_REPO (default ../UltimateVerifier).
 #
+# The README in the archive is the working tree's, with its two placeholders filled in: the SHA256
+# of the image, computed here, and the Zenodo DOI of this version, given as DOI (reserve it on Zenodo
+# before uploading). The working tree's README is left as it is.
+#
 # Usage:
-#   bash package.sh [--dry-run]    --dry-run: check and list what would be packaged, create nothing
+#   DOI=<version DOI> bash package.sh [--dry-run]    --dry-run: check and list what would be packaged,
+#                                                    create nothing
 #
 # Prerequisite: the image, built with `docker build -t pasttel-artifact:vmcai27 .`
 
@@ -23,7 +28,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 IMAGE="pasttel-artifact:vmcai27"
-IMAGE_TAR="pasttel-artifact-vmcai27.tar.gz"
+IMAGE_TAR="pasttel-docker-image-vmcai27.tar.gz"
 NAME="pasttel-vmcai27-artifact"
 DIST="dist"
 DRY_RUN=false
@@ -33,13 +38,21 @@ DRY_RUN=false
 # In tools/, the solvers go in as their release archives only, not as the copies extracted next to them.
 INCLUDE=(README LICENSE Dockerfile .dockerignore docker-compose.yml package.sh
          pasttel scripts benchmarks
-         logs/*.csv logs/*.html logs/*.zip logs/*.log logs/*.txt
+         logs/*.csv logs/*.html logs/*.zip logs/*.log
          tools/UAutomizer-linux tools/UAutomizer-PaSTTeL-linux
          tools/settings tools/toolchains tools/solvers/*.zip)
-[ -f paper.pdf ] && INCLUDE+=(paper.pdf)
+# The submitted paper, shipped as it is named in the working tree.
+PAPER="${PAPER:-VMCAI2027-PAPER.pdf}"
+[ -f "${PAPER}" ] && INCLUDE+=("${PAPER}")
 # Build products and local leftovers inside the included paths.
 EXCLUDE=(--exclude='pasttel/bin' --exclude='*.o' --exclude='*.d' --exclude='__pycache__'
-         --exclude='*.pyc' --exclude='*.smt2' --exclude='lasso_traces')
+         --exclude='*.pyc' --exclude='*.smt2' --exclude='lasso_traces'
+         # Eclipse caches Ultimate writes when it runs on the host (see .dockerignore)
+         --exclude='tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.core.runtime'
+         --exclude='tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.equinox.app'
+         --exclude='tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.osgi'
+         # PaSTTeL's own CI files and test reports; the artifact's Dockerfile is the top-level one
+         --exclude='pasttel/Dockerfile' --exclude='pasttel/Jenkinsfile' --exclude='pasttel/test-reports')
 
 warn() { echo "  Warning: $*"; }
 die() { echo "ERROR: $*" >&2; exit 1; }
@@ -51,7 +64,7 @@ echo "============================================================"
 
 # -- Checks ---------------------------------------------------------------------
 for p in "${INCLUDE[@]}"; do [ -e "${p}" ] || die "missing: ${p}"; done
-[ -f paper.pdf ] || warn "paper.pdf not found: add it before the final submission."
+[ -f "${PAPER}" ] || warn "${PAPER} not found: add it before the final submission (or set PAPER)."
 docker image inspect "${IMAGE}" >/dev/null 2>&1 \
     || die "Docker image ${IMAGE} not found; build it first: docker build -t ${IMAGE} ."
 # The commit a release was built from, as Ultimate itself records it (git.commit.id).
@@ -72,10 +85,15 @@ UV_COMMIT="$(release_commit tools/UAutomizer-linux)"
 [ -n "${UV_COMMIT}" ] || die "tools/UAutomizer-linux records no git commit"
 git -C "${UV_REPO}" cat-file -e "${UV_COMMIT}^{commit}" 2>/dev/null \
     || die "${UV_REPO} lacks commit ${UV_COMMIT:0:10}, the one tools/UAutomizer-linux was built from (set ULTIMATE_VERIFIER_REPO)"
-# Placeholders left in the README are easy to miss once the archive is on Zenodo.
-if grep -q "TO COMPLETE" README; then
-    warn "README still has placeholders:"
-    grep -n "TO COMPLETE" README | sed 's/^/             /' | cut -c1-110
+# The README's placeholders: the image's SHA256 is filled in below, the DOI comes from DOI. Any other
+# one left is easy to miss once the archive is on Zenodo.
+SHA_MARK="[TO COMPLETE: after packaging]"
+DOI_MARK="[TO COMPLETE: version DOI]"
+DOI="${DOI:-}"
+[ -n "${DOI}" ] || ! grep -q -F "${DOI_MARK}" README || warn "DOI not set: the archive's README will keep \"${DOI_MARK}\" (reserve the DOI on Zenodo, then DOI=... bash package.sh)"
+if grep -v -F -e "${SHA_MARK}" -e "${DOI_MARK}" README | grep -q "TO COMPLETE"; then
+    warn "README still has other placeholders:"
+    grep -n "TO COMPLETE" README | grep -v -F -e "${SHA_MARK}" -e "${DOI_MARK}" | sed 's/^/             /' | cut -c1-110
 fi
 
 echo ""
@@ -110,7 +128,14 @@ docker save "${IMAGE}" | "${GZIP_CMD[@]}" > "${DIST}/${IMAGE_TAR}"
 # -- 2. Archive -----------------------------------------------------------------
 echo "[2/3] ${NAME}.tar.gz"
 TAR="${STAGE}/${NAME}.tar"
-tar --create --file "${TAR}" "${EXCLUDE[@]}" --transform "s|^|${NAME}/|" "${INCLUDE[@]}"
+# The README with its placeholders filled in, instead of the working tree's.
+IMAGE_SHA="$(cut -d' ' -f1 "${DIST}/${IMAGE_TAR}.sha256")"
+sed -e "s|$(printf '%s' "${SHA_MARK}" | sed 's/[][]/\\&/g')|\`${IMAGE_SHA}\`|" \
+    -e "s|$(printf '%s' "${DOI_MARK}" | sed 's/[][]/\\&/g')|${DOI:-${DOI_MARK}}|" README > "${STAGE}/README"
+declare -a FILES=()
+for p in "${INCLUDE[@]}"; do [ "${p}" = README ] || FILES+=("${p}"); done
+tar --create --file "${TAR}" "${EXCLUDE[@]}" --transform "s|^|${NAME}/|" "${FILES[@]}"
+tar --append --file "${TAR}" --directory "${STAGE}" --transform "s|^|${NAME}/|" README
 tar --append --file "${TAR}" --directory "${DIST}" --transform "s|^|${NAME}/|" "${IMAGE_TAR}"
 git -C ultimate archive --format=tar --prefix="${NAME}/ultimate/" "${ULTIMATE_COMMIT}" > "${STAGE}/ultimate.tar"
 tar --concatenate --file "${TAR}" "${STAGE}/ultimate.tar"

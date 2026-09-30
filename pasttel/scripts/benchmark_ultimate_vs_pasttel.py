@@ -20,6 +20,7 @@ import collections
 import csv
 import glob
 import json
+import math
 import os
 import re
 import subprocess
@@ -1186,46 +1187,68 @@ def scatter_path(csv_path):
 
 def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-baseline",
                           baseline_name=None):
-    """Write the HTML scatter plot of one benchmark CSV: the paper's table for ULR-Baseline and this
-    CSV's P-ULR configuration, then one point per trace both proved (X: ULR-Baseline, Y: P-ULR),
-    green when terminating, blue when non-terminating, a black star on a contradiction. Hovering a
-    point gives each tool's verdict, the strategy that proved it, and its time."""
+    """Write the HTML scatter plot of one benchmark CSV, laid out as the paper's Figure 5: the paper's
+    table for ULR-Baseline and this CSV's P-ULR configuration, then two panels, the traces both proved
+    terminating (left, green) and non-terminating (right, blue), one + per trace (X: ULR-Baseline,
+    Y: P-ULR), with the diagonal; a contradiction is a black star in the panel of ULR-Baseline's
+    verdict. Hovering a point gives each tool's verdict, the strategy that proved it, and its time."""
     table, common, contra = pulr_table([csv_path], baseline_name)
     p_col, ulr, pulr, _ = _pulr_results(csv_path)
     strategy = _pulr_strategies(csv_path)
     baseline = f"ULR-Baseline ({baseline_name})" if baseline_name else "ULR-Baseline"
-    x_axis_label, y_axis_label = f"{baseline} (ms)", f"{p_col} (ms)"
     plot_title = f"{baseline} vs {p_col}"
 
-    series = [("Terminating", "green", "circle", common["TERMINATING"]),
-              ("Non-terminating", "blue", "circle", common["NONTERMINATING"]),
-              ("Contradiction", "black", "star", [t for t in contra if t in ulr and t in pulr])]
-    traces, vals = [], []
-    for label, colour, symbol, names in series:
-        if not names:
-            continue
-        xs, ys = [ulr[t][1] for t in names], [pulr[t][1] for t in names]
-        vals += [v for v in xs + ys if v > 0]
-        traces.append({
-            "x": xs, "y": ys, "mode": "markers", "type": "scatter", "hoverinfo": "text",
-            # Each tool's verdict with the strategy that proved it (template, Fixpoint or GNTA).
-            "text": [f"{t}<br>ULR-Baseline: {ulr[t][0]} ({strategy[t][0]}), {ulr[t][1]:.1f} ms"
-                     f"<br>{p_col}: {pulr[t][0]} ({strategy[t][1]}), {pulr[t][1]:.1f} ms"
-                     for t in names],
-            "name": f"{label} ({len(names)})",
-            "marker": {"color": colour, "symbol": symbol, "opacity": 0.7, "size": 12 if symbol == "star" else 8},
-        })
-    if not vals:
+    x_axis_label, y_axis_label = "ULR-Baseline (ms)", f"{p_col} (ms)"
+    # (panel title, verdict, colour); a contradiction goes to the panel of ULR-Baseline's verdict.
+    panels = [("Terminating", "TERMINATING", "green"), ("Non-terminating", "NONTERMINATING", "blue")]
+    contra_both = [t for t in contra if t in ulr and t in pulr]
+    hover = lambda t: (f"{t}<br>ULR-Baseline: {ulr[t][0]} ({strategy[t][0]}), {ulr[t][1]:.1f} ms"
+                       f"<br>{p_col}: {pulr[t][0]} ({strategy[t][1]}), {pulr[t][1]:.1f} ms")
+    traces, layout, n_plotted = [], {}, 0
+    axis = {"type": "log" if log_scale else "linear", "showgrid": True, "gridcolor": "#ddd",
+            "zeroline": False, "mirror": True, "showline": True, "linecolor": "black", "ticks": "outside"}
+    if log_scale:
+        # One tick per decade, labelled 10^k, as in the paper.
+        axis.update(dtick=1, exponentformat="power")
+    for i, (title, verdict, colour) in enumerate(panels, 1):
+        xa, ya = ("x", "y") if i == 1 else (f"x{i}", f"y{i}")
+        groups = [("both", colour, "cross-thin", common[verdict]),
+                  ("contradiction", "black", "star", [t for t in contra_both if ulr[t][0] == verdict])]
+        vals = []
+        for kind, col, symbol, names in groups:
+            if not names:
+                continue
+            xs, ys = [ulr[t][1] for t in names], [pulr[t][1] for t in names]
+            vals += [v for v in xs + ys if v > 0]
+            n_plotted += len(names)
+            traces.append({
+                "x": xs, "y": ys, "xaxis": xa, "yaxis": ya, "mode": "markers", "type": "scatter",
+                "hoverinfo": "text", "text": [hover(t) for t in names],
+                "name": f"{title} ({len(names)})" if kind == "both" else f"Contradiction ({len(names)})",
+                # Thin "+" like the paper's figure: a line-only marker, drawn by its outline.
+                "marker": {"color": col, "symbol": symbol, "size": 11 if symbol == "star" else 7,
+                           "line": {"width": 1.2, "color": col}},
+            })
+        # Each panel has its own range, the same on both axes, so that y = x is the diagonal.
+        lo, hi = (min(vals) * 0.7, max(vals) * 1.4) if vals else (1, 10)
+        traces.append({"x": [lo, hi], "y": [lo, hi], "xaxis": xa, "yaxis": ya, "mode": "lines",
+                       "type": "scatter", "showlegend": False, "hoverinfo": "skip",
+                       "line": {"color": "black", "width": 1.2, "dash": "dash"}})
+        rng = [math.log10(lo), math.log10(hi)] if log_scale else [0, hi]
+        domain = [0.0, 0.44] if i == 1 else [0.56, 1.0]
+        layout[f"xaxis{'' if i == 1 else i}"] = dict(axis, domain=domain, range=rng, title={"text": x_axis_label},
+                                                     anchor=ya, constrain="domain")
+        layout[f"yaxis{'' if i == 1 else i}"] = dict(axis, range=rng, title={"text": y_axis_label}, anchor=xa,
+                                                     scaleanchor=xa, scaleratio=1, constrain="domain")
+        layout.setdefault("annotations", []).append(
+            {"text": title, "xref": f"{xa} domain", "yref": f"{ya} domain", "x": 0.5, "y": 1.08,
+             "showarrow": False, "font": {"size": 15}})
+    if not n_plotted:
         print(f"No trace proved by both ULR-Baseline and {p_col} in {csv_path}: no plot.")
         return None
-    lo, hi = min(vals) * 0.8, max(vals) * 1.2
-    # Diagonal from a positive start, so that it is drawn on logarithmic axes too.
-    traces.insert(0, {"x": [lo, hi], "y": [lo, hi], "mode": "lines", "type": "scatter", "name": "y = x",
-                      "line": {"color": "gray", "width": 1.5, "dash": "dash"}, "hoverinfo": "skip"})
-    axis = {"type": "log"} if log_scale else {"rangemode": "tozero"}
-    layout = {"xaxis": dict(axis, title=x_axis_label), "yaxis": dict(axis, title=y_axis_label),
-              "hovermode": "closest", "legend": {"x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"},
-              "margin": {"l": 70, "r": 30, "t": 30, "b": 70}}
+    layout.update({"hovermode": "closest", "plot_bgcolor": "white", "showlegend": True,
+                   "legend": {"orientation": "h", "x": 0.5, "xanchor": "center", "y": -0.18},
+                   "margin": {"l": 70, "r": 30, "t": 50, "b": 90}})
 
     # Embed Plotly JS for offline use (no CDN dependency)
     try:
@@ -1248,14 +1271,16 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
 <style>
   body {{ font-family: Arial, sans-serif; margin: 20px; }}
   pre {{ font-size: 0.95em; }}
-  #plot {{ width: 100%; height: 85vh; }}
+  #plot {{ width: 1100px; max-width: 100%; height: 560px; }}
 </style>
 </head>
 <body>
 <h2>{esc(plot_title)} &mdash; Computation Time Comparison</h2>
 <pre>{table_txt}</pre>
-<p style="font-size:0.85em; color:#555;">
-  One point per lasso trace both tools proved; a trace proved by one tool only counts in VBS above.
+<p style="font-size:0.85em; color:#555; max-width:1100px;">
+  As Figure 5 of the paper: one + per lasso trace both tools proved, terminating on the left,
+  non-terminating on the right, ULR-Baseline on the X axis and {esc(p_col)} on the Y axis. A trace
+  proved by one tool only counts in VBS above. Hover a point for each tool's verdict, strategy and time.
 </p>
 <div id="plot"></div>
 <script>

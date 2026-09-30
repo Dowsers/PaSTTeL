@@ -1,0 +1,220 @@
+This is Ultimate 0.3.2-dev-4a3209064b
+[2026-09-30 15:34:39,749 INFO  L188        SettingsManager]: Resetting all preferences to default values...
+[2026-09-30 15:34:39,943 INFO  L75    nceAwareModelManager]: Repository-Root is: /tmp
+[2026-09-30 15:34:39,951 INFO  L261   ainManager$Toolchain]: [Toolchain 1]: Applicable parser(s) successfully (re)initialized
+[2026-09-30 15:34:39,953 INFO  L217   ainManager$Toolchain]: [Toolchain 1]: Toolchain selected.
+[2026-09-30 15:34:39,954 INFO  L270        PluginConnector]: Initializing Boogie PL CUP Parser...
+[2026-09-30 15:34:39,954 INFO  L274        PluginConnector]: Boogie PL CUP Parser initialized
+[2026-09-30 15:34:39,955 INFO  L431   ainManager$Toolchain]: [Toolchain 1]: Parsing single file: /home/anissa/Documents/Tools/PaSTTeL/benchmarks/smoke_test/full_programs_c_bpl/Fibonacci.bpl
+[2026-09-30 15:34:39,955 INFO  L110           BoogieParser]: Parsing: '/home/anissa/Documents/Tools/PaSTTeL/benchmarks/smoke_test/full_programs_c_bpl/Fibonacci.bpl'
+[2026-09-30 15:34:39,971 INFO  L299   ainManager$Toolchain]: ####################### [Toolchain 1] #######################
+[2026-09-30 15:34:39,973 INFO  L133        ToolchainWalker]: Walking toolchain with 3 elements.
+[2026-09-30 15:34:39,973 INFO  L112        PluginConnector]: ------------------------Boogie Preprocessor----------------------------
+[2026-09-30 15:34:39,973 INFO  L270        PluginConnector]: Initializing Boogie Preprocessor...
+[2026-09-30 15:34:39,973 INFO  L274        PluginConnector]: Boogie Preprocessor initialized
+[2026-09-30 15:34:39,982 INFO  L184        PluginConnector]: Executing the observer EnsureBoogieModelObserver from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:39,983 INFO  L184        PluginConnector]: Executing the observer TypeChecker from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,001 INFO  L184        PluginConnector]: Executing the observer ConstExpander from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,002 INFO  L184        PluginConnector]: Executing the observer StructExpander from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,005 INFO  L184        PluginConnector]: Executing the observer ReplaceArrayAssignments from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,006 INFO  L184        PluginConnector]: Executing the observer FunctionInliner from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,007 INFO  L184        PluginConnector]: Executing the observer LTLStepAnnotator from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,007 INFO  L184        PluginConnector]: Executing the observer BoogieSymbolTableConstructor from plugin Boogie Preprocessor for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,012 INFO  L131        PluginConnector]: ------------------------ END Boogie Preprocessor----------------------------
+[2026-09-30 15:34:40,012 INFO  L112        PluginConnector]: ------------------------IcfgBuilder----------------------------
+[2026-09-30 15:34:40,012 INFO  L270        PluginConnector]: Initializing IcfgBuilder...
+[2026-09-30 15:34:40,012 INFO  L274        PluginConnector]: IcfgBuilder initialized
+[2026-09-30 15:34:40,013 INFO  L184        PluginConnector]: Executing the observer IcfgBuilderObserver from plugin IcfgBuilder for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/1) ...
+[2026-09-30 15:34:40,015 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,021 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:34:40,029 INFO  L229       MonitoredProcess]: Starting monitored process 1 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:34:40,031 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (1)] Waiting until timeout for monitored process
+[2026-09-30 15:34:40,046 INFO  L130     BoogieDeclarations]: Found specification of procedure void$java.lang.Object$$la$init$ra$$28
+[2026-09-30 15:34:40,046 INFO  L124     BoogieDeclarations]: Specification and implementation of procedure void$Fibonacci$$la$init$ra$$2228 given in one single declaration
+[2026-09-30 15:34:40,046 INFO  L130     BoogieDeclarations]: Found specification of procedure void$Fibonacci$$la$init$ra$$2228
+[2026-09-30 15:34:40,046 INFO  L138     BoogieDeclarations]: Found implementation of procedure void$Fibonacci$$la$init$ra$$2228
+[2026-09-30 15:34:40,047 INFO  L124     BoogieDeclarations]: Specification and implementation of procedure void$Fibonacci$main$2229 given in one single declaration
+[2026-09-30 15:34:40,047 INFO  L130     BoogieDeclarations]: Found specification of procedure void$Fibonacci$main$2229
+[2026-09-30 15:34:40,047 INFO  L138     BoogieDeclarations]: Found implementation of procedure void$Fibonacci$main$2229
+[2026-09-30 15:34:40,047 INFO  L124     BoogieDeclarations]: Specification and implementation of procedure int$Fibonacci$fib$2230 given in one single declaration
+[2026-09-30 15:34:40,047 INFO  L130     BoogieDeclarations]: Found specification of procedure int$Fibonacci$fib$2230
+[2026-09-30 15:34:40,047 INFO  L138     BoogieDeclarations]: Found implementation of procedure int$Fibonacci$fib$2230
+[2026-09-30 15:34:40,099 INFO  L250             CfgBuilder]: Building ICFG
+[2026-09-30 15:34:40,100 INFO  L281             CfgBuilder]: Building CFG for each procedure with an implementation
+[2026-09-30 15:34:40,173 INFO  L?                        ?]: Removed 10 outVars from TransFormulas that were not future-live.
+[2026-09-30 15:34:40,173 INFO  L302             CfgBuilder]: Performing block encoding
+[2026-09-30 15:34:40,179 INFO  L104     LargeBlockEncoding]: Applying CFG Large Block Encoding to ICFG that has 3 procedures, 21 locations, 26 edges, 0 initial locations, 0 loop locations, and 1 error locations.
+[2026-09-30 15:34:40,185 INFO  L154     LargeBlockEncoding]: LargeBlockEncoding completed in 10 ms, with 1 straightline sequential compositions, 0 parallel compositions, 0 1:n/n:1 sequential compositions and 0 complex sequential compositions.
+[2026-09-30 15:34:40,186 INFO  L324             CfgBuilder]: Using library mode
+[2026-09-30 15:34:40,186 INFO  L332             CfgBuilder]: Removed 0 assume(true) statements.
+[2026-09-30 15:34:40,186 INFO  L334             CfgBuilder]: Constructed ICFG has 3 procedures, 20 locations, 25 edges, 3 initial locations, 0 loop locations, and 1 error locations.
+[2026-09-30 15:34:40,186 INFO  L201        PluginConnector]: Adding new model Fibonacci.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder CFG 30.09 03:34:40 BoogieIcfgContainer
+[2026-09-30 15:34:40,187 INFO  L131        PluginConnector]: ------------------------ END IcfgBuilder----------------------------
+[2026-09-30 15:34:40,187 INFO  L112        PluginConnector]: ------------------------BuchiAutomizer----------------------------
+[2026-09-30 15:34:40,187 INFO  L270        PluginConnector]: Initializing BuchiAutomizer...
+[2026-09-30 15:34:40,190 INFO  L274        PluginConnector]: BuchiAutomizer initialized
+[2026-09-30 15:34:40,191 INFO  L99          BuchiAutomizer]: Safety of program was proven or not checked, starting termination analysis
+[2026-09-30 15:34:40,191 INFO  L184        PluginConnector]: Executing the observer BuchiAutomizerObserver from plugin BuchiAutomizer for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.boogie.parser AST 30.09 03:34:39" (1/2) ...
+[2026-09-30 15:34:40,192 INFO  L204        PluginConnector]: Invalid model from BuchiAutomizer for observer de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer.BuchiAutomizerObserver@4aefac65 and model type Fibonacci.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer AST 30.09 03:34:40, skipping insertion in model container
+[2026-09-30 15:34:40,192 INFO  L99          BuchiAutomizer]: Safety of program was proven or not checked, starting termination analysis
+[2026-09-30 15:34:40,192 INFO  L184        PluginConnector]: Executing the observer BuchiAutomizerObserver from plugin BuchiAutomizer for "Fibonacci.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.icfgbuilder CFG 30.09 03:34:40" (2/2) ...
+[2026-09-30 15:34:40,193 INFO  L363   chiAutomizerObserver]: Analyzing ICFG Fibonacci.bpl
+[2026-09-30 15:34:40,223 INFO  L333   stractBuchiCegarLoop]: Interprodecural is true
+[2026-09-30 15:34:40,223 INFO  L334   stractBuchiCegarLoop]: Hoare is None
+[2026-09-30 15:34:40,223 INFO  L335   stractBuchiCegarLoop]: Compute interpolants for ForwardPredicates
+[2026-09-30 15:34:40,223 INFO  L336   stractBuchiCegarLoop]: Backedges is STRAIGHT_LINE
+[2026-09-30 15:34:40,223 INFO  L337   stractBuchiCegarLoop]: Determinization is PREDICATE_ABSTRACTION
+[2026-09-30 15:34:40,223 INFO  L338   stractBuchiCegarLoop]: Difference is false
+[2026-09-30 15:34:40,223 INFO  L339   stractBuchiCegarLoop]: Minimize is MINIMIZE_SEVPA
+[2026-09-30 15:34:40,223 INFO  L343   stractBuchiCegarLoop]: ======== Iteration 0 == of CEGAR loop == BuchiAutomatonCegarLoop ========
+[2026-09-30 15:34:40,226 INFO  L73            BuchiIsEmpty]: Start buchiIsEmpty. Operand  has 20 states, 13 states have (on average 1.2307692307692308) internal successors, (16), 14 states have internal predecessors, (16), 3 states have call successors, (3), 1 states have call predecessors, (3), 1 states have return successors, (3), 3 states have call predecessors, (3), 3 states have call successors, (3)
+[2026-09-30 15:34:40,238 INFO  L131   ngComponentsAnalysis]: Automaton has 1 accepting balls. 7
+[2026-09-30 15:34:40,238 INFO  L88            BuchiIsEmpty]: Finished buchiIsEmpty Result is false
+[2026-09-30 15:34:40,238 INFO  L120           BuchiIsEmpty]: Starting construction of run
+[2026-09-30 15:34:40,241 INFO  L148   hiAutomatonCegarLoop]: Counterexample stem histogram []
+[2026-09-30 15:34:40,241 INFO  L149   hiAutomatonCegarLoop]: Counterexample loop histogram [1, 1, 1, 1, 1]
+[2026-09-30 15:34:40,241 INFO  L363   stractBuchiCegarLoop]: ======== Iteration 1 ============
+[2026-09-30 15:34:40,241 INFO  L73            BuchiIsEmpty]: Start buchiIsEmpty. Operand  has 20 states, 13 states have (on average 1.2307692307692308) internal successors, (16), 14 states have internal predecessors, (16), 3 states have call successors, (3), 1 states have call predecessors, (3), 1 states have return successors, (3), 3 states have call predecessors, (3), 3 states have call successors, (3)
+[2026-09-30 15:34:40,242 INFO  L131   ngComponentsAnalysis]: Automaton has 1 accepting balls. 7
+[2026-09-30 15:34:40,242 INFO  L88            BuchiIsEmpty]: Finished buchiIsEmpty Result is false
+[2026-09-30 15:34:40,242 INFO  L120           BuchiIsEmpty]: Starting construction of run
+[2026-09-30 15:34:40,242 INFO  L148   hiAutomatonCegarLoop]: Counterexample stem histogram []
+[2026-09-30 15:34:40,242 INFO  L149   hiAutomatonCegarLoop]: Counterexample loop histogram [1, 1, 1, 1, 1]
+[2026-09-30 15:34:40,246 INFO  L1146  eck$LassoCheckResult]: Stem: 
+[2026-09-30 15:34:40,249 INFO  L1148  eck$LassoCheckResult]: Loop: "i05 := $param_0;" "assume (if i05 != 0 then 1 else 0) == 1;" "assume (if i05 != 1 then 1 else 0) == 1;" "$i16 := i05 - 1;" "call $i27 := int$Fibonacci$fib$2230($i16);"< 
+[2026-09-30 15:34:40,252 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:34:40,252 INFO  L86        PathProgramCache]: Analyzing trace with hash 46600998, now seen corresponding path program 1 times
+[2026-09-30 15:34:40,256 INFO  L118   FreeRefinementEngine]: Executing refinement strategy FIXED_PREFERENCES
+[2026-09-30 15:34:40,256 INFO  L324   FreeRefinementEngine]: Using trace check IpTcStrategyModulePreferences [846558620]
+[2026-09-30 15:34:40,256 INFO  L97    rtionOrderModulation]: Keeping assertion order NOT_INCREMENTALLY
+[2026-09-30 15:34:40,256 INFO  L127          SolverBuilder]: Constructing new instance of SMTInterpol with explicit timeout -1 ms and remaining time -1 ms
+[2026-09-30 15:34:40,293 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 5 statements into 1 equivalence classes.
+[2026-09-30 15:34:40,303 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 5 of 5 statements.
+[2026-09-30 15:34:40,303 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:34:40,303 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:34:40,304 INFO  L348             TraceCheck]: Trace is feasible, we will do another trace check, this time with branch encoders.
+[2026-09-30 15:34:40,306 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 5 statements into 1 equivalence classes.
+[2026-09-30 15:34:40,310 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 5 of 5 statements.
+[2026-09-30 15:34:40,310 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:34:40,310 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:34:40,319 INFO  L130   FreeRefinementEngine]: Strategy FIXED_PREFERENCES found a feasible trace
+[2026-09-30 15:34:40,321 INFO  L160       PredicateUnifier]: Initialized classic predicate unifier
+[2026-09-30 15:34:40,322 INFO  L86        PathProgramCache]: Analyzing trace with hash 46600998, now seen corresponding path program 2 times
+[2026-09-30 15:34:40,322 INFO  L118   FreeRefinementEngine]: Executing refinement strategy FIXED_PREFERENCES
+[2026-09-30 15:34:40,322 INFO  L324   FreeRefinementEngine]: Using trace check IpTcStrategyModulePreferences [925803242]
+[2026-09-30 15:34:40,322 INFO  L97    rtionOrderModulation]: Keeping assertion order NOT_INCREMENTALLY
+[2026-09-30 15:34:40,322 INFO  L127          SolverBuilder]: Constructing new instance of SMTInterpol with explicit timeout -1 ms and remaining time -1 ms
+[2026-09-30 15:34:40,326 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 5 statements into 1 equivalence classes.
+[2026-09-30 15:34:40,331 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 5 of 5 statements.
+[2026-09-30 15:34:40,331 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:34:40,331 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:34:40,331 INFO  L348             TraceCheck]: Trace is feasible, we will do another trace check, this time with branch encoders.
+[2026-09-30 15:34:40,332 INFO  L108    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY partitioned 5 statements into 1 equivalence classes.
+[2026-09-30 15:34:40,336 INFO  L111    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s) and asserted 5 of 5 statements.
+[2026-09-30 15:34:40,336 INFO  L114    AnnotateAndAsserter]: Assert order NOT_INCREMENTALLY issued 1 check-sat command(s)
+[2026-09-30 15:34:40,336 INFO  L115    AnnotateAndAsserter]: Conjunction of SSA is sat
+[2026-09-30 15:34:40,338 INFO  L130   FreeRefinementEngine]: Strategy FIXED_PREFERENCES found a feasible trace
+[2026-09-30 15:34:40,404 INFO  L214          LassoAnalysis]: Preferences:
+[2026-09-30 15:34:40,404 INFO  L125   ssoRankerPreferences]: Compute integeral hull: false
+[2026-09-30 15:34:40,404 INFO  L126   ssoRankerPreferences]: Enable LassoPartitioneer: false
+[2026-09-30 15:34:40,404 INFO  L127   ssoRankerPreferences]: Term annotations enabled: false
+[2026-09-30 15:34:40,405 INFO  L128   ssoRankerPreferences]: Use exernal solver: true
+[2026-09-30 15:34:40,405 INFO  L129   ssoRankerPreferences]: SMT solver command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,405 INFO  L130   ssoRankerPreferences]: Dump SMT script to file: false
+[2026-09-30 15:34:40,405 INFO  L131   ssoRankerPreferences]: Path of dumped script: 
+[2026-09-30 15:34:40,405 INFO  L132   ssoRankerPreferences]: Filename of dumped script: Fibonacci.bpl_Iteration1_Loop
+[2026-09-30 15:34:40,405 INFO  L133   ssoRankerPreferences]: MapElimAlgo: Matthias
+[2026-09-30 15:34:40,405 INFO  L251          LassoAnalysis]: Starting lasso preprocessing...
+[2026-09-30 15:34:40,492 INFO  L270          LassoAnalysis]: Preprocessing complete.
+[2026-09-30 15:34:40,493 INFO  L387          LassoAnalysis]: Checking for nontermination...
+[2026-09-30 15:34:40,494 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,495 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:34:40,497 INFO  L229       MonitoredProcess]: Starting monitored process 2 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:34:40,498 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (2)] Waiting until timeout for monitored process
+[2026-09-30 15:34:40,499 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 0 Nilpotent components: true
+[2026-09-30 15:34:40,499 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:34:40,518 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (2)] Ended with exit code 0
+[2026-09-30 15:34:40,518 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,519 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:34:40,521 INFO  L229       MonitoredProcess]: Starting monitored process 3 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:34:40,521 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (3)] Waiting until timeout for monitored process
+[2026-09-30 15:34:40,523 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 3 Nilpotent components: true
+[2026-09-30 15:34:40,523 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:34:40,551 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (3)] Ended with exit code 0
+[2026-09-30 15:34:40,552 INFO  L423          LassoAnalysis]: Proved nontermination for one component.
+[2026-09-30 15:34:40,552 INFO  L425          LassoAnalysis]: Non-Termination argument consisting of: Initial state: {v_rep$arrSizeIdx_1=-1, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0} Honda state: {v_rep$arrSizeIdx_1=-1, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0} Generalized eigenvectors: [{v_rep$arrSizeIdx_1=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=0, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}, {v_rep$arrSizeIdx_1=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}, {v_rep$arrSizeIdx_1=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=0, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}] Lambdas: [1, 1, 1] Nus: [0, 0]
+[2026-09-30 15:34:40,555 INFO  L214          LassoAnalysis]: Preferences:
+[2026-09-30 15:34:40,556 INFO  L125   ssoRankerPreferences]: Compute integeral hull: false
+[2026-09-30 15:34:40,556 INFO  L126   ssoRankerPreferences]: Enable LassoPartitioneer: false
+[2026-09-30 15:34:40,556 INFO  L127   ssoRankerPreferences]: Term annotations enabled: false
+[2026-09-30 15:34:40,556 INFO  L128   ssoRankerPreferences]: Use exernal solver: true
+[2026-09-30 15:34:40,556 INFO  L129   ssoRankerPreferences]: SMT solver command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,556 INFO  L130   ssoRankerPreferences]: Dump SMT script to file: false
+[2026-09-30 15:34:40,556 INFO  L131   ssoRankerPreferences]: Path of dumped script: 
+[2026-09-30 15:34:40,556 INFO  L132   ssoRankerPreferences]: Filename of dumped script: Fibonacci.bpl_Iteration1_Lasso
+[2026-09-30 15:34:40,556 INFO  L133   ssoRankerPreferences]: MapElimAlgo: Matthias
+[2026-09-30 15:34:40,556 INFO  L251          LassoAnalysis]: Starting lasso preprocessing...
+[2026-09-30 15:34:40,619 INFO  L270          LassoAnalysis]: Preprocessing complete.
+[2026-09-30 15:34:40,620 INFO  L387          LassoAnalysis]: Checking for nontermination...
+[2026-09-30 15:34:40,620 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,621 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:34:40,623 INFO  L229       MonitoredProcess]: Starting monitored process 4 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:34:40,624 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (4)] Waiting until timeout for monitored process
+[2026-09-30 15:34:40,626 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 0 Nilpotent components: true
+[2026-09-30 15:34:40,626 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:34:40,643 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (4)] Ended with exit code 0
+[2026-09-30 15:34:40,644 INFO  L173          SolverBuilder]: Constructing external solver with command: z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000
+[2026-09-30 15:34:40,645 INFO  L189       MonitoredProcess]: No working directory specified, using /home/anissa/.local/bin/z3
+[2026-09-30 15:34:40,647 INFO  L229       MonitoredProcess]: Starting monitored process 5 with /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (exit command is (exit), workingDir is null)
+[2026-09-30 15:34:40,648 INFO  L327       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (5)] Waiting until timeout for monitored process
+[2026-09-30 15:34:40,650 INFO  L148   nArgumentSynthesizer]: Nontermination analysis: LINEAR Allow bounded executions: true Number of generalized eigenvectors: 3 Nilpotent components: true
+[2026-09-30 15:34:40,650 INFO  L160   nArgumentSynthesizer]: Using integer mode.
+[2026-09-30 15:34:40,680 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (5)] Ended with exit code 0
+[2026-09-30 15:34:40,680 INFO  L423          LassoAnalysis]: Proved nontermination for one component.
+[2026-09-30 15:34:40,680 INFO  L425          LassoAnalysis]: Non-Termination argument consisting of: Initial state: {v_rep$arrSizeIdx_2=-1, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0} Honda state: {v_rep$arrSizeIdx_2=-1, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0} Generalized eigenvectors: [{v_rep$arrSizeIdx_2=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=-1, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}, {v_rep$arrSizeIdx_2=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=0, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}, {v_rep$arrSizeIdx_2=0, int$Fibonacci$fib$2230___ret=0, int$Fibonacci$fib$2230_$i16=0, int$Fibonacci$fib$2230_$i27=0, int$Fibonacci$fib$2230_$param_0=0, int$Fibonacci$fib$2230_$i49=0, int$Fibonacci$fib$2230_$i38=0, int$Fibonacci$fib$2230_i05=0, int$Fibonacci$fib$2230_$i510=0}] Lambdas: [1, 1, 1] Nus: [0, 0]
+[2026-09-30 15:34:40,699 INFO  L201        PluginConnector]: Adding new model Fibonacci.bpl de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer CFG 30.09 03:34:40 BoogieIcfgContainer
+[2026-09-30 15:34:40,699 INFO  L131        PluginConnector]: ------------------------ END BuchiAutomizer----------------------------
+[2026-09-30 15:34:40,701 INFO  L158              Benchmark]: Toolchain (without parser) took 727,83ms. Allocated memory is still 536,9MB. Free memory was 496,6MB in the beginning and 446,1MB in the end (delta: 50,5MB). Peak memory consumption was 50,3MB. Max. memory is 12,9GB.
+[2026-09-30 15:34:40,701 INFO  L158              Benchmark]: Boogie PL CUP Parser took 0,20ms. Allocated memory is still 536,9MB. Free memory is still 498,1MB. There was no memory consumed. Max. memory is 12,9GB.
+[2026-09-30 15:34:40,702 INFO  L158              Benchmark]: Boogie Preprocessor took 38,66ms. Allocated memory is still 536,9MB. Free memory was 496,5MB in the beginning and 493,7MB in the end (delta: 2,8MB). Peak memory consumption was 8,4MB. Max. memory is 12,9GB.
+[2026-09-30 15:34:40,702 INFO  L158              Benchmark]: IcfgBuilder took 174,36ms. Allocated memory is still 536,9MB. Free memory was 493,6MB in the beginning and 482,2MB in the end (delta: 11,4MB). Peak memory consumption was 8,4MB. Max. memory is 12,9GB.
+[2026-09-30 15:34:40,709 INFO  L158              Benchmark]: BuchiAutomizer took 512,22ms. Allocated memory is still 536,9MB. Free memory was 482,1MB in the beginning and 446,1MB in the end (delta: 36,0MB). Peak memory consumption was 33,6MB. Max. memory is 12,9GB.
+[2026-09-30 15:34:40,710 INFO  L338   ainManager$Toolchain]: #######################  End [Toolchain 1] #######################
+ --- Results ---
+ * Results from de.uni_freiburg.informatik.ultimate.core:
+  - StatisticsResult: Toolchain Benchmarks
+    Benchmark results are:
+ * Boogie PL CUP Parser took 0,20ms. Allocated memory is still 536,9MB. Free memory is still 498,1MB. There was no memory consumed. Max. memory is 12,9GB.
+ * Boogie Preprocessor took 38,66ms. Allocated memory is still 536,9MB. Free memory was 496,5MB in the beginning and 493,7MB in the end (delta: 2,8MB). Peak memory consumption was 8,4MB. Max. memory is 12,9GB.
+ * IcfgBuilder took 174,36ms. Allocated memory is still 536,9MB. Free memory was 493,6MB in the beginning and 482,2MB in the end (delta: 11,4MB). Peak memory consumption was 8,4MB. Max. memory is 12,9GB.
+ * BuchiAutomizer took 512,22ms. Allocated memory is still 536,9MB. Free memory was 482,1MB in the beginning and 446,1MB in the end (delta: 36,0MB). Peak memory consumption was 33,6MB. Max. memory is 12,9GB.
+ * Results from de.uni_freiburg.informatik.ultimate.plugins.generator.traceabstraction:
+  - StatisticsResult: Constructed decomposition of program
+    Trivial decomposition into one nonterminating module.
+  - StatisticsResult: Timing statistics
+    BüchiAutomizer plugin needed 0.4s and 1 iterations.  TraceHistogramMax:1. Analysis of lassos took 0.4s. Construction of modules took 0.0s. Büchi inclusion checks took 0.0s. Highest rank in rank-based complementation 0. Minimization of det autom 0. Minimization of nondet autom 0. Automata minimization No data available. Non-live state removal took 0.0s Buchi closure took 0.0s. Biggest automaton had -1 states and ocurred in iteration -1.	Nontrivial modules had stage [0, 0, 0, 0, 0].	InterpolantCoveringCapabilityFinite: 0/0	InterpolantCoveringCapabilityBuchi: 0/0	HoareTripleCheckerStatistics: 	LassoAnalysisResults: nont1 unkn0 SFLI0 SFLT0 conc0 concLT0 SILN0 SILU0 SILI0 SILT0 lasso0 LassoPreprocessingBenchmarks:   Lassos: inital15 mio100 ax160 arr100 mio100 div100 bol100 ite100 ukn100 eq208 smp100 dnf240 smp50 tf100 neg100 sie106 LassoTerminationAnalysisBenchmarks: not availableLassoTerminationAnalysisBenchmarks: LassoNonterminationAnalysisSatFixpoint: 0	LassoNonterminationAnalysisSatUnbounded: 2	LassoNonterminationAnalysisUnsat: 0	LassoNonterminationAnalysisUnknown: 0	LassoNonterminationAnalysisTime: 0.1s	InitialAbstractionConstructionTime: 0.0s
+  - TerminationAnalysisResult: Nontermination possible
+    Buchi Automizer proved that your program is nonterminating for some inputs
+  - GeometricNonTerminationArgumentResult [Line: 408]: Nontermination argument in form of an infinite program execution.
+    Nontermination argument in form of an infinite execution
+State at position 0 is
+{__ret=0, $param_0=-1, $i510=0, $i16=0, $i27=0, $i49=0, $i38=0, $arrSizeIdx=-1, i05=0}
+State at position 1 is
+{__ret=0, $param_0=-1, $i510=0, $i16=0, $i27=0, $i49=0, $i38=0, $arrSizeIdx=-1, i05=0}
+For i>1, the state at position i is
+{__ret=0 + sum_{k=0}^i 0, $param_0=-1 + sum_{k=0}^i -1, $i510=0 + sum_{k=0}^i 0, $i16=0 + sum_{k=0}^i 0, $i27=0 + sum_{k=0}^i 0, $i49=0 + sum_{k=0}^i 0, $i38=0 + sum_{k=0}^i 0, $arrSizeIdx=-1 + sum_{k=0}^i 0, i05=0 + sum_{k=0}^i 0}
+  - StatisticsResult: NonterminationArgumentStatistics
+    Unbounded Execution 1GEVs Lambdas: [1, 1, 1] Mus: [0, 0]
+  - NonterminatingLassoResult [Line: 408]: Nonterminating execution
+    Found a nonterminating execution for the following lasso shaped sequence of statements.
+Stem:
+Loop:
+[L408]        i05 := $param_0;
+[L422]        assume (if i05 != 0 then 1 else 0) == 1;
+[L434]        assume (if i05 != 1 then 1 else 0) == 1;
+[L444]        $i16 := i05 - 1;
+[L449]  CALL  call $i27 := int$Fibonacci$fib$2230($i16);
+End of lasso representation.
+RESULT: Ultimate proved your program to be incorrect!
+[2026-09-30 15:34:40,721 INFO  L546       MonitoredProcess]: [MP /home/anissa/.local/bin/z3 SMTLIB2_COMPLIANT=true -memory:1024 -smt2 -in -t:12000 (1)] Ended with exit code 0
+Received shutdown request...

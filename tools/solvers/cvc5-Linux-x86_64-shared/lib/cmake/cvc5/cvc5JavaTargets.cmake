@@ -40,8 +40,8 @@ set(_prefix ${CMAKE_CURRENT_LIST_DIR}/../../../)
 # Create imported target cvc5::cvc5jar
 add_library(cvc5::cvc5jar IMPORTED STATIC)
 set_target_properties(cvc5::cvc5jar PROPERTIES
-  IMPORTED_LOCATION "${_prefix}/share/java/cvc5-1.3.3.jar"
-  JAR_FILE "${_prefix}/share/java/cvc5-1.3.3.jar")
+  IMPORTED_LOCATION "${_prefix}/share/java/cvc5-1.3.4.jar"
+  JAR_FILE "${_prefix}/share/java/cvc5-1.3.4.jar")
 
 
 unset(_prefix)

@@ -1,9 +1,9 @@
-#PaSTTeL backend for BuchiAutomizer: the only settings UPL adds to Ultimate's defaults.
+#PaSTTeL backend for BuchiAutomizer: the only settings Ultimate-PL adds to Ultimate's defaults.
 #
-# ULR runs Ultimate with no settings file at all, like the extraction of the lasso traces for
-# ULR vs P-ULR; UPL runs it with this one. It holds the lines that select PaSTTeL instead of
-# LassoRanker as the rank-synthesis backend and configure it, and nothing else, so that ULR and
-# UPL differ in the backend only.
+# Ultimate-LR runs Ultimate with no settings file at all, like the extraction of the lasso traces for
+# ULR-Baseline vs P-ULR; Ultimate-PL runs it with this one. It holds the lines that select PaSTTeL
+# instead of LassoRanker as the rank-synthesis backend and configure it, and nothing else, so that
+# Ultimate-LR and Ultimate-PL differ in the backend only.
 #
 # TEMPLATE -- do not pass this file to Ultimate directly. The placeholders below
 # are substituted by scripts/run_ulr_vs_upl.sh, which writes the resulting .epf
@@ -16,10 +16,6 @@
 #                      UPL_PASTTEL_TIMEOUT_DEFAULT in scripts/common.sh, the one place it is defined
 #                      (with its rationale); run_ulr_vs_upl.sh --pasttel-timeout overrides it
 #   @PASTTEL_CPUS@     cores PaSTTeL may use to race its templates
-#
-# run_ulr_vs_upl.sh --dump-pasttel-io appends the two lines that make Ultimate keep PaSTTeL's JSON
-# input and output per lasso. They are off by default: the I/O lands inside the very interval the
-# ULR vs UPL comparison measures.
 file_export_version=3.0
 @de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=0.0.1
 \!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=

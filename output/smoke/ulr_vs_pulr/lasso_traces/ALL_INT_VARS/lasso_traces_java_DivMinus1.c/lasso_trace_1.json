@@ -1,0 +1,62 @@
+{
+  "program_vars": [
+    "mdiv_#in~x",
+    "mdiv_#in~y",
+    "mdiv_~res~0",
+    "mdiv_~x",
+    "mdiv_~y"
+  ],
+  "var_types": {
+    "mdiv_#in~x": "Int",
+    "mdiv_#in~y": "Int",
+    "mdiv_~res~0": "Int",
+    "mdiv_~x": "Int",
+    "mdiv_~y": "Int"
+  },
+  "stem": [
+    {
+      "source": "S0",
+      "target": "S1",
+      "formula": "(and (= v_mdiv_~res~0_21 0) (= |v_mdiv_#in~y_5| v_mdiv_~y_17) (= |v_mdiv_#in~x_5| v_mdiv_~x_21) (<= 0 (+ |v_mdiv_#in~x_5| 2147483648)) (<= |v_mdiv_#in~y_5| 2147483647) (<= 0 (+ |v_mdiv_#in~y_5| 2147483648)) (<= |v_mdiv_#in~x_5| 2147483647))",
+      "in_vars": {
+        "mdiv_#in~x": "|v_mdiv_#in~x_5|",
+        "mdiv_#in~y": "|v_mdiv_#in~y_5|"
+      },
+      "out_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_21",
+        "mdiv_#in~x": "|v_mdiv_#in~x_5|",
+        "mdiv_#in~y": "|v_mdiv_#in~y_5|",
+        "mdiv_~y": "v_mdiv_~y_17",
+        "mdiv_~x": "v_mdiv_~x_21"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "mdiv_~res~0",
+        "mdiv_~y",
+        "mdiv_~x"
+      ]
+    }
+  ],
+  "loop": [
+    {
+      "source": "L0",
+      "target": "L1",
+      "formula": "(and (<= 1 v_mdiv_~y_18) (= (+ v_mdiv_~x_22 v_mdiv_~y_18) v_mdiv_~x_23) (<= v_mdiv_~y_18 v_mdiv_~x_23) (= v_mdiv_~res~0_22 (+ v_mdiv_~res~0_23 1)))",
+      "in_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_23",
+        "mdiv_~y": "v_mdiv_~y_18",
+        "mdiv_~x": "v_mdiv_~x_23"
+      },
+      "out_vars": {
+        "mdiv_~res~0": "v_mdiv_~res~0_22",
+        "mdiv_~y": "v_mdiv_~y_18",
+        "mdiv_~x": "v_mdiv_~x_22"
+      },
+      "aux_vars": [],
+      "assigned_vars": [
+        "mdiv_~res~0",
+        "mdiv_~x"
+      ]
+    }
+  ]
+}

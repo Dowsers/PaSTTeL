@@ -1,238 +1,490 @@
 # PaSTTeL — VMCAI 2027 Artifact
 
-## Description
+Artifact of the paper **"PaSTTeL: Parallel analysiS framework for Termination and non-Termination of
+Lasso programs"** (VMCAI 2027).
 
-This artifact accompanies the paper **"PaSTTeL: Parallel analysiS framework for Termination and non-Termination of Lasso programs"** submitted to VMCAI 2027.
+PaSTTeL proves termination or non-termination of lasso programs (a stem followed by a loop). It
+synthesises ranking functions and non-termination witnesses with an SMT solver (Z3), racing its
+techniques on several cores. The paper evaluates it in two ways, both replicated by this artifact:
 
-**PaSTTeL** (Parallel analysiS framework for Termination and non-Termination of Lasso programs) is a C++17 tool that analyses lasso programs (a finite stem followed by an infinite loop) to prove **termination** or **non-termination**. It uses SMT solvers (Z3 4.16.0, CVC5 1.3.4) to synthesise ranking functions and non-termination witnesses, and supports parallelism over multiple CPU cores.
+| | Comparison | Granularity | Paper |
+|---|---|---|---|
+| **[1]** | **ULR-Baseline** (Ultimate's LassoRanker) vs **P-ULR-Seq** and **P-ULR-Par7** (PaSTTeL on 1 and 7 cores) | per lasso trace: Ultimate extracts the traces of each program, PaSTTeL replays them | Table 1, Figure 5 |
+| **[2]** | **Ultimate-LR** vs **Ultimate-PL**: Ultimate Büchi Automizer with LassoRanker, or with PaSTTeL, as its ranking-function backend | per C/Boogie program, end to end | Figure 6, and the figures of Section 6 ("Integrate P-ULR inside Ultimate"), which `scripts/run_ulr_vs_upl.sh` prints as a table |
 
-### Claims replicated
+ULR-Baseline and Ultimate-LR are both LassoRanker, measured differently: ULR-Baseline is its time on
+each lasso trace, Ultimate-LR a whole Ultimate run on each program.
 
-The artifact allows reviewers to:
-1. Run P-ULR (PaSTTeL "à la Ultimate LassoRanker") on lasso program instances (JSON format) and observe termination/non-termination results.
-2. Run ULR-Baseline (Ultimate LassoRanker on Ultimate Buchi Automizer) on C/BPL programs to extract lasso traces and observe their termination/non-termination results.
-3. Reproduce the experimental comparison between P-ULR (sequential and parallel) and ULR-Baseline
-   (Tables and Figures in the paper): timing, termination verdicts, and scatter plots.
-4. Compare **ULR** against **UPL** (Ultimate PaSTTeL): the same Ultimate release analysing whole
-   programs end to end, once with Ultimate's own LassoRanker as the rank-synthesis backend and once
-   with PaSTTeL plugged in as that backend for ranking functions, with no LassoRanker fallback: a
-   lasso PaSTTeL cannot prove terminating gets no ranking function. See *Comparing ULR and UPL*
-   below.
+The two comparisons use two releases of Ultimate, which are simply two versions of it:
+`tools/UAutomizer-linux` (Ultimate 0.3.1) is the one we ran ULR-Baseline vs P-ULR with, and
+`tools/UAutomizer-PaSTTeL-linux` (Ultimate 0.3.2), a later version, integrates PaSTTeL: it runs both
+Ultimate-LR and Ultimate-PL. Both ship with their sources (section 6, PaSTTeL inside Ultimate).
 
-### Artifact structure
+1. [Artifact contents](#1-artifact-contents)
+2. [Getting started](#2-getting-started) — smoke test, about 2 minutes
+3. [Replicating the paper](#3-replicating-the-paper) — from our logs in seconds, a subset in about 3 hours, or everything
+4. [Reading the results](#4-reading-the-results)
+5. [Resource requirements](#5-resource-requirements)
+6. [Reusing the artifact](#6-reusing-the-artifact)
+7. [Requested badges](#7-requested-badges)
+
+---
+
+## 1. Artifact contents
 
 ```
-PaSTTeL/
-├── Dockerfile                   — Docker image definition (Ubuntu 24.04, offline build)
-├── docker-compose.yml           — Docker Compose configuration
-├── README                       — This file
-├── LICENSE                      — AGPL-3.0 license
-├── paper.pdf                    — Submitted paper (add before final submission)
-├── package.sh                   — Script to package the final artifact ZIP
-├── scripts/                     — Evaluation scripts (entry points for reviewers)
-│   ├── run_smoke_test.sh        — Quick smoke test (~2-5 min)
-│   ├── run_full_evaluation.sh   — The two comparisons on the full benchmark, or with --subset
-│   │                              on benchmarks/subset (about 3 h)
-│   ├── run_pulr.sh              — ULR-Baseline vs P-ULR for one Ultimate release (per lasso trace)
-│   ├── run_ulr_vs_upl.sh        — ULR vs UPL comparison (per whole program)
-│   ├── run_pasttel_ulr_only.sh  — Run PaSTTeL standalone on JSON instances
-│   ├── run_ultimate_only.sh     — Run Ultimate on C/BPL programs
-│   └── common.sh                — Shared path resolution and sanity checks
+pasttel-vmcai27-artifact/
+├── README                            this file
+├── LICENSE                           AGPL-3.0, PaSTTeL's licence (the others: below)
+├── VMCAI2027-PAPER.pdf               the paper
+├── pasttel-docker-image-vmcai27.tar.gz   the pre-built Docker image (section 2)
+├── Dockerfile                        the image: install.sh, then the test suite and the smoke test
+├── docker-compose.yml                the same image, with Docker Compose
+├── package.sh                        builds this archive
+│
+├── scripts/                          what reviewers run (section 6)
+│   ├── run_smoke_test.sh             both comparisons on 10 programs, about 2 min (section 2)
+│   ├── run_full_evaluation.sh        both comparisons, full or --subset (sections 3.2, 3.3)
+│   ├── run_ulr_vs_pulr.sh            [1] ULR-Baseline vs P-ULR, on any programs or traces
+│   ├── run_ulr_vs_upl.sh             [2] Ultimate-LR vs Ultimate-PL, on any programs
+│   ├── install.sh                    installation without Docker (section 6)
+│   └── common.sh                     paths and the paper's defaults (timeouts, cores)
+│
+├── pasttel/                          PaSTTeL, C++17
+│   ├── src/, include/                sources: techniques, templates, portfolio, SMT solvers, parser
+│   ├── examples/                     103 JSON lassos, the paper's Figure 1 among them
+│   ├── scripts/                      the analysis scripts (tables, plots) and the test suite
+│   ├── Makefile                      builds bin/pasttel and bin/libpasttel.a
+│   └── README.md                     PaSTTeL alone: build, options, input, library
+│
 ├── benchmarks/
-│   ├── C/                       — 1,559 .c programs
-│   ├── BPL/                     — 1,871 .bpl programs
-│   ├── subset/                  — 100 programs drawn at random, for run_full_evaluation.sh --subset
-│   ├── difficult_instances/     — the 200 hardest programs for ULR and P-ULR-Par7 (see its README)
-│   │                              (see its README)
-│   └── smoke_test/              — 10 representative programs for smoke test
-│       ├── full_programs_c_bpl/ — source programs (.c/.bpl) for Ultimate Buchi Automizer
-│       └── json_lassos_from_full_programs/ — pre-extracted lasso traces (.json) for PaSTTeL
-├── logs/                        — The paper's own runs (see *Comparing with paper results*)
-│   ├── FINAL_VMCAI27_NOSHUFFLE_LASSOS.zip — [1] ULR vs P-ULR (183 MB, 1.6 GB unpacked):
-│   │     results_P-ULR-Seq_z3.csv, results_P-ULR-Par7_z3.csv — per trace, with their _scatter.html
-│   │     summary_tables.log     — the comparison tables
-│   │     results_P-ULR-Par7_cvc5.csv, _scatter.html — the same with CVC5 [not in the paper]
-│   │     lasso_traces/          — per program: <prog>.ultimate.log, the dumped traces
-│   │                              lasso_traces_<prog>/lasso_trace_N.txt, and PaSTTeL's logs
-│   ├── run_log_NOSHUFFLE.txt    — Console output of the PaSTTeL part of that run
-│   ├── ulr_vs_upl/              — [2] ULR vs UPL:
-│   │     results_ULR_vs_UPL.csv, summary_tables.log, results_ULR_vs_UPL_{wall,plugin,lassos}.html
-│   │     BuchiAutomizerPasttel.epf — the UPL settings of the run
-│   │     logs/                  — <prog>.ulr.log, <prog>.upl.log (Ultimate), .wall_ms (wall clock), .exit (exit status)
-│   └── smoke_test_output.log    — Expected output of the smoke test script
+│   ├── ulr_vs_pulr/                  [1]: 2,856 programs (1,557 C, 1,299 Boogie), Table 1 and Figure 5
+│   ├── ulr_vs_upl/                   [2]: 1,087 of them, Figure 6
+│   ├── subset/                       --subset (section 3.2)
+│   │   ├── ulr_vs_pulr/              100 programs of [1]
+│   │   └── ulr_vs_upl/               100 programs of [2]
+│   ├── smoke_test/                   section 2
+│   │   ├── full_programs_c_bpl/      the 10 programs
+│   │   └── json_lassos_from_full_programs/   their 14 traces, as the JSON PaSTTeL reads
+│   └── additional_programs/          574 other programs (C/, BPL/), not used by the experiments
+│
+├── logs/                             our runs (sections 3.1, 4)
+│   ├── results_P-ULR-Seq_z3.csv      [1] per trace, ULR-Baseline and P-ULR-Seq
+│   ├── results_P-ULR-Seq_z3_scatter.html    Figure 5
+│   ├── results_P-ULR-Par7_z3.csv     [1] per trace, ULR-Baseline and P-ULR-Par7
+│   ├── results_P-ULR-Par7_z3_scatter.html   the same for P-ULR-Par7 (not in the paper)
+│   ├── results_ULR_vs_UPL.csv        [2] per program
+│   ├── results_ULR_vs_UPL_wall.html  Figure 6
+│   ├── ULR_vs_PULR_logs.zip          [1] raw: the lasso traces (.txt and .json), Ultimate's logs
+│   ├── ULR_vs_UPL_logs.zip           [2] raw: Ultimate's log, wall clock and exit status of each run
+│   └── smoke_test_output.log         the smoke test's expected output
+│
 ├── tools/
-│   ├── UAutomizer-linux/            — Ultimate release of ULR vs P-ULR: LassoRanker, dumps the lasso traces
-│   ├── UAutomizer-PaSTTeL-linux/    — Ultimate release with the PaSTTeL backend compiled in (UPL)
-│   │     (neither ships a z3: Ultimate uses the Z3 4.16.0 on PATH, the same one PaSTTeL links)
-│   ├── toolchains/                  — Toolchain XML files (BuchiAutomizerC.xml, BuchiAutomizerBpl.xml)
+│   ├── UAutomizer-linux/             Ultimate 0.3.1, the release of [1]: dumps the lasso traces
+│   ├── UAutomizer-PaSTTeL-linux/     Ultimate 0.3.2, the release of [2]: PaSTTeL as optional backend
 │   ├── settings/
-│   │   └── BuchiAutomizerPasttel.epf.in — UPL settings template: only the lines selecting and
-│   │                                      configuring the PaSTTeL backend (ULR runs without settings)
-│   └── solvers/                     — Pre-downloaded solver archives (for offline Docker build)
-│       ├── z3-4.16.0-x64-glibc-2.39.zip
-│       └── cvc5-Linux-x86_64-shared.zip
-├── ultimate/                        — Ultimate source (git submodule, the fork that adds PaSTTeL);
-│                                      tools/UAutomizer-PaSTTeL-linux is built from it
-└── pasttel/                     — PaSTTeL C++ source code (built during Docker build)
-    ├── src/			 — Source code
-    └── examples/                — 53 JSON lasso trace examples for standalone testing
+│   │   └── BuchiAutomizerPasttel.epf.in   Ultimate-PL's settings: the PaSTTeL lines only
+│   ├── toolchains/                   BuchiAutomizerC.xml and BuchiAutomizerBpl.xml
+│   └── solvers/                      the Z3 4.16.0 and CVC5 1.3.4 archives
+│
+├── ultimate/                         sources of Ultimate 0.3.2 with PaSTTeL (section 6)
+└── ultimate-verifier/                sources of Ultimate 0.3.1 with the lasso-trace dump (section 6)
 ```
+
+The two zips of `logs/` are in the Zenodo archive only. They exceed GitHub's file-size limit, so the
+git repository of the paper's footnote has everything else, but not them.
+
+Licences:
+- PaSTTeL: AGPL-3.0 (`LICENSE`).
+- Ultimate, both releases and both source trees: LGPL-3.0 with a linking exception (`ultimate/README.md`).
+- Z3 4.16.0: MIT (`LICENSE.txt` in its archive). CVC5 1.3.4: BSD-3-Clause (`COPYING` in its archive);
+  its archive also ships GMP and LibPoly, under the LGPL.
+- nlohmann/json, in `pasttel/include/external/`: MIT.
+- The benchmark programs come from SV-COMP, TermCOMP (TPDB) and the Ultimate repository, each under
+  the licence of its source.
 
 ---
 
-## Requirements
+## 2. Getting started
 
-- **Platform**: x86-64 Linux, or any host able to run x86-64 Docker images
-- **Docker**: version >= 20.10
-- **RAM**: 16 GB recommended. Ultimate's JVM may grow up to 12 GB (`-Xmx12G` in each release's
-  `Ultimate.ini`); the smoke test needs far less, and the Docker build runs it with 4 GB.
-- **CPU**: 8 cores recommended. `P-ULR-Par7` lets PaSTTeL use 7 cores, and UPL 5; with fewer, they
-  still run, but their times are no longer those of the paper's configurations.
-- **Disk**: 20 GB free (image, benchmarks and outputs)
-- **Internet**: not needed to load and run the pre-built image. Building the image from the
-  Dockerfile downloads Ubuntu packages; all solvers and Ultimate releases are bundled.
-
----
-
-## Installation
-
-The Docker image is named `pasttel-artifact:vmcai27`.
-
-### Option 1 — Load the pre-built Docker image (recommended)
-
-The artifact ships the image, pre-built for x86-64, as `pasttel-artifact-vmcai27.tar.gz`:
+**Needs:** an x86-64 host with Docker ≥ 20.10, 16 GB of RAM, 8 cores recommended, 20 GB of disk.
+No network access is needed with the pre-built image.
 
 ```bash
-docker load --input pasttel-artifact-vmcai27.tar.gz
-```
+# Load the image shipped with the artifact
+docker load --input pasttel-docker-image-vmcai27.tar.gz
 
-SHA256 of `pasttel-artifact-vmcai27.tar.gz`: [TO COMPLETE: after packaging]
+# Open a shell in the container; everything written to /app/output appears in ./output on the host
+docker run -it --rm -v "$(pwd)/output:/app/output" pasttel-artifact:vmcai27
 
-### Option 2 — Build the Docker image from the Dockerfile
-
-Z3, CVC5 and the two Ultimate releases are bundled in `tools/`; only Ubuntu packages are
-downloaded.
-
-```bash
-# From the artifact root directory:
-docker build -t pasttel-artifact:vmcai27 .
-```
-
-The build takes about 5 minutes on the test machine. It compiles PaSTTeL from source and then runs
-the smoke test as a validation step: if the smoke test fails, the build fails.
-
-### Run the container
-
-```bash
-# Interactive shell:
-docker run -it --rm \
-    -v "$(pwd)/output:/app/output" \
-    pasttel-artifact:vmcai27
-
-# Or with Docker Compose, once the image is loaded or built:
-docker compose up -d
-docker compose exec pasttel bash
-docker compose down            # when done
-```
-
-The `-v "$(pwd)/output:/app/output"` volume mount makes results accessible on the host in `./output/`.
-The commands of this README are run from `/app`, the working directory of the container.
-
----
-
-## Smoke Test (~5 minutes)
-
-The smoke test runs, on 10 small programs, the two comparisons of the paper end to end:
-
-| Part | Baseline | Compared with | Granularity | Settings |
-|------|----------|---------------|-------------|----------|
-| [1] | ULR, `tools/UAutomizer-linux` | P-ULR-Seq and P-ULR-Par7 | per lasso trace | Ultimate defaults |
-| [2] | ULR, `tools/UAutomizer-PaSTTeL-linux` (LassoRanker backend) | UPL, same release (PaSTTeL backend) | per program | ULR: Ultimate defaults; UPL: `tools/settings/BuchiAutomizerPasttel.epf.in` |
-
-In [1], Ultimate extracts the lasso traces of each program and PaSTTeL then replays every
-trace (`scripts/run_pulr.sh`). [2] runs Ultimate twice per program, differing only in the
-rank-synthesis backend (`scripts/run_ulr_vs_upl.sh`). All solving uses Z3 4.16.0; no CVC5 run is
-part of the smoke test.
-
-```bash
-# Inside the container (from /app), or from the repository root outside Docker:
+# Inside the container (working directory /app): both comparisons on 10 small programs
 bash scripts/run_smoke_test.sh
-
-# Options (defaults shown):
-bash scripts/run_smoke_test.sh --ultimate-timeout 120 --pasttel-timeout 120 --par-cpus 7 --output output/smoke
 ```
 
-It takes a few minutes (see *Resource Requirements*). The Docker build runs it once as a
-validation step.
+SHA256 of `pasttel-docker-image-vmcai27.tar.gz`: [TO COMPLETE: after packaging]
 
-### Expected outcome
+Alternatives:
+- With Docker Compose: `docker compose up -d`, `docker compose exec pasttel bash`, and finally
+  `docker compose down`.
+- Build the image yourself: `docker build -t pasttel-artifact:vmcai27 .` This takes about 10
+  minutes, downloads Ubuntu packages, and runs PaSTTeL's test suite and the smoke test: the build
+  fails if either does.
+- Without Docker, on Ubuntu 24.04 x86-64: `bash scripts/install.sh` (section 6), then
+  `bash scripts/run_smoke_test.sh`.
 
-The script ends with one line per result file and exits with status 0 only if all of them hold
-results:
-
-```
-  OK      ULR vs P-ULR-Seq                                 15 row(s)  ulr_vs_pulr/results_P-ULR-Seq_z3.csv
-  OK      ULR vs P-ULR-Par7                                15 row(s)  ulr_vs_pulr/results_P-ULR-Par7_z3.csv
-  OK      ULR vs UPL (per program)                         10 row(s)  ulr_vs_upl/results_ULR_vs_UPL.csv
-```
-
-Any `FAILED` line means that comparison produced nothing; the logs next to its CSV say why. The
-complete expected output is in `logs/smoke_test_output.log`.
-
-These row counts are the same from one run to the next.
-
-### Outputs
-
-In `output/smoke/`:
+**Expected outcome.** The smoke test takes about 2 minutes (1 min 50 s in the container on the test
+machine, section 5) and exits with status 0. It ends with:
 
 ```
-ulr_vs_pulr/                        [1]
-├── results_P-ULR-Seq_z3.csv        per trace: ULR-Baseline and P-ULR-Seq times and verdicts
-├── results_P-ULR-Seq_z3_scatter.html
-├── results_P-ULR-Par7_z3.csv       per trace: ULR-Baseline and P-ULR-Par7
-├── results_P-ULR-Par7_z3_scatter.html
-├── summary_tables.log              comparison tables, one per configuration
-└── lasso_traces/                   dumped traces by category, Ultimate and PaSTTeL logs
-ulr_vs_upl/                         [2], see *Comparing ULR and UPL*
+  OK      ULR-Baseline vs P-ULR-Seq                        15 row(s)  ulr_vs_pulr/results_P-ULR-Seq_z3.csv
+  OK      ULR-Baseline vs P-ULR-Par7                       15 row(s)  ulr_vs_pulr/results_P-ULR-Par7_z3.csv
+  OK      Ultimate-LR vs Ultimate-PL (per program)         10 row(s)  ulr_vs_upl/results_ULR_vs_UPL.csv
 ```
 
-The scatter plots name the Ultimate release on their X axis. Plotly is embedded, so they open
-offline in any browser.
+These lines are followed by the two tables of the paper computed on these 10 programs, and by the
+paths of the scatter plots (`.html` files that open in any browser, offline). A `FAILED` line means
+that comparison produced nothing; the Ultimate and PaSTTeL logs next to its CSV say why. The
+complete expected output is `logs/smoke_test_output.log`.
 
 ### Smoke test programs and expected verdicts
 
-The `benchmarks/smoke_test/full_programs_c_bpl/` directory contains the following 10 programs,
-processed by Ultimate Buchi Automizer to extract lasso traces:
+`benchmarks/smoke_test/full_programs_c_bpl/` holds the 10 programs of the smoke test. Ultimate
+extracts 15 lasso traces from them; all tools agree on every one:
 
-| Program                                                      | Type | Lassos | ULR-Baseline verdict(s)                                                                 |
-|--------------------------------------------------------------|------|--------|-----------------------------------------------------------------------------------------|
-| `2Nested-1.c`                                                | C    | 1      | #1 TERMINATING                                                                          |
-| `AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c` | C | 6  | #1 INFEASIBLE · #2–6 TERMINATING                                                        |
-| `java_DivMinus1.c`                                           | C    | 1      | #1 TERMINATING                                                                          |
-| `recursive.c`                                                | C    | 1      | #1 NONTERMINATING                                                                       |
-| `ATVA2013-nonIntegral-real.bpl`                              | BPL  | 1      | #1 NONTERMINATING                                                                       |
-| `Fibonacci.bpl`                                              | BPL  | 1      | #1 NONTERMINATING                                                                       |
-| `Lobnya-Boolean.bpl`                                         | BPL  | 1      | #1 TERMINATING                                                                          |
-| `loopWithBreak.bpl`                                          | BPL  | 1      | #1 TERMINATING                                                                          |
-| `LTL_Coolant_Nonterminating01.bpl`                           | BPL  | 1      | #1 NONTERMINATING                                                                       |
-| `NonterminationDifficult05_ComplexEigenvalues.bpl`           | BPL  | 1      | #1 NONTERMINATING                                                                       |
+| Program | Language | Category | Traces | ULR-Baseline, P-ULR-Seq, P-ULR-Par7 (per trace) | Ultimate-LR, Ultimate-PL (program) |
+|---|---|---|---|---|---|
+| `2Nested-1.c` | C | ALL_INT_VARS | 1 | TERMINATING | terminating |
+| `AliasDarteFeautrierGonnord-SAS2010-counterex1b_true-termination.c` | C | BOOLEAN_OP | 6 | #1 infeasible, left out; #2–6 TERMINATING | terminating |
+| `java_DivMinus1.c` | C | ALL_INT_VARS | 1 | TERMINATING | terminating |
+| `recursive.c` | C | ALL_INT_VARS | 1 | NONTERMINATING | non-terminating |
+| `ATVA2013-nonIntegral-real.bpl` | Boogie | REAL_VARS | 1 | NONTERMINATING | non-terminating |
+| `Fibonacci.bpl` | Boogie | ALL_INT_VARS | 1 | NONTERMINATING | non-terminating |
+| `Lobnya-Boolean.bpl` | Boogie | BOOLEAN_OP | 1 | TERMINATING | terminating |
+| `loopWithBreak.bpl` | Boogie | ALL_INT_VARS | 1 | TERMINATING | terminating |
+| `LTL_Coolant_Nonterminating01.bpl` | Boogie | ALL_INT_VARS | 1 | NONTERMINATING | non-terminating |
+| `NonterminationDifficult05_ComplexEigenvalues.bpl` | Boogie | REAL_VARS | 1 | NONTERMINATING | non-terminating |
 
-Pre-extracted lasso traces (`.json`) for these programs are also available in
-`benchmarks/smoke_test/json_lassos_from_full_programs/` and can be used directly with
-`run_pasttel_ulr_only.sh` without re-running Ultimate.
-
-Note: P-ULR replays the lasso programs of the categories ALL_INT_VARS, BOOLEAN_OP, REAL_VARS and
-ARRAY_OP, as in the paper. Programs outside these categories are processed by Ultimate only.
+- **Category** is the class a trace is sorted into by the types of its variables
+  (`pasttel/scripts/split_specific.sh`). P-ULR replays the classes ALL_INT_VARS, BOOLEAN_OP,
+  REAL_VARS and ARRAY_OP, as in the paper; the other classes are Ultimate's only, and none occurs
+  here.
+- **The 14 feasible traces** also ship as the JSON PaSTTeL reads, in
+  `benchmarks/smoke_test/json_lassos_from_full_programs/`. PaSTTeL analyses them without Ultimate
+  in about a second (section 6, Running P-ULR standalone).
 
 ---
 
-## Running P-ULR Standalone
+## 3. Replicating the paper
 
-P-ULR takes a single JSON lasso trace as input.
-The main binary is `/app/pasttel/bin/pasttel`. Available options:
+All commands run inside the container, from `/app`. Every script prints its options with `--help`.
+
+Each result of the paper, and where to check it. "Logs" is our run, rebuilt in seconds (3.1); "rerun"
+runs it again, on a subset (3.2) or in full (3.3).
+
+| Paper | Result | Check it with |
+|---|---|---|
+| Table 1 | ULR-Baseline, P-ULR-Seq, P-ULR-Par7 on 5,727 lasso traces: 4,141 terminating, 1,586 non-terminating, and their times (rounded to the second in the paper, to the hundredth by the scripts) | logs: 3.1 [1]; rerun: `run_full_evaluation.sh --parts pulr` |
+| §6, Sequential and Parallel Comparison | P-ULR-Seq gains 1,088 s, and divides the termination time by 11 (1,173 s → 102 s); P-ULR-Par7 gains 1,143 s, and divides the total time by 23 | the totals of Table 1: 1,087.86 s and ×11.5, 1,142.79 s and ×23.8 |
+| §6 | 80 % of the lassos admit an affine ranking function | the command below |
+| Figure 5 | P-ULR-Seq against ULR-Baseline | `logs/results_P-ULR-Seq_z3_scatter.html`, rebuilt by 3.1 [1] |
+| §6, Integrate P-ULR inside Ultimate; Figure 6 | Ultimate-LR vs Ultimate-PL on 1,087 programs: 883 solved by both, 13,491 s → 12,763 s (−5.4 %; 13,490.75 s and 12,762.92 s in the table), 28 solved by Ultimate-PL only, 8 by Ultimate-LR only | logs: 3.1 [2] and `logs/results_ULR_vs_UPL_wall.html`; rerun: `run_full_evaluation.sh --parts upl` |
+| §6 | the Ultimate plugin, 520 lines of code | `ultimate/` (section 6, PaSTTeL inside Ultimate) |
+| Figures 1 and 4, §5 | the example lasso and its ranking function | section 6, Running P-ULR standalone |
+| §3–§5 | Z3 and CVC5, the three linearization modes, the five templates, fixpoint and GNTA, the library, the single interface of a technique | section 6 |
+
+```bash
+# §6: the lassos ULR-Baseline proves terminating, and how many of them with the affine template
+python3 -c "import csv; t = [r for r in csv.DictReader(open('logs/results_P-ULR-Seq_z3.csv')) if r['Result Code'] == 'TERMINATING']; a = sum(r['Algo'].startswith('Affine') for r in t); print(a, 'of', len(t), f'({100 * a / len(t):.0f}%)')"
+# prints: 3425 of 4269 (80%)
+```
+
+Not replicable exactly, and why (details in 3.4): the times, which depend on the machine; the
+technique that wins each P-ULR-Par7 race; and, on a few long-running programs, the lasso traces
+Ultimate extracts. The conclusions the paper draws from them should hold: P-ULR-Seq and P-ULR-Par7
+prove the same traces as ULR-Baseline, much faster; Ultimate-PL solves more programs than
+Ultimate-LR, in less cumulative time on the programs both solve.
+
+### 3.1 From our logs, in seconds
+
+`logs/` holds our own runs. Its scatter plots open directly in a browser:
+`results_P-ULR-Seq_z3_scatter.html` (Figure 5), `results_P-ULR-Par7_z3_scatter.html` and
+`results_ULR_vs_UPL_wall.html` (Figure 6). The analysis scripts rebuild the paper's tables and these
+plots without running Ultimate:
+
+```bash
+mkdir -p output/paper
+
+# [1] ULR-Baseline vs P-ULR: the table and the two scatter plots, from our per-trace CSVs
+cp logs/results_P-ULR-*_z3.csv output/paper/
+python3 pasttel/scripts/benchmark_ultimate_vs_pasttel.py --baseline-name UAutomizer-linux --log \
+    --table output/paper/results_P-ULR-Seq_z3.csv output/paper/results_P-ULR-Par7_z3.csv
+
+# [2] Ultimate-LR vs Ultimate-PL: the table, the CSV and the scatter plot, from our Ultimate logs (1.5 GB unpacked)
+unzip -q logs/ULR_vs_UPL_logs.zip -d output/paper
+python3 pasttel/scripts/benchmark_ulr_vs_upl.py --log-dir output/paper/ULR_vs_UPL_logs --timeout 1000 \
+    --log-scale --output output/paper/results_ULR_vs_UPL.csv
+```
+
+They print the paper's Table 1 and the figures of its Section 6, shown in
+[Section 4](#4-reading-the-results).
+
+PaSTTeL can also re-analyse the paper's 11,282 lasso traces itself, still without Ultimate. The
+ULR-Baseline column then comes from our Ultimate run, and the P-ULR columns from your machine. This
+takes about 20 minutes for P-ULR-Seq and 17 for P-ULR-Par7.
+
+```bash
+# The lasso traces of our run, sorted by category, each with the JSON PaSTTeL read (1.5 GB unpacked)
+unzip -q logs/ULR_vs_PULR_logs.zip -d output/paper
+bash scripts/run_ulr_vs_pulr.sh --only seq,par --lassos output/paper/ULR_vs_PULR_logs/lasso_traces \
+    --output output/replay
+```
+
+### 3.2 Subset: 100 + 100 programs, about 3 hours
+
+```bash
+bash scripts/run_full_evaluation.sh --subset                # both comparisons, results in output/subset/
+bash scripts/run_full_evaluation.sh --subset --parts pulr   # [1] only, about 1 hour
+bash scripts/run_full_evaluation.sh --subset --parts upl    # [2] only, about 2 hours
+```
+
+Each comparison runs on 100 programs drawn at random, with a fixed seed, from its own benchmark:
+- [1] on `benchmarks/subset/ulr_vs_pulr` (55 C, 45 Boogie), from `benchmarks/ulr_vs_pulr`;
+- [2] on `benchmarks/subset/ulr_vs_upl` (96 C, 4 Boogie), from `benchmarks/ulr_vs_upl`.
+
+Their READMEs say how they were drawn and give our results for each program.
+
+Each Ultimate run is capped at 300 s instead of the paper's 3,000 s ([1]) and 1,000 s ([2]).
+PaSTTeL keeps the paper's timeouts. As a result:
+- in [1], 6 of the 100 programs yield fewer lasso traces than in our run;
+- in [2], the 9 programs with a run above 300 s count as unsolved on that side.
+
+`--ultimate-timeout` and `--upl-timeout` raise the caps. The times above come from our logs of these
+very programs.
+
+### 3.3 Full evaluation: about 5.5 days
+
+```bash
+bash scripts/run_full_evaluation.sh                 # both comparisons, results in output/full/
+bash scripts/run_full_evaluation.sh --parts pulr    # [1] only: benchmarks/ulr_vs_pulr, 2,856 programs
+bash scripts/run_full_evaluation.sh --parts upl     # [2] only: benchmarks/ulr_vs_upl, 1,087 programs
+```
+
+| Option | Default (the paper's) | |
+|---|---|---|
+| `--ultimate-timeout` | 3000 s | per Ultimate run in [1] |
+| `--upl-timeout` | 1000 s | per Ultimate run in [2], each side |
+| `--input`, `--output` | see above | other programs, other output directory |
+
+PaSTTeL always keeps the paper's settings: 600 s per trace in [1], on 1 and 7 cores; 20 s per lasso
+on 5 cores inside Ultimate-PL, past which LassoRanker takes over. Ultimate dominates the running time. The
+banner printed at start-up gives the worst case, in which every run hits its timeout.
+
+### 3.4 What may differ from our numbers
+
+- **Times** depend on the machine and its load. Run one experiment at a time on an idle machine;
+  the scripts are sequential on purpose. Compare verdict counts and time totals, not individual
+  times.
+- **The lasso traces Ultimate extracts** are identical from run to run on most programs, but not
+  on some long-running ones. We traced this to Java identity hash codes, which change between
+  runs; no Ultimate setting controls it. [1] stays exact, since ULR-Baseline and P-ULR are timed
+  on the very same trace, but the number of traces can vary. In [2], the two runs of a program
+  are independent, so the lassos they analyse can differ.
+- **P-ULR-Par7** races its techniques: the winning technique and its time can change from run to
+  run.
+- **CVC5** is installed for PaSTTeL's test suite, which runs every test with both solvers, and for
+  anyone who wants to try it (`pasttel -s cvc5`). The experiments use Z3 only: `run_ulr_vs_pulr.sh`
+  runs PaSTTeL with `--solver z3`, and Ultimate-PL with PaSTTeL's default solver, Z3.
+
+---
+
+## 4. Reading the results
+
+Each comparison writes a `summary_tables.log`, which the script also prints: the paper's table,
+then the paths of the scatter plots and CSVs. An instance counts as solved by a tool that proved
+it `TERMINATING` or `NONTERMINATING`; timeouts and UNKNOWN answers solve nothing and add no
+time. `*` marks the best value, set in bold in the paper. **VBS**, the virtual best solver,
+solves every instance that any tool solved, each at the best tool's time.
+
+### [1] ULR-Baseline vs P-ULR (`ulr_vs_pulr/`)
+
+On our run:
 
 ```
-Usage: pasttel [options] <filename>
+ULR-Baseline vs P-ULR, ULR-Baseline from UAutomizer-linux
+11282 lasso traces, 5872 analysed (left out: 5069 infeasible, 341 unchecked)
+----------------------------------------------------------------------
+Tool          #Terminating    Time (s)   #Non-Terminating    Time (s)
+----------------------------------------------------------------------
+VBS                   4269      102.54                1586        2.81
+ULR-Baseline          4141     1172.99                1586       19.90
+P-ULR-Seq             4141      101.92                1586        3.11*
+P-ULR-Par7            4141       46.77*               1586        3.33
+----------------------------------------------------------------------
+Tools: the 5727 traces every tool proved. VBS: the traces any tool proved, each at its best time. * best.
+Not proved: ULR-Baseline 17 (UNKNOWN 17) | P-ULR-Seq 145 (UNKNOWN 128, not run 17) | P-ULR-Par7 145 (UNKNOWN 128, not run 17)
+Contradictions: none
+```
+
+- **Tool rows** count the traces that every tool proved, and add up each tool's time on exactly
+  these traces.
+- **Infeasible and unchecked traces** are not termination problems and are left out.
+- **Not proved** gives, for each tool, the traces it did not prove and why. PaSTTeL is not run on
+  the traces ULR-Baseline left UNKNOWN.
+
+There is one scatter plot per P-ULR configuration: `results_P-ULR-Seq_z3_scatter.html` is Figure 5,
+and `results_P-ULR-Par7_z3_scatter.html` the same for P-ULR-Par7, which is not in the paper. As in
+Figure 5, each has two panels, the traces both tools proved terminating (left, green) and
+non-terminating (right, blue), one + per trace, ULR-Baseline time on the X axis and P-ULR time on
+the Y axis; a contradiction would be a black star. Hovering a point gives each tool's verdict, the
+strategy that proved it (a ranking-function template, Fixpoint or GNTA) and its time. The directory
+also holds the per-trace CSVs, `lasso_traces/` with the dumped traces (by category, each
+`lasso_trace_<N>.txt` with the `lasso_trace_<N>.json` PaSTTeL reads) and Ultimate's log of each
+program, and `pasttel_logs/` with PaSTTeL's.
+
+### [2] Ultimate-LR vs Ultimate-PL (`ulr_vs_upl/`)
+
+On our run:
+
+```
+Ultimate-LR vs Ultimate-PL on 1087 C/BPL programs, Ultimate timeout 1000 s per run, wall clock
+---------------------------------------------------------------------------------------------
+Tool          #Solved   #Terminating    Time (s)   #Non-Terminating    Time (s)    Total (s)
+---------------------------------------------------------------------------------------------
+VBS               919             591     8242.93                 328     3853.70      12096.63
+Ultimate-LR       891             558     9442.55                 325     4048.20*     13490.75
+Ultimate-PL       911*            558     8511.54*                325     4251.39      12762.92*
+---------------------------------------------------------------------------------------------
+Ultimate-LR, Ultimate-PL: #Solved by each run; times on the 883 programs both runs solved,
+  Total being the Cumulative Intersection Time. VBS: the programs either run solved, each at its
+  better time. * best.
+Not solved: Ultimate-LR 196 (UNKNOWN 152, TIMEOUT 44) | Ultimate-PL 176 (UNKNOWN 140, TIMEOUT 36)
+Solved by one run only: Ultimate-LR 8, Ultimate-PL 28
+PaSTTeL inside Ultimate-PL: 2284 calls, 2152 conclusive, 132 without result (LassoRanker took over), 10 certificates not mapped back
+Contradictions: none
+```
+
+- **#Solved** is each run's own count.
+- **The time columns** are wall clock on the programs both runs solved, split by verdict.
+  **Total** is the paper's Cumulative Intersection Time.
+- **During the run**, each program prints one line per side: its wall clock and its verdict. The
+  verdict is `proved terminating`, `proved nonterminating`, `TIMEOUT` (stopped at `--timeout`) or
+  `UNKNOWN` (Ultimate gave up, or stopped earlier without a verdict, e.g. on an exception).
+- **The scatter plot** `results_ULR_vs_UPL_wall.html` is Figure 6: terminating programs on the left
+  (green), non-terminating ones on the right (blue). A +: both runs solved the program. A triangle:
+  only one run did; the other answered `TIMEOUT` or `UNKNOWN` and is drawn beyond the red dashed
+  timeout line on its axis (right: Ultimate-LR, top: Ultimate-PL). Programs neither run solved are
+  not drawn.
+- **`logs/`** (in our run: `logs/ULR_vs_UPL_logs.zip`) keeps, for each program and side, Ultimate's
+  log (`.log`), the wall clock (`.wall_ms`) and the exit status (`.exit`, 124 meaning stopped at the
+  time limit).
+
+Ultimate-LR and Ultimate-PL are the same Ultimate release (`tools/UAutomizer-PaSTTeL-linux`), and
+they differ only in the termination analysis backend:
+- **Ultimate-LR** runs with Ultimate's default settings, exactly like the trace extraction of [1].
+- **Ultimate-PL** adds `tools/settings/BuchiAutomizerPasttel.epf.in`, whose only lines select
+  PaSTTeL and set its binary, timeout and cores.
+- **Fallback:** when PaSTTeL does not prove a lasso terminating, Ultimate-PL falls back to LassoRanker's
+  templates.
+
+### CSV columns
+
+- **Per trace** (`results_P-ULR-*_z3.csv`):
+  - `Result Code` is ULR-Baseline's verdict, and `ULR-Baseline (ms)` its time: fixpoint check +
+    termination + non-termination.
+  - `P-ULR-Seq` / `P-ULR-Par7` is PaSTTeL's analysis time, `PaSTTeL-TOTAL` its process time, and
+    `PaSTTeL Status` its verdict.
+  - `Stem/Loop/Total Size Trace` give the size of the trace, and `Algo` the winning technique of
+    each tool.
+- **Per program** (`results_ULR_vs_UPL.csv`):
+  - `Ultimate-LR/Ultimate-PL Verdict` is as above; `NO LOG` means that side was not run.
+  - `Ultimate-LR/Ultimate-PL Wall (ms)` is measured by the script. `Plugin (ms)` and `Lassos (ms)` come from
+    Ultimate's statistics; `benchmark_ulr_vs_upl.py --plot <csv> --col plugin|lassos` plots them.
+  - `Ultimate-PL PaSTTeL Calls / Success / No Result / Unmapped` describe PaSTTeL's activity inside
+    Ultimate-PL.
+  - `Agreement` and `Speedup (wall)` are also given; the speedup only when both runs solved the
+    program.
+
+### Checking the verdicts
+
+What shows that the verdicts behind the tables are right:
+- **Two independent tools agree.** Every table ends with a `Contradictions` line: none on the
+  5,727 traces both ULR-Baseline and P-ULR prove, and none on the 883 programs both Ultimate-LR and
+  Ultimate-PL solve. A contradiction would be listed, and drawn as a black star.
+- **PaSTTeL's certificates are checked, then used.** `pasttel -val` re-checks each ranking function
+  it synthesises with the SMT solver, and Ultimate-PL always calls PaSTTeL with `-val`. The
+  certificate then becomes Ultimate's own termination argument (`PasttelResultMapper`), from which
+  Ultimate builds the proof of the whole program. One that does not translate is discarded and LassoRanker takes over: 10 in
+  our run, counted on the `PaSTTeL inside Ultimate-PL` line.
+- **PaSTTeL's test suite** (247 tests, about 4 minutes): lassos with a known verdict, on both
+  solvers, part of them with `-val` or with one template only, plus checks of the supporting
+  invariants; the regression tests name the bug each guards against. The image is built only if
+  they all pass; to run them again:
+  ```bash
+  cd /app/pasttel && python3 scripts/test_non_regression.py
+  ```
+- **Guards in the scripts.** `run_ulr_vs_upl.sh` stops if PaSTTeL cannot be launched, if the
+  Ultimate release lacks the PaSTTeL backend, or if Ultimate analyses lassos with other settings
+  than ULR-Baseline's (partitioning off, linear synthesis): each would make Ultimate-PL silently
+  measure Ultimate-LR.
+
+---
+
+## 5. Resource requirements
+
+| Run | Time | |
+|---|---|---|
+| `docker build` (optional) or `scripts/install.sh` | about 10 min, or about 3 min | measured on the test machine below |
+| `scripts/run_smoke_test.sh` | about 2 min | measured on the test machine below, in the container |
+| PaSTTeL's test suite (section 4) | about 4 min | measured on the test machine below |
+| From our logs (3.1) | seconds; about 40 min to replay the traces | |
+| `run_full_evaluation.sh --subset` | about 3 h | estimated from our logs |
+| `run_full_evaluation.sh` | about 5.5 days: 86 h for [1], 45 h for [2] | from our logs |
+
+- **RAM:** 16 GB. Ultimate's JVM may grow up to 12 GB (`-Xmx12G` in each release's `Ultimate.ini`).
+- **Cores:** 8 recommended. P-ULR-Par7 uses 7 cores and Ultimate-PL 5. With fewer cores the scripts still
+  run, but no longer in the paper's configuration.
+- **Architecture:** x86-64 only; the Ultimate releases and the solvers are x86-64 binaries. On an ARM
+  host (e.g. Apple Silicon), Docker emulates x86-64: the smoke test still runs, but several times
+  slower, and the times are no longer comparable with ours.
+- **Machines.** Our results (section 4) come from the paper's machine; every time given for the
+  artifact itself (smoke test, build, test suite) was measured on the test machine.
+
+  | | Paper's machine | Test machine |
+  |---|---|---|
+  | Kind | virtual machine | physical machine |
+  | OS | Ubuntu 24.04, x86-64 | Ubuntu 24.04.5 LTS, x86-64, Linux 7.0 |
+  | CPU | Intel Core i5-14400T, 16 vCPUs: 6 performance and 4 efficient cores | AMD Ryzen 7 PRO 6850H: 8 cores, 16 threads |
+  | Frequency | up to 4.5 GHz (performance cores; base 1.5 GHz, efficient cores 1.1–3.2 GHz, Intel's specification) | 3.2 GHz base, up to 4.7 GHz (4,787 MHz) |
+  | Cache | 20 MB (Intel's specification) | L2 4 MiB, L3 16 MiB |
+  | RAM | 30 GiB | 30.6 GiB, and 8 GiB of swap |
+  | Disk | – | NVMe SSD |
+  | Software | Z3 4.16.0 | Docker 27.1.1; in the image: Java 21, Z3 4.16.0, CVC5 1.3.4 |
+- **Timeouts:** the paper's timeouts are the scripts' defaults, all defined in `scripts/common.sh`.
+
+---
+
+## 6. Reusing the artifact
+
+### Scripts
+
+Each script takes its own programs (`.c` or `.bpl` files, or directories of them, with
+`--input`, repeatable) and output directory. The two comparison scripts also take PaSTTeL's timeout
+and cores, and run one side at a time with `--only`. `--help` lists everything.
+
+| Script | Does |
+|---|---|
+| `run_smoke_test.sh` | both comparisons on the 10 smoke-test programs |
+| `run_full_evaluation.sh` | both comparisons, full (default) or `--subset`, part by part with `--parts pulr,upl` |
+| `run_ulr_vs_pulr.sh` | [1] on any programs: Ultimate extracts the traces with ULR-Baseline (`--only ulr`), PaSTTeL replays them on 1 core (`--only seq`) or 7 (`--only par`), on these traces or on others given with `--lassos` |
+| `run_ulr_vs_upl.sh` | [2] on any programs, both sides or one (`--only ultimate-lr`, `--only ultimate-pl`); run with the same `--output`, the two sides give the table |
+
+### Running P-ULR standalone
+
+PaSTTeL, instantiated as P-ULR, analyses one lasso given as JSON, without Ultimate. Its binary is
+`pasttel/bin/pasttel` (`/app/pasttel/bin/pasttel` in the container):
+
+```
+Usage: pasttel/bin/pasttel [options] <filename>
 
 Options:
   -a <terminate|nonterminate|both>   Set analysis mode (default: both)
@@ -244,756 +496,163 @@ Options:
   -nla <overapproximate|underapproximate|none>
                                      Non-linear arithmetic handling (default: overapproximate)
   -mode <linear|nonlinear>           Set analysis mode (default: linear)
+  -val, --validate                   Re-check every synthesized ranking function
+                                     with the SMT solver (default: off)
+  -only <affine|nested|lexicographic|multiphase|piecewise>
+                                     Restrict the termination portfolio to a single
+                                     ranking template (default: run all)
+  -o <text|json>                     Output format (default: text); json is the full report,
+                                     for a program to read
   -h, --help                         Show this help message
 ```
 
-For example:
+`-c 1` is P-ULR-Seq, `-c 7` P-ULR-Par7. For example, the lasso of the paper's Figures 1 and 4
+(Figure 4 shows a simplified version of this file):
 
 ```bash
-# Run on a single built-in example (sequential, Z3).
-# P-ULR should return TERMINATING with Affine Template as the winning strategy.
-/app/pasttel/bin/pasttel -a both -s z3 -c 1 \
-    /app/logs/lasso_traces/ALL_INT_VARS/lasso_traces_xor-01.c/lasso_trace_1.json
+pasttel/bin/pasttel -a both -s z3 -c 1 pasttel/examples/figure1_paper_example.json
 ```
 
-The obtained output:
+prints
 
-```bash
+```
 ============================================================
-                    ANALYSIS REPORT                         
+                    ANALYSIS REPORT
 ============================================================
 
 --- TERMINATION TECHNIQUES ---
 Technique                          Result         Time (s)    Proof
 --------------------------------------------------------------------------------
-RankingBased(AffineTemplate)       TERMINATING    0.011       main_~x~0
+RankingBased(AffineTemplate)       TERMINATING    0.007       f(x) = 2·x + -2·y + -1  [delta = 1]
+                                                              Supporting invariants:
+                                                                [0] y + 2 >= 0
 
 ============================================================
 OVERALL RESULT: TERMINATING
-TOTAL TIME: 0.017 s
+TOTAL TIME: 0.072 s
 TESTED STRATEGIES :
-  - FIXPOINT TIME: 0.002 s
-  - GNTA TIME: 0.003 s
-  - AFFINE TIME: 0.011 s
+  - FIXPOINT TIME: 0.001 s
+  - GNTA TIME: 0.004 s
+  - AFFINE TIME: 0.007 s
   - NESTED TIME: -
+  - RankingBased(2-4-MultiphaseTemplate) TIME: -
+  - RankingBased(2-4-LexicographicTemplate) TIME: -
+  - RankingBased(2-5-PiecewiseTemplate) TIME: -
 ============================================================
-``` 
+```
 
+that is, the ranking function f(x, y) = 2x − 2y − 1 with the supporting invariant y + 2 ≥ 0, found
+by the affine template; a `-` time is a technique the winner cancelled.
 
-A simplified launcher script is available at `scripts/run_pasttel_ulr_only.sh`. It runs PaSTTeL
-alone on lassos already exported as JSON; Ultimate is not involved. Commands are given from the
-repository root, which is `/app` inside the container.
+On many lassos, one line each, e.g. the 14 traces of the smoke test (about a second; the verdicts are
+those of section 2):
 
 ```bash
-# All of PaSTTeL's examples in pasttel/examples/ (103 JSON files), sequential, Z3:
-bash scripts/run_pasttel_ulr_only.sh
-
-# One file:
-bash scripts/run_pasttel_ulr_only.sh --input pasttel/examples/test_erc20_simple.json
-
-# The 14 pre-extracted lassos of the smoke-test programs:
-bash scripts/run_pasttel_ulr_only.sh --input benchmarks/smoke_test/json_lassos_from_full_programs/
-
-# Options (defaults shown):
-#   --solver  z3|cvc5                       z3 (the paper uses Z3 only; CVC5 is installed for trying it)
-#   --cpus    <int>                         1, sequential
-#   --timeout <sec>                         600, per lasso
-#   --strat   both|terminate|nonterminate   both
-#   --output  <log>                         output/pasttel-ulr/pasttel_ulr_results.log
-```
-
-One line is printed per lasso, with PaSTTeL's verdict -- `TERMINATING`, `NON-TERMINATING` or
-`UNKNOWN` -- and its total time, or `TIMEOUT` / `ERROR (exit <code>)` when PaSTTeL did not finish.
-PaSTTeL's full reports go to the `--output` log, and one log per directory is written next to it.
-
----
-
-## Running Ultimate Standalone
-
-`scripts/run_ultimate_only.sh` extracts lasso traces with one Ultimate release, using Ultimate's
-default settings, then sorts them by variable category.
-
-```bash
-# The smoke-test programs, with the release of ULR vs P-ULR (the default):
-bash scripts/run_ultimate_only.sh benchmarks/smoke_test/full_programs_c_bpl
-
-# The whole benchmark, with 300 s per program:
-bash scripts/run_ultimate_only.sh --input benchmarks/C --input benchmarks/BPL \
-    --timeout 300 --output output/my_traces
-
-# Options (defaults shown):
-#   --input <dir|file>        repeatable; a bare path works too
-#   --ultimate-home <dir>     tools/UAutomizer-linux
-#   --output <dir>            output/ultimate/lasso_traces
-#   --timeout <sec>           3000, per program, as in the paper
-#   --toolchain-dir <dir>     tools/toolchains (BuchiAutomizerC.xml for .c, BuchiAutomizerBpl.xml for .bpl)
-```
-
-The traces end up in `<output>/<CATEGORY>/lasso_traces_<program>/lasso_trace_<N>.txt`, one per
-CEGAR iteration, each holding LassoRanker's verdict, timings and proof (the ULR-Baseline). The
-original of each trace also stays in `<output>/lasso_traces_<program>/`, and Ultimate's log is
-`<output>/<program>.ultimate.log`.
-
-PaSTTeL replays the categories `ALL_INT_VARS`, `BOOLEAN_OP`, `REAL_VARS`, and `ARRAY_OP`; the
-others (`UNKNOWN_LOOP`, `FUNCT_SIGNATURE`, `UNDEF_TYPE`, `SI_ARRAYS`, `OTHERS`) are Ultimate only.
-
----
-
-## Comparing ULR and UPL
-
-ULR vs P-ULR measures PaSTTeL **per lasso trace**: Ultimate extracts the traces, and P-ULR replays
-them offline. ULR vs UPL measures it **per program**, end to end, which is what a user of Ultimate
-actually experiences:
-
-| Configuration | Rank synthesis backend | Settings file |
-|---------------|------------------------|---------------|
-| **ULR** | Ultimate's own LassoRanker, one external solver call per template | none: Ultimate's defaults |
-| **UPL** | PaSTTeL for ranking functions, one call per lasso racing all templates in parallel; LassoRanker's templates are never tried | `tools/settings/BuchiAutomizerPasttel.epf.in` |
-
-In both configurations, Ultimate first looks for a non-termination argument with LassoRanker's own
-fixpoint check and GNTA, and only when that fails for a ranking function; UPL hands this second
-step, and only it, to PaSTTeL (`pasttel -a terminate`). On non-terminating lassos GNTA takes a few
-milliseconds, less than launching one PaSTTeL process, so both sides analyse them identically.
-
-Each side uses its backend alone for ranking functions. When PaSTTeL does not prove a lasso
-terminating (UNKNOWN, timeout, or a certificate Ultimate cannot map back), UPL does not retry with
-LassoRanker's templates: the lasso gets no ranking function, exactly as in ULR when all of
-LassoRanker's templates fail, and a program Ultimate cannot decide ends UNKNOWN, which does not
-count as solved. In our runs the fallback almost never paid off: after 24 fallbacks on 220
-programs, LassoRanker found a ranking function once.
-
-Each program is analysed twice by a full Ultimate run. **Both runs use the same Ultimate release by
-default**, so the two configurations differ only in the rank-synthesis backend -- not in build
-date, bundled solvers or upstream revision. ULR runs Ultimate with no settings file, exactly as the
-extraction of the lasso traces for ULR vs P-ULR does. UPL adds a settings file whose only lines
-select the PaSTTeL backend and configure it: `Rank synthesis backend=PASTTEL`, the path of the
-`pasttel` binary, its timeout per lasso and its number of cores. Ultimate's log of a UPL run lists
-them under `Preferences different from defaults after loading the file`, and nothing else.
-
-The Ultimate defaults are those of ULR-Baseline in ULR vs P-ULR: the fork keeps LassoRanker's
-partitioning of lassos into independent components disabled, and its rank and GNTA synthesis
-linear (`Rank analysis` and `GNTA analysis` set to `LINEAR`), as the releases
-`tools/UAutomizer-linux` does. `scripts/run_ulr_vs_upl.sh`
-checks this in Ultimate's log of the first lasso analysed on each side, and stops if the release
-uses other settings, as an older build of the fork does.
-
-### Running it
-
-```bash
-# Default: the 10 smoke-test programs, results in output/ulr_vs_upl/
-bash scripts/run_ulr_vs_upl.sh
-
-# On your own benchmark (a directory is searched recursively for .c and .bpl):
-bash scripts/run_ulr_vs_upl.sh --input /path/to/benchmark --output output/my_run --timeout 600
-
-# On a single program:
-bash scripts/run_ulr_vs_upl.sh --input benchmarks/smoke_test/full_programs_c_bpl/Fibonacci.bpl
-```
-
-For each program, the script prints the wall clock and the verdict of both runs:
-
-```
-[1/4] LeeJonesBen-Amram-POPL2001-Ex5.c
-        ULR  wall    34457 ms  UNKNOWN
-        UPL  wall   114891 ms  UNKNOWN
-```
-
-The verdict is `proved terminating`, `proved nonterminating`, `UNKNOWN` (Ultimate gave up),
-`TIMEOUT` (the run was stopped at `--timeout`) or `CRASHED` (the run ended before the time limit
-without a verdict, typically on an exception). TIMEOUT and CRASHED are told apart by the exit status
-of the run, which the script keeps next to its log: an exception alone does not tell them apart,
-since a run stopped at the time limit may raise one while Ultimate shuts down.
-
-Options (`--help` lists them all):
-
-| Option | Default | Meaning |
-|--------|---------|---------|
-| `--input <dir\|file>` | `benchmarks/smoke_test/full_programs_c_bpl` | programs to analyse |
-| `--output <dir>` | `output/ulr_vs_upl` | where results are written |
-| `--timeout <sec>` | 1000, as in the paper | budget per Ultimate run, applied to both sides |
-| `--pasttel-timeout <sec>` | 20 | budget for PaSTTeL **per lasso**; past it, the lasso gets no ranking function |
-| `--pasttel-cpus <int>` | 5 | cores PaSTTeL may use to race its templates: one per technique of its termination portfolio (affine, nested, multiphase, lexicographic, piecewise) |
-| `--repeat <int>` | 1 | run each configuration N times and report the median |
-| `--ulr-home <dir>` | same release as UPL | run the baseline from a *different* release (see below) |
-| `--skip-ulr`, `--skip-upl` | off | run only one side |
-| `--dump-pasttel-io` | off | keep PaSTTeL's JSON input/output per lasso |
-
-The PaSTTeL timeout is a parameter, `--pasttel-timeout`, substituted into the settings template like
-the other placeholders. Its default is `UPL_PASTTEL_TIMEOUT_DEFAULT` in `scripts/common.sh`, the one
-place it is defined, together with the paper's Ultimate timeouts. Its value, 20 s, is also the
-preference's built-in default in the Ultimate fork. In P-ULR-Par7, every one of the 4,749 traces
-PaSTTeL solved on the paper's benchmark was solved within 20 s. (Sequentially, one trace needs more: `CounterExp-4bit.c`, 32.4 s.)
-
-Two more defaults are deliberate and worth knowing. PaSTTeL's I/O dumping is **off**, because writing one
-JSON file per lasso lands inside the very interval the comparison measures. And the script is
-**strictly sequential**: `--pasttel-cpus 5` already runs five solver threads, and PaSTTeL can use
-several GB on heavy instances, so do not wrap this script in `xargs -P`.
-
-On short-running programs the gap between the two backends is of the same order as JVM startup
-noise; `--repeat 3` is recommended there. The median run is the one reported, and its log is kept as
-the canonical one, so the plugin and lasso timings always describe the same run as the wall clock
-printed beside them.
-
-### Outputs
-
-In the `--output` directory:
-
-| File | Contents |
-|------|----------|
-| `summary_tables.log` | one summary table per timing, PaSTTeL's activity inside UPL, contradictions |
-| `results_ULR_vs_UPL.csv` | one row per program, 21 columns (see *CSV Output Format*) |
-| `results_ULR_vs_UPL_wall.html` | summary table + scatter plot, total wall clock |
-| `results_ULR_vs_UPL_plugin.html` | idem, BuchiAutomizer plugin time only |
-| `results_ULR_vs_UPL_lassos.html` | idem, lasso analysis time only |
-| `logs/<prog>.{ulr,upl}.log` | raw Ultimate output for both configurations |
-| `logs/<prog>.{ulr,upl}.wall_ms`, `.exit` | wall clock measured by the script, and the run's exit status (124: stopped at the time limit) |
-| `BuchiAutomizerPasttel.epf` | the settings actually used, for traceability |
-
-Three timings are recorded side by side because they answer different questions: **wall clock**
-includes JVM startup and parsing, **plugin** isolates BuchiAutomizer, and **lassos** isolates the
-part PaSTTeL actually replaces. Each HTML file shows one of them, in the same layout as the P-ULR
-plots: a summary table, then a scatter plot on log-log axes named after the backend and settings
-file. Plotly is embedded when installed, so the figures open without network access.
-
-The summary table sorts the programs by outcome, and gives for each category the number of programs
-and the cumulated time of each side:
-
-| Category | Meaning |
-|----------|---------|
-| Terminating / Non-terminating (common) | both runs proved the same verdict |
-| Contradiction | both runs concluded, with opposite verdicts |
-| Solved by ULR only / by UPL only | one run concluded, the other timed out, answered UNKNOWN or crashed |
-| Solved by neither | no run concluded; counted in the table, not plotted |
-
-Only `TERMINATING` and `NONTERMINATING` count as solved: a run that timed out, gave up or crashed
-answered nothing, however quickly it ended. Such a side is placed at the PAR-2 penalty, twice the
-Ultimate timeout, both in the table and on the plot. `PAR-2 total` sums, on that basis, the programs
-solved by at least one of the two runs: those neither solved would add the same penalty to both
-sides and only blur the difference between the backends. Programs where both runs crashed say
-nothing about either backend and are left out; `summary_tables.log` gives their number.
-
-### Reading the PaSTTeL columns
-
-`UPL PaSTTeL Calls`, `UPL PaSTTeL Success` and `UPL No Result` come from Ultimate's own log and show
-how often the PaSTTeL backend was consulted, how often it concluded, and how often it did not. A program can legitimately
-show 0 calls: the verdict was reached before rank synthesis was ever needed, e.g. every lasso of a
-non-terminating program was settled by the fixpoint check or GNTA. `UPL Unmapped` counts
-certificates PaSTTeL produced but Ultimate could not map back to its own representation; a non-zero
-value there is worth investigating.
-
-A **contradiction** -- both configurations concluding on the same program, with opposite verdicts --
-is a soundness signal rather than a performance one, and is listed explicitly at the end of
-`summary_tables.log` rather than averaged away. One side failing (TIMEOUT, UNKNOWN, CRASHED) while the
-other concludes, or both failing differently, is not a contradiction.
-
-### Regenerating tables and figures without re-running Ultimate
-
-The parser reads the saved logs, so tables and plots can be rebuilt in seconds:
-
-```bash
-python3 pasttel/scripts/benchmark_ulr_vs_upl.py \
-    --log-dir output/my_run/logs \
-    --output  output/my_run/results_ULR_vs_UPL.csv \
-    --timeout 600 --summary --summary-file output/my_run/summary_tables.log
-
-python3 pasttel/scripts/benchmark_ulr_vs_upl.py \
-    --plot output/my_run/results_ULR_vs_UPL.csv --col wall --log-scale \
-    --output output/my_run/results_ULR_vs_UPL_wall.html
-```
-
-### Comparing releases instead of backends
-
-`--ulr-home` runs the baseline from a different Ultimate release, which is a **different
-experiment**: it compares builds, not backends. The script prints a warning when the two sides come
-from different releases, and the figures carry the release names in their axis labels, so that the
-two protocols cannot be mistaken for one another.
-
-### Expected time
-
-The worst case is `2 x number_of_programs x timeout`. On the 10 smoke-test programs it takes about
-two minutes in total. Start with a sample before launching a large benchmark.
-
----
-
-## Full Evaluation
-
-### Subset version (about 3 hours)
-
-`scripts/run_full_evaluation.sh --subset` runs the two comparisons of the smoke test on
-`benchmarks/subset`: 100 programs drawn at random, with a fixed seed, from the 2,860 programs of
-the paper's runs (55 C and 45 Boogie programs, the paper's proportions). `benchmarks/subset/README`
-says how they were drawn and gives, for each program, the paper's verdict, extraction time and
-number of lasso traces.
-
-```bash
-bash scripts/run_full_evaluation.sh --subset
-
-# One part only, e.g. ULR vs UPL (about 2 hours):
-bash scripts/run_full_evaluation.sh --subset --parts upl
-
-# With --subset, the defaults become (shown):
-bash scripts/run_full_evaluation.sh --subset --ultimate-timeout 300 --upl-timeout 300 --output output/subset
-```
-
-Every Ultimate run is capped at 300 s, instead of 3,000 s in [1] and 1,000 s in [2]. PaSTTeL
-keeps the paper's timeouts: 600 s per trace, and 20 s per lasso inside UPL. The subset takes about
-3 hours on the paper's machine: about 1 h for [1] and 2 h for [2]. These are estimates from the
-paper's logs. [1] comes from the paper's own extraction of these 100 programs. [2] was measured for
-8 of the 100 programs, and the others are extrapolated from their extraction time.
-[TO COMPLETE: re-estimate [2] from the ULR vs UPL run of the rebuilt release]
-The banner prints this estimate next to the worst case, 25 hours, which applies only if every
-Ultimate run hits its timeout.
-
-The shorter timeout changes a few programs compared with the paper:
-- In [1], 6 of the 100 programs took more than 300 s to extract their lasso traces in the paper's
-  run, and 2 of them were stopped at 3,000 s. With the subset's timeout, these 6 dump fewer traces.
-- In [2], a program whose ULR or UPL run exceeds 300 s counts as unsolved on that side, where the
-  paper's 1,000 s may have been enough. In the ULR vs UPL runs measured so far, 9% of the programs
-  had a run above 300 s.
-
-Everything else is set up as in the paper. For a closer match, raise `--ultimate-timeout` ([1])
-and `--upl-timeout` ([2]); this makes the run longer, and the banner then prints no estimate.
-
-The outputs go to `output/subset/`, with the same layout as the smoke test.
-
-### Full version (full benchmark, several days)
-
-`scripts/run_full_evaluation.sh` runs the two comparisons of the smoke test on the full benchmark,
-`benchmarks/C` and `benchmarks/BPL` (3,430 programs):
-
-```bash
-bash scripts/run_full_evaluation.sh
-
-# One part only, e.g. ULR vs UPL (parts: pulr for [1], upl for [2]):
-bash scripts/run_full_evaluation.sh --parts upl
-
-# Options (defaults shown):
-#   --subset                    off; on: benchmarks/subset with 300 s Ultimate runs (Subset version)
-#   --input <dir|file>          repeatable; benchmarks/C and benchmarks/BPL
-#   --output <dir>              output/full
-#   --parts <list>              pulr,upl
-#   --ultimate-timeout <sec>    3000, per Ultimate run (pulr), as in the paper
-#   --upl-timeout <sec>         1000, per Ultimate run (upl), as in the paper
-#   --pasttel-timeout <sec>     600, per PaSTTeL run on one trace (pulr), as in the paper
-#   --upl-pasttel-timeout <sec> 20, PaSTTeL budget per lasso inside Ultimate (upl)
-#   --par-cpus <int>            7, cores of P-ULR-Par7 (pulr)
-#   --upl-pasttel-cpus <int>    5, cores PaSTTeL uses inside UPL (upl)
-```
-
-Ultimate dominates the running time: `pulr` runs it once per program and `upl` twice, each run
-capped by its timeout, and the script prints the resulting worst case when it starts. With the
-paper's timeouts this is 3,430 x 3,000 s plus 2 x 3,430 x 1,000 s, about 198 days. Most programs
-finish far below the timeout, so in practice expect about 11 days (see *Resource Requirements*).
-PaSTTeL is comparatively cheap: on the 11,282 lasso traces of the paper's ULR vs P-ULR run, the
-P-ULR-Seq pass took about 20 minutes and the P-ULR-Par7 pass about 17.
-
-Outputs in `output/full/`, with the same layout as the smoke test:
-
-```
-ulr_vs_pulr/          [1] ULR (UAutomizer-linux) vs P-ULR-Seq and P-ULR-Par7
-ulr_vs_upl/           [2] ULR vs UPL (UAutomizer-PaSTTeL-linux), see *Comparing ULR and UPL*
-```
-
-`ulr_vs_pulr/` holds `results_P-ULR-Seq_z3.csv`, `results_P-ULR-Par7_z3.csv`, their
-`_scatter.html` plots, `summary_tables.log` and `lasso_traces/`. The script exits non-zero if a
-selected part produced no result.
-
-The scatter plot shows Ultimate LassoRanker time (x-axis) vs PaSTTeL time (y-axis). Points are colored by verdict agreement:
-- **Green**: both agree TERMINATING
-- **Blue**: both agree NON-TERMINATING
-- **Orange**: PaSTTeL timeout
-- **Red**: unknown PaSTTeL verdict
-- **Purple**: algorithm not supported by PaSTTeL
-
-### Comparing with paper results
-
-`logs/` holds the paper's own runs, in the formats the scripts produce, so that the analysis
-scripts run on them unchanged:
-
-- [1] `logs/FINAL_VMCAI27_NOSHUFFLE_LASSOS.zip`: ULR vs P-ULR-Seq and P-ULR-Par7, on the 2,860
-  programs of the paper's run and their 11,282 lasso traces. Unpacked, it has the layout of
-  `output/full/ulr_vs_pulr/`. It also holds the same comparison with CVC5, which the paper does
-  not use.
-- [2] `logs/ulr_vs_upl/`: ULR vs UPL, with the layout of `output/full/ulr_vs_upl/`.
-  [TO COMPLETE: replace with the run of the rebuilt release -- the 220 programs there were run
-  with partitioning on and nonlinear synthesis on the ULR side, through the former settings files]
-- `logs/smoke_test_output.log`: the expected output of the smoke test.
-
-The tables and plots can be rebuilt from these logs in seconds. PaSTTeL can also replay the
-paper's lasso traces without running Ultimate. The ULR-Baseline times then still come from the
-traces, i.e. from the paper's own Ultimate run:
-
-```bash
-# [1] Unpack the paper's run (1.6 GB):
-unzip -q logs/FINAL_VMCAI27_NOSHUFFLE_LASSOS.zip -d output/paper
-P=output/paper/FINAL_VMCAI27_NOSHUFFLE_LASSOS
-
-# [1] The paper's table and scatter plot for P-ULR-Seq, rebuilt from its CSV
-#     (use results_P-ULR-Par7_z3.csv for P-ULR-Par7):
-python3 pasttel/scripts/benchmark_ultimate_vs_pasttel.py --plot $P/results_P-ULR-Seq_z3.csv \
-    --log --timeout 600 --baseline-name UAutomizer-linux
-
-# [1] PaSTTeL replays the 11,282 traces sequentially: about 20 minutes on the paper's machine.
-#     For P-ULR-Par7, use --cpus 7 and results_P-ULR-Par7_z3.csv.
-mkdir -p output/replay
-for d in $P/lasso_traces/lasso_traces_*/; do
-    python3 pasttel/scripts/benchmark_ultimate_vs_pasttel.py --input-dir "$d" \
-        --pasttel-bin pasttel/bin/pasttel --output output/replay/results_P-ULR-Seq_z3.csv \
-        --check lasso --parse normal --strat both --solver z3 --cpus 1 --timeout 600 > /dev/null 2>&1
+for f in benchmarks/smoke_test/json_lassos_from_full_programs/*/*.json; do
+    printf '%-16s %s\n' "$(pasttel/bin/pasttel -a both -s z3 -c 1 -t 60 "$f" | sed -n 's/^OVERALL RESULT: //p')" "$f"
 done
-python3 pasttel/scripts/benchmark_ultimate_vs_pasttel.py --plot output/replay/results_P-ULR-Seq_z3.csv \
-    --log --timeout 600 --baseline-name UAutomizer-linux
-
-# [2] The ULR vs UPL table and wall-clock plot, rebuilt from the Ultimate logs:
-python3 pasttel/scripts/benchmark_ulr_vs_upl.py --log-dir logs/ulr_vs_upl/logs \
-    --output output/paper_ulr_vs_upl/results_ULR_vs_UPL.csv --timeout 1000 --summary
-python3 pasttel/scripts/benchmark_ulr_vs_upl.py --plot output/paper_ulr_vs_upl/results_ULR_vs_UPL.csv \
-    --col wall --log-scale --output output/paper_ulr_vs_upl/results_ULR_vs_UPL_wall.html
 ```
 
-For the subset, `benchmarks/subset/README` gives the paper's verdict, extraction time and number of
-traces for each of its 100 programs.
+The input is a lasso in JSON, its formulas in SMT-LIB syntax, as in the paper's Figure 4:
+`program_vars` (the names), `var_types` (`Int`, `Real`, `Bool` or an array sort), and the `stem` and
+`loop` transitions, each a `formula` over SSA copies of the variables with the maps `in_vars` and
+`out_vars` from each variable to its copy. `pasttel/examples/` holds 103 of them, and
+`pasttel/include/parser/json_trace_parser.h` the full format. `benchmark_ultimate_vs_pasttel.py`
+converts Ultimate's lasso traces to it.
 
-### Correspondence with paper figures and tables
+### Installing without Docker
 
-**Smoke test** (`output/smoke/`):
+`scripts/install.sh` installs everything on Ubuntu 24.04 x86-64. The Dockerfile builds the image
+with this very script, so a machine it sets up runs every script of the artifact as the image does.
 
-| Output file                                    | Paper element                                                       |
-|------------------------------------------------|---------------------------------------------------------------------|
-| `summary_tables.log`                           | Table.1 and Fig.7 — P-ULR-Seq vs ULR-Baseline (Z3) — subset [paper] |
-| `smoke_results_P-ULR-Seq_z3.csv`               | Table 1 — P-ULR-Seq vs ULR-Baseline (Z3) — subset [paper]           |
-| `smoke_results_P-ULR-Seq_z3_scatter.html/.pdf` | Figure 6 — ULR-Baseline vs P-ULR-Seq (Z3) — subset [paper]          |
-| `smoke_results_P-ULR-Seq_cvc5.csv`	         | P-ULR-Seq vs ULR-Baseline (CVC5) — subset [not in the paper]        |
-| `smoke_z3_vs_cvc5.html/.pdf`                   | Z3 vs CVC5 on P-ULR-Seq — subset [paper]                            |
+```bash
+bash scripts/install.sh              # asks for sudo, for apt
+export PATH="$PWD/pasttel/solvers/bin:$PATH"             # the two lines it prints at the end:
+export LD_LIBRARY_PATH="$PWD/pasttel/solvers/lib"        # Ultimate needs this z3 on PATH
+bash scripts/run_smoke_test.sh
+```
 
-**Full evaluation** (`output/full/`):
+It installs, in this order:
+1. with apt: `build-essential`, `libboost-dev`, `libedit2`, `gawk`, `unzip`, `python3`,
+   `python3-plotly` and `openjdk-21-jre-headless`;
+2. Z3 4.16.0 and CVC5 1.3.4, from `tools/solvers/`, into `pasttel/solvers/` (`--prefix` to choose);
+3. PaSTTeL, built with `make` in `pasttel/`;
+4. then it checks that PaSTTeL proves the paper's Figure 1 lasso terminating.
 
-| Output file                                    | Paper element                                                       |
-|------------------------------------------------|---------------------------------------------------------------------|
-| `results_P-ULR-Seq_z3.csv`                     | Table 1 — P-ULR-Seq vs ULR-Baseline (Z3) [paper]                    |
-| `results_P-ULR-Seq_z3_scatter.html/.pdf`       | Figure 6 — ULR-Baseline vs P-ULR-Seq (Z3) [paper]                   |
-| `results_P-ULR-Par4_z3.csv`                    | Table 1 — P-ULR-Par4 vs ULR-Baseline (Z3) [paper]                   |
-| `results_P-ULR-Par4_z3_scatter.html/.pdf`      | Figure 6 — ULR-Baseline vs P-ULR-Par4 (Z3) [paper]                  |
-| `results_P-ULR-Par4_cvc5.csv`                  | Table 1 — P-ULR-Par4 vs ULR-Baseline (CVC5) [paper]                 |
-| `results_P-ULR-Par4_cvc5_scatter.html/.pdf`    | Figure 6c — ULR-Baseline vs P-ULR-Par4 (CVC5) [not in the paper]    |
-| `full_z3_vs_cvc5.html/.pdf`                    | Figure 7 — Z3 vs CVC5 on P-ULR-Par4 [paper]                         |
+On another Linux distribution, install the equivalents of step 1 yourself and run
+`bash scripts/install.sh --no-apt`. The solver archives need glibc 2.39 or newer.
 
-**ULR vs UPL** (`output/ulr_vs_upl/`, produced by `scripts/run_ulr_vs_upl.sh`):
+### Extending PaSTTeL
 
-| Output file                        | Paper element                                                  |
-|------------------------------------|----------------------------------------------------------------|
-| `summary_tables.log`               | Per-program table, verdict counts, and global resolution times  |
-| `results_ULR_vs_UPL.csv`           | Raw data behind those tables                                    |
-| `results_ULR_vs_UPL_wall.html`     | ULR vs UPL, total wall clock                                    |
-| `results_ULR_vs_UPL_plugin.html`   | ULR vs UPL, BuchiAutomizer plugin time                          |
-| `results_ULR_vs_UPL_lassos.html`   | ULR vs UPL, lasso analysis time                                 |
+The paper's components (Section 4) are, in `pasttel/`:
+- **AnalysisInterface**, the sequential analyzer: `include/analysis_technique_interface.h`
+  (`init`, `analyze`, `getProof`, `getName`, and `cancel`, which has a default). A new technique
+  implements this class.
+- **PortfolioAnalyzer**: `PortfolioOrchestrator`, `src/portfolio_orchestrator.cpp`, which runs the
+  registered techniques concurrently and returns the first conclusive result.
+- **SMTSolverInterface**: `include/smtsolvers/SMTSolverInterface.h`, implemented for Z3 and CVC5.
+- **init-PaSTTeL** (Algorithm 1): `runAnalysis()` in `src/pasttel.cpp`, which registers each
+  technique with `addTechnique`; a new technique is one more `addTechnique` line there.
 
-**Pre-computed paper results** (`logs/`):
+`python3 scripts/test_non_regression.py` runs the test suite (section 4). `make lib` builds
+`bin/libpasttel.a`, the library of the paper; its entry point is `runAnalysis()` in
+`include/pasttel.h`, on a `LassoProgram` (`include/lasso_program.h`).
 
-| File                                                 | Paper element                                                  |
-|------------------------------------------------------|----------------------------------------------------------------|
-| `result_atva26_sequential_z3.csv`                    | Table 1 — P-ULR-Seq (Z3), full benchmark [paper]               |
-| `result_atva26_sequential_z3_scatter.html/.pdf`      | Figure 6 — P-ULR-Seq (Z3) scatter [paper]                      |
-| `result_atva26_sequential_cvc5.csv`                  | Table 1 — P-ULR-Seq (CVC5), full benchmark [not in the paper] |
-| `result_atva26_sequential_cvc5_scatter.html/.pdf`    | Figure 6 — P-ULR-Seq (CVC5) scatter [not in the paper]        |
-| `result_atva26_parallel4_z3.csv`                     | Table 1 — P-ULR-Par4 (Z3), full benchmark [paper]              |
-| `result_atva26_parallel4_z3_scatter.html/.pdf`       | None — P-ULR-Par4 (Z3) scatter [paper]                         |
-| `result_atva26_parallel4_cvc5.csv`                   | Figure 7 — P-ULR-Par4 (CVC5), full benchmark [paper]           |
-| `result_atva26_parallel4_cvc5_scatter.html/.pdf`     | None — P-ULR-Par4 (CVC5) scatter [not in the paper]           |
-| `comparison_par4_z3_cvc5.html/.pdf`                  | Figure 7 — Z3 vs CVC5 on P-ULR-Par4 [paper]                    |
+### PaSTTeL inside Ultimate
+
+The two Ultimate releases are two versions of Ultimate: 0.3.1 for ULR-Baseline vs P-ULR, and 0.3.2,
+the later version into which we integrated PaSTTeL, for Ultimate-LR vs Ultimate-PL.
+
+`ultimate/` holds the sources of 0.3.2, from which `tools/UAutomizer-PaSTTeL-linux` is built:
+upstream Ultimate plus the plugin of the paper's Section 6, about 520 lines of code: the three classes of
+`trunk/source/Library-LassoRanker/.../lassoranker/pasttel/` and a hook in BuchiAutomizer's
+`LassoCheck.java`:
+- `LassoJsonWriter` writes Ultimate's lasso as PaSTTeL JSON;
+- `PasttelExecutor` runs `pasttel`;
+- `PasttelResultMapper` turns PaSTTeL's certificate back into Ultimate's own objects.
+
+The backend is selected by four preferences: backend, binary path, timeout and cores. The fork
+also keeps the lasso-analysis defaults of the release of [1]: partitioning off, linear synthesis.
+`run_ulr_vs_upl.sh` checks these settings in Ultimate's log and stops if a release differs.
+
+`ultimate-verifier/` holds the sources of 0.3.1, from which `tools/UAutomizer-linux` is built: the
+release that extracts the lasso traces of [1], whose LassoRanker dumps each lasso with its own
+timings. Each
+release records the commit it was built from (`version.properties` in its core plugin). To rebuild
+a release, follow Ultimate's build instructions (<https://github.com/ultimate-pa/ultimate>).
 
 ---
 
-## Reproducibility
-
-What to expect when re-running the experiments, and why some numbers can differ from ours.
-
-### Timings
-
-All times depend on the machine, and on its load. Run the experiments on an otherwise idle machine,
-one at a time: the scripts are sequential for that reason, and two Ultimate or PaSTTeL runs sharing
-the cores would slow each other down. Programs close to a timeout may be solved on a fast machine
-and not on a slow one. Compare verdict counts, and totals and medians of the times, rather than
-individual times.
-
-### The lassos Ultimate extracts
-
-On most programs Ultimate is deterministic: run twice with the same release, settings and Z3, it
-analyses the same sequence of lassos and reports the same verdict, iterations and ranking
-functions. On some long-running programs it is not. We ran ULR (`tools/UAutomizer-PaSTTeL-linux`,
-LassoRanker backend) three times on 8 programs taken at random among the paper's programs with 4 to
-12 lassos:
-
-| Programs | Outcome of the 3 runs |
-|----------|-----------------------|
-| 7 of 8 | identical lasso sequences, verdicts, iterations and ranking functions -- including 3 programs whose three runs hit the 180 s timeout on the same lasso |
-| `Ackermann_true-termination.c` | the runs pick different lassos from the 12th or the 16th lasso on, and all three hit the timeout |
-
-The code of Ultimate and LassoRanker uses no unseeded randomness (the only random generator has a
-fixed seed), and no solver query returned `unknown` before the divergence. When the runs part, the
-abstraction automaton still has the same size in all of them: the same automaton yields a different
-lasso. The likely cause is the order in which Ultimate iterates over hash-based collections of
-objects hashed by identity, since the JVM assigns identity hash codes differently from one run to
-the next. With sequential identity hash codes (`-XX:+UnlockExperimentalVMOptions -XX:hashCode=3`),
-the two runs that started from the same hash counter produced the same 29 lassos, and only the run
-whose counter was off by one diverged. This cannot be pinned down further from outside: Eclipse,
-OSGi and the C parser start multithreaded and consume a varying number of hash codes before the
-analysis begins. No Ultimate setting controls it.
-
-What this means for each comparison:
-
-- **ULR vs P-ULR** (per lasso trace): each comparison stays exact, since ULR-Baseline and P-ULR are
-  measured on the very same dumped trace. What can vary on long-running programs is the *set* of
-  traces extracted, hence the number of rows.
-- **ULR vs UPL** (per program): the two sides are independent Ultimate runs, so on a long-running
-  program they may explore different lassos. `--repeat` reports the median of several runs.
-
-PaSTTeL's parallel configuration (`P-ULR-Par7`) races its techniques, and the first one to
-conclude wins: which technique is reported, and its time, can differ between runs.
-
----
-
-## CSV Output Format
-
-### Per-lasso-trace CSV (`run_full_evaluation.sh`, `run_smoke_test.sh`)
-
-The results CSV contains the following columns:
-
-| Column                  | Description                                                                    |
-|-------------------------|--------------------------------------------------------------------------------|
-| `Trace Name`            | Path to the lasso trace file                                                   |
-| `Result Code`           | Ultimate LassoRanker verdict: TERMINATING, NONTERMINATING, INFEASIBLE, UNKNOWN |
-| `Fixpoint (ms)`         | Time for fixpoint computation in ULR                                           |
-| `Termination (ms)`      | Time for termination analysis in ULR                                           |
-| `Nontermination (ms)`   | Time for non-termination analysis in ULR                                       |
-| `ULR-Baseline (ms)`     | Total execution time of ULR                                                    |
-| `P-ULR-X`               | Total P-ULR-X execution time (X: Seq, Par2, Par4,...)                          |
-| `PaSTTeL Status`        | PaSTTeL verdict: TERMINATING, NONTERMINATING, TIMEOUT, or NOT SUPPORTED        |
-| `Stem Size`             | Number of stem transitions                                                     |
-| `Loop Size`             | Number of loop transitions                                                     |
-| `Total Size Trace`      | Total transitions                                                              |
-| `Algo`                  | Ranking function template used by ULR-Baseline / P-ULR                         |
-
-### Per-program CSV (`run_ulr_vs_upl.sh`)
-
-`results_ULR_vs_UPL.csv` has one row per **program**, not per lasso trace:
-
-| Column | Description |
-|--------|-------------|
-| `Program`, `Ext` | Program file name and extension (`c` or `bpl`) |
-| `Timeout (s)` | Budget given to each Ultimate run |
-| `ULR Verdict`, `UPL Verdict` | `TERMINATING`, `NONTERMINATING`, `UNKNOWN`, `TIMEOUT` (stopped at the time limit), `CRASHED` (ended earlier without a verdict), or `NO LOG` when that side was skipped |
-| `ULR/UPL Wall (ms)` | Wall clock measured around the Ultimate process by the script |
-| `ULR/UPL Plugin (ms)` | Time attributed to the BuchiAutomizer plugin, from Ultimate's own statistics |
-| `ULR/UPL Lassos (ms)` | Time spent analysing lassos, from the same statistics |
-| `ULR/UPL Iters` | Number of CEGAR iterations |
-| `UPL PaSTTeL Calls` | How many times the PaSTTeL backend was consulted |
-| `UPL PaSTTeL Success` | How many of those calls concluded |
-| `UPL No Result` | How many produced no ranking function (UNKNOWN, timeout, crash or unmapped certificate) |
-| `UPL Unmapped` | Certificates PaSTTeL produced that could not be mapped back |
-| `UPL Techniques` | Winning PaSTTeL techniques, separated by `\|` |
-| `Agreement` | both solved: `SAME` or `CONFLICT` (opposite verdicts); one solved: `UPL ONLY` or `ULR ONLY`; none solved: `BOTH <verdict>` (same failure) or `NEITHER` (different failures); `ULR/UPL MISSING` if a side was not run |
-| `Speedup (wall)`, `Speedup (plugin)` | ULR time divided by UPL time, above 1 when UPL is faster; `-` unless both runs solved the program |
-
-
----
-
-## Resource Requirements
-
-| Run | Duration | Notes |
-|-----|----------|-------|
-| `scripts/run_smoke_test.sh` | [TO COMPLETE: re-measure on the test machine below, after the release rebuild] | 10 programs, the two comparisons |
-| `scripts/run_full_evaluation.sh --subset` | about 3 h on the paper's machine (estimate) | 100 programs of `benchmarks/subset`, each Ultimate run capped at 300 s; see *Subset version* |
-| `scripts/run_full_evaluation.sh` | about 11 days on the paper's machine (estimate) | 3,430 programs, the paper's timeouts; the script prints the worst case at start-up |
-
-Ultimate is the expensive part: ULR vs P-ULR runs it once per program and ULR vs UPL twice, each
-run capped by its timeout: 3,000 s to extract the lasso traces of ULR vs P-ULR, and 1,000 s per run
-of ULR vs UPL, the values the paper used and the scripts' defaults. PaSTTeL is comparatively cheap:
-on the 11,282 lasso traces of the paper's ULR vs P-ULR run, the P-ULR-Seq pass took about 20
-minutes and the P-ULR-Par7 pass about 17.
-
-Both estimates come from the paper's logs. Extracting the lasso traces took 88 h for the 2,860
-programs of the paper's run, about 110 s per program including PaSTTeL. ULR vs UPL took about 160 s
-per program over the 220 programs measured so far. For the full evaluation, this gives
-3,430 x (110 + 160) s, about 11 days.
-[TO COMPLETE: re-estimate from the ULR vs UPL run of the rebuilt release]
-
-The paper's results were produced on:
-- Ubuntu 24.04, x86-64, 16 vCPUs (virtual machine, host processor not exposed), 29 GB RAM
-- Z3 4.16.0
-- timeouts: Ultimate 3,000 s per program to extract lasso traces and 1,000 s per program and per
-  run for ULR vs UPL; PaSTTeL 600 s per lasso trace in ULR vs P-ULR and
-  20 s per lasso inside UPL. These are the scripts' defaults (`scripts/common.sh`).
-
-The artifact was tested on:
-- Ubuntu 24.04.5 LTS, x86-64
-- AMD Ryzen 7 PRO 6850H (8 cores, 16 threads), 30 GB RAM
-- Java 21, Z3 4.16.0, CVC5 1.3.4 (installed, not used by the experiments)
-
----
-
-## Requested Badges
-
-We apply for the three badges.
-
-**Available.** The artifact is archived on Zenodo under the DOI [TO COMPLETE: version DOI]. The
-archive holds everything needed to replicate the paper without any other download: the Docker
-image, PaSTTeL's sources, the sources of the Ultimate fork that integrates PaSTTeL (`ultimate/`),
-the two prebuilt Ultimate releases (`tools/`), the solver archives, the benchmarks, the scripts,
-the pre-computed results of the paper (`logs/`), and the license (`LICENSE`).
-
-**Functional.** The artifact exercises every experiment of the paper and is consistent with its
-claims:
-- *Smoke Test* runs, in a few minutes, the paper's two comparisons end to end -- ULR vs P-ULR and
-  ULR vs UPL -- and fails loudly if either produces nothing.
-- *Full Evaluation* reruns them on a random subset of 100 programs in about 3 hours, or on the
-  full benchmark, whole or part by part (`--parts`).
-- *Correspondence with paper figures and tables* maps every output to the figure or table it
-  reproduces, and `logs/` holds our own results for comparison.
-- *Reproducibility* states what may legitimately differ from our numbers, and why.
-
-**Reusable.** The artifact is meant to be taken apart and reused beyond the paper:
-- PaSTTeL builds without Docker and can be used as a C++ library (*Reusable Badge*, below).
-- Every script takes any benchmark (`--input`, repeatable), any Ultimate release (`--ultimate-home`),
-  and its own timeouts and core count; `--help` documents each of them.
-- The only difference between ULR and UPL is a plain settings file,
-  `tools/settings/BuchiAutomizerPasttel.epf.in`, which switches Ultimate's rank-synthesis backend to
-  PaSTTeL and nothing else.
-- The formats are documented: the per-trace and per-program CSVs (*CSV Output Format*), and the
-  JSON lassos PaSTTeL reads, which any tool can produce.
-- The Dockerfile is a complete, readable specification of the environment.
-
----
-
-## Reusable Badge
-
-This section describes how to use PaSTTeL outside of the Docker evaluation environment,
-and how to reuse the benchmarks for other research.
-
-### Using PaSTTeL without Docker
-
-#### Requirements
-
-- `g++` with C++17 support (GCC ≥ 9)
-- Java 21 JRE (`openjdk-21-jre-headless`) for Ultimate Buchi Automizer
-- Z3 4.16.0 development headers and shared library (`libz3.so`)
-- CVC5 1.3.4 shared build (`libcvc5.so`, `libcvc5parser.so`, and dependencies)
-- Python 3 with `plotly`, `pandas`, and `matplotlib` (for benchmark scripts)
-
-The solver archives in `tools/solvers/` can be used directly:
-```bash
-# Extract Z3
-unzip tools/solvers/z3-4.16.0-x64-glibc-2.39.zip -d /path/to/solvers
-cd /path/to/solvers/z3-4.16.0-x64-glibc-2.39 && mkdir -p lib && cp bin/lib* lib/ && cd ~
-
-# Extract CVC5
-unzip tools/solvers/cvc5-Linux-x86_64-shared.zip  -d /path/to/solvers
-```
-
-System packages required (Ubuntu 24.04):
-```bash
-apt-get install -y build-essential openjdk-21-jre-headless \
-    python3 python3-plotly python3-pandas python3-matplotlib \ 
-    libboost-dev libedit-dev
-```
-
-#### Building PaSTTeL from source
-
-```bash
-cd pasttel/
-
-# Set paths to Z3 and CVC5 install prefixes
-export PASTTEL=/path/to/solvers/z3-4.16.0-x64-glibc-2.39
-export CVC5_DIR=/path/to/solvers/cvc5-Linux-x86_64-shared
-export LD_LIBRARY_PATH=${PASTTEL}/bin:${CVC5_DIR}/lib:${LD_LIBRARY_PATH}
-
-make -j$(nproc)
-# Binary produced at: pasttel/bin/pasttel
-```
-
-
-#### Running PaSTTeL directly
-
-```bash
-# Run PaSTTeL testsuite
-python3 ./scripts/test_non_regression.py
-``` 
-
-```bash
-# Analyse a single lasso trace (JSON format):
-./bin/pasttel -a both -s z3 pasttel/examples/lasso_trace_1.json
-
-# Options:
-#   -a  both|terminate|nonterminate   analysis mode (default: both)
-#   -s  z3|cvc5                       SMT solver (default: z3)
-#   -c  N                             number of CPU cores (default: 1)
-#   -t  N                             timeout in seconds (default: 6000)
-#   -v                                verbose output
-#   -h                                show help
-```
-
-### Using PaSTTeL as a library
-
-PaSTTeL can also be used as a static library (`bin/libpasttel.a`) in other C++17 projects.
-Build it with:
-
-```bash
-cd pasttel/
-make lib
-```
-
-The entry point is `include/pasttel.h` (`runAnalysis()`). Lasso programs can be loaded from
-a JSON trace file via `JsonTraceParser::parseToLasso()` (see `include/parser/json_trace_parser.h`),
-or constructed directly as a `LassoProgram` instance (see `include/lasso_program.h`) to
-integrate PaSTTeL into a larger verification pipeline without the JSON format.
-
-### Reusing the benchmarks
-
-The `benchmarks/C/` and `benchmarks/BPL/` directories contain programs from SV-COMP and
-competition benchmarks. Extracting lasso traces from these programs requires
-**Ultimate Buchi Automizer**, which in turn requires a custom build of Ultimate.
-
-#### Option A — Use the pre-extracted lasso traces (no Ultimate required)
-
-The lasso traces used in the paper are already available in `logs/lasso_traces/`,
-organised by variable category. They can be used directly as input to PaSTTeL or
-any other tool that accepts the ULR `.txt` format:
-
-```bash
-# Run P-ULR on the paper's exact inputs (no Ultimate needed):
-bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/ALL_INT_VARS/
-bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/BOOLEAN_OP/
-bash /app/scripts/run_pasttel_ulr_only.sh --input /app/logs/lasso_traces/REAL_VARS/
-```
-
-#### Option B — Extract new lasso traces with Ultimate (requires building Ultimate)
-
-We modified Ultimate to log lasso traces in a structured format. The modified
-source is included in `tools/ultimate/`. To build it, follow the instructions at
-[https://github.com/ultimate-pa/ultimate](https://github.com/ultimate-pa/ultimate),
-then replace `tools/UAutomizer-linux/` with the newly generated release folder.
-
-Once Ultimate is built and installed, extract lasso traces with:
-
-```bash
-# Run Ultimate Buchi Automizer to generate lasso_trace_*.txt files:
-bash /app/scripts/run_ultimate_only.sh /app/benchmarks/C/ --output /app/output/my_traces/
-
-# Traces are organised by variable category:
-#   ALL_INT_VARS/  — integer-only programs (PaSTTeL supported)
-#   BOOLEAN_OP/    — programs with boolean operations (PaSTTeL supported)
-#   REAL_VARS/     — programs with real variables (PaSTTeL supported)
-#   ARRAY_OP/      — array programs (PaSTTeL supported)
-```
-
-The JSON format expected by PaSTTeL can be generated from any `.txt` lasso trace
-via the `benchmark_ultimate_vs_pasttel.py` script.
-
-### Building the Docker image from the Dockerfile
-
-The `Dockerfile` serves as a complete, reproducible specification of the build environment.
-To build the image from scratch (no internet required):
-
-```bash
-docker build -t pasttel-artifact:vmcai27 .
-```
+## 7. Requested badges
+
+We request the three badges, **Available**, **Functional** and **Reusable**.
+
+**Available.** The artifact is archived on Zenodo, DOI [10.5281/zenodo.23064129](https://doi.org/10.5281/zenodo.23064129). The archive is
+self-contained (section 1): the pre-built Docker image, the README, the sources of PaSTTeL and of both
+Ultimate releases (`ultimate/`, `ultimate-verifier/`), the solvers, the benchmarks, the scripts, our
+logs and the licences.
+
+**Functional.**
+- *Consistent and complete:* each result of the paper, Table 1, Figures 5 and 6, and the figures of
+  Section 6, is mapped to the command that checks it (section 3). Section 3.4 says what cannot be
+  replicated exactly, and why.
+- *Exercisable:* the smoke test runs both comparisons end to end in about 2 minutes (section 2). Our
+  logs rebuild the paper's results in seconds (3.1). The subset reruns both comparisons in about 3
+  hours (3.2), and the full evaluation everything (3.3).
+- *Documented:* the inventory is section 1, the outputs are explained in section 4, and the
+  resources in section 5.
+- *Verification and validation:* no contradiction between the tools, certificates re-checkable with
+  `-val`, and PaSTTeL's 247 tests, run at every image build (section 4, Checking the verdicts).
+
+**Reusable.**
+- One script installs everything without Docker, the one that builds the image (section 6).
+- Every script runs on any C or Boogie program, one step or one side at a time (`--only`), with its
+  own timeouts and cores (section 6).
+- PaSTTeL runs alone on a JSON lasso in SMT-LIB syntax, such as the paper's example, and is also a
+  C++ library (section 6).
+- The paper's architecture is mapped to the code: a new technique implements one interface and is
+  registered in one line (section 6, Extending PaSTTeL).
+- The integration into Ultimate is a separate backend of about 520 lines, whose sources ship with the
+  artifact. A four-line settings file selects it (section 6).
+- The licences are open (section 1), and the versions are fixed: Ubuntu 24.04, Java 21, Z3 4.16.0,
+  CVC5 1.3.4.

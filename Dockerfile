@@ -19,71 +19,37 @@ ENV CVC5_DIR=${PASTTEL_HOME}/solvers
 
 # The two Ultimate releases live in /app/tools/, where scripts/common.sh finds them together with
 # tools/settings/ and tools/toolchains/. No TOOLCHAIN_DIR here: it would override common.sh's default.
-# ULTIMATE_HOME names the release of ULR vs P-ULR for scripts that still take a single release.
+# ULTIMATE_HOME names the release of ULR-Baseline vs P-ULR for scripts that still take a single release.
 ENV ULTIMATE_HOME=/app/tools/UAutomizer-linux
 ENV PATH=${PASTTEL_HOME}/bin:${PASTTEL}/bin:${ULTIMATE_HOME}:${PATH}
 ENV LD_LIBRARY_PATH=${PASTTEL}/lib
 
-RUN apt-get -y update \
-    && apt-get -y upgrade \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        libboost-dev \
-        gawk \
-        wget \
-        unzip \
-        ca-certificates \
-        python3 \
-        python3-pip \
-        python3-plotly \
-        python3-pandas \
-        python3-matplotlib \
-        openjdk-21-jre-headless \
-    && update-alternatives --install /usr/bin/awk awk /usr/bin/gawk 10 \
-    && pip3 install --break-system-packages unittest-xml-reporting \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Z3 (bin/libz3.so + bin/z3 + include/) — from pre-downloaded archive (offline build)
-# One Z3 for every tool in the image: PaSTTeL links this libz3, and the Ultimate releases ship no z3
-# binary of their own, so Ultimate resolves "z3" through PATH to this ${PASTTEL}/bin/z3. The archive name
-# is derived from Z3_VERSION, so the copied archive and the extracted path cannot disagree.
-COPY tools/solvers/z3-${Z3_VERSION}-x64-glibc-2.39.zip /tmp/z3.zip
-RUN mkdir -p ${PASTTEL}/include ${PASTTEL}/lib ${PASTTEL}/bin \
-    && unzip -q /tmp/z3.zip -d /tmp/z3 \
-    && cp /tmp/z3/z3-${Z3_VERSION}-x64-glibc-2.39/include/*.h ${PASTTEL}/include/ \
-    && cp /tmp/z3/z3-${Z3_VERSION}-x64-glibc-2.39/bin/libz3.so ${PASTTEL}/lib/ \
-    && cp /tmp/z3/z3-${Z3_VERSION}-x64-glibc-2.39/bin/z3 ${PASTTEL}/bin/ \
-    && rm -rf /tmp/z3.zip /tmp/z3
-
-# Install CVC5 (shared build: lib/ + include/ + bin/cvc5) — from pre-downloaded archive (offline build)
-COPY tools/solvers/cvc5-Linux-x86_64-shared.zip /tmp/cvc5.zip
-RUN unzip -q /tmp/cvc5.zip -d /tmp/cvc5 \
-    && cp -r /tmp/cvc5/cvc5-Linux-x86_64-shared/include/* ${PASTTEL}/include/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/lib/libcvc5.so*        ${PASTTEL}/lib/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/lib/libcvc5parser.so*  ${PASTTEL}/lib/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/lib/libpoly.so*        ${PASTTEL}/lib/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/lib/libpolyxx.so*      ${PASTTEL}/lib/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/lib/libgmp.so*         ${PASTTEL}/lib/ \
-    && cp    /tmp/cvc5/cvc5-Linux-x86_64-shared/bin/cvc5               ${PASTTEL}/bin/ \
-    && rm -rf /tmp/cvc5.zip /tmp/cvc5
+# System packages, Z3 and CVC5 from tools/solvers/, and PaSTTeL built against them: all done by
+# scripts/install.sh, the script that installs the artifact without Docker (README, section 6), so the
+# image and a machine set up by hand are the same. One Z3 for every tool: PaSTTeL links its libz3, and
+# the Ultimate releases ship no z3 binary of their own, so Ultimate resolves "z3" through PATH to
+# ${PASTTEL}/bin/z3.
+COPY tools/solvers/z3-${Z3_VERSION}-x64-glibc-2.39.zip tools/solvers/cvc5-Linux-x86_64-shared.zip /app/tools/solvers/
+COPY scripts/install.sh scripts/common.sh /app/scripts/
+COPY pasttel/ ${PASTTEL_HOME}/
+RUN bash /app/scripts/install.sh && rm -rf /var/lib/apt/lists/*
+# PaSTTeL's test suite (247 tests, both solvers, every ranking function re-checked with -val on part of
+# them): the image is not built if one fails.
+RUN cd ${PASTTEL_HOME} && python3 scripts/test_non_regression.py
 
 # Prebuilt Ultimate releases (none ships a z3, see above):
-#   UAutomizer-linux           LassoRanker, dumps the lasso traces    -> ULR vs P-ULR
-#   UAutomizer-PaSTTeL-linux   LassoRanker or PaSTTeL rank backend    -> ULR vs UPL (from ultimate/)
+#   UAutomizer-linux           LassoRanker, dumps the lasso traces    -> ULR-Baseline vs P-ULR
+#   UAutomizer-PaSTTeL-linux   LassoRanker or PaSTTeL rank backend    -> Ultimate-LR vs Ultimate-PL (from ultimate/)
 COPY tools/UAutomizer-linux/          /app/tools/UAutomizer-linux/
 COPY tools/UAutomizer-PaSTTeL-linux/  /app/tools/UAutomizer-PaSTTeL-linux/
 COPY tools/settings/                  /app/tools/settings/
 COPY tools/toolchains/                /app/tools/toolchains/
 
-# Copy PaSTTeL source and build
-WORKDIR ${PASTTEL_HOME}
-COPY pasttel/ .
-RUN make -j$(nproc)
-
 # Copy artifact scripts, benchmarks, and logs
 COPY scripts/ /app/scripts/
 COPY benchmarks/ /app/benchmarks/
-COPY logs/ /app/logs/
+# Our runs: the CSVs and scatter plots of [1] and [2], their raw logs (zips), the smoke test's expected output
+COPY logs/*.csv logs/*.html logs/*.zip logs/*.log /app/logs/
 
 RUN chmod +x /app/scripts/*.sh \
     && mkdir -p /app/output

@@ -1,90 +1,69 @@
 #!/bin/bash
-# run_ulr_vs_upl.sh -- Compare Ultimate LassoRanker (ULR) against Ultimate PaSTTeL (UPL).
+# run_ulr_vs_upl.sh -- Compare Ultimate-LR (Ultimate with its LassoRanker backend) against
+# Ultimate-PL (Ultimate with the PaSTTeL backend).
 #
-# Unlike run_full_evaluation.sh, which compares per *lasso trace* (Ultimate
-# extracts traces, PaSTTeL replays them), this script compares per *program*:
+# Unlike run_ulr_vs_pulr.sh, which compares per *lasso trace* (Ultimate extracts
+# traces, PaSTTeL replays them), this script compares per *program*:
 # every input is analysed twice by a full Ultimate run, once with the stock
 # LassoRanker rank-synthesis backend and once with the PaSTTeL backend for
-# ranking functions, with no LassoRanker fallback.
+# ranking functions, which falls back to LassoRanker when PaSTTeL does not conclude.
 #
-# By default both runs use the SAME Ultimate release, so the two configurations
-# differ only in the rank-synthesis backend -- not in build date, bundled solvers
-# or upstream revision. ULR runs Ultimate with no settings file, exactly as
-# run_ultimate_only.sh does to extract the lasso traces of ULR vs P-ULR; UPL adds
+# Both runs use the SAME Ultimate release, tools/UAutomizer-PaSTTeL-linux, so the two
+# configurations differ only in the rank-synthesis backend -- not in build date, bundled solvers
+# or upstream revision. Ultimate-LR runs Ultimate with no settings file, exactly as
+# run_ulr_vs_pulr.sh does to extract the lasso traces of ULR-Baseline vs P-ULR; Ultimate-PL adds
 # tools/settings/BuchiAutomizerPasttel.epf.in, whose only lines select the
 # PaSTTeL backend and configure it (binary, timeout, cores).
-# Pass --ulr-home to run the baseline from a different release instead; that is a
-# deliberately different experiment (comparing builds, e.g. tools/UAutomizer-linux),
-# and the script says so when it happens.
+# Ultimate-LR is not ULR-Baseline: it verifies whole programs, while ULR-Baseline is LassoRanker
+# timed on single lassos.
+#
+# --only ultimate-lr or --only ultimate-pl runs one side. Its logs (<program>.ulr.* or
+# <program>.upl.*) join those already in <output>/logs, so the two sides may be run one after the
+# other with the same --output: the second run prints the table.
 #
 # Usage:
-#   bash scripts/run_ulr_vs_upl.sh [--input <dir|file>]...  (repeatable; default: benchmarks/smoke_test/full_programs_c_bpl)
-#                                  [--output <dir>]         (default: output/ulr_vs_upl)
-#                                  [--timeout <sec>]        (default: 1000, per Ultimate run, as in the paper)
-#                                  [--pasttel-timeout <sec>](default: 20, per lasso inside UPL; see common.sh)
-#                                  [--pasttel-cpus <int>]   (default: 5, cores for PaSTTeL inside UPL; see common.sh)
-#                                  [--repeat <int>]         (default: 1, median over N runs)
-#                                  [--dump-pasttel-io]      (off by default: dumping biases the timings)
-#                                  [--skip-ulr | --skip-upl]
-#                                  [--ulr-home <dir>]       (default: same release as UPL)
-#                                  [--upl-home <dir>]       (default: tools/UAutomizer-PaSTTeL-linux)
-#                                  [--no-plot]
+#   bash scripts/run_ulr_vs_upl.sh [--input <dir|file>]...   (repeatable; default: benchmarks/smoke_test/full_programs_c_bpl)
+#                                  [--only ultimate-lr|ultimate-pl] (default: both sides)
+#                                  [--output <dir>]          (default: output/ulr_vs_upl)
+#                                  [--timeout <sec>]         (default: 1000, per Ultimate run, as in the paper)
+#                                  [--pasttel-timeout <sec>] (default: 20, per lasso inside Ultimate-PL; see common.sh)
+#                                  [--pasttel-cpus <int>]    (default: 5, cores for PaSTTeL inside Ultimate-PL; see common.sh)
 #
-# Environment overrides: APP_DIR, PASTTEL_BIN, ULTIMATE_ULR, ULTIMATE_UPL.
+# Environment overrides: APP_DIR, PASTTEL_BIN, ULTIMATE_UPL.
 
 set -euo pipefail
-
-# Captured before common.sh, which fills in a default and would otherwise make
-# "the user exported ULTIMATE_ULR" indistinguishable from "nobody said anything".
-ULR_HOME_ENV="${ULTIMATE_ULR:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "${SCRIPT_DIR}/common.sh"
 
 declare -a INPUTS=()
+# ulr, upl: the two sides, as their log files are named.
+declare -a CONFIGS=(ulr upl)
+declare -A SIDE=([ulr]=Ultimate-LR [upl]=Ultimate-PL)
 OUTPUT_DIR="${APP_DIR}/output/ulr_vs_upl"
 TIMEOUT="${UPL_ULTIMATE_TIMEOUT_DEFAULT}"
-# Empty: keep the timeout written in the settings template.
 PASTTEL_TIMEOUT="${UPL_PASTTEL_TIMEOUT_DEFAULT}"
 PASTTEL_CPUS="${UPL_PASTTEL_CPUS_DEFAULT}"
-REPEAT=1
-DUMP_IO=false
-SKIP_ULR=false
-SKIP_UPL=false
-PLOT=true
-# Empty means "same release as UPL"; resolved once the options are parsed so that
-# --upl-home also moves the baseline.
-ULR_HOME_OVERRIDE="${ULR_HOME_ENV}"
 
-usage() { sed -n "2,30p" "${BASH_SOURCE[0]}"; }
+usage() { sed -n "2,$(grep -n '^# Environment overrides' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --input)           INPUTS+=("$2");       shift 2 ;;
+        --only)            case "$2" in
+                               ultimate-lr) CONFIGS=(ulr) ;;
+                               ultimate-pl) CONFIGS=(upl) ;;
+                               *) die "--only takes ultimate-lr or ultimate-pl, not '$2'" ;;
+                           esac;                 shift 2 ;;
         --output)          OUTPUT_DIR="$2";      shift 2 ;;
         --timeout)         TIMEOUT="$2";         shift 2 ;;
         --pasttel-timeout) PASTTEL_TIMEOUT="$2"; shift 2 ;;
         --pasttel-cpus)    PASTTEL_CPUS="$2";    shift 2 ;;
-        --repeat)          REPEAT="$2";          shift 2 ;;
-        --dump-pasttel-io) DUMP_IO=true;         shift ;;
-        --skip-ulr)        SKIP_ULR=true;        shift ;;
-        --skip-upl)        SKIP_UPL=true;        shift ;;
-        --ulr-home)        ULR_HOME_OVERRIDE="$2"; shift 2 ;;
-        --upl-home)        ULTIMATE_UPL="$2";    shift 2 ;;
-        --no-plot)         PLOT=false;           shift ;;
         -h|--help)         usage; exit 0 ;;
         *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
     esac
 done
-
-if [ -n "${ULR_HOME_OVERRIDE}" ]; then
-    ULTIMATE_ULR="${ULR_HOME_OVERRIDE}"
-    SAME_RELEASE=false
-else
-    ULTIMATE_ULR="${ULTIMATE_UPL}"
-    SAME_RELEASE=true
-fi
 
 PARSER="${PASTTEL_HOME}/scripts/benchmark_ulr_vs_upl.py"
 EPF_TEMPLATE="${SETTINGS_DIR}/BuchiAutomizerPasttel.epf.in"
@@ -96,17 +75,14 @@ require_file "${PASTTEL_BIN}"  "pasttel binary"
 [ -x "${PASTTEL_BIN}" ] || die "${PASTTEL_BIN} is not executable (run 'make -j' in ${PASTTEL_HOME})"
 require_dir  "${TOOLCHAIN_DIR}" "Ultimate toolchains"
 
-"${SKIP_ULR}" || require_ultimate "${ULTIMATE_ULR}" "ULR"
-if ! "${SKIP_UPL}"; then
-    require_ultimate "${ULTIMATE_UPL}" "UPL"
-    # A release without the PaSTTeL classes accepts the PASTTEL setting and
-    # quietly ignores it, producing a UPL column identical to ULR. Refuse to run
-    # rather than emit a comparison that looks plausible and means nothing.
-    ultimate_has_pasttel "${ULTIMATE_UPL}" \
-        || die "${ULTIMATE_UPL} has no PaSTTeL backend: its LassoRanker library
+require_ultimate "${ULTIMATE_UPL}" "Ultimate-LR and Ultimate-PL"
+# A release without the PaSTTeL classes accepts the PASTTEL setting and
+# quietly ignores it, producing an Ultimate-PL column identical to Ultimate-LR. Refuse to run
+# rather than emit a comparison that looks plausible and means nothing.
+ultimate_has_pasttel "${ULTIMATE_UPL}" \
+    || die "${ULTIMATE_UPL} has no PaSTTeL backend: its LassoRanker library
        (plugins/de.uni_freiburg.informatik.ultimate.lib.lassoranker_*.jar) holds no PasttelExecutor.
        It looks like a stock upstream release. Rebuild it from the ultimate/ submodule."
-fi
 
 # -- Collect inputs (absolute: run_config runs Ultimate from inside its release) ---
 [ ${#INPUTS[@]} -gt 0 ] || INPUTS=("${APP_DIR}/benchmarks/smoke_test/full_programs_c_bpl")
@@ -119,21 +95,13 @@ mkdir -p "${OUTPUT_DIR}"
 OUTPUT_DIR="$(realpath "${OUTPUT_DIR}")"
 LOG_DIR="${OUTPUT_DIR}/logs"
 mkdir -p "${LOG_DIR}"
-DUMP_DIR="${OUTPUT_DIR}/pasttel_io"
-"${DUMP_IO}" && mkdir -p "${DUMP_DIR}"
 
-# -- Materialise the UPL settings from the template ---------------------------
+# -- Materialise the Ultimate-PL settings from the template ---------------------------
 EPF_UPL="${OUTPUT_DIR}/BuchiAutomizerPasttel.epf"
 sed -e "s|@PASTTEL_BIN@|${PASTTEL_BIN}|g" \
     -e "s|@PASTTEL_TIMEOUT@|${PASTTEL_TIMEOUT}|g" \
     -e "s|@PASTTEL_CPUS@|${PASTTEL_CPUS}|g" \
     "${EPF_TEMPLATE}" > "${EPF_UPL}"
-# Only on request: with these two lines Ultimate keeps PaSTTeL's JSON I/O per lasso.
-if "${DUMP_IO}"; then
-    BA_PREF="/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer"
-    printf '%s\n' "${BA_PREF}/Dump\ SMT\ script\ to\ file=true" \
-                   "${BA_PREF}/To\ the\ following\ directory=${DUMP_DIR}" >> "${EPF_UPL}"
-fi
 
 # Only @NAME@ counts: a .epf legitimately contains lines such as '@UltimateCore=0.0.1'.
 LEFTOVERS=$(grep -vE '^[[:space:]]*#' "${EPF_UPL}" | grep -cE '@[A-Z_]+@' || true)
@@ -142,50 +110,43 @@ LEFTOVERS=$(grep -vE '^[[:space:]]*#' "${EPF_UPL}" | grep -cE '@[A-Z_]+@' || tru
 CSV="${OUTPUT_DIR}/results_ULR_vs_UPL.csv"
 
 echo "============================================================"
-echo " ULR vs UPL -- per-program comparison"
+echo " Ultimate-LR vs Ultimate-PL -- per-program comparison"
 echo "============================================================"
 echo " Programs        : ${#PROGRAMS[@]} (from ${INPUTS[*]})"
-if "${SAME_RELEASE}"; then
 echo " Release         : ${ULTIMATE_UPL}"
 echo "                   (both sides; only the rank-synthesis backend differs)"
-else
-echo " ULR release     : ${ULTIMATE_ULR}"
-echo " UPL release     : ${ULTIMATE_UPL}"
-echo "                   NOTE: different builds -- this compares releases, not just backends."
-fi
 echo " pasttel binary  : ${PASTTEL_BIN}"
 echo " z3 (Ultimate)   : $(ultimate_z3 "${ULTIMATE_UPL}")"
-"${SAME_RELEASE}" || echo " z3 (ULR side)   : $(ultimate_z3 "${ULTIMATE_ULR}")"
 echo " Ultimate timeout: ${TIMEOUT}s per run"
-echo " Settings        : ULR none (Ultimate's defaults), UPL ${EPF_UPL}"
+echo " Sides           : $(for c in "${CONFIGS[@]}"; do printf '%s ' "${SIDE[$c]}"; done)"
+echo " Settings        : Ultimate-LR none (Ultimate's defaults), Ultimate-PL ${EPF_UPL}"
 echo " PaSTTeL         : ${PASTTEL_TIMEOUT}s per lasso, ${PASTTEL_CPUS} cpus"
-echo " Repeats         : ${REPEAT} (median reported)"
-echo " I/O dumping     : ${DUMP_IO}"
 echo " Output          : ${OUTPUT_DIR}"
 echo "============================================================"
 echo ""
 
-# run_config <label> <ultimate_home> <settings> <program> <log>
+# run_config <settings> <program> <log>
 # Runs Ultimate once and prints the wall-clock milliseconds on stdout. An empty
 # <settings> runs it with no settings file, i.e. with Ultimate's defaults.
 # Ultimate must run from its own directory: it resolves z3/cvc4/mathsat relatively.
 run_config() {
-    local label="$1" home="$2" settings="$3" prog="$4" log="$5"
+    local settings="$1" prog="$2" log="$3"
     local tc start end status=0
     local -a settings_args=()
     [ -z "${settings}" ] || settings_args=(-s "${settings}")
     tc="$(toolchain_for "${prog}")"
     start=$(now_ms)
-    ( cd "${home}" && timeout "${TIMEOUT}" ./Ultimate \
+    ( cd "${ULTIMATE_UPL}" && timeout "${TIMEOUT}" ./Ultimate \
         -tc "${tc}" "${settings_args[@]}" -i "${prog}" ) > "${log}" 2>&1 || status=$?
     end=$(now_ms)
     # Sidecar <name>.<cfg>.exit: timeout(1) exits with 124 when it had to stop Ultimate, which is how
-    # the parser tells a run that hit the time limit (TIMEOUT) from one that ended early (CRASHED).
+    # the parser tells a run that hit the time limit (TIMEOUT) from one that ended early without a
+    # verdict (UNKNOWN).
     echo "${status}" > "${log%.log}.exit"
     echo "$((end - start))"
 }
 
-# Guard evaluated once, on the first program analysed by UPL: if PaSTTeL cannot
+# Guard evaluated once, on the first program analysed by Ultimate-PL: if PaSTTeL cannot
 # even be launched, every later row would silently be a LassoRanker run.
 upl_preflight_done=false
 upl_preflight() {
@@ -194,7 +155,7 @@ upl_preflight() {
     upl_preflight_done=true
     if grep -q 'PaSTTeL invocation failed' "${log}"; then
         echo "" >&2
-        echo "ERROR: Ultimate could not launch PaSTTeL, so UPL silently degraded to ULR." >&2
+        echo "ERROR: Ultimate could not launch PaSTTeL, so Ultimate-PL silently degraded to Ultimate-LR." >&2
         grep -m1 'PaSTTeL invocation failed' "${log}" >&2
         echo "       Check that ${PASTTEL_BIN} exists and is executable." >&2
         exit 1
@@ -202,7 +163,7 @@ upl_preflight() {
 }
 
 # Guard evaluated once per side, on its first run that analyses a lasso: both sides must do so with
-# the settings of ULR-Baseline in ULR vs P-ULR -- LassoRanker's partitioning off, linear rank and
+# the settings of ULR-Baseline in ULR-Baseline vs P-ULR -- LassoRanker's partitioning off, linear rank and
 # GNTA synthesis -- which only a release built from the current ultimate/ submodule has by default.
 # An older build runs with partitioning on and nonlinear synthesis, silently: every row would then
 # compare against another baseline than the paper's.
@@ -217,7 +178,7 @@ settings_preflight() {
     wrong=$(printf '%s\n' "${found}" | grep -vE ': (false|LINEAR)$' || true)
     if [ -n "${wrong}" ]; then
         echo "" >&2
-        echo "ERROR: ${cfg^^} analysed its lassos with settings other than those of ULR-Baseline:" >&2
+        echo "ERROR: ${SIDE[${cfg}]} analysed its lassos with settings other than those of ULR-Baseline:" >&2
         printf '%s\n' "${wrong}" | sed 's/^/         /' >&2
         echo "       expected: Enable LassoPartitioneer: false, (Non)termination analysis: LINEAR." >&2
         echo "       Rebuild the release from the ultimate/ submodule, whose defaults are these." >&2
@@ -233,68 +194,29 @@ for prog in "${PROGRAMS[@]}"; do
     toolchain_for "${prog}" >/dev/null || { echo "  skip (unsupported extension): ${name}"; continue; }
     printf '[%d/%d] %s\n' "${n}" "${#PROGRAMS[@]}" "${name}"
 
-    for cfg in ulr upl; do
-        [ "${cfg}" = ulr ] && "${SKIP_ULR}" && continue
-        [ "${cfg}" = upl ] && "${SKIP_UPL}" && continue
-        if [ "${cfg}" = ulr ]; then home="${ULTIMATE_ULR}"; settings=""
-        else                        home="${ULTIMATE_UPL}"; settings="${EPF_UPL}"; fi
-
-        canonical="${LOG_DIR}/${name}.${cfg}.log"
-        times=(); logs=()
-        for ((r = 1; r <= REPEAT; r++)); do
-            run_log="${canonical}"
-            [ "${REPEAT}" -gt 1 ] && run_log="${LOG_DIR}/${name}.${cfg}.run${r}.log"
-            times+=("$(run_config "${cfg}" "${home}" "${settings}" "${prog}" "${run_log}")")
-            logs+=("${run_log}")
-            [ "${cfg}" = upl ] && upl_preflight "${run_log}"
-            settings_preflight "${cfg}" "${run_log}"
-        done
-        # Report the median repeat, and keep that same run's log as the canonical
-        # one: the parser derives the plugin and lasso timings from it, so they
-        # must describe the very run whose wall clock is reported beside them.
-        median_idx=$(for i in "${!times[@]}"; do printf '%s %s\n' "${times[$i]}" "$i"; done \
-                     | sort -n | awk -v n="${#times[@]}" 'NR == int((n + 1) / 2) { print $2 }')
-        if [ "${logs[$median_idx]}" != "${canonical}" ]; then
-            cp -f "${logs[$median_idx]}" "${canonical}"
-            cp -f "${logs[$median_idx]%.log}.exit" "${canonical%.log}.exit"
-        fi
+    for cfg in "${CONFIGS[@]}"; do
+        settings=""; [ "${cfg}" = upl ] && settings="${EPF_UPL}"
+        log="${LOG_DIR}/${name}.${cfg}.log"
+        wall=$(run_config "${settings}" "${prog}" "${log}")
+        [ "${cfg}" = upl ] && upl_preflight "${log}"
+        settings_preflight "${cfg}" "${log}"
         # Sidecar: wall clock stays the script's own measurement, never log-derived.
-        echo "${times[$median_idx]}" > "${LOG_DIR}/${name}.${cfg}.wall_ms"
-        # The verdict as the CSV will have it: proved terminating, proved nonterminating, UNKNOWN,
-        # TIMEOUT or CRASHED.
-        verdict=$(python3 "${PARSER}" --verdict "${canonical}" --timeout "${TIMEOUT}" 2>/dev/null || echo "?")
-        printf '        %-4s wall %8s ms  %s\n' "${cfg^^}" "${times[$median_idx]}" "${verdict}"
+        echo "${wall}" > "${LOG_DIR}/${name}.${cfg}.wall_ms"
+        # The verdict as the CSV will have it: proved terminating, proved nonterminating, UNKNOWN
+        # (Ultimate gave up, or stopped early without a verdict) or TIMEOUT.
+        verdict=$(python3 "${PARSER}" --verdict "${log}" --timeout "${TIMEOUT}" 2>/dev/null || echo "?")
+        printf '        %-11s wall %8s ms  %s\n' "${SIDE[${cfg}]}" "${wall}" "${verdict}"
     done
 done
 
-echo ""
-echo "Parsing logs into ${CSV} ..."
+# -- The paper's table and its scatter plot (wall clock, the time a user of Ultimate waits) ---
+# benchmark_ulr_vs_upl.py writes the CSV and the scatter plot next to it, then prints the table and
+# the paths of both, and keeps that same text in summary_tables.log.
 SUMMARY="${OUTPUT_DIR}/summary_tables.log"
-python3 "${PARSER}" --log-dir "${LOG_DIR}" --output "${CSV}" --timeout "${TIMEOUT}" \
-    --summary --summary-file "${SUMMARY}"
-
-if "${PLOT}"; then
-    # Name the axes after the settings actually used, so a figure read on its own
-    # still says which backend each side is -- both runs are "Ultimate" otherwise.
-    ULR_LABEL="ULR — LassoRanker (default settings)"
-    UPL_LABEL="UPL — PaSTTeL ($(basename "${EPF_UPL}"))"
-    "${SAME_RELEASE}" || {
-        ULR_LABEL="${ULR_LABEL%)} , $(basename "${ULTIMATE_ULR}"))"
-        UPL_LABEL="${UPL_LABEL%)} , $(basename "${ULTIMATE_UPL}"))"
-    }
-    for col in wall plugin lassos; do
-        python3 "${PARSER}" --plot "${CSV}" --col "${col}" \
-            --output "${OUTPUT_DIR}/results_ULR_vs_UPL_${col}.html" --log-scale \
-            --ulr-label "${ULR_LABEL}" --upl-label "${UPL_LABEL}" || true
-    done
-fi
-
+# Name the axes after the settings actually used, so a figure read on its own
+# still says which backend each side is -- both runs are "Ultimate" otherwise.
+ULR_LABEL="Ultimate-LR — LassoRanker (default settings)"
+UPL_LABEL="Ultimate-PL — PaSTTeL ($(basename "${EPF_UPL}"))"
 echo ""
-echo "============================================================"
-echo " Done."
-echo "   CSV      : ${CSV}"
-echo "   Tables   : ${SUMMARY}"
-echo "   Plots    : ${OUTPUT_DIR}/results_ULR_vs_UPL_{wall,plugin,lassos}.html"
-echo "   Raw logs : ${LOG_DIR}"
-echo "   Settings : ${EPF_UPL}"
-echo "============================================================"
+python3 "${PARSER}" --log-dir "${LOG_DIR}" --output "${CSV}" --timeout "${TIMEOUT}" --col wall --log-scale \
+    --ulr-label "${ULR_LABEL}" --upl-label "${UPL_LABEL}" --summary-file "${SUMMARY}"

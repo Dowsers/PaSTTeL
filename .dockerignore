@@ -13,6 +13,11 @@ test-reports
 # Lasso traces Ultimate dumped into a release directory, its working directory. Anchored on tools/:
 # benchmarks/smoke_test/ ships pre-extracted lassos under similar names on purpose.
 tools/*/lasso_traces
+# Eclipse caches that Ultimate writes into a release's configuration/ when it runs on the host. The
+# release itself ships only config.ini and org.eclipse.update there.
+tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.core.runtime
+tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.equinox.app
+tools/UAutomizer-PaSTTeL-linux/configuration/org.eclipse.osgi
 
 # Build products: the image compiles PaSTTeL from source, against the solvers it installs itself.
 # A host-built pasttel/bin/pasttel links the host's libraries, and COPY keeps file timestamps, so a

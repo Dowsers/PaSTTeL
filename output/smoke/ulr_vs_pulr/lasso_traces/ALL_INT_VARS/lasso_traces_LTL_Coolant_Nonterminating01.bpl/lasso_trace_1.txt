@@ -1,0 +1,181 @@
+========================================
+LASSO TRACE REPORT - Iteration #1
+========================================
+
+--- VARIABLE TYPES AND FUNCTION SIGNATURES ---
+Variables:
+  main_~limit                                        : Int
+  main_~time                                         : Int
+  main_~chainBroken                                  : Int
+  main_#t~nondet0                                    : Int
+  v_main_~limit_5                                    : Int
+  v_main_~time_7                                     : Int
+  v_main_~chainBroken_5                              : Int
+  v_main_~limit_3                                    : Int
+  v_main_~time_4                                     : Int
+  v_main_~chainBroken_3                              : Int
+  v_main_#t~nondet0_4                                : Int
+  v_main_~limit_4                                    : Int
+  v_main_~time_6                                     : Int
+  v_main_~chainBroken_4                              : Int
+  v_main_~time_5                                     : Int
+  v_main_#t~nondet0_5                                : Int
+
+Function signatures:
+  (none)
+
+--- LINEARIZED TRACE (TransFormula) ---
+Stem TransFormula:
+Formula: (and (= v_main_~time_15 0) (= v_main_~chainBroken_11 0) (= 5 v_main_~limit_11))  InVars {}  OutVars{main_~limit=v_main_~limit_11, main_~time=v_main_~time_15, main_~chainBroken=v_main_~chainBroken_11}  AuxVars[]  AssignedVars[main_~limit, main_~time, main_~chainBroken]
+
+Loop TransFormula:
+Formula: (and (= (+ v_main_~time_17 1) v_main_~time_16) (not (= v_main_~chainBroken_12 1)) (<= |v_main_#t~nondet0_12| (+ v_main_~limit_12 273)))  InVars {main_#t~nondet0=|v_main_#t~nondet0_12|, main_~limit=v_main_~limit_12, main_~time=v_main_~time_17, main_~chainBroken=v_main_~chainBroken_12}  OutVars{main_~limit=v_main_~limit_12, main_~time=v_main_~time_16, main_~chainBroken=v_main_~chainBroken_12}  AuxVars[]  AssignedVars[main_#t~nondet0, main_~time]
+
+--- PREPROCESSED LINEAR TRACE (partitioner=OFF, single unified formula) ---
+  Preprocessing initial max DAG size: 25
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8800
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9149
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,3488
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0690
+
+Stem (linearized):
+  Formula:  (and (<= 5 v_main_~limit_3) (>= 5 v_main_~limit_3) (>= v_main_~chainBroken_3 0) (>= v_main_~time_4 0) (<= v_main_~chainBroken_3 0) (<= v_main_~time_4 0))
+  InVars:   {main_~limit=v_main_~limit_5, main_~time=v_main_~time_7, main_~chainBroken=v_main_~chainBroken_5}
+  OutVars:  {main_~limit=v_main_~limit_3, main_~time=v_main_~time_4, main_~chainBroken=v_main_~chainBroken_3}
+  AuxVars:  []
+
+Loop (linearized):
+  Formula:  (or (and (<= (+ v_main_~chainBroken_4 1) 1) (<= v_main_~time_5 (+ v_main_~time_6 1)) (<= |v_main_#t~nondet0_4| (+ 273 v_main_~limit_4)) (>= v_main_~time_5 (+ v_main_~time_6 1))) (and (<= v_main_~time_5 (+ v_main_~time_6 1)) (<= |v_main_#t~nondet0_4| (+ 273 v_main_~limit_4)) (<= (+ 1 1) v_main_~chainBroken_4) (>= v_main_~time_5 (+ v_main_~time_6 1))))
+  InVars:   {main_#t~nondet0=|v_main_#t~nondet0_4|, main_~limit=v_main_~limit_4, main_~time=v_main_~time_6, main_~chainBroken=v_main_~chainBroken_4}
+  OutVars:  {main_~limit=v_main_~limit_4, main_~time=v_main_~time_5, main_~chainBroken=v_main_~chainBroken_4, main_#t~nondet0=|v_main_#t~nondet0_5|}
+  AuxVars:  []
+
+--- RAW TRACE ---
+Stem (length=1):
+  [0] ~time := 0;~tempIn := 0;~temp := 0;~limit := 5;~chainBroken := 0;
+Loop (length=1):
+  [0] assume !(~chainBroken == 1);assume !!true;assume !(~chainBroken == 1);~time := ~time + 1;assume !(~chainBroken == 1);~tempIn := #t~nondet0;assume !(~chainBroken == 1);havoc #t~nondet0;assume !(~chainBroken == 1);~temp := ~tempIn - 273;assume !(~chainBroken == 1);assume !(~temp > ~limit);assume !(~chainBroken == 1);
+
+--- RESULT ---
+Stem feasibility:    FEASIBLE
+Loop feasibility:    FEASIBLE
+Concat feasibility:  FEASIBLE
+Loop termination:    UNCHECKED
+Lasso termination:   NONTERMINATING
+Continue directive:  REPORT_NONTERMINATION
+
+--- STRATEGY SHUFFLE ---
+  [Loop-only synthesis] (not run)
+  [Lasso synthesis]     Static order (shuffle disabled)
+    [1] FIXPOINT
+    [2] GNTA
+    [3] affine
+    [4] 2-nested
+    [5] 3-nested
+    [6] 4-nested
+    [7] 2-phase
+    [8] 3-phase
+    [9] 4-phase
+    [10] 2-lex
+    [11] 3-lex
+
+--- FIXPOINT CHECK ---
+  Result: NO
+  Time:   2251324 ns (2,25 ms)
+
+--- NONTERMINATION ARGUMENT ---
+  Type: GeometricNonTerminationArgument
+  State at init:
+    main_~time                               = 0
+    main_#t~nondet0                          = 0
+    main_~limit                              = 0
+    main_~chainBroken                        = 0
+  State at honda:
+    main_~time                               = 0
+    main_#t~nondet0                          = 0
+    main_~limit                              = 5
+    main_~chainBroken                        = 0
+  Number of GEVs: 3
+  GEV[0] (lambda=1):
+    main_~time                               = 0
+    main_#t~nondet0                          = 0
+    main_~limit                              = 0
+    main_~chainBroken                        = 0
+  GEV[1] (lambda=1):
+    main_~time                               = 1
+    main_#t~nondet0                          = 0
+    main_~limit                              = 0
+    main_~chainBroken                        = 0
+  GEV[2] (lambda=1):
+    main_~time                               = 0
+    main_#t~nondet0                          = 0
+    main_~limit                              = 0
+    main_~chainBroken                        = 0
+
+--- TERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:              LINEAR
+  num_strict_invariants:      0
+  num_non_strict_invariants:  1
+  non_decreasing_invariants:  true
+  simplify_termination_arg:   true
+  simplify_supporting_invs:   true
+  overapproximate_stem:       false
+  template_benchmark_mode:    false
+  partitioner_enabled:        false
+
+--- TERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  (none)
+
+--- TERMINATION ARGUMENT ---
+  (none)
+
+--- NONTERMINATION ANALYSIS SETTINGS [partitioner=OFF] ---
+  analysis_type:        LINEAR
+  num_gevs:             3
+  allow_bounded:        true
+  nilpotent_components: true
+  partitioner_enabled:  false
+
+--- NONTERMINATION ANALYSIS BENCHMARKS [partitioner=OFF] ---
+  [1] IsFixpoint: false  Satisfiability: sat      Time: 52892258 ns (52,89 ms)
+       Variables (stem/loop): 3/5  Disjuncts (stem/loop): 1/2
+  Total nontermination analysis time: 52,89 ms
+
+--- PREPROCESSING BENCHMARKS [partitioner=OFF] ---
+  [Lasso 1] Initial max DAG size: 25
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Add axioms to the transition -> relative DAG size: 1,0000
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 1,0000
+    Removes arrays by introducing new variables for each relevant array cell -> relative DAG size: 1,0000
+    Add a corresponding inVars and outVars -> relative DAG size: 1,0000
+    Replace integer division by equivalent linear constraints -> relative DAG size: 1,0000
+    Replace boolean variables by integer variables -> relative DAG size: 1,0000
+    Remove if-then-else terms. -> relative DAG size: 1,0000
+    Replace variables that have a used defined type -> relative DAG size: 1,0000
+    Replaces a = b with (a <= b /\ a >= b) and a != b with (a > b \/ a < b) -> relative DAG size: 1,8800
+    Simplify formula using CommuhashNormalForm -> relative DAG size: 0,9149
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Transform into disjunctive normal form -> relative DAG size: 1,3488
+    Simplify formula using some simplification technique -> relative DAG size: 1,0000
+    Replace 'true' with '0 >= 0' and 'false' with '0 >= 1' -> relative DAG size: 1,0000
+    Remove negation before atoms -> relative DAG size: 1,0000
+    Replace strict inequalities by non-strict inequalities -> relative DAG size: 1,0690
+
+--- TIMING SUMMARY [partitioner=OFF] ---
+Fixpoint check time:  2,25 ms
+Total LassoRanker time: 52,89 ms
+  Termination analysis:     0,00 ms
+  Nontermination analysis:   52,89 ms

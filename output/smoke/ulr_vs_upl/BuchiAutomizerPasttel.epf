@@ -1,0 +1,25 @@
+#PaSTTeL backend for BuchiAutomizer: the only settings Ultimate-PL adds to Ultimate's defaults.
+#
+# Ultimate-LR runs Ultimate with no settings file at all, like the extraction of the lasso traces for
+# ULR-Baseline vs P-ULR; Ultimate-PL runs it with this one. It holds the lines that select PaSTTeL
+# instead of LassoRanker as the rank-synthesis backend and configure it, and nothing else, so that
+# Ultimate-LR and Ultimate-PL differ in the backend only.
+#
+# TEMPLATE -- do not pass this file to Ultimate directly. The placeholders below
+# are substituted by scripts/run_ulr_vs_upl.sh, which writes the resulting .epf
+# into its output directory. Ultimate resolves none of these paths relative to
+# anything, so they must all be absolute.
+#
+#   /home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel      absolute path to the pasttel binary
+#   20  budget of one PaSTTeL call (all ranking-function templates racing) on one lasso,
+#                      in seconds; past it Ultimate falls back to LassoRanker. Its default, 20 s, is
+#                      UPL_PASTTEL_TIMEOUT_DEFAULT in scripts/common.sh, the one place it is defined
+#                      (with its rationale); run_ulr_vs_upl.sh --pasttel-timeout overrides it
+#   5     cores PaSTTeL may use to race its templates
+file_export_version=3.0
+@de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=0.0.1
+\!/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer=
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/Rank\ synthesis\ backend=PASTTEL
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ binary\ path=/home/anissa/Documents/Tools/PaSTTeL/pasttel/bin/pasttel
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ timeout\ (seconds)=20
+/instance/de.uni_freiburg.informatik.ultimate.plugins.generator.buchiautomizer/PaSTTeL\ number\ of\ CPUs=5
