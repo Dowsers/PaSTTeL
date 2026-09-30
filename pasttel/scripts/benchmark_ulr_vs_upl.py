@@ -3,7 +3,7 @@
 
 Each program is analysed twice by a full Ultimate run -- once with the stock
 LassoRanker rank-synthesis backend (ULR), once with the PaSTTeL backend for
-ranking functions, without any LassoRanker fallback (UPL).
+ranking functions, falling back to LassoRanker when PaSTTeL does not conclude (UPL).
 scripts/run_ulr_vs_upl.sh produces, per program and per configuration:
 
     <name>.<cfg>.log       Ultimate stdout+stderr
@@ -16,6 +16,7 @@ analysis time isolates the part PaSTTeL actually replaces.
 """
 
 import argparse
+import collections
 import csv
 import glob
 import os
@@ -39,13 +40,14 @@ _VERDICT_PATTERNS = (
     ("NONTERMINATING", re.compile(r"TerminationAnalysisResult:\s*Nontermination possible")),
     ("UNKNOWN", re.compile(r"TerminationAnalysisResult:\s*Unable to decide termination")),
 )
-# No verdict: the run hit the time limit (TIMEOUT) or ended early without one (CRASHED). Only the
-# first is decided by timeout(1)'s exit status, which run_ulr_vs_upl.sh keeps in <name>.<cfg>.exit;
-# the exception Ultimate logs cannot tell them apart, since a run stopped at the time limit may raise
-# one while it shuts down. Logs recorded before that sidecar existed fall back on Ultimate's own
-# TimeoutResult, then on a wall clock (<name>.<cfg>.wall_ms) that reached the limit.
+# No verdict: the run hit the time limit (TIMEOUT), or it ended early without one, e.g. on an
+# exception, which counts as UNKNOWN like Ultimate's own "Unable to decide termination". The time
+# limit is decided by timeout(1)'s exit status, which run_ulr_vs_upl.sh keeps in <name>.<cfg>.exit;
+# the exception Ultimate logs cannot tell, since a run stopped at the time limit may raise one while it
+# shuts down. Logs recorded before that sidecar existed fall back on Ultimate's own TimeoutResult,
+# then on a wall clock (<name>.<cfg>.wall_ms) that reached the limit.
 TIMEOUT = "TIMEOUT"
-CRASHED = "CRASHED"
+UNKNOWN = "UNKNOWN"
 TIMEOUT_EXIT_STATUS = "124"
 _TIMEOUT_RESULT_RE = re.compile(r"TimeoutResult")
 
@@ -65,9 +67,9 @@ _TOOLCHAIN_RE = re.compile(r"BuchiAutomizer took " + _NUM + r"\s*ms")
 # non-termination stops after the technique -- so stop at a comma, not at
 # whitespace, or the technique keeps the separator.
 _PASTTEL_SUCCESS_RE = re.compile(r"PaSTTeL (?:termination|non-termination) check: SUCCESS via ([^,\n]+)")
-# A PaSTTeL call that produced no argument (UNKNOWN, timeout, crash, unmapped certificate). Since UPL has no
-# LassoRanker fallback, LassoCheck logs "no ranking function"; logs of older builds say "falling back to
-# LassoRanker" for the same event.
+# A PaSTTeL call that produced no argument (UNKNOWN, timeout, crash, unmapped certificate), after which
+# LassoCheck falls back to LassoRanker ("falling back to LassoRanker"; a build without that fallback logs
+# "no ranking function" for the same event).
 _PASTTEL_NO_RESULT_RE = re.compile(r"PaSTTeL .*(?:no ranking function|falling back to LassoRanker)")
 _PASTTEL_INVOKE_FAIL_RE = re.compile(r"PaSTTeL invocation failed")
 _PASTTEL_UNMAPPED_RE = re.compile(r"PaSTTeL reported \S+ but its certificate could not be mapped back")
@@ -86,7 +88,7 @@ MISSING = "NO LOG"
 # How run_ulr_vs_upl.sh reports each verdict next to a run's wall clock (--verdict).
 VERDICT_LABELS = {
     "TERMINATING": "proved terminating", "NONTERMINATING": "proved nonterminating",
-    "UNKNOWN": "UNKNOWN", TIMEOUT: TIMEOUT, CRASHED: CRASHED, MISSING: MISSING,
+    UNKNOWN: UNKNOWN, TIMEOUT: TIMEOUT, MISSING: MISSING,
 }
 
 
@@ -139,7 +141,7 @@ def parse_log(path, timeout_s):
             break
     else:
         # No TerminationAnalysisResult at all: the run did not reach a verdict.
-        out["verdict"] = TIMEOUT if _hit_time_limit(path, text, timeout_s) else CRASHED
+        out["verdict"] = TIMEOUT if _hit_time_limit(path, text, timeout_s) else UNKNOWN
 
     m = _PLUGIN_RE.search(text) or _PLUGIN_ASCII_RE.search(text)
     if m:
@@ -191,7 +193,7 @@ def speedup(ulr, upl):
 
 
 def agreement(ulr_verdict, upl_verdict):
-    # A side that was not run at all (--skip-ulr / --skip-upl) is missing data,
+    # A side that was not run at all (e.g. an interrupted run) is missing data,
     # not a disagreement: saying otherwise would report every row of a one-sided
     # run as a verdict conflict.
     if ulr_verdict == MISSING and upl_verdict == MISSING:
@@ -208,7 +210,7 @@ def agreement(ulr_verdict, upl_verdict):
         return "UPL ONLY"
     if u_ok:
         return "ULR ONLY"
-    # Neither solved: a TIMEOUT against a CRASHED run is two failures, not a conflict.
+    # Neither solved: a TIMEOUT against an UNKNOWN run is two failures, not a conflict.
     return f"BOTH {ulr_verdict}" if ulr_verdict == upl_verdict else "NEITHER"
 
 
@@ -220,8 +222,8 @@ def build_rows(log_dir, timeout_s):
         wall = {cfg: read_wall_ms(log_dir, name, cfg) for cfg in CONFIGS}
         u, p = parsed["ulr"], parsed["upl"]
 
-        # A speedup only means something when both runs solved the program: a run that crashed or
-        # gave up early is not faster, it did not answer.
+        # A speedup only means something when both runs solved the program: a run that gave up or
+        # stopped early is not faster, it did not answer.
         both_solved = u["verdict"] in SOLVED and p["verdict"] in SOLVED
 
         rows.append({
@@ -256,7 +258,6 @@ def write_csv(rows, path):
         writer = csv.DictWriter(fh, fieldnames=COLUMNS)
         writer.writeheader()
         writer.writerows(rows)
-    print(f"CSV written to: {path}  ({len(rows)} program(s))")
 
 
 def parse_float(text):
@@ -277,22 +278,15 @@ COLUMN_FOR = {
     "lassos": ("ULR Lassos (ms)", "UPL Lassos (ms)", "lasso analysis"),
 }
 
-# One classification feeds the text summary, the HTML table and the scatter plot alike, so that the
-# three can never tell different stories. Only a TERMINATING or NONTERMINATING verdict counts as
-# solved: a TIMEOUT, UNKNOWN or CRASHED run solved nothing, however fast it ended, and is placed at the
-# PAR-2 penalty (twice the Ultimate timeout) instead of its own time.
-#   key, label, colour, marker, plotted
-CATEGORIES = (
-    ("term", "Terminating (common)", "green", "circle", True),
-    ("nonterm", "Non-terminating (common)", "blue", "circle", True),
-    ("contra", "Contradiction (both disagree)", "black", "star", True),
-    ("ulr_only", "Solved by ULR only (UPL: PAR-2)", "orange", "circle-open", True),
-    ("upl_only", "Solved by UPL only (ULR: PAR-2)", "purple", "diamond-open", True),
-    # both at PAR-2: every such program would sit on the same corner point, so it is only counted
-    ("neither", "Solved by neither (PAR-2 both)", "red", "x", False),
-)
-
-
+# The paper's table, split by verdict. A program counts as solved by a run that proved it TERMINATING
+# or NONTERMINATING; TIMEOUT and UNKNOWN runs solved nothing and enter no total.
+#   ULR, UPL  #Solved: the programs the run solved. The time columns cover the programs both runs
+#             solved (the intersection), split by verdict; their Total is the paper's Cumulative
+#             Intersection Time, so both runs are timed on the same programs.
+#   VBS       the virtual best solver: the programs either run solved, each at the better of the two
+#             times.
+# A program the two runs solved with opposite verdicts is a contradiction: it is left out of the
+# intersection and of VBS, and listed.
 def _as_int(value):
     try:
         return int(str(value).strip())
@@ -300,111 +294,114 @@ def _as_int(value):
         return 0
 
 
-def categorize(rows, col_key, default_timeout_s):
-    """Sort programs into CATEGORIES for one timing column.
-
-    Returns ({key: [point]}, excluded) where a point is (program, x_ms, y_ms, row), x for ULR and y
-    for UPL, and excluded counts the programs left out: both runs CRASHED (they say nothing
-    about either backend), or one side was never run (--skip-ulr / --skip-upl).
-    """
-    cx, cy, _ = COLUMN_FOR[col_key]
-    cats = {key: [] for key, *_ in CATEGORIES}
-    excluded = {"both CRASHED": 0, "one side not run": 0}
-    for r in rows:
-        u, p = r["ULR Verdict"], r["UPL Verdict"]
-        if MISSING in (u, p):
-            excluded["one side not run"] += 1
-            continue
-        if u == CRASHED and p == CRASHED:
-            excluded["both CRASHED"] += 1
-            continue
-        par2 = 2 * 1000.0 * (parse_float(r.get("Timeout (s)")) or default_timeout_s)
-        u_ok, p_ok = u in SOLVED, p in SOLVED
-        # A solved side without a parsed time (e.g. missing statistics line) keeps PAR-2 rather than
-        # vanishing from the totals.
-        x = (parse_float(r[cx]) if u_ok else None) or par2
-        y = (parse_float(r[cy]) if p_ok else None) or par2
-        if u_ok and p_ok:
-            key = "contra" if u != p else ("term" if u == "TERMINATING" else "nonterm")
-        elif u_ok:
-            key = "ulr_only"
-        elif p_ok:
-            key = "upl_only"
-        else:
-            key = "neither"
-        cats[key].append((r["Program"], x, y, r))
-    return cats, excluded
+def vbs_table(rows, col_key="wall"):
+    cx, cy, metric = COLUMN_FOR[col_key]
+    runs = [r for r in rows if MISSING not in (r["ULR Verdict"], r["UPL Verdict"])]
+    solved, failed = {}, {}
+    for side, vcol, tcol in (("ULR", "ULR Verdict", cx), ("UPL", "UPL Verdict", cy)):
+        solved[side] = {r["Program"]: (r[vcol], parse_float(r[tcol]) or 0.0) for r in runs if r[vcol] in SOLVED}
+        failed[side] = collections.Counter(r[vcol] for r in runs if r[vcol] not in SOLVED)
+    u, p = solved["ULR"], solved["UPL"]
+    contra = sorted(prog for prog in u.keys() & p.keys() if u[prog][0] != p[prog][0])
+    both = {v: sorted(prog for prog in u.keys() & p.keys() if u[prog][0] == p[prog][0] == v) for v in SOLVED}
+    vbs = {v: {} for v in SOLVED}
+    for prog in (u.keys() | p.keys()) - set(contra):
+        results = [res[prog] for res in (u, p) if prog in res]
+        vbs[results[0][0]][prog] = min(ms for _, ms in results)
+    secs = {side: {v: sum(solved[side][prog][1] for prog in both[v]) / 1000 for v in SOLVED} for side in solved}
+    return {
+        "metric": metric, "programs": len(runs), "timeout": next(
+            (parse_float(r.get("Timeout (s)")) for r in runs if parse_float(r.get("Timeout (s)"))), None),
+        "solved": solved, "failed": failed, "both": both, "contra": contra, "secs": secs,
+        "vbs": vbs, "vbs_secs": {v: sum(vbs[v].values()) / 1000 for v in SOLVED},
+        # CSVs written before "UPL No Result" have the same count under "UPL Fallbacks".
+        "pasttel": {key: sum(_as_int(r.get(col, r.get(old, 0))) for r in runs) for key, col, old in (
+            ("calls", "UPL PaSTTeL Calls", ""), ("ok", "UPL PaSTTeL Success", ""),
+            ("no_result", "UPL No Result", "UPL Fallbacks"), ("unmapped", "UPL Unmapped", ""))},
+    }
 
 
-def summary_rows(cats):
-    """(label, count, ULR total s, UPL total s) per category, then the two cumulative lines."""
-    out = []
-    for key, label, *_ in CATEGORIES:
-        pts = cats[key]
-        out.append((key, label, len(pts), sum(x for _, x, _, _ in pts) / 1000, sum(y for _, _, y, _ in pts) / 1000))
-    both = cats["term"] + cats["nonterm"]
-    # Programs neither run solved are left out of the PAR-2 total: they would add the same 2 x timeout
-    # to both sides and only dilute the difference between the two backends.
-    solved = [pt for key, *_ in CATEGORIES if key != "neither" for pt in cats[key]]
-    out.append(("both", "Solved by both (cumulative)", len(both),
-                sum(x for _, x, _, _ in both) / 1000, sum(y for _, _, y, _ in both) / 1000))
-    out.append(("par2", "PAR-2 total (solved by at least one)", len(solved),
-                sum(x for _, x, _, _ in solved) / 1000, sum(y for _, _, y, _ in solved) / 1000))
-    return out
+def table_lines(t):
+    T, N = SOLVED
+    n_both = len(t["both"][T]) + len(t["both"][N])
+    head = (f"{'Tool':<4}  {'#Solved':>8}   {'#Terminating':>12}  {'Time (s)':>10}   "
+            f"{'#Non-Terminating':>16}  {'Time (s)':>10}   {'Total (s)':>10}")
+    sep = "-" * (len(head) + 1)
+    timeout = f", Ultimate timeout {t['timeout']:g} s per run" if t["timeout"] else ""
+    lines = [f"ULR vs UPL on {t['programs']} C/BPL programs{timeout}, {t['metric']}", sep, head, sep]
+    vs = t["vbs_secs"]
+    lines.append(f"{'VBS':<4}  {len(t['vbs'][T]) + len(t['vbs'][N]):>8}    {len(t['vbs'][T]):>12}  {vs[T]:>10.2f}    "
+                 f"{len(t['vbs'][N]):>16}  {vs[N]:>10.2f}    {vs[T] + vs[N]:>10.2f}")
+    sides = ("ULR", "UPL")
+    tot = {side: t["secs"][side][T] + t["secs"][side][N] for side in sides}
+    star = lambda side, values, pick: "*" if values[side] == pick(values.values()) else " "
+    n_solved = {side: len(t["solved"][side]) for side in sides}
+    for side in sides:
+        st, sn = ({x: t["secs"][x][v] for x in sides} for v in (T, N))
+        lines.append(f"{side:<4}  {n_solved[side]:>8}{star(side, n_solved, max)}   {len(t['both'][T]):>12}  "
+                     f"{t['secs'][side][T]:>10.2f}{star(side, st, min)}   {len(t['both'][N]):>16}  "
+                     f"{t['secs'][side][N]:>10.2f}{star(side, sn, min)}   {tot[side]:>10.2f}{star(side, tot, min)}")
+    lines += [sep,
+              f"ULR, UPL: #Solved by each run; times on the {n_both} programs both runs solved, Total being the",
+              "  Cumulative Intersection Time. VBS: the programs either run solved, each at its better time. * best.",
+              "Not solved: " + " | ".join(
+                  f"{side} {sum(t['failed'][side].values())}"
+                  + (" (" + ", ".join(f"{k} {n}" for k, n in t["failed"][side].most_common()) + ")"
+                     if t["failed"][side] else "") for side in sides),
+              f"Solved by one run only: ULR {n_solved['ULR'] - n_both - len(t['contra'])}, "
+              f"UPL {n_solved['UPL'] - n_both - len(t['contra'])}",
+              f"PaSTTeL inside UPL: {t['pasttel']['calls']} calls, {t['pasttel']['ok']} conclusive, "
+              f"{t['pasttel']['no_result']} without result (LassoRanker took over), "
+              f"{t['pasttel']['unmapped']} certificates not mapped back"]
+    if t["contra"]:
+        lines.append(f"CONTRADICTIONS ({len(t['contra'])}), both runs solved these with opposite verdicts:")
+        lines += [f"  {prog}: ULR={t['solved']['ULR'][prog][0]} UPL={t['solved']['UPL'][prog][0]}"
+                  for prog in t["contra"]]
+    else:
+        lines.append("Contradictions: none")
+    return lines
 
 
-def summary_table_text(rows, col_key, default_timeout_s, ulr_label, upl_label):
-    cats, excluded = categorize(rows, col_key, default_timeout_s)
-    metric = COLUMN_FOR[col_key][2]
-    xh, yh = f"{ulr_label} (s)", f"{upl_label} (s)"
-    w = max(len(xh), len(yh), 14)
-    hdr = f"{'Category':<36}  {'Count':>6}  {xh:>{w}}  {yh:>{w}}"
-    sep = "-" * len(hdr)
-    lines = [f"=== {metric} ===", sep, hdr, sep]
-    for key, label, n, tx, ty in summary_rows(cats):
-        if key == "both":
-            lines.append(sep)
-        lines.append(f"{label:<36}  {n:>6}  {tx:>{w}.2f}  {ty:>{w}.2f}")
-    lines.append(sep)
-    left_out = [f"{n} {why}" for why, n in excluded.items() if n]
-    if left_out:
-        lines.append(f"Not shown: {', '.join(left_out)}.")
-    return "\n".join(lines), cats
+def sides_run(rows):
+    """The sides with at least one log: both, or one after run_ulr_vs_upl.sh --only ulr|upl."""
+    return [side for side in ("ULR", "UPL") if any(r[f"{side} Verdict"] != MISSING for r in rows)]
 
 
-def render_summary(rows):
-    """The whole text summary, for stdout and summary_tables.log alike."""
-    labels = (DEFAULT_ULR_LABEL, DEFAULT_UPL_LABEL)
-    timeout = next((parse_float(r.get("Timeout (s)")) for r in rows if parse_float(r.get("Timeout (s)"))), 0)
-    out = [f"ULR vs UPL -- {len(rows)} program(s), PAR-2 penalty = 2 x {timeout:g} s", ""]
-    # Wall clock only: it is the time a user of Ultimate actually waits. The plugin and lasso-analysis
-    # columns stay in the CSV, and --plot --col plugin|lassos still draws them.
-    text, cats = summary_table_text(rows, "wall", timeout, *labels)
-    out += [text, ""]
-    calls = sum(_as_int(r["UPL PaSTTeL Calls"]) for r in rows)
-    ok = sum(_as_int(r["UPL PaSTTeL Success"]) for r in rows)
-    nores = sum(_as_int(r["UPL No Result"]) for r in rows)
-    unm = sum(_as_int(r["UPL Unmapped"]) for r in rows)
-    out.append(f"PaSTTeL inside UPL: {calls} call(s), {ok} conclusive, {nores} without result, "
-               f"{unm} certificate(s) not mapped back.")
-    # A contradiction is a soundness signal: name the programs rather than only counting them.
-    if cats and cats["contra"]:
-        out.append("")
-        out.append("CONTRADICTIONS (both runs solved the program, with opposite verdicts):")
-        for prog, _, _, r in cats["contra"]:
-            out.append(f"  {prog}: ULR={r['ULR Verdict']} UPL={r['UPL Verdict']}")
-    return "\n".join(out)
+def one_side_lines(rows, side, col_key="wall"):
+    """The summary of a side run alone: its own counts and times, in the layout of the table."""
+    cx, cy, metric = COLUMN_FOR[col_key]
+    vcol, tcol = f"{side} Verdict", cx if side == "ULR" else cy
+    runs = [r for r in rows if r[vcol] != MISSING]
+    T, N = SOLVED
+    n = {v: sum(1 for r in runs if r[vcol] == v) for v in SOLVED}
+    secs = {v: sum(parse_float(r[tcol]) or 0.0 for r in runs if r[vcol] == v) / 1000 for v in SOLVED}
+    failed = collections.Counter(r[vcol] for r in runs if r[vcol] not in SOLVED)
+    timeout = next((parse_float(r.get("Timeout (s)")) for r in runs if parse_float(r.get("Timeout (s)"))), None)
+    head = (f"{'Tool':<4}  {'#Solved':>8}   {'#Terminating':>12}  {'Time (s)':>10}   "
+            f"{'#Non-Terminating':>16}  {'Time (s)':>10}   {'Total (s)':>10}")
+    sep = "-" * (len(head) + 1)
+    lines = [f"{side} alone on {len(runs)} C/BPL programs"
+             + (f", Ultimate timeout {timeout:g} s per run" if timeout else "") + f", {metric}", sep, head, sep,
+             f"{side:<4}  {n[T] + n[N]:>8}    {n[T]:>12}  {secs[T]:>10.2f}    {n[N]:>16}  {secs[N]:>10.2f}    "
+             f"{secs[T] + secs[N]:>10.2f}", sep,
+             f"Times on the programs {side} solved. The other side, run with the same --output, completes the table.",
+             f"Not solved: {side} {sum(failed.values())}"
+             + (" (" + ", ".join(f"{k} {c}" for k, c in failed.most_common()) + ")" if failed else "")]
+    if side == "UPL":
+        calls, ok, no_result, unmapped = (sum(_as_int(r.get(col, 0)) for r in runs) for col in (
+            "UPL PaSTTeL Calls", "UPL PaSTTeL Success", "UPL No Result", "UPL Unmapped"))
+        lines.append(f"PaSTTeL inside UPL: {calls} calls, {ok} conclusive, {no_result} without result "
+                     f"(LassoRanker took over), {unmapped} certificates not mapped back")
+    return lines
 
 
-def print_summary(rows, summary_file=None):
-    text = render_summary(rows)
-    print()
-    print(text)
-    if summary_file:
-        os.makedirs(os.path.dirname(os.path.abspath(summary_file)) or ".", exist_ok=True)
-        with open(summary_file, "w") as fh:
-            fh.write(text + "\n")
-        print(f"\nSummary written to: {summary_file}")
+def render_summary(rows, col_key="wall"):
+    """The text summary, for stdout and summary_tables.log alike: the table of both sides, or the
+    summary of the one side run."""
+    sides = sides_run(rows)
+    if len(sides) == 1:
+        return "\n".join(one_side_lines(rows, sides[0], col_key))
+    return "\n".join(table_lines(vbs_table(rows, col_key)))
 
 
 def _plotly_script_tag():
@@ -421,71 +418,149 @@ def _esc(text):
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+# Scatter plot of the programs a run did not solve: the colour says which run failed, the marker why.
+_VERDICT_STYLE = {"TERMINATING": ("Terminating", "green"), "NONTERMINATING": ("Non-terminating", "blue")}
+# A program one run solved and the other did not (TIMEOUT or UNKNOWN): one kind of point,
+# in the colour of the verdict found, the failed run drawn beyond the timeout on its axis.
+_ONE_FAILED = "One run TIMEOUT / UNKNOWN"
+
+
+# The class of each point, as the "label" column of the .dat file names it for pgfplots.
+_DAT_LABEL = {"Terminating": "TERMINATING", "Non-terminating": "NONTERMINATING",
+              _ONE_FAILED: "UNSOLVED", "Contradiction": "CONTRADICTION"}
+
+
+def scatter_points(rows, col_key, timeout_ms, log_scale):
+    """The points of the scatter plot, shared by the HTML plot and the .dat file: one per program at
+    least one run solved, in the order of the CSV. A run that did not solve it is placed at beyond_ms,
+    past the timeout. Returns (points, number of programs neither run solved, beyond_ms), a point being
+    a dict with program, ulr/upl verdicts, x/y (ms, as drawn), series, symbol, colour and hover."""
+    cx, cy, _ = COLUMN_FOR[col_key]
+    # Where a run that did not solve the program is drawn: past the timeout, inside the axes.
+    beyond_ms = timeout_ms * (2.0 if log_scale else 1.1)
+    points, neither = [], 0
+    for r in rows:
+        u, p = r["ULR Verdict"], r["UPL Verdict"]
+        if MISSING in (u, p):
+            continue
+        u_ok, p_ok = u in SOLVED, p in SOLVED
+        if not (u_ok or p_ok):
+            neither += 1
+            continue
+        x, y = parse_float(r[cx]), parse_float(r[cy])
+        if (u_ok and x is None) or (p_ok and y is None):
+            continue    # a solved run without that time (no statistics line in its log)
+        hx = f"{x:.1f} ms" if u_ok else f"not solved ({x:.1f} ms), drawn beyond the timeout" if x else "not solved"
+        hy = f"{y:.1f} ms" if p_ok else f"not solved ({y:.1f} ms), drawn beyond the timeout" if y else "not solved"
+        hover = (f"{r['Program']}<br>ULR: {u}, {hx}<br>UPL: {p}, {hy}"
+                 f"<br>PaSTTeL conclusive/calls: {_as_int(r.get('UPL PaSTTeL Success', 0))}"
+                 f"/{_as_int(r.get('UPL PaSTTeL Calls', 0))}")
+        if u_ok and p_ok and u != p:
+            series, symbol, colour = "Contradiction", "star", "black"
+        elif u_ok and p_ok:
+            (series, colour), symbol = _VERDICT_STYLE[u], "circle"
+        else:
+            series, symbol, colour = _ONE_FAILED, "diamond-open", _VERDICT_STYLE[u if u_ok else p][1]
+            x, y = (x if u_ok else beyond_ms), (y if p_ok else beyond_ms)
+        points.append({"program": r["Program"], "ulr": u, "upl": p, "x": x, "y": y, "series": series,
+                       "symbol": symbol, "colour": colour, "hover": hover})
+    return points, neither, beyond_ms
+
+
+def _dat_number(ms):
+    return str(int(ms)) if float(ms).is_integer() else f"{ms:.2f}"
+
+
+def write_dat(csv_path, col_key, output_dat, log_scale, timeout_s):
+    """The scatter plot's points as a tab-separated table for pgfplots (\\addplot table [col sep=tab]):
+    nodes (1, 2, ...), the verdict and time in ms of each run -- the time as drawn, i.e. beyond the
+    timeout for a run that did not solve the program -- the point's class (label: TERMINATING,
+    NONTERMINATING, UNSOLVED when one run did not solve it, CONTRADICTION), and the program."""
+    with open(csv_path, newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    t = vbs_table(rows, col_key)
+    points, _, _ = scatter_points(rows, col_key, 1000.0 * (t["timeout"] or timeout_s), log_scale)
+    if not points:
+        return None
+    os.makedirs(os.path.dirname(os.path.abspath(output_dat)) or ".", exist_ok=True)
+    with open(output_dat, "w") as fh:
+        fh.write("\t".join(("nodes", "ULR-Verdict", "ULR-Time", "UPL-Verdict", "UPL-Time", "label", "Program")) + "\n")
+        for n, pt in enumerate(points, 1):
+            fh.write("\t".join((str(n), pt["ulr"], _dat_number(pt["x"]), pt["upl"], _dat_number(pt["y"]),
+                                _DAT_LABEL[pt["series"]], pt["program"])) + "\n")
+    return output_dat
+
+
 def plot(csv_path, col_key, output_html, log_scale, timeout_s,
          ulr_label=DEFAULT_ULR_LABEL, upl_label=DEFAULT_UPL_LABEL):
-    """Scatter plot plus summary table, in the style of the P-ULR plots
-    (benchmark_ultimate_vs_pasttel.py): white page, one table, one figure."""
+    """The summary table, then a scatter plot, in the style of the P-ULR plots
+    (benchmark_ultimate_vs_pasttel.py): white page, one table, one figure. A program is drawn when at
+    least one run solved it, in the colour of its verdict: a run that did not solve it (TIMEOUT,
+    UNKNOWN) is placed beyond the dotted timeout line, which tells which run it was. Programs
+    neither run solved are not drawn."""
     import json
     with open(csv_path, newline="") as fh:
         rows = list(csv.DictReader(fh))
-    cats, _ = categorize(rows, col_key, timeout_s)
-    metric = COLUMN_FOR[col_key][2]
-    par2_s = 2 * (next((parse_float(r.get("Timeout (s)")) for r in rows if parse_float(r.get("Timeout (s)"))), 0)
-                  or timeout_s)
+    t = vbs_table(rows, col_key)
+    cx, cy, metric = COLUMN_FOR[col_key]
     title = f"{ulr_label} vs {upl_label}"
+    timeout_ms = 1000.0 * (t["timeout"] or timeout_s)
+    points, neither, beyond_ms = scatter_points(rows, col_key, timeout_ms, log_scale)
 
-    traces, pts_all = [], []
-    for key, label, colour, symbol, plotted in CATEGORIES:
-        pts = cats[key]
-        if not plotted or not pts:
+    # series: label -> (marker, [(colour, x, y, hover)]).
+    series = {}
+    for pt in points:
+        series.setdefault(pt["series"], (pt["symbol"], []))[1].append((pt["colour"], pt["x"], pt["y"], pt["hover"]))
+
+    traces, vals = [], []
+    for label in ("Terminating", "Non-terminating", _ONE_FAILED, "Contradiction"):
+        if label not in series:
             continue
-        pts_all += pts
+        symbol, pts = series[label]
+        colours = [c for c, _, _, _ in pts]
+        vals += [v for _, x, y, _ in pts for v in (x, y) if v > 0]
+        mixed = len(set(colours)) > 1
         traces.append({
             "x": [x for _, x, _, _ in pts], "y": [y for _, _, y, _ in pts],
-            "text": [f"{prog}<br>ULR: {r['ULR Verdict']}, {x:.1f} ms<br>UPL: {r['UPL Verdict']}, {y:.1f} ms"
-                     f"<br>PaSTTeL conclusive/calls: {r['UPL PaSTTeL Success']}/{r['UPL PaSTTeL Calls']}"
-                     for prog, x, y, r in pts],
+            "text": [h for _, _, _, h in pts],
             "mode": "markers", "type": "scatter", "name": f"{label} ({len(pts)})", "hoverinfo": "text",
-            "marker": {"color": colour, "symbol": symbol, "opacity": 0.8,
-                       "size": 12 if symbol == "star" else 9},
+            # Points of several colours: their legend entry is drawn apart, in grey (below).
+            "showlegend": not mixed, "legendgroup": label,
+            "marker": {"color": colours, "symbol": symbol, "opacity": 0.75,
+                       "size": 11 if symbol == "star" else 8,
+                       "line": {"width": 1.5 if symbol.endswith("-open") else 0.5, "color": colours}},
         })
-    if not pts_all:
-        print(f"No plottable data for '{col_key}' in {csv_path}", file=sys.stderr)
-        return
-    vals = [v for _, x, y, _ in pts_all for v in (x, y) if v > 0]
-    lo, hi = min(vals) * 0.8, max(vals) * 1.2
-    # Diagonal from a positive start, so that it is drawn on logarithmic axes too.
+        if mixed:
+            traces.append({"x": [None], "y": [None], "mode": "markers", "type": "scatter",
+                           "name": f"{label} ({len(pts)})", "legendgroup": label, "hoverinfo": "skip",
+                           "marker": {"color": "gray", "symbol": symbol, "size": 8, "line": {"width": 1.5}}})
+    if not vals:
+        sides = sides_run(rows)
+        why = f"only {sides[0]} was run" if len(sides) == 1 else "no program solved"
+        print(f"No scatter plot for {csv_path}: {why}", file=sys.stderr)
+        return None
+    # The same range on both axes, from the fastest run to just past the "beyond the timeout" points.
+    lo, hi = min(vals) * 0.7, max(vals + [beyond_ms]) * (1.5 if log_scale else 1.05)
     traces.insert(0, {"x": [lo, hi], "y": [lo, hi], "mode": "lines", "type": "scatter", "name": "y = x",
-                      "line": {"color": "gray", "width": 1.5, "dash": "dash"}, "hoverinfo": "skip"})
-    axis_type = {"type": "log"} if log_scale else {"rangemode": "tozero"}
+                      "line": {"color": "gray", "width": 1, "dash": "dash"}, "hoverinfo": "skip"})
+    traces.insert(1, {"x": [timeout_ms, timeout_ms, None, lo, hi], "y": [lo, hi, None, timeout_ms, timeout_ms],
+                      "mode": "lines", "type": "scatter", "name": f"timeout ({timeout_ms / 1000:g} s)",
+                      "line": {"color": "red", "width": 1, "dash": "dot"}, "hoverinfo": "skip"})
+    import math
+    rng = [math.log10(lo), math.log10(hi)] if log_scale else [0, hi]
+    axis = {"type": "log" if log_scale else "linear", "range": rng, "constrain": "domain",
+            "showgrid": True, "gridcolor": "#eee", "zeroline": False}
     layout = {
-        "xaxis": dict(axis_type, title=f"{ulr_label} — {metric} (ms)"),
-        "yaxis": dict(axis_type, title=f"{upl_label} — {metric} (ms)"),
+        "xaxis": dict(axis, title=f"{ulr_label} — {metric} (ms)"),
+        # Square plotting area: one decade (or one unit) is the same length on both axes.
+        "yaxis": dict(axis, title=f"{upl_label} — {metric} (ms)", scaleanchor="x", scaleratio=1),
         "hovermode": "closest",
-        "legend": {"x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"},
-        "margin": {"l": 70, "r": 30, "t": 30, "b": 70},
+        "legend": {"x": 1.02, "y": 1, "xanchor": "left", "bgcolor": "rgba(255,255,255,0.9)"},
+        "margin": {"l": 80, "r": 20, "t": 20, "b": 70},
+        "plot_bgcolor": "white",
     }
-
-    style = {"term": "color:green;", "nonterm": "color:blue;", "contra": "color:black; background:#fff3cd;",
-             "ulr_only": "color:orange;", "upl_only": "color:purple;", "neither": "color:red;",
-             "both": "font-weight:bold; border-top:2px solid #333;", "par2": "font-weight:bold;"}
-    body = "".join(
-        f'  <tr style="{style[key]}"><td>{_esc(label)}</td><td style="text-align:right;">{n}</td>'
-        f'<td style="text-align:right;">{tx:.2f}</td><td style="text-align:right;">{ty:.2f}</td></tr>\n'
-        for key, label, n, tx, ty in summary_rows(cats))
-    summary_html = f"""<h3>Summary</h3>
-<table border="1" cellpadding="6" cellspacing="0"
-       style="border-collapse:collapse; font-family:monospace; margin-bottom:20px;">
-<thead style="background:#f0f0f0;">
-  <tr><th>Category</th><th>Count</th><th>{_esc(ulr_label)} total (s)</th><th>{_esc(upl_label)} total (s)</th></tr>
-</thead>
-<tbody>
-{body}</tbody>
-</table>"""
-
-    legend = " &nbsp;\n  ".join(
-        f'<span style="color:{colour};">{"&#9733;" if symbol == "star" else "&#9679;"}</span> {_esc(label)}'
-        for _, label, colour, symbol, plotted in CATEGORIES if plotted)
+    table = "\n".join(table_lines(t))
+    hidden = f" The {neither} programs neither run solved are not drawn." if neither else ""
     html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -494,21 +569,19 @@ def plot(csv_path, col_key, output_html, log_scale, timeout_s,
 {_plotly_script_tag()}
 <style>
   body {{ font-family: Arial, sans-serif; margin: 20px; }}
-  #plot {{ width: 100%; height: 85vh; }}
+  pre {{ font-size: 0.95em; }}
+  #plot {{ width: 1000px; max-width: 100%; height: 720px; }}
 </style>
 </head>
 <body>
-<h2>{_esc(title)} &mdash; {_esc(metric)}</h2>
-<p>
-  {legend}
+<h2>{_esc(title)} &mdash; {t['programs']} programs, {_esc(metric)}</h2>
+<pre>{_esc(table)}</pre>
+<p style="font-size:0.85em; color:#555; max-width:1000px;">
+  One point per program at least one run solved, {_esc(ulr_label)} on the X axis, {_esc(upl_label)} on
+  the Y axis, green if it terminates, blue if not. A filled circle: both runs solved it. An open
+  diamond: one run answered TIMEOUT or UNKNOWN, and is drawn beyond the dotted timeout line
+  on its own axis -- to the right when it was ULR, at the top when it was UPL.{hidden}
 </p>
-<p style="font-size:0.85em; color:#555;">
-  Each point is one program, analysed twice by the same Ultimate release, once per rank-synthesis
-  backend. Only TERMINATING and NONTERMINATING count as solved: a side that timed out, answered
-  UNKNOWN or crashed is placed at the PAR-2 penalty, twice the timeout ({par2_s:g} s).
-  Programs where both runs crashed are not shown.
-</p>
-{summary_html}
 <div id="plot"></div>
 <script>
 Plotly.newPlot('plot', {json.dumps(traces)}, {json.dumps(layout)});
@@ -518,7 +591,13 @@ Plotly.newPlot('plot', {json.dumps(traces)}, {json.dumps(layout)});
     os.makedirs(os.path.dirname(os.path.abspath(output_html)) or ".", exist_ok=True)
     with open(output_html, "w") as fh:
         fh.write(html)
-    print(f"Plot written to: {output_html}")
+    return output_html
+
+
+def plot_path(csv_path, col_key, ext=".html"):
+    """Where the scatter plot of a CSV goes: next to it, results_ULR_vs_UPL_<col>.html, and its points
+    for LaTeX, results_ULR_vs_UPL_<col>.dat."""
+    return (csv_path[:-4] if csv_path.endswith(".csv") else csv_path) + f"_{col_key}{ext}"
 
 
 def main():
@@ -526,7 +605,6 @@ def main():
     ap.add_argument("--log-dir", help="Directory holding <prog>.{ulr,upl}.log files")
     ap.add_argument("--output", default="results_ULR_vs_UPL.csv", help="Output CSV (or HTML with --plot)")
     ap.add_argument("--timeout", type=int, default=600, help="Ultimate timeout used, in seconds")
-    ap.add_argument("--summary", action="store_true", help="Print the summary tables")
     ap.add_argument("--summary-file", default=None,
                     help="Also write the summary tables to this file")
     ap.add_argument("--plot", metavar="CSV", help="Plot an existing CSV instead of parsing logs")
@@ -547,11 +625,14 @@ def main():
     if args.plot:
         if not os.path.isfile(args.plot):
             ap.error(f"CSV not found: {args.plot}")
-        out = args.output
-        if out.endswith(".csv"):
-            out = out[:-4] + f"_{args.col}.html"
-        plot(args.plot, args.col, out, args.log_scale, args.timeout,
-             args.ulr_label, args.upl_label)
+        out = args.output if args.output.endswith(".html") else plot_path(args.plot, args.col)
+        with open(args.plot, newline="") as fh:
+            print(render_summary(list(csv.DictReader(fh)), args.col))
+        if plot(args.plot, args.col, out, args.log_scale, args.timeout, args.ulr_label, args.upl_label):
+            print(f"Scatter plot: {out}")
+        dat = write_dat(args.plot, args.col, out[:-len(".html")] + ".dat", args.log_scale, args.timeout)
+        if dat:
+            print(f"Scatter data (LaTeX): {dat}")
         return
 
     if not args.log_dir:
@@ -563,9 +644,22 @@ def main():
     if not rows:
         print(f"No <prog>.{{ulr,upl}}.log found in {args.log_dir}", file=sys.stderr)
         sys.exit(1)
+    # The CSV, its scatter plot and the summary always go together; the summary ends with their paths.
     write_csv(rows, args.output)
-    if args.summary or args.summary_file:
-        print_summary(rows, args.summary_file)
+    html = plot(args.output, args.col, plot_path(args.output, args.col), args.log_scale, args.timeout,
+                args.ulr_label, args.upl_label)
+    dat = write_dat(args.output, args.col, plot_path(args.output, args.col, ".dat"), args.log_scale, args.timeout)
+    text = render_summary(rows, args.col)
+    if html:
+        text += f"\nScatter plot: {html}"
+    if dat:
+        text += f"\nScatter data (LaTeX): {dat}"
+    text += f"\nCSV: {args.output}"
+    print(text)
+    if args.summary_file:
+        os.makedirs(os.path.dirname(os.path.abspath(args.summary_file)) or ".", exist_ok=True)
+        with open(args.summary_file, "w") as fh:
+            fh.write(text + "\n")
 
 
 if __name__ == "__main__":

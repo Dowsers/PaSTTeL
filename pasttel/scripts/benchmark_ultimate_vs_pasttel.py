@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import collections
 import csv
 import glob
 import json
@@ -1069,286 +1070,162 @@ def _ultimate_algo_is_supported_by_pasttel(u_algo_raw):
     return base in ("affine", "nested", "lex", "lexicographic", "phase", "piecewise")
 
 
+_SOLVED = ("TERMINATING", "NONTERMINATING")
+
+
+def _pulr_results(csv_path):
+    """Read one benchmark CSV. Returns (label of its P-ULR column, ULR-Baseline results, P-ULR results,
+    outcomes): a result is {trace: (verdict, ms)} over the traces that tool proved TERMINATING or
+    NONTERMINATING, and outcomes is {trace: (Result Code, PaSTTeL Status)} over all the traces."""
+    ulr, pulr, outcomes = {}, {}, {}
+    with open(csv_path, newline="") as f:
+        reader = csv.DictReader(f)
+        p_col = next((h for h in (reader.fieldnames or []) if h.startswith("P-ULR")), "P-ULR")
+        for row in reader:
+            name = row["Trace Name"].strip()
+            code, status = row["Result Code"].strip(), row.get("PaSTTeL Status", "").strip() or "-"
+            outcomes[name] = (code, status)
+            ms = parse_float(row.get("ULR-Baseline (ms)", "-"))
+            if code in _SOLVED and ms is not None:
+                ulr[name] = (code, ms)
+            ms = parse_float(row.get(p_col, "-"))
+            if status in _SOLVED and ms is not None:
+                pulr[name] = (status, ms)
+    return p_col, ulr, pulr, outcomes
+
+
+def _pulr_strategies(csv_path):
+    """{trace: (ULR-Baseline's strategy, P-ULR's strategy)} from the Algo column, which reads
+    "<ULR-Baseline> / <P-ULR>" (e.g. "2-Nested Template / 2-4-Nested Template", "Fixpoint / GNTA"),
+    or "<ULR-Baseline>" alone when PaSTTeL did not prove the trace."""
+    strategies = {}
+    with open(csv_path, newline="") as f:
+        for row in csv.DictReader(f):
+            parts = [p.strip() for p in row.get("Algo", "").split("/")]
+            strategies[row["Trace Name"].strip()] = (parts[0] or "-", parts[1] if len(parts) > 1 else "-")
+    return strategies
+
+
+_LEFT_OUT = ("INFEASIBLE", "UNCHECKED")
+
+
+def pulr_table(csv_paths, baseline_name=None):
+    """The paper's table for ULR-Baseline and the P-ULR configurations of csv_paths (one CSV each, all
+    on the same traces), split by verdict. A trace counts for a tool that proved it TERMINATING or
+    NONTERMINATING; timeouts, UNKNOWN and unsupported traces enter no total.
+      tool rows  the traces every tool proved, each tool's time cumulated over exactly these traces;
+      VBS        the virtual best solver: the traces any tool proved, each at the best tool's time.
+    A trace two tools proved with opposite verdicts is a contradiction: left out of both, and listed.
+    Returns (text lines, common traces {verdict: [trace]}, contradicted traces)."""
+    tools, outcomes = [], None
+    for i, path in enumerate(csv_paths):
+        label, ulr, pulr, outc = _pulr_results(path)
+        if i == 0:
+            tools.append(("ULR-Baseline", ulr))
+            outcomes = outc
+        tools.append((label, pulr))
+    vbs = {v: {} for v in _SOLVED}
+    common = {v: [] for v in _SOLVED}
+    contra = []
+    for trace in sorted(set().union(*(res.keys() for _, res in tools))):
+        verdicts = {res[trace][0] for _, res in tools if trace in res}
+        if len(verdicts) > 1:
+            contra.append(trace)
+            continue
+        verdict = verdicts.pop()
+        vbs[verdict][trace] = min(res[trace][1] for _, res in tools if trace in res)
+        if all(trace in res for _, res in tools):
+            common[verdict].append(trace)
+    secs = {label: {v: sum(res[t][1] for t in common[v]) / 1000.0 for v in _SOLVED} for label, res in tools}
+    best = {v: min(secs[label][v] for label, _ in tools) for v in _SOLVED}
+    vbs_secs = {v: sum(vbs[v].values()) / 1000.0 for v in _SOLVED}
+
+    # The traces a tool did not prove, among those analysed (not INFEASIBLE or UNCHECKED), by outcome.
+    analysed = [t for t, (code, _) in outcomes.items() if code not in _LEFT_OUT]
+    left_out = collections.Counter(code for code, _ in outcomes.values() if code in _LEFT_OUT)
+    not_proved = []
+    for i, (label, res) in enumerate(tools):
+        why = collections.Counter(
+            (outcomes[t][0] if i == 0 else ("not run" if outcomes[t][1] == "-" else outcomes[t][1]))
+            for t in analysed if t not in res)
+        not_proved.append(f"{label} {sum(why.values())}"
+                          + (" (" + ", ".join(f"{k} {n}" for k, n in why.most_common()) + ")" if why else ""))
+
+    n_common = sum(len(common[v]) for v in _SOLVED)
+    origin = f", ULR-Baseline from {baseline_name}" if baseline_name else ""
+    w = max(len(label) for label, _ in tools)
+    head = f"{'Tool':<{w}}  {'#Terminating':>12}  {'Time (s)':>10}   {'#Non-Terminating':>16}  {'Time (s)':>10}"
+    sep = "-" * (len(head) + 1)
+    lines = [f"ULR-Baseline vs P-ULR{origin}",
+             f"{len(outcomes)} lasso traces, {len(analysed)} analysed"
+             + (" (left out: " + ", ".join(f"{n} {k.lower()}" for k, n in left_out.most_common()) + ")"
+                if left_out else ""),
+             sep, head, sep,
+             f"{'VBS':<{w}}  {len(vbs['TERMINATING']):>12}  {vbs_secs['TERMINATING']:>10.2f}    "
+             f"{len(vbs['NONTERMINATING']):>16}  {vbs_secs['NONTERMINATING']:>10.2f}"]
+    for label, _ in tools:
+        cells = [(len(common[v]), f"{secs[label][v]:.2f}{'*' if secs[label][v] == best[v] else ' '}")
+                 for v in _SOLVED]
+        lines.append(f"{label:<{w}}  {cells[0][0]:>12}  {cells[0][1]:>11}   {cells[1][0]:>16}  {cells[1][1]:>11}")
+    lines += [sep,
+              f"Tools: the {n_common} traces every tool proved. VBS: the traces any tool proved, each at "
+              "its best time. * best.",
+              "Not proved: " + " | ".join(not_proved)]
+    if contra:
+        lines.append(f"CONTRADICTIONS ({len(contra)}), tools proved these with opposite verdicts:")
+        lines += [f"  {t}" for t in contra]
+    else:
+        lines.append("Contradictions: none")
+    return lines, common, contra
+
+
+def scatter_path(csv_path):
+    """Where the scatter plot of a benchmark CSV goes: next to it, <csv>_scatter.html."""
+    return os.path.splitext(csv_path)[0] + "_scatter.html"
+
+
 def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False, x_col="ulr-baseline",
                           baseline_name=None):
-    """Read the benchmark CSV and generate an interactive HTML scatter plot.
-
-    X axis: ULR-Baseline (ms)  — cumulative sequential ULR time
-    Y axis: P-ULR (ms)         — P-ULR column from PaSTTeL
-
-    Points are colored:
-      - Green:  both agree TERMINATING
-      - Blue:   both agree NONTERMINATING
-      - Orange: PaSTTeL timeout
-      - Red:    UNKNOWN (Ultimate answered, PaSTTeL did not)
-      - Purple: NOT SUPPORTED by PaSTTeL
-
-    When PaSTTeL times out or is not supported, a PAR-2 penalty time
-    (timeout * 2) is used on the Y axis.
-    Rows with INFEASIBLE / UNCHECKED / Ultimate-UNKNOWN are skipped.
-    """
-    # baseline_name names the Ultimate release the traces came from: plots of several releases may
-    # be compared side by side, and the axis must say which one this is.
+    """Write the HTML scatter plot of one benchmark CSV: the paper's table for ULR-Baseline and this
+    CSV's P-ULR configuration, then one point per trace both proved (X: ULR-Baseline, Y: P-ULR),
+    green when terminating, blue when non-terminating, a black star on a contradiction. Hovering a
+    point gives each tool's verdict, the strategy that proved it, and its time."""
+    table, common, contra = pulr_table([csv_path], baseline_name)
+    p_col, ulr, pulr, _ = _pulr_results(csv_path)
+    strategy = _pulr_strategies(csv_path)
     baseline = f"ULR-Baseline ({baseline_name})" if baseline_name else "ULR-Baseline"
-    x_axis_label = f"{baseline} (ms)"
-    # Derive Y-axis label from the CSV header (P-ULR-Seq or P-ULR-Par*)
-    y_axis_label = "P-ULR (ms)"
-    plot_title   = f"{baseline} vs P-ULR"
+    x_axis_label, y_axis_label = f"{baseline} (ms)", f"{p_col} (ms)"
+    plot_title = f"{baseline} vs {p_col}"
 
-    par2_ms = timeout_s * 2 * 1000.0
-    rows = []
-    with open(csv_path, "r") as f:
-        reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames or []
-        # Auto-detect the P-ULR column name (P-ULR-Seq, P-ULR-Par4, …)
-        p_ulr_col = next((h for h in fieldnames if h.startswith("P-ULR")), "P-ULR")
-        if p_ulr_col != "P-ULR":
-            y_axis_label = f"{p_ulr_col} (ms)"
-            plot_title   = f"{baseline} vs {p_ulr_col}"
-        for row in reader:
-            rows.append(row)
-
-    green_x, green_y, green_labels = [], [], []
-    blue_x, blue_y, blue_labels = [], [], []
-    red_x, red_y, red_labels = [], [], []
-    orange_x, orange_y, orange_labels = [], [], []
-    purple_x, purple_y, purple_labels = [], [], []
-    # Contradiction: BOTH tools concluded, but disagree (one says TERMINATING,
-    # the other NONTERMINATING). This is a soundness discrepancy, not a mere
-    # PaSTTeL failure, so it gets its own category and colour.
-    contra_x, contra_y, contra_labels = [], [], []
-
-    def verdict_from_algo(a):
-        a = a.strip().lower()
-        if a in ("fixpoint", "gnta"):
-            return "NONTERMINATING"
-        if "template" in a:
-            return "TERMINATING"
-        return "UNKNOWN"
-
-    col_name = "Baseline"
-
-    for row in rows:
-        result = row["Result Code"].strip()
-        t_time_str = row.get(p_ulr_col, "-").strip()
-        name = row["Trace Name"].strip()
-        algo = row.get("Algo", "").strip()
-        pasttel_status = row.get("PaSTTeL Status", "").strip()
-
-        algo_parts = [p.strip() for p in algo.split("/")] if "/" in algo else [algo]
-        u_algo_raw = algo_parts[0].strip()
-
-        u_time_str = row.get("ULR-Baseline (ms)", "-").strip()
-
-        if result in ("INFEASIBLE", "UNCHECKED", "UNKNOWN"):
+    series = [("Terminating", "green", "circle", common["TERMINATING"]),
+              ("Non-terminating", "blue", "circle", common["NONTERMINATING"]),
+              ("Contradiction", "black", "star", [t for t in contra if t in ulr and t in pulr])]
+    traces, vals = [], []
+    for label, colour, symbol, names in series:
+        if not names:
             continue
-        if u_time_str.strip().strip('"') in ("-", ""):
-            continue
-
-        u_verdict = result
-
-        t_algo = algo_parts[-1] if len(algo_parts) >= 2 else ""
-        t_verdict = verdict_from_algo(t_algo) if t_algo else "UNKNOWN"
-        if pasttel_status in ("TERMINATING", "NONTERMINATING"):
-            t_verdict = pasttel_status
-
-        if pasttel_status:
-            p_status = pasttel_status
-        elif t_time_str.strip().strip('"') == "-":
-            p_status = "UNKNOWN"
-        else:
-            p_status = t_verdict
-
-        ux = parse_float(u_time_str)
-        ty_raw = parse_float(t_time_str)
-
-        if ux is None:
-            continue
-        ty = ty_raw if ty_raw is not None else par2_ms
-
-        u_algo_supported = _ultimate_algo_is_supported_by_pasttel(u_algo_raw)
-        is_not_supported = (
-            u_verdict == "TERMINATING"
-            and not u_algo_supported
-            and p_status not in ("TERMINATING", "NONTERMINATING")
-        )
-
-        if p_status == "NOT_SUPPORTED" or is_not_supported:
-            purple_x.append(ux); purple_y.append(ty)
-            purple_labels.append(
-                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms"
-                f"<br>Ultimate: {u_verdict} ({u_algo_raw}), PaSTTeL: NOT SUPPORTED"
-            )
-        elif u_verdict == "TERMINATING" and t_verdict == "TERMINATING":
-            green_x.append(ux); green_y.append(ty)
-            green_labels.append(f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms")
-        elif u_verdict == "NONTERMINATING" and t_verdict == "NONTERMINATING":
-            blue_x.append(ux); blue_y.append(ty)
-            blue_labels.append(f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms")
-        elif t_verdict in ("TERMINATING", "NONTERMINATING") and t_verdict != u_verdict:
-            # Both concluded but disagree -> soundness contradiction.
-            contra_x.append(ux); contra_y.append(ty)
-            contra_labels.append(
-                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms"
-                f"<br>CONTRADICTION — Ultimate: {u_verdict} ({u_algo_raw}), PaSTTeL: {t_verdict}"
-            )
-        elif p_status == "TIMEOUT":
-            # Real timeout only (subprocess killed at the time limit). A genuine
-            # UNKNOWN concluded *under* the timeout has ty_raw is None too, but must
-            # NOT be coloured orange — it falls through to the red (UNKNOWN) branch.
-            orange_x.append(ux); orange_y.append(ty)
-            orange_labels.append(
-                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms"
-                f"<br>Ultimate: {u_verdict}, PaSTTeL: TIMEOUT (PAR-2={par2_ms:.0f}ms)"
-            )
-        elif u_verdict == "TERMINATING" and t_verdict != "TERMINATING":
-            red_x.append(ux); red_y.append(ty)
-            red_labels.append(
-                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms"
-                f"<br>Ultimate: TERMINATING ({u_algo_raw}), PaSTTeL: {t_verdict}"
-            )
-        else:
-            red_x.append(ux); red_y.append(ty)
-            red_labels.append(
-                f"{name}<br>Algo: {algo}<br>ULR-Baseline={ux:.1f}ms  P-ULR={ty:.1f}ms"
-                f"<br>Ultimate: {u_verdict}, PaSTTeL: {t_verdict}"
-            )
-
-    all_y = green_y + blue_y + red_y + orange_y + purple_y + contra_y
-    all_x = green_x + blue_x + red_x + orange_x + purple_x + contra_x
-    if not all_x:
-        print("No plottable data points found (all INFEASIBLE/UNCHECKED or missing times).")
-        return
-
-    x_ref = "ULR-Baseline"
-    y_ref = p_ulr_col
-
-    # ── Summary table ────────────────────────────────────────────────────────
-    n_term        = len(green_x)
-    n_nonterm     = len(blue_x)
-    n_timeout     = len(orange_x)
-    n_unknown     = len(red_x)
-    n_notsup      = len(purple_x)
-    n_contra      = len(contra_x)
-    total_term_x    = sum(green_x)   / 1000.0
-    total_term_y    = sum(green_y)   / 1000.0
-    total_nonterm_x = sum(blue_x)    / 1000.0
-    total_nonterm_y = sum(blue_y)    / 1000.0
-    total_contra_x  = sum(contra_x)  / 1000.0
-    total_contra_y  = sum(contra_y)  / 1000.0
-
-    # PAR-2: an instance PaSTTeL did not solve (timeout / unknown / not-supported)
-    # is penalised as 2*timeout on the P-ULR (Y) axis. Those Y values already hold
-    # par2_ms (substituted when ty_raw is None), so summing them yields the
-    # penalised cumulative runtime. Ultimate (X) solved every plotted instance,
-    # so its cumulative carries no penalty.
-    total_timeout_x = sum(orange_x) / 1000.0
-    total_timeout_y = sum(orange_y) / 1000.0
-    total_unknown_x = sum(red_x)    / 1000.0
-    total_unknown_y = sum(red_y)    / 1000.0
-    total_notsup_x  = sum(purple_x) / 1000.0
-    total_notsup_y  = sum(purple_y) / 1000.0
-
-    # Instances solved by BOTH techniques (common terminating + non-terminating).
-    n_both       = n_term + n_nonterm
-    total_both_x = total_term_x + total_nonterm_x
-    total_both_y = total_term_y + total_nonterm_y
-
-    # PAR-2 grand total over the instances that count: solved (terminating +
-    # non-terminating) and genuine timeouts. Unknown (red) and Not-supported
-    # (purple) instances are excluded entirely. Timeout Y values already hold
-    # par2_ms (the 2*timeout penalty); solved Y values hold real times.
-    par2_x = green_x + blue_x + orange_x
-    par2_y = green_y + blue_y + orange_y
-    n_all        = len(par2_x)
-    par2_total_x = sum(par2_x) / 1000.0
-    par2_total_y = sum(par2_y) / 1000.0
-
-    x_col_hdr = x_axis_label   # e.g. "ULR-Fair (ms)" or "ULR-Baseline (ms)"
-    y_col_hdr = y_axis_label   # e.g. "P-ULR-Seq (ms)" or "P-ULR-Par6 (ms)"
-
-    # NB: the X column ("ULR-Baseline") is always the reference tool's own time.
-    # It ALWAYS concludes TERMINATING/NONTERMINATING on every plotted instance
-    # (INFEASIBLE/UNCHECKED/UNKNOWN rows are filtered out upstream). The
-    # "Timeout / Unknown / Not supported" categories therefore describe PaSTTeL's
-    # outcome, NOT the reference — the X time there is simply how long the
-    # reference took to solve the instances PaSTTeL could not.
-    hdr = f"{'Category':<34}  {'Count':>6}  {x_col_hdr:>22}  {y_col_hdr:>22}"
-    sep = "-" * len(hdr)
-    rows_txt = [
-        f"{'Terminating (common)':<34}  {n_term:>6}  {total_term_x:>19.2f} s  {total_term_y:>19.2f} s",
-        f"{'Non-terminating (common)':<34}  {n_nonterm:>6}  {total_nonterm_x:>19.2f} s  {total_nonterm_y:>19.2f} s",
-        f"{'Contradiction (both disagree)':<34}  {n_contra:>6}  {total_contra_x:>19.2f} s  {total_contra_y:>19.2f} s",
-        f"{'PaSTTeL Timeout (PAR-2 x2)':<34}  {n_timeout:>6}  {total_timeout_x:>19.2f} s  {total_timeout_y:>19.2f} s",
-        f"{'PaSTTeL Unknown (no P-ULR time)':<34}  {n_unknown:>6}  {total_unknown_x:>19.2f} s  {'-':>21}",
-        f"{'PaSTTeL Not supported (no P-ULR)':<34}  {n_notsup:>6}  {total_notsup_x:>19.2f} s  {'-':>21}",
-    ]
-    print(f"\n{sep}\n{hdr}\n{sep}")
-    for r in rows_txt:
-        print(r)
-    print(sep)
-    print(f"{'Solved by BOTH (cumul.)':<34}  {n_both:>6}  {total_both_x:>19.2f} s  {total_both_y:>19.2f} s")
-    print(f"{'PAR-2 total (all)':<34}  {n_all:>6}  {par2_total_x:>19.2f} s  {par2_total_y:>19.2f} s")
-    print(sep + "\n")
-
-    summary_html = f"""
-<h3>Summary</h3>
-<table border="1" cellpadding="6" cellspacing="0"
-       style="border-collapse:collapse; font-family:monospace; margin-bottom:20px;">
-<thead style="background:#f0f0f0;">
-  <tr>
-    <th>Category</th><th>Count</th>
-    <th>{x_col_hdr} total (s)</th>
-    <th>{y_col_hdr} total (s)</th>
-  </tr>
-</thead>
-<tbody>
-  <tr style="color:green;">
-    <td>Terminating (common)</td>
-    <td style="text-align:right;">{n_term}</td>
-    <td style="text-align:right;">{total_term_x:.2f}</td>
-    <td style="text-align:right;">{total_term_y:.2f}</td>
-  </tr>
-  <tr style="color:blue;">
-    <td>Non-terminating (common)</td>
-    <td style="text-align:right;">{n_nonterm}</td>
-    <td style="text-align:right;">{total_nonterm_x:.2f}</td>
-    <td style="text-align:right;">{total_nonterm_y:.2f}</td>
-  </tr>
-  <tr style="color:black; background:#fff3cd;">
-    <td>Contradiction (both disagree)</td>
-    <td style="text-align:right;">{n_contra}</td>
-    <td style="text-align:right;">{total_contra_x:.2f}</td><td style="text-align:right;">{total_contra_y:.2f}</td>
-  </tr>
-  <tr style="color:orange;">
-    <td>{y_ref} Timeout (PAR-2 &times;2)</td>
-    <td style="text-align:right;">{n_timeout}</td>
-    <td style="text-align:right;">{total_timeout_x:.2f}</td><td style="text-align:right;">{total_timeout_y:.2f}</td>
-  </tr>
-  <tr style="color:red;">
-    <td>{y_ref} Unknown (no P-ULR time)</td>
-    <td style="text-align:right;">{n_unknown}</td>
-    <td style="text-align:right;">{total_unknown_x:.2f}</td><td style="text-align:right;">-</td>
-  </tr>
-  <tr style="color:purple;">
-    <td>{y_ref} Not supported (no P-ULR time)</td>
-    <td style="text-align:right;">{n_notsup}</td>
-    <td style="text-align:right;">{total_notsup_x:.2f}</td><td style="text-align:right;">-</td>
-  </tr>
-  <tr style="font-weight:bold; border-top:2px solid #333;">
-    <td>Solved by both (cumulative)</td>
-    <td style="text-align:right;">{n_both}</td>
-    <td style="text-align:right;">{total_both_x:.2f}</td><td style="text-align:right;">{total_both_y:.2f}</td>
-  </tr>
-  <tr style="font-weight:bold;">
-    <td>PAR-2 total (all instances)</td>
-    <td style="text-align:right;">{n_all}</td>
-    <td style="text-align:right;">{par2_total_x:.2f}</td><td style="text-align:right;">{par2_total_y:.2f}</td>
-  </tr>
-</tbody>
-</table>"""
-
-    max_val = max(max(all_x), max(all_y)) if all_y else max(all_x)
+        xs, ys = [ulr[t][1] for t in names], [pulr[t][1] for t in names]
+        vals += [v for v in xs + ys if v > 0]
+        traces.append({
+            "x": xs, "y": ys, "mode": "markers", "type": "scatter", "hoverinfo": "text",
+            # Each tool's verdict with the strategy that proved it (template, Fixpoint or GNTA).
+            "text": [f"{t}<br>ULR-Baseline: {ulr[t][0]} ({strategy[t][0]}), {ulr[t][1]:.1f} ms"
+                     f"<br>{p_col}: {pulr[t][0]} ({strategy[t][1]}), {pulr[t][1]:.1f} ms"
+                     for t in names],
+            "name": f"{label} ({len(names)})",
+            "marker": {"color": colour, "symbol": symbol, "opacity": 0.7, "size": 12 if symbol == "star" else 8},
+        })
+    if not vals:
+        print(f"No trace proved by both ULR-Baseline and {p_col} in {csv_path}: no plot.")
+        return None
+    lo, hi = min(vals) * 0.8, max(vals) * 1.2
+    # Diagonal from a positive start, so that it is drawn on logarithmic axes too.
+    traces.insert(0, {"x": [lo, hi], "y": [lo, hi], "mode": "lines", "type": "scatter", "name": "y = x",
+                      "line": {"color": "gray", "width": 1.5, "dash": "dash"}, "hoverinfo": "skip"})
+    axis = {"type": "log"} if log_scale else {"rangemode": "tozero"}
+    layout = {"xaxis": dict(axis, title=x_axis_label), "yaxis": dict(axis, title=y_axis_label),
+              "hovermode": "closest", "legend": {"x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"},
+              "margin": {"l": 70, "r": 30, "t": 30, "b": 70}}
 
     # Embed Plotly JS for offline use (no CDN dependency)
     try:
@@ -1356,134 +1233,39 @@ def generate_scatter_plot(csv_path, output_html, timeout_s=600, log_scale=False,
         import os as _os
         _plotly_js = _os.path.join(_os.path.dirname(plotly.__file__), "package_data", "plotly.min.js")
         with open(_plotly_js) as _f:
-            _plotly_bundle = _f.read()
-        _plotly_script = f"<script>{_plotly_bundle}</script>"
+            _plotly_script = f"<script>{_f.read()}</script>"
     except Exception:
         _plotly_script = '<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>'
 
-    # Build the HTML with Plotly
+    esc = lambda text: str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    table_txt = esc("\n".join(table))
     html = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>{plot_title} - Scatter Plot</title>
+<title>{esc(plot_title)} - Scatter Plot</title>
 {_plotly_script}
 <style>
   body {{ font-family: Arial, sans-serif; margin: 20px; }}
+  pre {{ font-size: 0.95em; }}
   #plot {{ width: 100%; height: 85vh; }}
 </style>
 </head>
 <body>
-<h2>{plot_title} &mdash; Computation Time Comparison</h2>
-<p>
-  <span style="color:green;">&#9679;</span> Terminating &nbsp;
-  <span style="color:blue;">&#9679;</span> Non-terminating &nbsp;
-  <span style="color:black;">&#9733;</span> Contradiction &nbsp;
-  <span style="color:orange;">&#9679;</span> {y_ref} Timeout &nbsp;
-  <span style="color:red;">&#9679;</span> {y_ref} Unknown &nbsp;
-  <span style="color:purple;">&#9679;</span> {y_ref} Not supported
-</p>
+<h2>{esc(plot_title)} &mdash; Computation Time Comparison</h2>
+<pre>{table_txt}</pre>
 <p style="font-size:0.85em; color:#555;">
-  Note: the X axis ({x_ref}) is the reference tool and always concludes
-  TERMINATING/NONTERMINATING on every plotted instance. The Timeout / Unknown /
-  Not-supported categories describe {y_ref}'s outcome — the X time shown there is
-  the reference's own time to solve instances {y_ref} could not.
+  One point per lasso trace both tools proved; a trace proved by one tool only counts in VBS above.
 </p>
-{summary_html}
 <div id="plot"></div>
 <script>
-var green = {{
-  x: {json.dumps(green_x)},
-  y: {json.dumps(green_y)},
-  text: {json.dumps(green_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Terminating ({len(green_x)})',
-  marker: {{ color: 'green', size: 8, opacity: 0.7 }},
-  hoverinfo: 'text'
-}};
-var blue = {{
-  x: {json.dumps(blue_x)},
-  y: {json.dumps(blue_y)},
-  text: {json.dumps(blue_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Non-terminating ({len(blue_x)})',
-  marker: {{ color: 'blue', size: 8, opacity: 0.7 }},
-  hoverinfo: 'text'
-}};
-var orange = {{
-  x: {json.dumps(orange_x)},
-  y: {json.dumps(orange_y)},
-  text: {json.dumps(orange_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Timeout {y_ref} ({len(orange_x)})',
-  marker: {{ color: 'orange', size: 9, opacity: 0.85, symbol: 'circle-open' }},
-  hoverinfo: 'text'
-}};
-var red = {{
-  x: {json.dumps(red_x)},
-  y: {json.dumps(red_y)},
-  text: {json.dumps(red_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Unknown {x_ref}=TERM ({len(red_x)})',
-  marker: {{ color: 'red', size: 10, opacity: 0.85, symbol: 'x' }},
-  hoverinfo: 'text'
-}};
-var purple = {{
-  x: {json.dumps(purple_x)},
-  y: {json.dumps(purple_y)},
-  text: {json.dumps(purple_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Not supported by {y_ref} ({len(purple_x)})',
-  marker: {{ color: 'purple', size: 9, opacity: 0.85, symbol: 'diamond-open' }},
-  hoverinfo: 'text'
-}};
-var contra = {{
-  x: {json.dumps(contra_x)},
-  y: {json.dumps(contra_y)},
-  text: {json.dumps(contra_labels)},
-  mode: 'markers',
-  type: 'scatter',
-  name: 'Contradiction ({len(contra_x)})',
-  marker: {{ color: 'black', size: 12, opacity: 0.9, symbol: 'star' }},
-  hoverinfo: 'text'
-}};
-var diag_max = {max_val * 1.05};
-var diagonal = {{
-  x: [0, diag_max],
-  y: [0, diag_max],
-  mode: 'lines',
-  type: 'scatter',
-  name: 'y = x',
-  line: {{ color: 'gray', width: 1.5, dash: 'dash' }},
-  hoverinfo: 'skip',
-  showlegend: true
-}};
-var layout = {{
-  xaxis: {{
-    title: '{x_axis_label}',
-    {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
-  }},
-  yaxis: {{
-    title: '{y_axis_label}',
-    {"type: 'log'," if log_scale else "rangemode: 'tozero',"}
-  }},
-  hovermode: 'closest',
-  legend: {{ x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)' }},
-  margin: {{ l: 70, r: 30, t: 30, b: 70 }}
-}};
-Plotly.newPlot('plot', [diagonal, green, blue, orange, red, purple, contra], layout);
+Plotly.newPlot('plot', {json.dumps(traces)}, {json.dumps(layout)});
 </script>
 </body>
 </html>"""
-
     with open(output_html, "w") as f:
         f.write(html)
-    print(f"Scatter plot written to: {output_html}")
+    return output_html
 
 
 # =============================================================================
@@ -1521,6 +1303,12 @@ def main():
              "(skip benchmarking), or add to a benchmark run to plot after."
     )
     parser.add_argument(
+        "--table", nargs="+", metavar="CSV",
+        help="Print the paper's table (VBS, ULR-Baseline, one row per P-ULR configuration) from benchmark "
+             "CSVs of the same traces, e.g. the P-ULR-Seq and P-ULR-Par7 ones, and write the scatter plot "
+             "of each CSV next to it"
+    )
+    parser.add_argument(
         "--baseline-name", default=None, metavar="NAME",
         help="Ultimate release the traces were extracted with (e.g. UAutomizer-linux); "
              "shown on the X axis and in the title of the scatter plot"
@@ -1551,15 +1339,33 @@ def main():
     )
     args = parser.parse_args()
 
+    # Table-only mode: --table CSV [CSV ...] (no benchmarking)
+    if args.table:
+        missing = [p for p in args.table if not os.path.isfile(p)]
+        if missing:
+            print(f"Error: CSV file not found: {', '.join(missing)}")
+            sys.exit(1)
+        print("\n".join(pulr_table(args.table, args.baseline_name)[0]))
+        for csv_file in args.table:
+            html = generate_scatter_plot(csv_file, scatter_path(csv_file), timeout_s=args.timeout,
+                                         log_scale=args.log, baseline_name=args.baseline_name)
+            if html:
+                print(f"Scatter plot: {html}")
+        for csv_file in args.table:
+            print(f"CSV: {csv_file}")
+        return
+
     # Plot-only mode: --plot CSV_FILE (no benchmarking)
     if isinstance(args.plot, str):
         csv_file = args.plot
         if not os.path.isfile(csv_file):
             print(f"Error: CSV file not found: {csv_file}")
             sys.exit(1)
-        html_out = os.path.splitext(csv_file)[0] + "_scatter.html"
-        generate_scatter_plot(csv_file, html_out, timeout_s=args.timeout, log_scale=args.log,
-                              baseline_name=args.baseline_name)
+        print("\n".join(pulr_table([csv_file], args.baseline_name)[0]))
+        html = generate_scatter_plot(csv_file, scatter_path(csv_file), timeout_s=args.timeout,
+                                     log_scale=args.log, baseline_name=args.baseline_name)
+        if html:
+            print(f"Scatter plot: {html}")
         return
 
     # Benchmark mode requires --input-dir and --pasttel-bin
@@ -1790,9 +1596,11 @@ def main():
 
         # Generate scatter plot if requested
         if args.plot:
-            html_out = os.path.splitext(args.output)[0] + "_scatter.html"
-            generate_scatter_plot(args.output, html_out, timeout_s=args.timeout, log_scale=args.log,
-                                  baseline_name=args.baseline_name)
+            print("\n".join(pulr_table([args.output], args.baseline_name)[0]))
+            html = generate_scatter_plot(args.output, scatter_path(args.output), timeout_s=args.timeout,
+                                         log_scale=args.log, baseline_name=args.baseline_name)
+            if html:
+                print(f"Scatter plot: {html}")
 
 
 if __name__ == "__main__":
