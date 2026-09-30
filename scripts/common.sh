@@ -30,8 +30,8 @@ ULTIMATE_UPL="${ULTIMATE_UPL:-${TOOLS_DIR}/UAutomizer-PaSTTeL-linux}"
 #                                  run_full_evaluation.sh --pasttel-timeout)
 #   UPL_ULTIMATE_TIMEOUT_DEFAULT   Ultimate budget per program for each of the two runs of ULR vs UPL
 #                                  (run_ulr_vs_upl.sh --timeout, run_full_evaluation.sh --upl-timeout)
-#   UPL_PASTTEL_TIMEOUT_DEFAULT    PaSTTeL budget per lasso inside UPL, past which the lasso gets no
-#                                  ranking function; substituted for @PASTTEL_TIMEOUT@ in
+#   UPL_PASTTEL_TIMEOUT_DEFAULT    PaSTTeL budget per lasso inside UPL, past which Ultimate falls back to
+#                                  LassoRanker for that lasso; substituted for @PASTTEL_TIMEOUT@ in
 #                                  tools/settings/BuchiAutomizerPasttel.epf.in. 20 s, the preference's own
 #                                  default in the fork: in P-ULR-Par7 every trace PaSTTeL solved on the
 #                                  paper's benchmark (4,749) was solved within 20 s. (run_ulr_vs_upl.sh

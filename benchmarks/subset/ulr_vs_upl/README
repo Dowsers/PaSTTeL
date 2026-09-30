@@ -1,0 +1,117 @@
+benchmarks/subset/ulr_vs_upl -- the 100 programs of [2] ULR vs UPL for --subset
+==================================================================================
+
+Drawn uniformly at random, with a fixed seed, from the 1,087 programs of benchmarks/ulr_vs_upl
+(Figure 6): 96 of its 1,048 C programs and 4 of its 39 Boogie programs, its proportions. In
+Python 3:
+
+    rng = random.Random(2027)
+    c   = rng.sample(sorted(c_programs), 96)
+    bpl = rng.sample(sorted(bpl_programs), 4)
+
+The files are unchanged copies. The columns give our result for each program (logs/ULR_vs_UPL_logs.zip,
+timeout 1,000 s per run): the verdict of each run and its wall clock. The 9 programs with a run
+above 300 s are those that --subset, with its 300 s timeout, stops earlier than our run did.
+
+Program                                                           From  ULR verdict      ULR (s)  UPL verdict      UPL (s)
+----------------------------------------------------------------------------------------------------------------------------
+a.05-alloca_false-no-overflow.c                                   C     TERMINATING         10.9  TERMINATING         10.1
+a.06_true-termination.c                                           C     TERMINATING          5.6  TERMINATING         10.3
+a.07.c                                                            C     TERMINATING         17.6  TERMINATING         17.9
+Ackermann02.c                                                     C     UNKNOWN            847.1  UNKNOWN            782.3
+afagp-fail.t2.c                                                   C     NONTERMINATING      15.8  NONTERMINATING      15.8
+AliasDarteFeautrierGonnord-SAS2010-Fig2a.c                        C     TERMINATING          9.9  TERMINATING          8.4
+AliasDarteFeautrierGonnord-SAS2010-Fig2a_true-termination.c       C     TERMINATING          8.9  TERMINATING          8.1
+AliasDarteFeautrierGonnord-SAS2010-speedpldi2_true-termination.c  C     TERMINATING          5.5  TERMINATING          5.3
+alternating_list.i_41.bpl                                         BPL   UNKNOWN            189.4  UNKNOWN            216.4
+and-01-false.c                                                    C     UNKNOWN              4.6  UNKNOWN              4.7
+and-02-false.c                                                    C     NONTERMINATING       4.7  NONTERMINATING       4.8
+array10_alloca.c                                                  C     UNKNOWN            149.7  UNKNOWN             28.4
+Arrays01-EquivalentConstantIndices_true-termination.c             C     TERMINATING          5.5  TERMINATING          5.4
+Arrays02-EquivalentConstantIndices.c                              C     NONTERMINATING       4.9  NONTERMINATING       4.9
+b.02_true-termination.c                                           C     TERMINATING          4.6  TERMINATING          4.7
+b.03-no-inv.c                                                     C     NONTERMINATING       4.2  NONTERMINATING       4.3
+b.03_assume.c                                                     C     TERMINATING          4.6  TERMINATING          4.7
+b.05-alloca.c                                                     C     TERMINATING          6.9  TERMINATING          7.0
+b.09_assume.c                                                     C     TERMINATING          5.2  TERMINATING          5.3
+b.12-alloca_true-termination.c                                    C     TERMINATING         11.8  TERMINATING         11.7
+b.12_false-no-overflow.c                                          C     TERMINATING          6.3  TERMINATING          9.0
+b.13_false-no-overflow.c                                          C     TERMINATING          7.6  TERMINATING         11.2
+b.18.c                                                            C     TERMINATING          7.4  TERMINATING          9.0
+Bangalore-2.c                                                     C     TERMINATING          6.2  TERMINATING          6.5
+boogieBoolConversionForWhileForCondex.c                           C     NONTERMINATING       4.7  NONTERMINATING       4.5
+bound-scaled200.bpl                                               BPL   TERMINATING          3.0  TERMINATING          3.3
+c.01-no-inv_false-no-overflow.c                                   C     UNKNOWN              8.8  UNKNOWN             22.8
+c.01.c                                                            C     UNKNOWN              5.3  UNKNOWN              7.2
+c.07.c                                                            C     TERMINATING          6.9  TERMINATING          6.7
+c.08_true-termination.c                                           C     TERMINATING         25.7  TERMINATING         31.0
+ChawdharyCookGulwaniSagivYang-ESOP2008-easy1_true-termination.c   C     TERMINATING          8.9  TERMINATING          6.6
+ChenFlurMukhopadhyay-SAS2012-Ex1.02.c                             C     TERMINATING          4.9  TERMINATING          6.2
+ChenFlurMukhopadhyay-SAS2012-Ex1.04.c                             C     TERMINATING          6.5  TERMINATING          6.3
+ChenFlurMukhopadhyay-SAS2012-Ex2.07_true-termination.c            C     TERMINATING          5.1  TERMINATING          7.1
+ChenFlurMukhopadhyay-SAS2012-Ex2.14.c                             C     NONTERMINATING       7.9  NONTERMINATING       7.1
+ChenFlurMukhopadhyay-SAS2012-Ex2.16.c                             C     TERMINATING         16.4  TERMINATING         19.4
+ChenFlurMukhopadhyay-SAS2012-Ex2.17.c                             C     NONTERMINATING      18.7  NONTERMINATING      19.7
+ChenFlurMukhopadhyay-SAS2012-Ex3.08_true-termination.c            C     TERMINATING          7.2  TERMINATING          7.2
+ChenFlurMukhopadhyay-SAS2012-Ex3.09_true-termination.c            C     TERMINATING          5.9  TERMINATING          7.3
+ChenFlurMukhopadhyay-SAS2012-Ex3.10.c                             C     TERMINATING          6.7  TERMINATING          6.3
+collatz.c                                                         C     TIMEOUT           1000.0  TIMEOUT           1000.0
+CompoundExpression01.c                                            C     NONTERMINATING       4.9  NONTERMINATING       5.7
+consts2nt.t2.c                                                    C     NONTERMINATING       7.3  NONTERMINATING       6.7
+CookSeeZuleger-2013TACAS-Fig3-alloca_true-termination.c           C     TERMINATING         14.6  TERMINATING         15.1
+coolant_basis_4_safe_sftyliveness_true-valid-ltl.c                C     NONTERMINATING      11.5  NONTERMINATING      13.7
+coolant_basis_5_safe_sftyliveness_true-valid-ltl.c                C     NONTERMINATING      34.1  NONTERMINATING      37.7
+coolant_basis_5_unsafe_sftyliveness.c                             C     NONTERMINATING      35.8  NONTERMINATING      39.9
+count_up_alloca.c                                                 C     UNKNOWN             12.4  UNKNOWN             12.3
+cstrchr-alloca-1.c                                                C     TERMINATING        375.9  TERMINATING         13.2
+cstrcmp-alloca-1.c                                                C     UNKNOWN             17.8  UNKNOWN             16.7
+cstrpbrk_true-termination.c                                       C     TIMEOUT           1000.0  TERMINATING         94.3
+dummy.t2.c                                                        C     NONTERMINATING       5.0  NONTERMINATING       5.3
+e-pgarch-fail.t2.c                                                C     NONTERMINATING       6.0  NONTERMINATING       6.2
+eric2.t2.c                                                        C     TIMEOUT           1000.0  TIMEOUT           1000.0
+Et1_true.c                                                        C     TERMINATING          5.3  TERMINATING          5.6
+euclid-no-inv.c                                                   C     TERMINATING          5.4  TERMINATING          5.7
+Ex01_false-no-overflow_false-termination.c                        C     NONTERMINATING       4.7  NONTERMINATING       4.9
+ex16.t2.c                                                         C     NONTERMINATING       9.3  NONTERMINATING       9.2
+ex2.t2.c                                                          C     NONTERMINATING       5.3  NONTERMINATING       5.2
+Fibonacci02.c                                                     C     TERMINATING         24.8  TERMINATING         25.7
+flag-alloca.c                                                     C     TERMINATING         38.5  TERMINATING         26.6
+flag-alloca_true-termination.c                                    C     TERMINATING         38.3  TERMINATING         21.6
+ForLoopWithEmptyBody-Safe.c                                       C     TERMINATING          4.7  TERMINATING          4.8
+fun7.t2.c                                                         C     NONTERMINATING       7.2  NONTERMINATING       7.3
+GopanReps-CAV2006-Fig1a.c                                         C     TERMINATING          5.3  TERMINATING          4.8
+HarrisLalNoriRajamani-2010SAS-Fig2-alloca_unknown-termination.c   C     NONTERMINATING       6.9  NONTERMINATING       7.7
+heidy6.t2.c                                                       C     NONTERMINATING       5.8  NONTERMINATING       5.8
+HeizmannHoenickeLeikePodelski-ATVA2013-Fig6_true-termination.c    C     TERMINATING          4.8  TERMINATING          4.8
+id_i10_o10_false-unreach-call.c                                   C     TERMINATING          5.2  TERMINATING          5.1
+jacobi.c.i.jacobi.pl.t2.fixed.t2.c                                C     TERMINATING          9.2  TERMINATING          9.5
+java_Ackermann.c                                                  C     UNKNOWN            566.3  UNKNOWN            313.4
+LexIndexValue-Array-1.c                                           C     TIMEOUT           1000.0  TIMEOUT           1000.0
+ll_append-alloca-WithAbsOfMinIntBug_false-no-overflow.c           C     NONTERMINATING      13.0  NONTERMINATING      11.9
+LogAG.c                                                           C     TERMINATING          5.6  TERMINATING          6.8
+Masse-VMCAI2014-Fig1a_true-termination.c                          C     TERMINATING          6.2  TERMINATING          9.4
+mutual2.c                                                         C     TERMINATING          6.3  TERMINATING          6.4
+n-10.t2.c                                                         C     NONTERMINATING       6.3  NONTERMINATING      12.3
+n-3.t2.c                                                          C     NONTERMINATING       5.1  NONTERMINATING       5.1
+n-36.t2.c                                                         C     NONTERMINATING       6.3  NONTERMINATING       6.3
+n-4.t2.c                                                          C     NONTERMINATING       6.2  NONTERMINATING       6.3
+n-9.t2.c                                                          C     NONTERMINATING       5.2  NONTERMINATING       5.2
+NestedRecursion_1d.c                                              C     TERMINATING          7.9  TERMINATING          8.2
+NestedRecursion_2b_false-termination.c                            C     NONTERMINATING       6.2  NONTERMINATING       6.2
+NO_01.c                                                           C     NONTERMINATING       4.7  NONTERMINATING       4.9
+NO_04.c                                                           C     NONTERMINATING       5.2  NONTERMINATING       5.3
+NO_10_false-no-overflow_false-termination.c                       C     NONTERMINATING       4.5  NONTERMINATING       4.6
+nondet_ll_search-alloca-2.c                                       C     UNKNOWN             29.8  UNKNOWN             11.6
+NonTerminationSimple4_false-termination.c                         C     NONTERMINATING       4.6  NONTERMINATING       4.6
+noReturn01.c                                                      C     NONTERMINATING       4.3  NONTERMINATING       4.4
+not-05.c                                                          C     TERMINATING          4.8  TERMINATING          4.9
+openbsd_cmemchr-alloca_true-termination.c                         C     TERMINATING          7.0  TERMINATING          6.7
+openbsd_cstpcpy-alloca.i_8.bpl                                    BPL   TERMINATING          9.9  TERMINATING          6.5
+polyrank4.t2.c                                                    C     TIMEOUT           1000.0  TIMEOUT           1000.0
+Pure3Phase-2.c                                                    C     TERMINATING         24.1  TERMINATING         20.9
+strdup.c                                                          C     TERMINATING         18.8  TERMINATING         19.3
+svcomp_bubblesort_alloca.c                                        C     TERMINATING        106.9  TERMINATING         97.8
+svcomp_insertion_sort_unsafe.c                                    C     TERMINATING         70.7  TERMINATING         69.7
+svcomp_java_BubbleSort_unsafe.c                                   C     TERMINATING        658.9  TIMEOUT           1000.0
+svcomp_Toulouse-MultiBranchesToLoop_true-alloca.c                 C     TERMINATING         35.5  TERMINATING         39.4
+yPositive-SIscaled75.bpl                                          BPL   TERMINATING          5.8  TERMINATING          6.3

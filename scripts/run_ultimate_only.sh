@@ -17,7 +17,7 @@
 #
 # Examples:
 #   bash scripts/run_ultimate_only.sh benchmarks/smoke_test/full_programs_c_bpl
-#   bash scripts/run_ultimate_only.sh --input benchmarks/C --input benchmarks/BPL --timeout 300
+#   bash scripts/run_ultimate_only.sh --input benchmarks/ulr_vs_pulr --timeout 300
 #   bash scripts/run_ultimate_only.sh --ultimate-home tools/UAutomizer-PaSTTeL-linux benchmarks/smoke_test/full_programs_c_bpl
 #
 # Environment overrides: APP_DIR, TOOLCHAIN_DIR, ULTIMATE_ULR.
