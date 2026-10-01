@@ -4,7 +4,8 @@
 # Produces, in dist/:
 #   pasttel-docker-image-vmcai27.tar.gz      the Docker image (docker save, gzip), also inside the archive
 #   pasttel-vmcai27-artifact.tar.gz          the artifact archive, with a single top-level directory
-#   *.sha256                                 their SHA256 checksums
+#   *.sha256                                 their SHA256 checksums (the image's also inside the archive)
+#   README                                   the archive's README, to upload next to the archive
 #
 # The archive holds an explicit list of paths (INCLUDE below) -- nothing else in the working tree ends
 # up in it -- plus the sources of both Ultimate releases, as `git archive` of the commit each release
@@ -15,7 +16,7 @@
 #
 # The README in the archive is the working tree's, with its two placeholders filled in: the SHA256
 # of the image, computed here, and the Zenodo DOI of this version, given as DOI (reserve it on Zenodo
-# before uploading). The working tree's README is left as it is.
+# before uploading). The working tree's README is left as it is: upload dist/README to Zenodo, not it.
 #
 # Usage:
 #   DOI=<version DOI> bash package.sh [--dry-run]    --dry-run: check and list what would be packaged,
@@ -90,7 +91,10 @@ git -C "${UV_REPO}" cat-file -e "${UV_COMMIT}^{commit}" 2>/dev/null \
 SHA_MARK="[TO COMPLETE: after packaging]"
 DOI_MARK="[TO COMPLETE: version DOI]"
 DOI="${DOI:-}"
-[ -n "${DOI}" ] || ! grep -q -F "${DOI_MARK}" README || warn "DOI not set: the archive's README will keep \"${DOI_MARK}\" (reserve the DOI on Zenodo, then DOI=... bash package.sh)"
+if [ -z "${DOI}" ] && grep -q -F "${DOI_MARK}" README; then
+    msg="DOI not set: the archive's README would keep \"${DOI_MARK}\" (reserve the DOI on Zenodo, then DOI=... bash package.sh)"
+    if ${DRY_RUN}; then warn "${msg}"; else die "${msg}"; fi
+fi
 if grep -v -F -e "${SHA_MARK}" -e "${DOI_MARK}" README | grep -q "TO COMPLETE"; then
     warn "README still has other placeholders:"
     grep -n "TO COMPLETE" README | grep -v -F -e "${SHA_MARK}" -e "${DOI_MARK}" | sed 's/^/             /' | cut -c1-110
@@ -130,13 +134,14 @@ echo "[2/3] ${NAME}.tar.gz"
 TAR="${STAGE}/${NAME}.tar"
 # The README with its placeholders filled in, instead of the working tree's.
 IMAGE_SHA="$(cut -d' ' -f1 "${DIST}/${IMAGE_TAR}.sha256")"
-sed -e "s|$(printf '%s' "${SHA_MARK}" | sed 's/[][]/\\&/g')|\`${IMAGE_SHA}\`|" \
-    -e "s|$(printf '%s' "${DOI_MARK}" | sed 's/[][]/\\&/g')|${DOI:-${DOI_MARK}}|" README > "${STAGE}/README"
+sed -e "s|$(printf '%s' "${SHA_MARK}" | sed 's/[][]/\\&/g')|\`${IMAGE_SHA}\`|g" \
+    -e "s|$(printf '%s' "${DOI_MARK}" | sed 's/[][]/\\&/g')|${DOI:-${DOI_MARK}}|g" README > "${STAGE}/README"
+cp "${STAGE}/README" "${DIST}/README"
 declare -a FILES=()
 for p in "${INCLUDE[@]}"; do [ "${p}" = README ] || FILES+=("${p}"); done
 tar --create --file "${TAR}" "${EXCLUDE[@]}" --transform "s|^|${NAME}/|" "${FILES[@]}"
 tar --append --file "${TAR}" --directory "${STAGE}" --transform "s|^|${NAME}/|" README
-tar --append --file "${TAR}" --directory "${DIST}" --transform "s|^|${NAME}/|" "${IMAGE_TAR}"
+tar --append --file "${TAR}" --directory "${DIST}" --transform "s|^|${NAME}/|" "${IMAGE_TAR}" "${IMAGE_TAR}.sha256"
 git -C ultimate archive --format=tar --prefix="${NAME}/ultimate/" "${ULTIMATE_COMMIT}" > "${STAGE}/ultimate.tar"
 tar --concatenate --file "${TAR}" "${STAGE}/ultimate.tar"
 git -C "${UV_REPO}" archive --format=tar --prefix="${NAME}/ultimate-verifier/" "${UV_COMMIT}" > "${STAGE}/uv.tar"
@@ -154,6 +159,7 @@ printf ' %-38s %8s  sha256 %s\n' "${DIST}/${IMAGE_TAR}" "$(du -sh "${DIST}/${IMA
     "$(cut -d' ' -f1 "${DIST}/${IMAGE_TAR}.sha256")"
 echo " Ultimate sources: ultimate/ at ${ULTIMATE_COMMIT:0:10}, ultimate-verifier/ at ${UV_COMMIT:0:10}"
 echo "============================================================"
-echo " Upload ${NAME}.tar.gz to Zenodo, and give EasyChair the DOI of that version"
-echo " (not the concept DOI) with the SHA256 above."
+echo " Upload to Zenodo: ${DIST}/${NAME}.tar.gz, ${DIST}/${NAME}.tar.gz.sha256, ${DIST}/README"
+echo " (placeholders filled, unlike the working tree's) and ${PAPER}. Give EasyChair the DOI of that"
+echo " version (not the concept DOI) with the SHA256 of ${NAME}.tar.gz above."
 echo "============================================================"

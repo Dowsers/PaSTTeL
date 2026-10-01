@@ -1,124 +1,399 @@
-benchmarks/subset/ulr_vs_pulr -- the 100 programs of [1] ULR-Baseline vs P-ULR for --subset
+benchmarks/subset/ulr_vs_pulr -- the 360 programs of [1] ULR-Baseline vs P-ULR for --subset
 ============================================================================================
 
-A random subset of benchmarks/ulr_vs_pulr (Table 1), on which scripts/run_full_evaluation.sh
---subset runs [1]. The files are unchanged copies of programs of benchmarks/ulr_vs_pulr.
+The programs on which scripts/run_full_evaluation.sh --subset runs [1], with a 300 s timeout per
+Ultimate run. The files are unchanged copies of programs of benchmarks/ulr_vs_pulr (Table 1, Figure 5).
 
-How they were drawn: uniformly at random, with a fixed seed, from the 2,860 programs of the
-paper's ULR-Baseline vs P-ULR run (logs/ULR_vs_PULR_logs.zip, one *.ultimate.log per program):
-55 of its 1,559 C programs and 45 of its 1,301 Boogie programs, the proportions of the paper. In
-Python 3:
+How they were chosen (benchmarks/subset/select_subsets.py, from our logs in logs/): 200 C and 160
+Boogie programs, the proportions of the benchmark, among the 2679 whose extraction took at most
+200 s in our run, so that the 300 s timeout leaves their lasso traces unchanged. The draws
+use random.Random(seed) for seed = 1, 2, ...; the first one whose traces reproduce the whole
+benchmark within the bounds below is kept: seed 347. A uniform draw does not, since a few traces
+carry most of the time differences; the bound on the largest single trace keeps the subset's
+ratios from resting on one trace.
 
-    rng = random.Random(2027)
-    c   = rng.sample(sorted(c_programs), 55)
-    bpl = rng.sample(sorted(bpl_programs), 45)
+                                           subset  benchmark   bounds
+    terminating, ULR-Baseline / P-ULR-Seq      12.1x      11.5x   [9.8x, 13.2x]
+    terminating, ULR-Baseline / P-ULR-Par7      27.8x      25.1x   [21.3x, 28.8x]
+    non-term., ULR-Baseline / P-ULR-Seq       6.9x       6.4x   [5.1x, 7.7x]
+    non-term., ULR-Baseline / P-ULR-Par7       6.4x       6.0x   [4.8x, 7.2x]
+    GNTA share (non-terminating)            12.7%      10.9%   [5.9%, 15.9%]
+    non-affine ranking functions               10        844   [3, -]
+    GNTA traces                                28        173   [3, -]
+    largest trace, of a terminating total      13.4%      16.9%   [0.0%, 15.0%]
+    largest trace, of a non-term. total       3.8%       0.8%   [0.0%, 25.0%]
+    traces every tool proved                  469       5727   [100, -]
+    running time (extraction, P-ULR)         1.3h
 
-The columns give the paper's result for each program, from that same run
+The subset keeps the speed-ups of Table 1, not two shares of the benchmark: its terminating traces
+are 96 % affine (80 % in the benchmark), and 53 % of its traces terminate (72 %). Both shares come
+from a handful of programs with hundreds of traces each -- polyrank4.t2.c alone dumps 765 of the
+benchmark's 844 non-affine ones -- whose extraction takes up to 3,000 s, beyond any subset.
+
+The columns give our result for each program, from the run of logs/ULR_vs_PULR_logs.zip
 (tools/UAutomizer-linux, timeout 3,000 s): the verdict Ultimate reached, the time it took (from
 the timestamps of its log) and the number of lasso traces it dumped. ERROR means that Ultimate
-stopped on an exception, TIMEOUT that it was killed at 3,000 s; both leave the traces dumped until
-then. The 6 programs above 300 s are those that --subset, with its 300 s timeout, stops earlier
-than the paper did.
+stopped on an exception, with the traces dumped until then.
 
 Program                                                           From  Verdict         Time (s)  Traces
 ----------------------------------------------------------------------------------------------------------
-4BitCounterPointer_true-termination.c                             C     ERROR               37.3       7
-a.03-no-inv.c                                                     C     NONTERMINATING       8.8       3
-a.06-alloca.c                                                     C     TERMINATING         50.4       7
-a.06_false-no-overflow.c                                          C     TERMINATING          3.6       1
-add_last-alloca.i_10.bpl                                          BPL   TERMINATING         28.3       1
-alternating_list.i_40.bpl                                         BPL   ERROR              165.1       3
-array16_alloca_original.c                                         C     ERROR               24.9       3
-b++-[.bpl                                                         BPL   NONTERMINATING       1.5       1
-b++-[[.bpl                                                        BPL   NONTERMINATING       3.5       2
-b++[]d.bpl                                                        BPL   NONTERMINATING       1.1       1
-b+[bd.bpl                                                         BPL   NONTERMINATING      21.3       1
-b+]+[.bpl                                                         BPL   NONTERMINATING       6.3       2
-b+b+[].bpl                                                        BPL   NONTERMINATING       1.5       1
-b+db[].bpl                                                        BPL   NONTERMINATING       2.0       1
-b+dd+[.bpl                                                        BPL   NONTERMINATING       2.3       1
-b-bd+[.bpl                                                        BPL   NONTERMINATING       4.4       1
-b-dd+[.bpl                                                        BPL   NONTERMINATING       2.8       1
-b.01-alloca_true-termination.c                                    C     TERMINATING          9.5       1
-b.09.c                                                            C     NONTERMINATING       3.3       1
-b.09_assume-alloca.c                                              C     TERMINATING         22.3       8
-b.13-alloca_false-no-overflow.c                                   C     TERMINATING         51.4       6
-b.17-alloca_false-no-overflow.c                                   C     ERROR               44.8       3
-b]+[.bpl                                                          BPL   NONTERMINATING       3.3       2
-bb]+[[.bpl                                                        BPL   NONTERMINATING      41.7       3
-bdb+[].bpl                                                        BPL   NONTERMINATING       1.1       1
-BradleyMannaSipma-CAV2005-Fig1_true-termination.c                 C     TERMINATING          3.8       1
-bubblesort-alloca.i_7.bpl                                         BPL   TERMINATING          7.7       1
-bubblesort-alloca_true-termination.c                              C     TERMINATING        594.1       5
-BubblesortWithSwapFunction_true-termination.c                     C     ERROR                7.3       3
-ChawdharyCookGulwaniSagivYang-ESOP2008-aaron6_true-termination.c  C     TERMINATING          4.4       1
-ChawdharyCookGulwaniSagivYang-ESOP2008-random2d.c                 C     TERMINATING          4.7       1
-ChenFlurMukhopadhyay-SAS2012-Ex2.22_true-termination.c            C     TERMINATING          3.9       1
-ChenFlurMukhopadhyay-SAS2012-Ex4.01_true-termination.c            C     TERMINATING          3.7       1
-compoundLiterals_02.c                                             C     TERMINATING          5.0       1
-coolant_basis_4_1_unsafe_sftyliveness_false-valid-ltl.c           C     NONTERMINATING      13.2       1
-coolant_basis_5_safe_sftyliveness_true-valid-ltl.c                C     NONTERMINATING      14.1       1
-cstrcat_mixed_alloca.c                                            C     TERMINATING        396.7       2
-d++d[.bpl                                                         BPL   NONTERMINATING       1.6       1
-d+[-+d.bpl                                                        BPL   NONTERMINATING       4.6       1
-d+[]b.bpl                                                         BPL   NONTERMINATING       1.4       1
-d+d[[d.bpl                                                        BPL   NONTERMINATING       5.0       3
-d+d[][.bpl                                                        BPL   NONTERMINATING       1.9       1
-d-b++[.bpl                                                        BPL   NONTERMINATING       1.5       1
-d[]d+[.bpl                                                        BPL   NONTERMINATING       3.5       2
-d]++[[.bpl                                                        BPL   NONTERMINATING       3.5       3
-d]d]+[.bpl                                                        BPL   NONTERMINATING       2.7       3
-dd++[d.bpl                                                        BPL   NONTERMINATING       2.0       1
-dd+]+[.bpl                                                        BPL   NONTERMINATING       4.9       2
-ddd+[[.bpl                                                        BPL   NONTERMINATING       3.1       2
-easy1_true-termination.c                                          C     TERMINATING          3.9       1
-encT_TRE.bpl                                                      BPL   NONTERMINATING       3.4       3
-Et2.c                                                             C     NONTERMINATING       3.1       1
-example_11.bpl                                                    BPL   NONTERMINATING      39.6       1
-exsec2.bpl                                                        BPL   NONTERMINATING       1.0       1
-fake-succeed.t2.c                                                 C     NONTERMINATING      26.1       1
-fork_loop_local.bpl                                               BPL   ERROR              507.4       1
-gj2007.c.i_4.bpl                                                  BPL   TERMINATING          3.2       1
-HenzingerJhalaMajumdarSutre-POPL2002-LockingExample.c             C     NONTERMINATING       4.1       2
-LeeJonesBen-Amram-POPL2001-Ex6.c                                  C     TERMINATING          4.5       2
-lex4_false-termination.bpl                                        BPL   NONTERMINATING       0.8       1
-Masse-alloca-3.c                                                  C     UNKNOWN              8.5       3
+01-exsec2_true-valid-ltl.c                                        C     NONTERMINATING       3.1       1
+15-windows_os_frag2_wbug_false-valid-ltl.c                        C     NONTERMINATING       4.4       1
+4NestedWith3Variables-1.c                                         C     TERMINATING          3.9       1
+4NestedWith3Variables-2.c                                         C     TERMINATING          3.8       1
+Acsl03-EnsuresGlobal-Safe.c                                       C     TERMINATING          3.7       1
+Addition02.c                                                      C     TERMINATING          5.1       2
+AliasDarteFeautrierGonnord-SAS2010-Fig1.c                         C     TERMINATING         10.1       9
+AliasDarteFeautrierGonnord-SAS2010-Fig2b_true-termination.c       C     TERMINATING         18.5      13
+AliasDarteFeautrierGonnord-SAS2010-easy1_true-termination.c       C     TERMINATING          3.4       1
+AliasDarteFeautrierGonnord-SAS2010-easy2-1.c                      C     TERMINATING          3.4       1
+AliasDarteFeautrierGonnord-SAS2010-terminate.c                    C     TERMINATING          3.6       1
+Arrays02-EquivalentConstantIndices.c                              C     NONTERMINATING       4.1       1
+ArraysWithLenghtAtDeclaration_-write.c                            C     ERROR               14.4       9
+BradleyMannaSipma-2005CAV-Fig1-modified-alloca_unknown-termination.c C     NONTERMINATING       6.5       2
+BrockschmidtCookFuhs-2013CAV-Fig1-alloca-2.c                      C     ERROR               12.9       2
+BrockschmidtCookFuhs-2013CAV-Fig1-alloca_true-termination.c       C     ERROR               30.8       7
+BrockschmidtCookFuhs-CAV2013-Fig9a_true-termination.c             C     TERMINATING          5.3       4
+ChawdharyCookGulwaniSagivYang-ESOP2008-aaron2_true-termination.c  C     TERMINATING          3.6       1
+ChawdharyCookGulwaniSagivYang-ESOP2008-aaron3.c                   C     TERMINATING          4.6       1
+ChawdharyCookGulwaniSagivYang-ESOP2008-random1d_true-termination.c C     TERMINATING          3.6       1
+ChenFlurMukhopadhyay-SAS2012-Ex2.03.c                             C     NONTERMINATING       3.1       1
+ChenFlurMukhopadhyay-SAS2012-Ex2.05_false-termination.c           C     NONTERMINATING       3.4       1
+ChenFlurMukhopadhyay-SAS2012-Ex2.09.c                             C     TERMINATING          3.6       1
+ChenFlurMukhopadhyay-SAS2012-Ex2.20_true-termination.c            C     TERMINATING          3.9       1
+ComplInterv3_false-no-overflow_false-termination.c                C     NONTERMINATING       3.5       1
+CookSeeZuleger-TACAS2013-Fig7b_true-termination.c                 C     TERMINATING          4.7       1
+DivMinus2.c                                                       C     TERMINATING          8.4       7
+Et1_false-no-overflow_true-termination.c                          C     TERMINATING          3.5       1
+Et4_false-no-overflow_false-termination.c                         C     NONTERMINATING       3.3       1
+EvenOdd01_true-termination.c                                      C     TERMINATING          3.9       1
+Ex03.c                                                            C     NONTERMINATING       3.2       1
+Ex05.c                                                            C     NONTERMINATING       3.0       1
+Flip.c                                                            C     NONTERMINATING       3.2       1
+GasCake01_InvariantCheck.c                                        C     NONTERMINATING       2.9       1
+Gothenburg_true-termination.c                                     C     TERMINATING          4.4       1
+Lcm_false-no-overflow_false-termination.c                         C     NONTERMINATING       3.2       1
+LeeJonesBen-Amram-POPL2001-Ex5.c                                  C     UNKNOWN             32.0       2
+Lobnya-Boolean-Reordered-2.c                                      C     TERMINATING         11.6       1
+Marbie1_false-no-overflow_false-termination.c                     C     NONTERMINATING       3.2       1
+Marbie2_false-no-overflow_false-termination.c                     C     NONTERMINATING       3.1       1
 Masse-VMCAI2014-Fig1a.c                                           C     TERMINATING          3.7       1
-memset2.c_4.bpl                                                   BPL   TERMINATING          2.4       1
-MenloPark.c                                                       C     TERMINATING          3.5       1
-multipleBranchOutsFromOneStateinTrace.bpl                         BPL   TERMINATING          1.9       1
-Mysore-1.c                                                        C     TERMINATING          3.8       1
+McCarthy91_Iteration.c                                            C     TERMINATING          3.7       1
+McCarthy91_Iteration_true-termination.c                           C     TERMINATING          3.6       1
+MinusMin.c                                                        C     TERMINATING          4.2       1
+NO_00.c                                                           C     NONTERMINATING       3.0       1
+NestedRecursion_2b_false-termination.c                            C     NONTERMINATING       5.7       4
+NonTerminationSimple4.c                                           C     NONTERMINATING       3.2       1
+NonTerminationSimple8_false-termination.c                         C     NONTERMINATING       4.2       1
+NoriSharma-2013FSE-Fig8-alloca.c                                  C     ERROR              140.9       4
+NoriSharma-FSE2013-Fig8.c                                         C     TERMINATING          4.0       1
+PastaC9.c                                                         C     TERMINATING          4.0       1
+PlusSwap.c                                                        C     TERMINATING          3.7       1
+PodelskiRybalchenko-TACAS2011-Fig1.c                              C     TERMINATING          3.5       1
+PodelskiRybalchenko-TACAS2011-Fig4_true-termination.c             C     TERMINATING          3.9       1
+PodelskiRybalchenko-VMCAI2004-Ex1_true-termination.c              C     TERMINATING          4.6       1
+Problem01_label20_false-unreach-call.c                            C     NONTERMINATING      41.7       5
+Pure3Phase-1.c                                                    C     TERMINATING          5.7       1
+RanFile007.c                                                      C     NONTERMINATING       4.4       1
+RanFile008.c                                                      C     NONTERMINATING       3.5       1
+RanFile011.c                                                      C     NONTERMINATING       3.9       1
+RanFile016.c                                                      C     NONTERMINATING       3.5       1
+RanFile018.c                                                      C     NONTERMINATING       4.1       1
+RanFile026.c                                                      C     NONTERMINATING       4.0       1
+RanFile029.c                                                      C     NONTERMINATING       4.0       1
+RanFile030.c                                                      C     NONTERMINATING       3.6       1
+RanFile045.c                                                      C     NONTERMINATING       3.7       1
+RanFile053.c                                                      C     NONTERMINATING       4.2       1
+RanFile054.c                                                      C     NONTERMINATING       4.1       1
+RanFile075.c                                                      C     NONTERMINATING       4.1       1
+RanFile081.c                                                      C     NONTERMINATING       4.6       1
+RanFile092.c                                                      C     NONTERMINATING       4.4       1
+RecursiveNonterminating-2.c                                       C     NONTERMINATING       3.6       1
+RecursiveNonterminating_false-termination.c                       C     NONTERMINATING       3.6       1
+Rotation180-1.c                                                   C     NONTERMINATING       3.4       1
+ShortCircuit-SideEffect-IfStatement-Safe.c                        C     NONTERMINATING       3.5       1
+ShortCircuit-SideEffect-WhileStatement-Unsafe.c                   C     NONTERMINATING       4.1       2
+Stockholm-2.c                                                     C     TERMINATING          3.7       1
+TrueDiv.c                                                         C     NONTERMINATING       3.6       1
+TwoFloatInterv.c                                                  C     NONTERMINATING       4.3       1
+Urban-WST2013-Fig1_false-termination.c                            C     NONTERMINATING       3.7       1
+VariableDeclarationInLoops.c                                      C     NONTERMINATING       3.4       1
+Velroyen_false-termination.c                                      C     NONTERMINATING       4.0       1
+WhileIncr_false-no-overflow_false-termination.c                   C     NONTERMINATING       3.7       1
+WhileTrue.c                                                       C     NONTERMINATING       3.6       1
+a.01-alloca_true-termination.c                                    C     ERROR               21.7       3
+a.02.real.c                                                       C     NONTERMINATING       3.8       1
+a.03.c                                                            C     NONTERMINATING       8.8       3
+a.07-alloca.c                                                     C     TERMINATING         19.0       2
+a.07.c                                                            C     TERMINATING          3.4       1
+a.08.c                                                            C     TERMINATING          3.2       1
+a.09_assume_false-no-overflow.c                                   C     TERMINATING          3.6       1
+aaron2_true-termination.c                                         C     TERMINATING          3.8       1
+addition-incorrect.bpl                                            BPL   TERMINATING         10.7       2
+afagp-fail.t2.c                                                   C     NONTERMINATING      29.2       1
+alternating_list.i_22.bpl                                         BPL   TERMINATING         15.0       1
+alternating_list.i_36.bpl                                         BPL   ERROR              177.2       3
+alternating_list.i_37.bpl                                         BPL   ERROR              184.6       3
+alternating_list.i_41.bpl                                         BPL   ERROR              162.9       3
+and-01-false.c                                                    C     UNKNOWN              3.2       1
+and-03-false.c                                                    C     UNKNOWN              3.1       1
+array01-alloca.i_4.bpl                                            BPL   TERMINATING          2.7       1
+array02-alloca_true-termination.c                                 C     TERMINATING         18.2       7
+array10_alloca.c                                                  C     UNKNOWN            143.6       3
+array2.i_3.bpl                                                    BPL   TERMINATING          1.2       1
+array_equalities.bpl                                              BPL   TERMINATING          1.0       1
+atol.c                                                            C     ERROR                6.2       2
+aviad_true-termination.c                                          C     TERMINATING          3.9       1
+b++[.bpl                                                          BPL   NONTERMINATING       4.1       1
+b++[]+.bpl                                                        BPL   NONTERMINATING       3.1       1
+b++db[.bpl                                                        BPL   NONTERMINATING       1.1       1
+b+--+[.bpl                                                        BPL   NONTERMINATING       2.0       1
+b+-]+[.bpl                                                        BPL   NONTERMINATING       4.5       2
+b+[+[[.bpl                                                        BPL   NONTERMINATING       2.3       2
+b+[-d+.bpl                                                        BPL   NONTERMINATING     148.2       1
+b+[[[[.bpl                                                        BPL   NONTERMINATING       2.1       2
+b+[[bd.bpl                                                        BPL   NONTERMINATING      10.3       3
+b+[]+b.bpl                                                        BPL   NONTERMINATING       2.1       1
+b+[]-.bpl                                                         BPL   NONTERMINATING       1.8       1
+b+[][+.bpl                                                        BPL   NONTERMINATING       2.7       1
+b+[]d-.bpl                                                        BPL   NONTERMINATING       8.7       1
+b+[]db.bpl                                                        BPL   NONTERMINATING       1.0       1
+b+[b+[.bpl                                                        BPL   NONTERMINATING       9.9       2
+b+]+[[.bpl                                                        BPL   NONTERMINATING       6.5       3
+b+]+[].bpl                                                        BPL   NONTERMINATING       3.8       2
+b+b+d[.bpl                                                        BPL   NONTERMINATING       7.4       1
+b+d++[.bpl                                                        BPL   NONTERMINATING       1.4       1
+b+d-+[.bpl                                                        BPL   NONTERMINATING       3.3       1
+b-++[.bpl                                                         BPL   NONTERMINATING       3.3       1
+b-+-+[.bpl                                                        BPL   NONTERMINATING       2.3       1
+b-+[+-.bpl                                                        BPL   NONTERMINATING       2.6       1
+b-+[bd.bpl                                                        BPL   NONTERMINATING      43.1       1
+b-+[db.bpl                                                        BPL   NONTERMINATING       2.8       1
+b-+]+[.bpl                                                        BPL   NONTERMINATING       9.7       2
+b--+[.bpl                                                         BPL   NONTERMINATING       5.8       1
+b--+[[.bpl                                                        BPL   NONTERMINATING       7.8       2
+b--+[].bpl                                                        BPL   NONTERMINATING       7.3       1
+b--]+[.bpl                                                        BPL   NONTERMINATING      28.5       2
+b--b+[.bpl                                                        BPL   NONTERMINATING       2.3       1
+b-]++[.bpl                                                        BPL   NONTERMINATING      18.6       2
+b-]b+[.bpl                                                        BPL   NONTERMINATING       5.0       2
+b-]d+[.bpl                                                        BPL   NONTERMINATING       4.5       2
+b-b]+[.bpl                                                        BPL   NONTERMINATING     140.7       2
+b-d+[[.bpl                                                        BPL   NONTERMINATING       3.8       2
+b-d+[].bpl                                                        BPL   NONTERMINATING       2.9       1
+b-dd+[.bpl                                                        BPL   NONTERMINATING       2.8       1
+b.05_true-termination.c                                           C     TERMINATING          3.5       1
+b.07-alloca.c                                                     C     TERMINATING         20.4       2
+b.07_true-termination.c                                           C     TERMINATING          4.0       1
+b.08.c                                                            C     NONTERMINATING       3.2       1
+b.11_true-termination.c                                           C     TERMINATING          4.1       1
+b.12-alloca_true-termination.c                                    C     TERMINATING         28.1       6
+b.14.c                                                            C     TERMINATING          3.9       3
+b]+[+-.bpl                                                        BPL   NONTERMINATING       3.8       2
+b]+[+[.bpl                                                        BPL   NONTERMINATING       3.8       3
+b]+[][.bpl                                                        BPL   NONTERMINATING       4.8       2
+b]+]+[.bpl                                                        BPL   NONTERMINATING       1.9       2
+b]+b+[.bpl                                                        BPL   NONTERMINATING       2.6       2
+b]-++[.bpl                                                        BPL   NONTERMINATING       2.9       2
+b]-+[[.bpl                                                        BPL   NONTERMINATING       5.0       3
+b]--+[.bpl                                                        BPL   NONTERMINATING       5.2       2
+b]-]+[.bpl                                                        BPL   NONTERMINATING       5.8       3
+b]]-+[.bpl                                                        BPL   NONTERMINATING       6.2       3
+b]]]+[.bpl                                                        BPL   NONTERMINATING       3.0       3
+b]b+[.bpl                                                         BPL   NONTERMINATING       4.4       2
+bb+++[.bpl                                                        BPL   NONTERMINATING       1.0       1
+bb+bd[.bpl                                                        BPL   NONTERMINATING       8.0       1
+bb+d+[.bpl                                                        BPL   NONTERMINATING       1.8       1
+bb-++[.bpl                                                        BPL   NONTERMINATING       2.0       1
+bb-+[].bpl                                                        BPL   NONTERMINATING       3.0       1
+bb]+[.bpl                                                         BPL   NONTERMINATING      42.0       2
+bb]+[[.bpl                                                        BPL   NONTERMINATING      41.7       3
+bbbb+[.bpl                                                        BPL   NONTERMINATING       3.3       1
+bbd++[.bpl                                                        BPL   NONTERMINATING       1.8       1
+bbd+[].bpl                                                        BPL   NONTERMINATING       2.0       1
+bbd]+[.bpl                                                        BPL   NONTERMINATING       7.2       2
+bbdb+[.bpl                                                        BPL   NONTERMINATING       3.8       1
+bd++d[.bpl                                                        BPL   NONTERMINATING       1.6       1
+bd+[]b.bpl                                                        BPL   NONTERMINATING       1.3       1
+bd+[d[.bpl                                                        BPL   NONTERMINATING       2.9       2
+bd--+[.bpl                                                        BPL   NONTERMINATING       8.7       1
+bd]+[.bpl                                                         BPL   NONTERMINATING      16.0       2
+bd]-+[.bpl                                                        BPL   NONTERMINATING      10.6       2
+bhmr2007.c.i_4.bpl                                                BPL   TERMINATING          3.2       1
+bpl.bpl                                                           BPL   NONTERMINATING       2.6       1
+broydn.c.i.broydn.pl.t2.fixed.t2.c                                C     TERMINATING        144.2      13
+bs.t2.c                                                           C     NONTERMINATING       4.3       1
+bubblesort-alloca.i_8.bpl                                         BPL   TERMINATING         18.9       5
+bug-double-call.bpl                                               BPL   TERMINATING          3.4       2
+bug06_IsEmptyHeuristic.c                                          C     NONTERMINATING       3.7       3
+bug08_IsEmptyHeuristic.c                                          C     NONTERMINATING       3.0       1
+c.01-no-inv-alloca_true-termination.c                             C     ERROR               14.1       2
+c.01_assume-alloca_false-no-overflow.c                            C     ERROR               23.6       5
+c.01_assume-alloca_true-termination.c                             C     ERROR               23.8       5
+c.08-alloca_false-no-overflow.c                                   C     ERROR               15.1       2
+c.08-alloca_true-termination.c                                    C     ERROR               15.1       2
+c.08_true-termination.c                                           C     TERMINATING          4.7       3
+calloc01.c                                                        C     NONTERMINATING       3.2       1
+chaining2.c                                                       C     TERMINATING          5.2       1
+cll_search-alloca-1.c                                             C     ERROR               22.9       1
+cnt.t2.c                                                          C     TERMINATING         76.7      27
+concurrent_TwoOne_nonterminating.bpl                              BPL   NONTERMINATING       4.0       4
+const1.i_3.bplTransformedIcfg_BEv2_6.bpl                          BPL   TERMINATING          2.5       1
+consts3nt.t2.c                                                    C     NONTERMINATING       3.7       1
+consts5nt.t2.c                                                    C     NONTERMINATING       3.8       1
+coolant_basis_1_neg.c                                             C     NONTERMINATING      13.1       2
+coolant_basis_1_neg_false-valid-ltl.c                             C     NONTERMINATING      23.4       5
+coolant_basis_2_neg.c                                             C     NONTERMINATING      23.2       2
+coolant_basis_2_safe_liveness.c                                   C     NONTERMINATING      24.6       2
+coolant_basis_4_2_unsafe_sftyliveness_false-valid-ltl.c           C     NONTERMINATING      13.5       1
+counting-bits-BK.c                                                C     TERMINATING          4.1       1
+cstrcpy-alloca.i_8.bpl                                            BPL   TERMINATING          8.9       1
+cstrcpy_malloc.c                                                  C     TERMINATING         20.7       1
+cstrncat_reverse_alloca.c                                         C     ERROR              111.8       2
+cstrncmp-alloca-2.c                                               C     TERMINATING         16.2       3
+cstrncpy_mixed_alloca.c                                           C     TERMINATING         18.0       2
+d++[+[.bpl                                                        BPL   NONTERMINATING       1.5       2
+d++d[d.bpl                                                        BPL   NONTERMINATING       2.0       1
+d+[+[[.bpl                                                        BPL   NONTERMINATING       3.0       2
+d+[-+[.bpl                                                        BPL   NONTERMINATING       3.0       2
+d+[-+d.bpl                                                        BPL   NONTERMINATING       4.6       1
+d+[[[d.bpl                                                        BPL   NONTERMINATING      10.8       3
+d+[]+[.bpl                                                        BPL   NONTERMINATING       2.0       1
+d+[]b.bpl                                                         BPL   NONTERMINATING       1.4       1
+d+[]b[.bpl                                                        BPL   NONTERMINATING       2.0       1
+d+[]d+.bpl                                                        BPL   NONTERMINATING       7.1       1
+d+[]d.bpl                                                         BPL   NONTERMINATING       7.0       1
+d+[dd.bpl                                                         BPL   NONTERMINATING       2.3       1
+d+b++[.bpl                                                        BPL   NONTERMINATING       1.6       1
+d+b+d[.bpl                                                        BPL   NONTERMINATING       1.8       1
+d+b-+[.bpl                                                        BPL   NONTERMINATING       1.5       1
+d+bd[d.bpl                                                        BPL   NONTERMINATING       1.1       1
+d+d[]d.bpl                                                        BPL   NONTERMINATING       2.7       1
+d+db+[.bpl                                                        BPL   NONTERMINATING       1.8       1
+d+dd[[.bpl                                                        BPL   NONTERMINATING       6.8       2
+d-++[[.bpl                                                        BPL   NONTERMINATING       1.9       2
+d-+[]-.bpl                                                        BPL   NONTERMINATING       1.8       1
+d-+]+[.bpl                                                        BPL   NONTERMINATING       3.7       2
+d-+b+[.bpl                                                        BPL   NONTERMINATING       1.8       1
+d-+d[].bpl                                                        BPL   NONTERMINATING       1.5       1
+d--+[.bpl                                                         BPL   NONTERMINATING       2.1       1
+d--+[[.bpl                                                        BPL   NONTERMINATING       3.5       2
+d--]+[.bpl                                                        BPL   NONTERMINATING       3.5       2
+d-]+d[.bpl                                                        BPL   NONTERMINATING       2.7       2
+d-b++[.bpl                                                        BPL   NONTERMINATING       1.5       1
+d.t2.c                                                            C     NONTERMINATING       4.2       1
+d[]+[d.bpl                                                        BPL   NONTERMINATING       3.9       2
+d]-+[[.bpl                                                        BPL   NONTERMINATING       3.9       3
+d]--+[.bpl                                                        BPL   NONTERMINATING       3.6       2
+d]]b+[.bpl                                                        BPL   NONTERMINATING       2.1       3
+d]b+[[.bpl                                                        BPL   NONTERMINATING       2.5       3
+d]bb+[.bpl                                                        BPL   NONTERMINATING      11.4       2
+db+-+[.bpl                                                        BPL   NONTERMINATING       1.8       1
+db+[].bpl                                                         BPL   NONTERMINATING       1.2       1
+db-+[.bpl                                                         BPL   NONTERMINATING       1.3       1
+db--+[.bpl                                                        BPL   NONTERMINATING       5.6       1
+dd++[].bpl                                                        BPL   NONTERMINATING       1.4       1
+dd+-+[.bpl                                                        BPL   NONTERMINATING       2.9       1
+dd+[-+.bpl                                                        BPL   NONTERMINATING       3.7       1
+dd+[]-.bpl                                                        BPL   NONTERMINATING       1.4       1
+dd+[]b.bpl                                                        BPL   NONTERMINATING       1.5       1
+dd-+d[.bpl                                                        BPL   NONTERMINATING       1.7       1
+ddd+[[.bpl                                                        BPL   NONTERMINATING       3.1       2
+ddd+[d.bpl                                                        BPL   NONTERMINATING       2.0       1
+ddd-+[.bpl                                                        BPL   NONTERMINATING       1.9       1
+destroy.t2.c                                                      C     TERMINATING         14.9       2
+easy1.c                                                           C     TERMINATING          3.9       1
+eric.t2.c                                                         C     TERMINATING         19.1       8
+ex17.t2.c                                                         C     TERMINATING          6.3       4
+ex2-alloca.c                                                      C     ERROR               94.1       3
+ex2.t2.c                                                          C     NONTERMINATING       4.2       1
+ex3.t2.c                                                          C     TERMINATING          4.4       1
+example_02.bpl                                                    BPL   NONTERMINATING       0.8       1
+example_10.bpl                                                    BPL   NONTERMINATING      10.7       1
+exsec2.bpl                                                        BPL   NONTERMINATING       1.0       1
+f91.c                                                             C     TERMINATING          8.1       5
+fake-succeed.t2.c                                                 C     NONTERMINATING      26.1       1
+fibo_5_false-unreach-call.c                                       C     TERMINATING          8.1       7
+fibonacciLikeCfgSimplified.bpl                                    BPL   NONTERMINATING       1.3       1
+fir.t2.c                                                          C     TERMINATING         10.5       3
+fragtest_simple.i_4.bpl                                           BPL   TERMINATING          5.0       2
+fun10b.t2.c                                                       C     NONTERMINATING      89.6       1
+fun1b.t2.c                                                        C     NONTERMINATING      58.4       8
+gotolabelnotfound.c                                               C     NONTERMINATING       2.9       1
+heidy8.t2.c                                                       C     NONTERMINATING       5.1       2
+hhk2008.c.i_3.bplTransformedIcfg_BEv2_3.bpl                       BPL   TERMINATING          2.9       1
+hqr.c.i.hqr.pl.t2.fixed.t2.c                                      C     NONTERMINATING      52.7       5
+hybrid.bpl                                                        BPL   NONTERMINATING       2.6       1
+incr-decr11.bpl                                                   BPL   NONTERMINATING      46.4       1
+jacobi.c.i.jacobi.pl.t2.nor.t2.rlgfixed.t2.c                      C     TERMINATING         17.7       5
+jain_4.i_2.bpl                                                    BPL   NONTERMINATING       1.1       1
+jain_6.i_2.bpl                                                    BPL   NONTERMINATING       1.1       1
+java_LogBuiltIn-alloca.c                                          C     TERMINATING          6.6       1
+java_PlusSwap.c                                                   C     TERMINATING          3.3       1
+jm2006.c.i_3.bpl                                                  BPL   TERMINATING          1.3       1
+jm2006.c.i_3.bplTransformedIcfg_BEv2_3.bpl                        BPL   TERMINATING          1.3       1
+knapsack.c                                                        C     TERMINATING          6.2       4
+lis-alloca.i_7.bpl                                                BPL   TERMINATING          3.7       1
+ll_append-alloca-1.c                                              C     ERROR               11.3       4
+loop-lockstep-example.bpl                                         BPL   TERMINATING          7.2      12
+loopWithBreak.bpl                                                 BPL   TERMINATING          1.2       1
+mc91.c                                                            C     TERMINATING          8.3       5
+min-max-sample-2.bpl                                              BPL   NONTERMINATING       2.3       1
+mult_array-alloca.i_6.bpl                                         BPL   TERMINATING          5.1       1
+n-12.t2.c                                                         C     NONTERMINATING       3.8       1
+n-15a.t2.c                                                        C     NONTERMINATING       5.4       2
+n-1c.t2.c                                                         C     NONTERMINATING       4.7       1
 n-46.t2.c                                                         C     NONTERMINATING       4.3       1
-not-03-false.c                                                    C     NONTERMINATING       3.2       1
-openbsd_cmemrchr-alloca-1.c                                       C     TERMINATING          6.8       1
-openbsd_cstrlen-alloca.i_5.bpl                                    BPL   TERMINATING          9.3       1
-optimistic-concurrency2.bpl                                       BPL   TERMINATING         10.4       4
-overapproximation.bpl                                             BPL   TERMINATING          2.7       1
-p-20.t2.c                                                         C     NONTERMINATING       5.7       1
-Parallel.c                                                        C     TERMINATING          4.1       1
-PastaC1.c                                                         C     UNKNOWN              4.7       2
-polling.t2.c                                                      C     NONTERMINATING      11.7       1
-Problem18_prop_045_false-valid-ltl.c                              C     TIMEOUT           2998.9       6
-Pure2Phase-2.c                                                    C     TERMINATING          4.4       1
-RanFile001.c                                                      C     NONTERMINATING       3.8       1
-RanFile040.c                                                      C     NONTERMINATING       3.4       1
-RanFile046.c                                                      C     NONTERMINATING       4.2       1
-RanFile071.c                                                      C     NONTERMINATING       4.2       1
-RanFile098.c                                                      C     NONTERMINATING       4.0       1
-recursified_nested_1.c                                            C     TERMINATING          6.4       1
+n-6.t2.c                                                          C     NONTERMINATING       4.0       1
+n-8.t2.c                                                          C     NONTERMINATING       4.3       1
+nested9.i_3.bpl                                                   BPL   TERMINATING          3.8       2
+not-04-false.c                                                    C     NONTERMINATING       3.2       1
+nullProgramm.bpl                                                  BPL   NONTERMINATING       1.7       1
+oneLoopWithBreakUnsafe.bpl                                        BPL   TERMINATING          2.7       1
+openbsd_cstrncpy-alloca_true-termination.c                        C     TERMINATING         14.4       2
+p-10.t2.c                                                         C     NONTERMINATING       4.7       1
+p-14.t2.c                                                         C     TERMINATING          4.1       1
+p-15.t2.c                                                         C     TERMINATING          4.0       1
+p-19.t2.c                                                         C     NONTERMINATING       4.4       1
+p-1d.t2.c                                                         C     TERMINATING          4.4       1
+p-3.t2.c                                                          C     TERMINATING          4.3       1
+p-32.t2.c                                                         C     NONTERMINATING       3.8       1
+p-33.t2.c                                                         C     NONTERMINATING       4.0       1
+pals_lcr-var-start-time.3.ufo.UNBOUNDED.pals.c_9.bplTransformedIcfg_BEv2_26.bpl BPL   TERMINATING         33.6       1
+preboogie.c                                                       C     TERMINATING          8.9      11
+pthread_double_lock_p1_vs.bpl                                     BPL   NONTERMINATING       2.2       1
+pthread_simple_loop.bpl                                           BPL   NONTERMINATING       1.3       1
+qrdcmp.t2.c                                                       C     TERMINATING         14.4       3
 recursified_nested_2.c                                            C     ERROR               33.9       8
-sanfoundry_02_true-unreach-call_ground.c                          C     TIMEOUT           2998.8     205
-selectionsort-alloca.i_8.bpl                                      BPL   TERMINATING          2.8       1
-simpleLoopCountDown.bpl                                           BPL   TERMINATING          1.0       1
-strspn.c                                                          C     UNKNOWN            616.7       4
-svcomp_flag-alloca.c                                              C     TERMINATING         63.5       1
-svcomp_insertion_sort_unsafe.c                                    C     TERMINATING         48.9       5
-SyntaxSupportBitwiseOperations01.c                                C     TERMINATING          4.7       1
+refine_disj_problem.t2.c                                          C     NONTERMINATING       9.2       4
+rev_nt2.t2.c                                                      C     NONTERMINATING      29.6       2
+reverse_div4.t2.c                                                 C     NONTERMINATING      31.8       2
+rlft3.t2.c                                                        C     NONTERMINATING      20.3       3
+selectionsort-alloca.i_16.bpl                                     BPL   TERMINATING         29.2       5
+seq2.t2.c                                                         C     TERMINATING          4.4       1
+simpleConComLoop.bpl                                              BPL   NONTERMINATING       0.9       1
+smagillc-succeed.t2.c                                             C     NONTERMINATING      23.0       7
+sum01_bug02_sum01_bug02_base.case.i_4.bpl                         BPL   TERMINATING          1.4       1
+sumsumsampleabs.bpl                                               BPL   NONTERMINATING       1.1       1
+svcomp_BrockschmidtCookFuhs-2013CAV-Introduction_true-alloca.c    C     TERMINATING          5.9       1
+svcomp_ChenFlurMukhopadhyay-2012SAS-Fig1_true-alloca.c            C     TERMINATING         10.2       1
+svcomp_CookSeeZuleger-2013TACAS-Fig7a_true-alloca.c               C     ERROR               22.4       4
+svcomp_NoriSharma-2013FSE-Fig7_true-alloca.c                      C     TERMINATING         49.2       3
+svcomp_Toulouse-BranchesToLoop_true-alloca.c                      C     TERMINATING         20.8       3
+svcomp_a.04.c                                                     C     TERMINATING          3.9       1
+svcomp_aviad_true-alloca.c                                        C     ERROR              110.1       3
+svcomp_b.09_assume.c                                              C     TERMINATING          5.0       2
+svcomp_b.10.c                                                     C     TERMINATING          4.1       1
+svcomp_b.13.c                                                     C     TERMINATING          4.6       1
+svcomp_b.14.c                                                     C     TERMINATING          5.2       3
+svcomp_c.01_assume.c                                              C     TERMINATING          5.2       3
+svcomp_c.03-alloca.c                                              C     ERROR               52.7       3
+svcomp_c.07.c                                                     C     TERMINATING          4.5       1
+svcomp_cstrlen_unsafe.c                                           C     TERMINATING         11.2       1
+svcomp_diff_alloca.c                                              C     TERMINATING         31.7       5
+svcomp_java_LogBuiltIn.c                                          C     TERMINATING          4.0       1
+svcomp_lis_unsafe.c                                               C     ERROR               23.8       6
+svcomp_mult_array_alloca.c                                        C     TERMINATING         14.8       1
 threadpooling_product_WithProcedures.bpl                          BPL   NONTERMINATING      13.0       3
 toeplz.c.i.toeplz.pl.t2.fixed.t2.c                                C     TERMINATING        126.5      10
-TrueDiv.c                                                         C     NONTERMINATING       3.6       1
-twoLoops.bpl                                                      BPL   TERMINATING          2.1       2
-twoLoopsSameVarsUnsafe.bpl                                        BPL   TERMINATING          1.0       1
-UpDownGlobal.c                                                    C     NONTERMINATING       3.9       1
-WhileTrue.c                                                       C     NONTERMINATING       3.6       1
-yPositive-SIscaled50.bpl                                          BPL   TERMINATING          8.8       1
+vass01.bpl                                                        BPL   TERMINATING          2.4       5

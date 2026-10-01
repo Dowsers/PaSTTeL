@@ -33,7 +33,8 @@ import sys
 
 
 def normalize_european_float(s):
-    """Convert European decimal separator (comma) to dot."""
+    """A number as Ultimate's dumps write it, in the JVM's locale: "8,10" (e.g. French) or "8.10"
+    (English, as in the Docker image). Both read as 8.10."""
     return s.replace(",", ".")
     
 def _ranking_type_ultimate_to_algo(template_name):
@@ -661,13 +662,13 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
     termination_time_ms = 0.0
     nontermination_time_ms = 0.0
     for line in lines:
-        m = re.search(r'Fixpoint check time:\s+([\d,]+)\s*ms', line)
+        m = re.search(r'Fixpoint check time:\s+([\d.,]+)\s*ms', line)
         if m:
             fixpoint_time_ms = float(normalize_european_float(m.group(1)))
-        m = re.search(r'Termination analysis:\s+([\d,]+)\s*ms', line)
+        m = re.search(r'Termination analysis:\s+([\d.,]+)\s*ms', line)
         if m:
             termination_time_ms = float(normalize_european_float(m.group(1)))
-        m = re.search(r'Nontermination analysis:\s+([\d,]+)\s*ms', line)
+        m = re.search(r'Nontermination analysis:\s+([\d.,]+)\s*ms', line)
         if m:
             nontermination_time_ms = float(normalize_european_float(m.group(1)))
 
@@ -688,7 +689,7 @@ def parse_ultimate_trace(filepath, check_mode="lasso", parse_mode="normal"):
             algo = "GNTA"
             # Use total nontermination analysis time for GNTA
             for line in lines:
-                m = re.search(r'Total nontermination analysis time:\s+([\d,]+)\s*ms', line)
+                m = re.search(r'Total nontermination analysis time:\s+([\d.,]+)\s*ms', line)
                 if m:
                     time_ms = float(normalize_european_float(m.group(1)))
                     break

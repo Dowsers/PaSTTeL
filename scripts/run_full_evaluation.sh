@@ -25,10 +25,11 @@
 # paper's settings: 600 s per trace in pulr, on 1 and 7 cores; 20 s per lasso on 5 cores inside Ultimate-PL.
 # scripts/run_ulr_vs_pulr.sh and scripts/run_ulr_vs_upl.sh, which this script runs, take other values.
 #
-# --subset replicates the comparisons in about 3 hours: pulr on the 100 programs of
-# benchmarks/subset/ulr_vs_pulr, upl on the 100 of benchmarks/subset/ulr_vs_upl, each drawn at random
-# from the paper's benchmark of that comparison (see their READMEs), with every Ultimate run capped
-# at 300 s instead of 3,000 s (pulr) and 1,000 s (upl).
+# --subset replicates the comparisons in about 3 hours: pulr on the 360 programs of
+# benchmarks/subset/ulr_vs_pulr, upl on the 100 of benchmarks/subset/ulr_vs_upl, each chosen from the
+# paper's benchmark of that comparison so as to reproduce its results (benchmarks/subset/select_subsets.py,
+# and the subsets' READMEs). pulr caps each Ultimate run at 300 s instead of 3,000 s: its programs are
+# among those extracted within 200 s. upl keeps the paper's 1,000 s, as its gain comes from long runs.
 # PaSTTeL keeps the paper's timeouts. --ultimate-timeout, --upl-timeout, --output and --parts still
 # apply; --input does not, since --subset sets the input.
 #
@@ -55,11 +56,12 @@ SUBSET=false
 # Banner only; run_smoke_test.sh sets it through the environment.
 TITLE="${EVALUATION_TITLE:-}"
 
-# --subset: its programs, its timeout for every Ultimate run, and its duration per part on the
-# paper's machine, estimated from the paper's logs (README, section 3.2).
+# --subset: its programs, the timeout of each Ultimate run in pulr (upl keeps the paper's), and the
+# duration of each part on the paper's machine, in minutes, from our logs of these programs
+# (benchmarks/subset/select_subsets.py) plus the start of every Ultimate run.
 SUBSET_DIR="${APP_DIR}/benchmarks/subset"
 SUBSET_ULTIMATE_TIMEOUT=300
-declare -A SUBSET_HOURS=([pulr]=1 [upl]=2)
+declare -A SUBSET_MINUTES=([pulr]=90 [upl]=100)
 
 usage() { sed -n "2,$(grep -n '^# Exits non-zero' "${BASH_SOURCE[0]}" | cut -d: -f1)p" "${BASH_SOURCE[0]}"; }
 
@@ -94,12 +96,12 @@ if "${SUBSET}"; then
     INPUTS=("${SUBSET_DIR}/ulr_vs_pulr")
     UPL_INPUTS=("${SUBSET_DIR}/ulr_vs_upl")
     ULTIMATE_TIMEOUT="${ULTIMATE_TIMEOUT:-${SUBSET_ULTIMATE_TIMEOUT}}"
-    UPL_TIMEOUT="${UPL_TIMEOUT:-${SUBSET_ULTIMATE_TIMEOUT}}"
-    # The estimate holds for the subset's own timeout only.
-    if [ "${ULTIMATE_TIMEOUT}" = "${SUBSET_ULTIMATE_TIMEOUT}" ] && [ "${UPL_TIMEOUT}" = "${SUBSET_ULTIMATE_TIMEOUT}" ]; then
-        hours=0
-        for part in "${!RUN[@]}"; do hours=$((hours + ${SUBSET_HOURS[${part}]})); done
-        EXPECTED="about ${hours} h on the paper's machine"
+    UPL_TIMEOUT="${UPL_TIMEOUT:-${UPL_ULTIMATE_TIMEOUT_DEFAULT}}"
+    # The estimate holds for the subset's own timeouts only.
+    if [ "${ULTIMATE_TIMEOUT}" = "${SUBSET_ULTIMATE_TIMEOUT}" ] && [ "${UPL_TIMEOUT}" = "${UPL_ULTIMATE_TIMEOUT_DEFAULT}" ]; then
+        minutes=0
+        for part in "${!RUN[@]}"; do minutes=$((minutes + ${SUBSET_MINUTES[${part}]})); done
+        EXPECTED="about $((minutes / 60)) h$([ $((minutes % 60)) -eq 0 ] || echo " $((minutes % 60)) min") on the paper's machine"
     fi
     OUTPUT_DIR="${OUTPUT_DIR:-${APP_DIR}/output/subset}"
     TITLE="${TITLE:-subset evaluation}"
