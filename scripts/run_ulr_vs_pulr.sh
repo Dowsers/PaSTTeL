@@ -161,8 +161,10 @@ if [ -n "${RUN[ulr]:-}" ]; then
         name="$(basename "${prog}")"
         tc="$(toolchain_for "${prog}")"
         printf '  [%d/%d] %s\n' "${n}" "${#PROGRAMS[@]}" "${name}"
-        ( cd "${RELEASE}" && timeout "${ULTIMATE_TIMEOUT}" ./Ultimate -tc "${tc}" -i "${prog}" ) \
+        ws="$(new_workspace)"        # a fresh Eclipse workspace per run (common.sh)
+        ( cd "${RELEASE}" && timeout "${ULTIMATE_TIMEOUT}" ./Ultimate -data "${ws}" -tc "${tc}" -i "${prog}" ) \
             > "${LASSO_DIR}/${name}.ultimate.log" 2>&1 || true
+        rm -rf "${ws}"
         if [ -d "${RELEASE}/lasso_traces" ]; then
             trace_dir="${LASSO_DIR}/lasso_traces_${name}"
             mv "${RELEASE}/lasso_traces" "${trace_dir}"

@@ -61,8 +61,9 @@ pasttel-vmcai27-artifact/
 │   ├── ulr_vs_pulr/                  [1]: 2,856 programs (1,557 C, 1,299 Boogie), Table 1 and Figure 5
 │   ├── ulr_vs_upl/                   [2]: 1,087 of them, Figure 6
 │   ├── subset/                       --subset (section 3.2)
-│   │   ├── ulr_vs_pulr/              100 programs of [1]
-│   │   └── ulr_vs_upl/               100 programs of [2]
+│   │   ├── ulr_vs_pulr/              360 programs of [1]
+│   │   ├── ulr_vs_upl/               100 programs of [2]
+│   │   └── select_subsets.py         chooses them from our logs (section 3.2)
 │   ├── smoke_test/                   section 2
 │   │   ├── full_programs_c_bpl/      the 10 programs
 │   │   └── json_lassos_from_full_programs/   their 14 traces, as the JSON PaSTTeL reads
@@ -114,7 +115,9 @@ No network access is needed with the pre-built image.
 # Load the image shipped with the artifact
 docker load --input pasttel-docker-image-vmcai27.tar.gz
 
-# Open a shell in the container; everything written to /app/output appears in ./output on the host
+# Open a shell in the container; everything written to /app/output appears in ./output on the host.
+# Create ./output first: Docker Desktop (macOS, Windows, Linux) may fail to create it itself.
+mkdir -p output
 docker run -it --rm -v "$(pwd)/output:/app/output" pasttel-artifact:vmcai27
 
 # Inside the container (working directory /app): both comparisons on 10 small programs
@@ -124,8 +127,8 @@ bash scripts/run_smoke_test.sh
 SHA256 of `pasttel-docker-image-vmcai27.tar.gz`: [TO COMPLETE: after packaging]
 
 Alternatives:
-- With Docker Compose: `docker compose up -d`, `docker compose exec pasttel bash`, and finally
-  `docker compose down`.
+- With Docker Compose: `mkdir -p output`, `docker compose up -d`, `docker compose exec pasttel bash`,
+  and finally `docker compose down`.
 - Build the image yourself: `docker build -t pasttel-artifact:vmcai27 .` This takes about 10
   minutes, downloads Ubuntu packages, and runs PaSTTeL's test suite and the smoke test: the build
   fails if either does.
@@ -239,27 +242,32 @@ bash scripts/run_ulr_vs_pulr.sh --only seq,par --lassos output/paper/ULR_vs_PULR
     --output output/replay
 ```
 
-### 3.2 Subset: 100 + 100 programs, about 3 hours
+### 3.2 Subset: 360 + 100 programs, about 3 hours
 
 ```bash
 bash scripts/run_full_evaluation.sh --subset                # both comparisons, results in output/subset/
-bash scripts/run_full_evaluation.sh --subset --parts pulr   # [1] only, about 1 hour
-bash scripts/run_full_evaluation.sh --subset --parts upl    # [2] only, about 2 hours
+bash scripts/run_full_evaluation.sh --subset --parts pulr   # [1] only, about 1 h 30 min
+bash scripts/run_full_evaluation.sh --subset --parts upl    # [2] only, about 1 h 40 min
 ```
 
-Each comparison runs on 100 programs drawn at random, with a fixed seed, from its own benchmark:
-- [1] on `benchmarks/subset/ulr_vs_pulr` (55 C, 45 Boogie), from `benchmarks/ulr_vs_pulr`;
-- [2] on `benchmarks/subset/ulr_vs_upl` (96 C, 4 Boogie), from `benchmarks/ulr_vs_upl`.
+Each comparison runs on programs of its own benchmark, chosen so that they reproduce its
+results (`benchmarks/subset/select_subsets.py`, from our logs):
+- [1] on the 360 programs of `benchmarks/subset/ulr_vs_pulr` (200 C, 160 Boogie): within 15 % of the
+  speed-ups of Table 1 (×12.1 and ×27.8 on terminating traces, ×6.9 and ×6.4 on non-terminating ones
+  in our logs),
+  with no single trace above 15 % of a total;
+- [2] on the 100 programs of `benchmarks/subset/ulr_vs_upl` (98 C, 2 Boogie): the benchmark's classes in its
+  proportions (solved by both runs, by Ultimate-PL only, by Ultimate-LR only, by neither), and its
+  time differences (−11.3 % terminating, +2.8 % non-terminating, −7.4 % in total in our logs).
 
-Their READMEs say how they were drawn and give our results for each program.
+A uniform random draw does not reproduce them: a few traces in [1], and a few long programs in [2],
+carry most of the differences. Each README gives the method, the seed found, the bounds and our
+result for every program.
 
-Each Ultimate run is capped at 300 s instead of the paper's 3,000 s ([1]) and 1,000 s ([2]).
-PaSTTeL keeps the paper's timeouts. As a result:
-- in [1], 6 of the 100 programs yield fewer lasso traces than in our run;
-- in [2], the 9 programs with a run above 300 s count as unsolved on that side.
-
-`--ultimate-timeout` and `--upl-timeout` raise the caps. The times above come from our logs of these
-very programs.
+[1] caps each Ultimate run at 300 s instead of 3,000 s; its programs are among those our run
+extracted within 200 s, so they yield the same traces. [2] keeps the paper's 1,000 s: the gain of
+Ultimate-PL comes from long runs. PaSTTeL keeps the paper's timeouts. The times above come from our
+logs of these very programs.
 
 ### 3.3 Full evaluation: about 5.5 days
 
@@ -638,7 +646,8 @@ logs and the licences.
   replicated exactly, and why.
 - *Exercisable:* the smoke test runs both comparisons end to end in about 2 minutes (section 2). Our
   logs rebuild the paper's results in seconds (3.1). The subset reruns both comparisons in about 3
-  hours (3.2), and the full evaluation everything (3.3).
+  hours, on programs chosen to reproduce the paper's results (3.2), and the full evaluation
+  everything (3.3).
 - *Documented:* the inventory is section 1, the outputs are explained in section 4, and the
   resources in section 5.
 - *Verification and validation:* no contradiction between the tools, certificates re-checkable with

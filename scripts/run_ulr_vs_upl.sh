@@ -131,14 +131,16 @@ echo ""
 # Ultimate must run from its own directory: it resolves z3/cvc4/mathsat relatively.
 run_config() {
     local settings="$1" prog="$2" log="$3"
-    local tc start end status=0
+    local tc start end status=0 ws
     local -a settings_args=()
     [ -z "${settings}" ] || settings_args=(-s "${settings}")
     tc="$(toolchain_for "${prog}")"
+    ws="$(new_workspace)"
     start=$(now_ms)
-    ( cd "${ULTIMATE_UPL}" && timeout "${TIMEOUT}" ./Ultimate \
+    ( cd "${ULTIMATE_UPL}" && timeout "${TIMEOUT}" ./Ultimate -data "${ws}" \
         -tc "${tc}" "${settings_args[@]}" -i "${prog}" ) > "${log}" 2>&1 || status=$?
     end=$(now_ms)
+    rm -rf "${ws}"
     # Sidecar <name>.<cfg>.exit: timeout(1) exits with 124 when it had to stop Ultimate, which is how
     # the parser tells a run that hit the time limit (TIMEOUT) from one that ended early without a
     # verdict (UNKNOWN).

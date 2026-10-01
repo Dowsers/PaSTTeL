@@ -164,5 +164,12 @@ collect_programs() {
     done | sort -zu
 }
 
+# new_workspace -- echoes a fresh, empty directory for one Ultimate run's Eclipse workspace (-data).
+# Each release's Ultimate.ini puts the workspace in ~/.ultimate, shared by every run. A run killed at
+# its timeout while Eclipse saves that workspace can leave it corrupt, and every later run that parses
+# C then fails at start-up (ObjectNotFoundException: Tree element '/FLAG...'). With a workspace of its
+# own, deleted afterwards, no run depends on another.
+new_workspace() { mktemp -d "${TMPDIR:-/tmp}/ultimate-workspace.XXXXXX"; }
+
 # now_ms -- wall clock in milliseconds.
 now_ms() { date +%s%3N; }
