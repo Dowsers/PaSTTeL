@@ -1,11 +1,14 @@
 pipeline {
   agent any
+
+  options { skipDefaultCheckout() }
+
   stages {
     stage('Checkout') {
       steps {
         checkout([
           $class: 'GitSCM',
-          branches: [[name: env.BRANCH_NAME]],
+          branches: scm.branches,              
           userRemoteConfigs: scm.userRemoteConfigs,
           extensions: [
             [$class: 'CleanBeforeCheckout'],
@@ -37,7 +40,7 @@ pipeline {
     }
 
     stage('Deploy') {
-      when { branch 'main' }
+      when { expression { env.GIT_BRANCH == 'origin/main' } }
       steps {
         echo 'Deploy...'
       }
